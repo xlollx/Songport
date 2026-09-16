@@ -95,7 +95,9 @@ fun AccountsScreen(snackbar: SnackbarHostState, onSetup: (MusicProvider) -> Unit
         }
     }
 
-    val providers = Providers.all()
+    // Reading the accounts map here subscribes this scope to the store: a newly added account shows
+    // up at once instead of on the next tab switch.
+    val providers = remember(data.settings.extraAccounts) { Providers.all() }
     LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item(key = "intro") { TrustBanner() }
         items(providers.filter { it.requiresAuth }, key = { it.id }) { p ->
