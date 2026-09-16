@@ -76,7 +76,7 @@ class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
                 out += Playlist(
                     id = pid,
                     name = p["name"].str ?: "",
-                    trackCount = p["tracks"]["total"].int ?: -1,
+                    trackCount = p["items"]["total"].int ?: p["tracks"]["total"].int ?: -1,
                     ownedByMe = p["owner"]["id"].str == me || p["collaborative"].bool == true,
                 )
             }
@@ -86,8 +86,8 @@ class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     }
 
     override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
-        val j = api(ctx, "GET", "$API/playlists/$playlistId?fields=name,tracks(total)")
-        return Playlist(playlistId, j["name"].str ?: playlistId, j["tracks"]["total"].int ?: -1, ownedByMe = false)
+        val j = api(ctx, "GET", "$API/playlists/$playlistId?fields=name,items(total),tracks(total)")
+        return Playlist(playlistId, j["name"].str ?: playlistId, j["items"]["total"].int ?: j["tracks"]["total"].int ?: -1, ownedByMe = false)
     }
 
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
@@ -95,13 +95,16 @@ class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         var url: String? = if (playlistId == MusicProvider.LIKED_ID) {
             "$API/me/tracks?limit=50"
         } else {
-            "$API/playlists/$playlistId/tracks?limit=100&fields=" +
-                Http.enc("next,items(track(id,name,uri,duration_ms,is_local,external_ids(isrc),artists(name),album(name)))")
+            // Migrazione Spotify di febbraio/marzo 2026: /tracks e' stato tolto alle app in Development Mode
+            // (risponde 403) e sostituito da /items, con "track" rinominato in "item" nella risposta.
+            "$API/playlists/$playlistId/items?limit=100&fields=" +
+                Http.enc("next,items(item(id,name,uri,duration_ms,is_local,external_ids(isrc),artists(name),album(name))," +
+                    "track(id,name,uri,duration_ms,is_local,external_ids(isrc),artists(name),album(name)))")
         }
         while (url != null) {
             val j = api(ctx, "GET", url)
             for (item in j["items"].arr) {
-                val t = item["track"]
+                val t = item["item"].takeUnless { it.isNullish } ?: item["track"]
                 if (t.isNullish || t["is_local"].bool == true) continue
                 if (t["id"].str == null) continue
                 out += toTrack(t)
@@ -160,7 +163,7 @@ class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
             return
         }
         tracks.mapNotNull { it.uri }.chunked(100).forEach { chunk ->
-            api(ctx, "POST", "$API/playlists/$playlistId/tracks", jsonObj("uris" to chunk))
+            api(ctx, "POST", "$API/playlists/$playlistId/items", jsonObj("uris" to chunk))
         }
     }
 
@@ -170,8 +173,8 @@ class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
             return
         }
         tracks.mapNotNull { it.uri }.chunked(100).forEach { chunk ->
-            api(ctx, "DELETE", "$API/playlists/$playlistId/tracks",
-                jsonObj("tracks" to chunk.map { mapOf("uri" to it) }))
+            api(ctx, "DELETE", "$API/playlists/$playlistId/items",
+                jsonObj("items" to chunk.map { mapOf("uri" to it) }))
         }
     }
 
