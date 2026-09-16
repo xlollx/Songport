@@ -331,7 +331,7 @@
     </string-array>
     <string-array name="setup_steps_apple">
         <item>Apple Music richiede l\'iscrizione a pagamento all\'Apple Developer Program (99 $ l\'anno) e un abbonamento Apple Music. Senza, usa i link di playlist pubbliche o i file.</item>
-        <item>In "Certificates, Identifiers & Profiles", "Identifiers", crea un Media ID con MusicKit abilitato.</item>
+        <item>In "Certificates, Identifiers &amp; Profiles", "Identifiers", crea un Media ID con MusicKit abilitato.</item>
         <item>In "Keys" crea una chiave con "Media Services (MusicKit)" abilitato e scarica il file .p8 (si scarica una volta sola). Annota il Key ID mostrato accanto e il tuo Team ID (in alto a destra nella pagina dell\'account).</item>
         <item>Genera il developer token ES256 (JWT) dalla chiave .p8: nel README del progetto c\'è uno script pronto. Incolla qui il token.</item>
         <item>Il token scade al massimo dopo sei mesi: quando il login smette di funzionare, generane uno nuovo e incollalo di nuovo.</item>

@@ -35,6 +35,7 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://developer.tidal.com/dashboard",
         redirectUri = AuthFlow.REDIRECT_URI,
+        stepUrls = listOf("https://developer.tidal.com/dashboard", "https://developer.tidal.com/dashboard/create", null, "https://developer.tidal.com/dashboard"),
         whyRes = R.string.setup_why_tidal,
         stepsArrayRes = R.array.setup_steps_tidal,
         fieldLabelRes = R.string.setup_field_client_id,

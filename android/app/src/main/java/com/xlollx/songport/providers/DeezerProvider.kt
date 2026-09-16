@@ -39,6 +39,7 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
 
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://developers.deezer.com/myapps",
+        stepUrls = listOf("https://developers.deezer.com/myapps", "https://developers.deezer.com/myapps/create", null, "https://developers.deezer.com/myapps"),
         whyRes = R.string.setup_why_deezer,
         stepsArrayRes = R.array.setup_steps_deezer,
         fieldLabelRes = R.string.setup_field_app_id,

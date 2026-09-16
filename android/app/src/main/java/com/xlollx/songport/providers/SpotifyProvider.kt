@@ -39,6 +39,7 @@ class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://developer.spotify.com/dashboard",
         redirectUri = AuthFlow.REDIRECT_URI,
+        stepUrls = listOf("https://developer.spotify.com/dashboard", "https://developer.spotify.com/dashboard/create", null, null, "https://developer.spotify.com/dashboard", "https://developer.spotify.com/dashboard"),
         whyRes = R.string.setup_why_spotify,
         stepsArrayRes = R.array.setup_steps_spotify,
         fieldLabelRes = R.string.setup_field_client_id,

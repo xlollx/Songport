@@ -31,6 +31,7 @@ class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
     override val loginForm = LoginForm(needsUrl = false, needsUser = true, needsSecret = false, hintRes = R.string.login_hint_lastfm)
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://www.last.fm/api/account/create",
+        stepUrls = listOf("https://www.last.fm/api/account/create", null, "https://www.last.fm/api/accounts"),
         whyRes = R.string.setup_why_lastfm,
         stepsArrayRes = R.array.setup_steps_lastfm,
         fieldLabelRes = R.string.setup_field_api_key,
