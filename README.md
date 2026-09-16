@@ -14,8 +14,10 @@ The app ships without any service credentials of its own: each user creates a fr
 on the services that require one (Spotify, YouTube Music, TIDAL, Deezer, Last.fm) and the app walks
 them through it in about two minutes. Personal servers and files need nothing.
 
-UI languages: English, Italian, French and German. License: GPL-3.0, see [LICENSE](LICENSE).
-Security reports: see [SECURITY.md](SECURITY.md).
+Download: the signed APK of every version is on the
+[Releases](https://github.com/xlollx/Songport/releases/latest) page. UI languages: English, Italian,
+French and German. License: GPL-3.0, see [LICENSE](LICENSE). Security reports: see
+[SECURITY.md](SECURITY.md).
 
 ---
 
@@ -188,7 +190,9 @@ Toolchain: AGP 8.11.1, Gradle 8.14.3, Kotlin 2.1.21, compileSdk/targetSdk 36, mi
 ### GitHub Actions
 
 `.github/workflows/build.yml` runs on every push to `main`, on pull requests and manually. It runs the
-tests, builds the debug APK and, when the upload key secrets are present, the signed AAB. With the
+tests, builds the debug APK and, when the upload key secrets are present, the signed AAB and APK. A
+push to `main` whose `versionName` in `app/build.gradle` has no tag yet creates the tag and publishes
+both as a GitHub Release: to release, bump `versionCode` and `versionName` and push. With the
 `DEBUG_KEYSTORE_BASE64` secret (a debug keystore in base64) the debug APK keeps the same signature
 across builds so updates install over each other; the file itself is not in the repository.
 

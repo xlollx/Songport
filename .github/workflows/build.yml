@@ -9,9 +9,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-# Il token del workflow puo' solo leggere il repository: gli artifact non richiedono altro.
+# contents: write is needed to create the tag and the GitHub Release; nothing else is granted.
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -98,14 +98,14 @@ jobs:
         if: steps.key.outputs.present == 'true'
         run: echo "${{ secrets.UPLOAD_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/upload.jks"
 
-      - name: Build AAB release firmato
+      - name: Build AAB e APK release firmati
         if: steps.key.outputs.present == 'true'
         env:
           KEYSTORE_FILE: ${{ runner.temp }}/upload.jks
           KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
-        run: gradle bundleRelease --no-daemon --stacktrace
+        run: gradle bundleRelease assembleRelease --no-daemon --stacktrace
 
       - name: Carica l'AAB come artifact
         if: steps.key.outputs.present == 'true'
@@ -116,3 +116,44 @@ jobs:
           path: android/app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 14
+
+      - name: Carica l'APK release come artifact
+        if: steps.key.outputs.present == 'true'
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: Songport-release-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      # ---- GitHub Release: on a push to main whose versionName has no tag yet, create the tag and
+      # publish the signed APK (direct download) and the AAB (for the Play Console). ----
+      - name: Decide whether to publish a release
+        id: rel
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.key.outputs.present == 'true' }}
+        run: |
+          v=$(sed -n 's/.*versionName "\([^"]*\)".*/\1/p' app/build.gradle | head -1)
+          if [ -z "$v" ]; then echo "versionName not found"; exit 1; fi
+          if git ls-remote --exit-code --tags origin "refs/tags/v$v" >/dev/null; then
+            echo "Tag v$v already exists: nothing to publish."
+          else
+            echo "tag=v$v" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Name release assets after the version
+        if: ${{ steps.rel.outputs.tag != '' }}
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/Songport-${{ steps.rel.outputs.tag }}.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "$GITHUB_WORKSPACE/Songport-${{ steps.rel.outputs.tag }}.aab"
+
+      - name: GitHub Release
+        if: ${{ steps.rel.outputs.tag != '' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.rel.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          files: |
+            Songport-*.apk
+            Songport-*.aab
+          generate_release_notes: true
