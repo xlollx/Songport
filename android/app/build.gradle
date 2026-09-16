@@ -145,7 +145,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
 
     // Login OAuth nel browser (Custom Tabs) e token cifrati
-    implementation 'androidx.browser:browser:1.8.0'
+    implementation 'androidx.browser:browser:1.10.0'
     // WebView per MusicKit JS (login Apple Music): serve l'asset loader per avere un'origine https
     implementation 'androidx.webkit:webkit:1.12.1'
     // Sblocco con impronta/PIN all'apertura (opzionale)
