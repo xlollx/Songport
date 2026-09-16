@@ -253,7 +253,7 @@ private fun MainScreen(
                             selected = tab == index,
                             onClick = { tab = index },
                             icon = { Icon(icon, contentDescription = null) },
-                            label = { Text(stringResource(label)) },
+                            label = { Text(stringResource(label), maxLines = 1, softWrap = false) },
                         )
                     }
                 }

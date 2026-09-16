@@ -27,16 +27,28 @@ data class Tokens(
  * Se la cifratura non e' disponibile sul dispositivo si ricade su SharedPreferences normali.
  */
 class TokenStore(context: Context) {
-    private val sp: SharedPreferences = try {
-        val key = MasterKey.Builder(context, "songport_master")
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-        EncryptedSharedPreferences.create(
-            context, "tokens", key,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
-        )
-    } catch (e: Exception) {
-        context.getSharedPreferences("tokens_plain", Context.MODE_PRIVATE)
+    // Aprire le preferenze cifrate costa (chiave nel Keystore, decifratura dell'indice): si fa una
+    // volta per processo, altrimenti ogni ridisegno delle schermate che mostrano "collegato" rallenta.
+    private val sp: SharedPreferences = shared(context)
+
+    companion object {
+        @Volatile private var cached: SharedPreferences? = null
+
+        private fun shared(context: Context): SharedPreferences = cached ?: synchronized(this) {
+            cached ?: open(context.applicationContext).also { cached = it }
+        }
+
+        private fun open(context: Context): SharedPreferences = try {
+            val key = MasterKey.Builder(context, "songport_master")
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+            EncryptedSharedPreferences.create(
+                context, "tokens", key,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
+            )
+        } catch (e: Exception) {
+            context.getSharedPreferences("tokens_plain", Context.MODE_PRIVATE)
+        }
     }
 
     fun get(providerId: String): Tokens? =

@@ -80,8 +80,8 @@
 
     <string name="settings_notifications">Notify after each sync</string>
     <string name="settings_notifications_desc">Show a notification when a scheduled sync adds or removes tracks, or fails.</string>
-    <string name="settings_advanced">Your own credentials</string>
-    <string name="settings_advanced_desc">Spotify allows only 5 users per app in development mode, and the daily YouTube quota is shared by everyone using this build. Registering your own app on each service is free and takes a couple of minutes: the guide walks you through it.</string>
+    <string name="settings_advanced">Service keys</string>
+    <string name="settings_advanced_desc">Songport ships without keys of its own: Spotify, YouTube Music, TIDAL, Deezer, Last.fm and Apple Music connect through a free key created in your name, so their limits and quotas are yours alone. Here you can see and change them.</string>
     <string name="settings_privacy_options">Ad privacy options</string>
     <string name="settings_privacy_policy">Privacy policy</string>
     <string name="settings_about">About</string>
@@ -117,7 +117,7 @@
 
     <string name="provider_note_apple">Apple Music playlists in your library. Needs a subscription and a MusicKit developer token. Apple\'s API can add tracks but not remove them.</string>
     <string name="provider_note_files">Local files: import a playlist you exported from any service (CSV, M3U, Apple Music/iTunes XML, JSON, or a plain list) and sync it anywhere. The bridge for services with no open API: Amazon Music, Qobuz, SoundCloud.</string>
-    <string name="apple_token_missing">No Apple Music developer token in this build. Paste yours in Settings › Advanced.</string>
+    <string name="apple_token_missing">No Apple Music developer token yet. Enter yours from Accounts, Apple Music, Set up.</string>
     <string name="csv_export_csv">Export as CSV</string>
     <string name="csv_export_m3u">Export as M3U</string>
     <string name="link_paste">Or paste a public playlist link</string>
@@ -130,9 +130,9 @@
     <string name="log_notes_title">Notes</string>
     <string name="editor_mirror_unsupported">%1$s can only add tracks: removals will be skipped.</string>
 
-    <string name="setup_cta">Use your own credentials</string>
-    <string name="setup_title">%1$s: your own credentials</string>
-    <string name="setup_using_own">You are using your own credentials.</string>
+    <string name="setup_cta">Change the key</string>
+    <string name="setup_title">%1$s: your key</string>
+    <string name="setup_using_own">Configured with your key.</string>
     <string name="setup_redirect_label">Redirect URI to paste in the dashboard</string>
     <string name="setup_copy">Copy</string>
     <string name="setup_copied">Copied</string>
@@ -147,9 +147,9 @@
     <string name="setup_field_secret">Client secret</string>
     <string name="setup_field_redirect_url">Your https redirect URL</string>
     <string name="setup_field_apple_token">Developer token (JWT)</string>
-    <string name="setup_why_spotify">Spotify allows 5 users per app in development mode, and extended access needs a registered company with 250,000 monthly users. With your own client ID that limit applies to you alone.</string>
-    <string name="setup_why_youtube">The daily YouTube quota is shared by everyone using this build. With your own credentials you get your own quota.</string>
-    <string name="setup_why_tidal">Your own client ID keeps you independent from the limits of the shared app.</string>
+    <string name="setup_why_spotify">Spotify requires an app registered in your name. It is free; an app in Development Mode serves up to 5 accounts, plenty for personal use.</string>
+    <string name="setup_why_youtube">Google requires a Cloud project in your name to use the YouTube API. It is free and the daily quota is yours alone.</string>
+    <string name="setup_why_tidal">TIDAL requires an app registered in your name. It is free.</string>
     <string name="setup_why_deezer">Deezer needs an app registered in your name. The https redirect page is provided by the project.</string>
     <string name="setup_why_apple">The developer token belongs to your Apple Developer account and expires after six months at most.</string>
     <string name="error_dev_mode_limit">%1$s only allows a handful of users per app. Set up your own credentials: it is free and takes about two minutes.</string>

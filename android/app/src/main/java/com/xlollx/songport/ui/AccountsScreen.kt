@@ -152,9 +152,10 @@ private fun ProviderCard(
     onChanged: () -> Unit,
 ) {
     val ctx = LocalContext.current
-    val configured = p.isConfigured(ctx)
-    val connected = p.isConnected(ctx)
-    val account = p.accountName(ctx)
+    // Letture dal token cifrato: una volta per scheda, non a ogni ridisegno (key(refresh) le rinnova).
+    val configured = remember(p.id) { p.isConfigured(ctx) }
+    val connected = remember(p.id) { p.isConnected(ctx) }
+    val account = remember(p.id) { p.accountName(ctx) }
     Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {

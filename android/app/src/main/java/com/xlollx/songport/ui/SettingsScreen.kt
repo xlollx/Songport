@@ -109,17 +109,23 @@ fun SettingsScreen(
         SectionCard(stringResource(R.string.settings_advanced)) {
             Text(stringResource(R.string.settings_advanced_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (advanced) {
-                Providers.all().filter { it.setupGuide != null }.forEach { p ->
+                Providers.all().filter { it.setupGuide != null && it.slot.isEmpty() }.forEach { p ->
+                    val configured = remember(p.id, data.settings) { p.isConfigured(ctx) }
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                         ProviderBadge(p, 28.dp)
                         Spacer(Modifier.width(10.dp))
                         Column(Modifier.weight(1f)) {
                             Text(p.displayName, style = MaterialTheme.typography.bodyLarge)
-                            if (p.usesOwnCredentials(ctx)) {
-                                Text(stringResource(R.string.setup_using_own), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
-                            }
+                            Text(
+                                stringResource(if (configured) R.string.setup_using_own else R.string.not_configured),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (configured) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                         }
-                        OutlinedButton(onClick = { onSetup(p) }) { Text(stringResource(R.string.setup_cta)) }
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedButton(onClick = { onSetup(p) }) {
+                            Text(stringResource(if (configured) R.string.edit else R.string.setup_now))
+                        }
                     }
                 }
             }

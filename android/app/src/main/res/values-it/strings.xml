@@ -5,7 +5,7 @@
     <string name="tab_syncs">Sync</string>
     <string name="tab_accounts">Account</string>
     <string name="tab_log">Registro</string>
-    <string name="tab_settings">Impostazioni</string>
+    <string name="tab_settings">Opzioni</string>
 
     <string name="syncs_empty">Nessuna sincronizzazione.\n\nCollega almeno un servizio in Account (o usa i file CSV), poi tocca + per creare la prima sync.</string>
     <string name="sync_all">Sincronizza tutto ora</string>
@@ -80,8 +80,8 @@
 
     <string name="settings_notifications">Notifica dopo ogni sync</string>
     <string name="settings_notifications_desc">Mostra una notifica quando una sync programmata aggiunge o rimuove brani, o fallisce.</string>
-    <string name="settings_advanced">Credenziali personali</string>
-    <string name="settings_advanced_desc">Spotify consente solo 5 utenti per app in modalità sviluppo, e la quota giornaliera di YouTube è divisa fra tutti gli utenti di questa build. Registrare la propria app su ciascun servizio è gratis e richiede un paio di minuti: la procedura guidata ti accompagna.</string>
+    <string name="settings_advanced">Chiavi dei servizi</string>
+    <string name="settings_advanced_desc">Songport non include chiavi proprie: Spotify, YouTube Music, TIDAL, Deezer, Last.fm e Apple Music si collegano con una chiave gratuita creata a tuo nome, così limiti e quote sono solo tuoi. Qui puoi vederle e cambiarle.</string>
     <string name="settings_privacy_options">Opzioni privacy annunci</string>
     <string name="settings_privacy_policy">Informativa privacy</string>
     <string name="settings_about">Informazioni</string>
@@ -117,7 +117,7 @@
 
     <string name="provider_note_apple">Playlist della tua libreria Apple Music. Servono un abbonamento e un developer token MusicKit. L\'API di Apple permette di aggiungere brani ma non di toglierli.</string>
     <string name="provider_note_files">File locali: importa una playlist esportata da qualsiasi servizio (CSV, M3U, XML di Apple Music/iTunes, JSON o un semplice elenco) e sincronizzala ovunque. E\' il ponte per i servizi senza API aperta: Amazon Music, Qobuz, SoundCloud.</string>
-    <string name="apple_token_missing">Questa build non ha un developer token Apple Music. Incolla il tuo in Impostazioni › Avanzate.</string>
+    <string name="apple_token_missing">Nessun developer token Apple Music. Inseriscilo da Account, Apple Music, Configura.</string>
     <string name="csv_export_csv">Esporta in CSV</string>
     <string name="csv_export_m3u">Esporta in M3U</string>
     <string name="link_paste">Oppure incolla il link di una playlist pubblica</string>
@@ -130,9 +130,9 @@
     <string name="log_notes_title">Note</string>
     <string name="editor_mirror_unsupported">%1$s può solo aggiungere brani: le rimozioni verranno saltate.</string>
 
-    <string name="setup_cta">Usa le tue credenziali</string>
-    <string name="setup_title">%1$s: credenziali personali</string>
-    <string name="setup_using_own">Stai usando le tue credenziali.</string>
+    <string name="setup_cta">Cambia la chiave</string>
+    <string name="setup_title">%1$s: la tua chiave</string>
+    <string name="setup_using_own">Configurato con la tua chiave.</string>
     <string name="setup_redirect_label">Redirect URI da incollare nella dashboard</string>
     <string name="setup_copy">Copia</string>
     <string name="setup_copied">Copiato</string>
@@ -147,9 +147,9 @@
     <string name="setup_field_secret">Client secret</string>
     <string name="setup_field_redirect_url">Il tuo URL di redirect https</string>
     <string name="setup_field_apple_token">Developer token (JWT)</string>
-    <string name="setup_why_spotify">Spotify consente 5 utenti per app in modalità sviluppo, e l\'accesso esteso richiede un\'azienda registrata con 250.000 utenti mensili. Con il tuo client ID quel limite vale solo per te.</string>
-    <string name="setup_why_youtube">La quota giornaliera di YouTube è condivisa da tutti gli utenti di questa build. Con le tue credenziali usi la tua.</string>
-    <string name="setup_why_tidal">Con il tuo client ID non dipendi dai limiti dell\'app condivisa.</string>
+    <string name="setup_why_spotify">Spotify richiede un\'app registrata a tuo nome. È gratis; un\'app in Development Mode serve fino a 5 account, più che sufficienti per uso personale.</string>
+    <string name="setup_why_youtube">Google richiede un progetto Cloud a tuo nome per usare l\'API di YouTube. È gratis e la quota giornaliera è solo tua.</string>
+    <string name="setup_why_tidal">TIDAL richiede un\'app registrata a tuo nome. È gratis.</string>
     <string name="setup_why_deezer">Deezer richiede un\'app registrata a tuo nome. La pagina https di redirect la fornisce il progetto.</string>
     <string name="setup_why_apple">Il developer token appartiene al tuo account Apple Developer e scade al massimo dopo sei mesi.</string>
     <string name="error_dev_mode_limit">%1$s permette pochi utenti per app. Configura le tue credenziali: è gratis e richiede due minuti.</string>
