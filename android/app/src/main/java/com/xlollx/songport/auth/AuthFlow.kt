@@ -8,8 +8,11 @@ import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.R
 import com.xlollx.songport.providers.OAuthProvider
 import com.xlollx.songport.providers.Providers
+import com.xlollx.songport.MainActivity
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.net.UnknownHostException
 
 /**
  * Login OAuth: apre il browser (Custom Tab) sull'URL di autorizzazione del servizio e
@@ -61,6 +64,19 @@ object AuthFlow {
                 tab.launchUrl(ctx, Uri.parse(url))
 
                 val params = server.awaitRedirect()
+                // Il browser ha ricevuto il redirect: prima di parlare con Google riportiamo l'app in primo
+                // piano. In secondo piano, con risparmio dati o batteria attivi, Android nega la rete e il
+                // DNS fallisce con "Unable to resolve host".
+                if (params.isNotEmpty()) {
+                    runCatching {
+                        ctx.startActivity(
+                            Intent(ctx, MainActivity::class.java).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                                putExtra(MainActivity.EXTRA_TAB, MainActivity.TAB_ACCOUNTS)
+                            }
+                        )
+                    }
+                }
                 val message = try {
                     when {
                         params.isEmpty() -> ctx.getString(R.string.auth_failed, ctx.getString(R.string.auth_timeout))
@@ -69,11 +85,13 @@ object AuthFlow {
                         params["state"] != null && params["state"] != state ->
                             ctx.getString(R.string.auth_state_mismatch)
                         else -> {
-                            provider.completeAuth(
-                                ctx,
-                                params + mapOf(OAuthProvider.PARAM_REDIRECT_URI to server.redirectUri),
-                                verifier,
-                            )
+                            retryOnDns {
+                                provider.completeAuth(
+                                    ctx,
+                                    params + mapOf(OAuthProvider.PARAM_REDIRECT_URI to server.redirectUri),
+                                    verifier,
+                                )
+                            }
                             ctx.getString(R.string.auth_done, provider.displayName)
                         }
                     }
@@ -92,8 +110,25 @@ object AuthFlow {
      * Spotify: un'app in modalita' sviluppo accetta 5 utenti, chi non e' nell'elenco riceve un
      * generico access_denied e non capisce perche'.
      */
+    /** Il DNS puo' fallire per qualche secondo mentre l'app torna in primo piano: riproviamo. */
+    private suspend fun <T> retryOnDns(times: Int = 4, block: suspend () -> T): T {
+        var last: Exception? = null
+        repeat(times) { i ->
+            try {
+                return block()
+            } catch (e: UnknownHostException) {
+                last = e
+                delay(1000L * (i + 1))
+            }
+        }
+        throw last!!
+    }
+
     fun friendlyError(ctx: Context, provider: MusicProvider, raw: String?): String {
         val text = raw.orEmpty()
+        if (text.contains("Unable to resolve host", true) || text.contains("UnknownHost", true)) {
+            return ctx.getString(R.string.error_network)
+        }
         val notRegistered = text.contains("not registered", true) ||
             text.contains("access_denied", true) ||
             text.contains("User not registered", true)

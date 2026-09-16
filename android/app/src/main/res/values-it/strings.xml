@@ -152,6 +152,7 @@
     <string name="setup_why_deezer">Deezer richiede un\'app registrata a tuo nome. La pagina https di redirect la fornisce il progetto.</string>
     <string name="setup_why_apple">Il developer token appartiene al tuo account Apple Developer e scade al massimo dopo sei mesi.</string>
     <string name="error_dev_mode_limit">%1$s permette pochi utenti per app. Configura le tue credenziali: è gratis e richiede due minuti.</string>
+    <string name="error_network">il telefono non è riuscito a raggiungere il servizio (DNS fallito). Controlla la connessione, eventuali VPN o DNS privato, e che Songport possa usare i dati in secondo piano, poi riprova.</string>
     <string name="auth_timeout">nessuna risposta dal browser, tempo scaduto</string>
 
     <string name="tab_tools">Strumenti</string>
