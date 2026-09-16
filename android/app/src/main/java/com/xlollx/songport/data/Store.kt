@@ -28,6 +28,12 @@ data class Settings(
     val deezerRedirectUrl: String = "",
     /** Account aggiuntivi per servizio: "spotify" -> ["2", "3"]. */
     val extraAccounts: Map<String, List<String>> = emptyMap(),
+    /** Connectors shown in Accounts, in order: provider ids ("spotify", "spotify@2", "csv"). */
+    val connectors: List<String> = emptyList(),
+    /** User-given connector names, by provider id. */
+    val connectorNames: Map<String, String> = emptyMap(),
+    /** True once existing connections have been turned into connectors (one-time migration). */
+    val connectorsInit: Boolean = false,
     /** Richiedi impronta/PIN all'apertura dell'app. */
     val appLock: Boolean = false,
     /** Schermata di benvenuto gia' vista. */
@@ -61,9 +67,23 @@ class Store private constructor(context: Context) {
     private var pendingWrite: java.util.concurrent.ScheduledFuture<*>? = null
     private val lock = Any()
 
-    private val _state = MutableStateFlow(load().also { Providers.configure(it.settings.extraAccounts) })
+    private val _state = MutableStateFlow(load().also { Providers.configure(it.settings.extraAccounts, it.settings.connectorNames) })
     val state: StateFlow<StoreData> get() = _state
     val data: StoreData get() = _state.value
+
+    init { migrateConnectors(context) }
+
+    /** First run of the connector model: whatever is connected or used by a sync becomes a connector. */
+    private fun migrateConnectors(ctx: Context) {
+        val d = data
+        if (d.settings.connectorsInit) return
+        val ids = Providers.all().filter { p ->
+            p.slot.isNotEmpty() ||
+                d.jobs.any { it.source.provider == p.id || it.target.provider == p.id } ||
+                (p.requiresAuth && runCatching { p.isConnected(ctx) }.getOrDefault(false))
+        }.map { it.id }
+        update { s -> s.copy(settings = s.settings.copy(connectors = ids, connectorsInit = true)) }
+    }
 
     private fun load(): StoreData = try {
         if (file.exists()) json.decodeFromString<StoreData>(file.readText()) else StoreData()
@@ -77,7 +97,7 @@ class Store private constructor(context: Context) {
             next = fn(_state.value)
             _state.value = next
         }
-        Providers.configure(next.settings.extraAccounts)
+        Providers.configure(next.settings.extraAccounts, next.settings.connectorNames)
         scheduleWrite()
     }
 

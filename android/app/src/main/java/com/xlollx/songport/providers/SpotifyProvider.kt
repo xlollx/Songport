@@ -50,6 +50,8 @@ class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val tokenEndpoint = "https://accounts.spotify.com/api/token"
     override val scopes =
         "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-library-read"
+    // Forces the consent page, which names the signed-in account and offers "Not you?" to switch.
+    override val switchAccountParams = mapOf("show_dialog" to "true")
 
 
     override suspend fun enrichAccount(ctx: Context, t: Tokens): Tokens {

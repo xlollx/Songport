@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.SwitchAccount
 import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.AlertDialog
@@ -51,6 +52,7 @@ fun ConnectDialog(provider: MusicProvider, onDismiss: () -> Unit, onContinue: ()
                         else -> stringResource(R.string.connect_where_oauth, provider.authDomain ?: provider.displayName)
                     },
                 )
+                if (provider.slot.isNotEmpty()) Fact(Icons.Filled.SwitchAccount, stringResource(R.string.connect_switch_account, provider.displayName))
                 Fact(Icons.Filled.Lock, stringResource(R.string.connect_token))
                 Fact(Icons.Filled.PhoneAndroid, stringResource(R.string.connect_noserver, provider.displayName))
                 Fact(Icons.Filled.Undo, stringResource(R.string.connect_revoke, provider.displayName))

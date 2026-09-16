@@ -251,6 +251,13 @@
     <string name="account_add">Aggiungi un altro account</string>
     <string name="account_remove">Rimuovi questo account</string>
     <string name="account_remove_blocked">Prima elimina le sync che usano questo account.</string>
+    <string name="connectors_empty_title">Nessun connettore</string>
+    <string name="connectors_empty_body">Tocca + per aggiungere un servizio: Spotify, YouTube Music, TIDAL, file… Puoi aggiungere più connettori dello stesso servizio, ognuno con il suo nome e il suo account.</string>
+    <string name="connector_add">Aggiungi connettore</string>
+    <string name="connector_pick_title">Quale servizio?</string>
+    <string name="connector_name_label">Nome del connettore</string>
+    <string name="connector_rename">Rinomina</string>
+    <string name="connect_switch_account">Il browser potrebbe essere già collegato a un altro account %1$s. Nella pagina di accesso scegli “Non sei tu?” o cambia account, poi continua con l\'account di questo connettore.</string>
     <string name="security_title">Come sono protetti i tuoi accessi</string>
     <string name="security_fact_1">Le password si digitano sulle pagine dei servizi, mai dentro Songport.</string>
     <string name="security_fact_2">Songport conserva solo token di accesso revocabili, cifrati con l\'Android Keystore.</string>

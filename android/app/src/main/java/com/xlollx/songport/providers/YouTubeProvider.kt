@@ -58,6 +58,8 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
     override val scopes = "https://www.googleapis.com/auth/youtube"
     // prompt=consent garantisce il refresh token anche ai riaccessi successivi.
     override val extraAuthParams = mapOf("access_type" to "offline", "prompt" to "consent")
+    // Extra accounts: Google shows the account chooser instead of reusing the signed-in one.
+    override val switchAccountParams = mapOf("prompt" to "consent select_account")
 
     // Client Android della build: Google impone lo schema "client id invertito" (nel manifest).
     override fun redirectUri(ctx: Context) = "${BuildConfig.GOOGLE_REDIRECT_SCHEME}:/oauth2redirect"

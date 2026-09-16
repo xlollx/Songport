@@ -26,6 +26,11 @@ abstract class OAuthProvider : MusicProvider {
     protected abstract val tokenEndpoint: String
     protected abstract val scopes: String
     protected open val extraAuthParams: Map<String, String> = emptyMap()
+    /**
+     * Parametri aggiunti solo per gli account oltre il primo: il browser e' quasi sempre gia' loggato
+     * con il primo account, e senza questi il servizio lo riuserebbe in silenzio.
+     */
+    protected open val switchAccountParams: Map<String, String> = emptyMap()
     protected open val apiAccept: String = "application/json"
     protected open val apiContentType: String = "application/json"
 
@@ -64,7 +69,7 @@ abstract class OAuthProvider : MusicProvider {
             "state" to state,
             "code_challenge_method" to "S256",
             "code_challenge" to codeChallenge,
-        ) + extraAuthParams
+        ) + extraAuthParams + (if (slot.isNotEmpty()) switchAccountParams else emptyMap())
         return authorizeEndpoint + "?" + Http.query(params)
     }
 

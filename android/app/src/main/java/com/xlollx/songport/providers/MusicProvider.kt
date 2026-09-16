@@ -63,9 +63,9 @@ interface MusicProvider {
     fun isConnected(ctx: Context): Boolean
     fun accountName(ctx: Context): String?
 
-    /** Nome da mostrare: il servizio, piu' l'account quando ce n'e' piu' d'uno. */
+    /** Nome da mostrare: quello scelto dall'utente per il connettore, altrimenti il servizio (e l'account). */
     fun label(ctx: Context): String =
-        if (slot.isEmpty()) displayName else "$displayName · ${accountName(ctx) ?: slot}"
+        Providers.customName(id) ?: if (slot.isEmpty()) displayName else "$displayName · ${accountName(ctx) ?: slot}"
 
     /**
      * Avvia il login. Default: OAuth nel browser (vedi OAuthProvider); Apple Music usa una
@@ -104,15 +104,20 @@ interface MusicProvider {
 
 object Providers {
     @Volatile private var extraAccounts: Map<String, List<String>> = emptyMap()
+    @Volatile private var names: Map<String, String> = emptyMap()
     @Volatile private var cached: List<MusicProvider> = build()
 
-    /** Chiamato dallo Store quando cambiano gli account aggiuntivi (servizio -> slot). */
-    fun configure(extra: Map<String, List<String>>) {
+    /** Chiamato dallo Store quando cambiano gli account aggiuntivi (servizio -> slot) o i nomi dei connettori. */
+    fun configure(extra: Map<String, List<String>>, connectorNames: Map<String, String> = names) {
+        names = connectorNames
         if (extra != extraAccounts) {
             extraAccounts = extra
             cached = build()
         }
     }
+
+    /** Nome scelto dall'utente per un connettore, se c'e'. */
+    fun customName(id: String): String? = names[id]?.trim()?.takeIf { it.isNotEmpty() }
 
     private fun build(): List<MusicProvider> {
         val out = ArrayList<MusicProvider>()

@@ -164,6 +164,7 @@ private fun MainScreen(
     var wizardFor by remember { mutableStateOf<MusicProvider?>(null) }
     var unmatchedReport by remember { mutableStateOf<String?>(null) }
     var previewJob by remember { mutableStateOf<SyncJob?>(null) }
+    var addConnector by remember { mutableStateOf(false) }
 
     val newSync by newSyncRequests.collectAsState()
     LaunchedEffect(newSync) { if (newSync) { newSyncRequests.value = false; tab = MainActivity.TAB_SYNCS; editing = newJob() } }
@@ -267,11 +268,18 @@ private fun MainScreen(
             }
         },
         floatingActionButton = {
-            if (tab == MainActivity.TAB_SYNCS) ExtendedFloatingActionButton(
-                onClick = { editing = newJob() },
-                icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-                text = { Text(stringResource(R.string.new_sync)) },
-            )
+            when (tab) {
+                MainActivity.TAB_SYNCS -> ExtendedFloatingActionButton(
+                    onClick = { editing = newJob() },
+                    icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                    text = { Text(stringResource(R.string.new_sync)) },
+                )
+                MainActivity.TAB_ACCOUNTS -> ExtendedFloatingActionButton(
+                    onClick = { addConnector = true },
+                    icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                    text = { Text(stringResource(R.string.connector_add)) },
+                )
+            }
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
@@ -288,7 +296,7 @@ private fun MainScreen(
                     },
                     onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS },
                 )
-                MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar) { wizardFor = it }
+                MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }) { wizardFor = it }
                 MainActivity.TAB_TOOLS -> ToolsScreen(snackbar)
                 MainActivity.TAB_LOG -> LogScreen(data, snackbar) { unmatchedReport = it }
                 else -> SettingsScreen(data, store, snackbar) { wizardFor = it }

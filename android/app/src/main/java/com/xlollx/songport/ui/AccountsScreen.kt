@@ -7,6 +7,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.AlertDialog
 import com.xlollx.songport.data.Store
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.filled.CheckCircle
@@ -70,9 +74,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Connectors, not services: the screen starts empty and the user adds one entry per account they
+ * want to use ("Spotify", "Spotify 2", "Files"...), each with its own name. Several connectors of
+ * the same service are separate accounts; Files allows one.
+ */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun AccountsScreen(snackbar: SnackbarHostState, onSetup: (MusicProvider) -> Unit) {
+fun AccountsScreen(snackbar: SnackbarHostState, showAdd: Boolean, onShowAdd: (Boolean) -> Unit, onSetup: (MusicProvider) -> Unit) {
     val ctx = LocalContext.current
     val store = remember { Store.get(ctx) }
     val data by store.state.collectAsState()
@@ -95,40 +104,135 @@ fun AccountsScreen(snackbar: SnackbarHostState, onSetup: (MusicProvider) -> Unit
         }
     }
 
-    // Reading the accounts map here subscribes this scope to the store: a newly added account shows
-    // up at once instead of on the next tab switch.
-    val providers = remember(data.settings.extraAccounts) { Providers.all() }
-    LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    // "+": pick a service, then name the connector.
+    var naming by remember { mutableStateOf<MusicProvider?>(null) }
+    if (showAdd) PickServiceDialog(
+        connectors = data.settings.connectors,
+        onDismiss = { onShowAdd(false) },
+        onPick = { service -> onShowAdd(false); naming = service },
+    )
+    naming?.let { service ->
+        val n = data.settings.connectors.count { Providers.byId(it)?.serviceId == service.serviceId } + 1
+        NameDialog(
+            title = stringResource(R.string.connector_add),
+            initial = if (n == 1) service.displayName else "${service.displayName} $n",
+            onDismiss = { naming = null },
+        ) { name ->
+            naming = null
+            store.updateSettings { s ->
+                // First connector of a service uses the primary slot; the next ones get a numbered slot.
+                val primaryTaken = service.serviceId in s.connectors
+                val slot = if (!primaryTaken) "" else {
+                    val used = s.extraAccounts[service.serviceId].orEmpty()
+                    ((used.mapNotNull { it.toIntOrNull() }.maxOrNull() ?: 1) + 1).toString()
+                }
+                val id = if (slot.isEmpty()) service.serviceId else "${service.serviceId}@$slot"
+                s.copy(
+                    connectors = s.connectors + id,
+                    connectorNames = s.connectorNames + (id to name),
+                    extraAccounts = if (slot.isEmpty()) s.extraAccounts
+                    else s.extraAccounts + (service.serviceId to s.extraAccounts[service.serviceId].orEmpty() + slot),
+                )
+            }
+        }
+    }
+    var renaming by remember { mutableStateOf<MusicProvider?>(null) }
+    renaming?.let { p ->
+        NameDialog(stringResource(R.string.connector_rename), p.label(ctx), onDismiss = { renaming = null }) { name ->
+            renaming = null
+            store.updateSettings { s -> s.copy(connectorNames = s.connectorNames + (p.id to name)) }
+        }
+    }
+
+    fun remove(p: MusicProvider) {
+        val inUse = data.jobs.any { it.source.provider == p.id || it.target.provider == p.id }
+        if (inUse) {
+            scope.launch { snackbar.showSnackbar(ctx.getString(R.string.account_remove_blocked)) }
+            return
+        }
+        if (p.requiresAuth) runCatching { p.disconnect(ctx) }
+        store.updateSettings { s ->
+            s.copy(
+                connectors = s.connectors.filter { it != p.id },
+                connectorNames = s.connectorNames - p.id,
+                extraAccounts = if (p.slot.isEmpty()) s.extraAccounts
+                else s.extraAccounts + (p.serviceId to s.extraAccounts[p.serviceId].orEmpty().filter { it != p.slot }),
+            )
+        }
+    }
+
+    // Reading the settings here subscribes this scope to the store: a new connector shows up at once.
+    val providers = remember(data.settings.connectors, data.settings.extraAccounts, data.settings.connectorNames) {
+        data.settings.connectors.mapNotNull { Providers.byId(it) }
+    }
+    if (providers.isEmpty()) {
+        EmptyState(Icons.Filled.AccountCircle, stringResource(R.string.connectors_empty_title), stringResource(R.string.connectors_empty_body))
+        return
+    }
+    LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item(key = "intro") { TrustBanner() }
-        items(providers.filter { it.requiresAuth }, key = { it.id }) { p ->
+        items(providers, key = { it.id }) { p ->
             key(refresh) {
-                ProviderCard(
+                if (!p.requiresAuth) FilesCard(snackbar, onRemove = { remove(p) })
+                else ProviderCard(
                     p = p,
                     quotaUsed = if (p.serviceId == YouTubeProvider.SERVICE) QuotaMeter.used(data, YouTubeProvider.SERVICE) else null,
                     onSetup = onSetup,
                     onConnect = { connectFor = p },
-                    onAddAccount = {
-                        val used = data.settings.extraAccounts[p.serviceId].orEmpty()
-                        val next = ((used.mapNotNull { it.toIntOrNull() }.maxOrNull() ?: 1) + 1).toString()
-                        store.updateSettings { s -> s.copy(extraAccounts = s.extraAccounts + (p.serviceId to used + next)) }
-                    },
-                    onRemoveAccount = {
-                        val inUse = data.jobs.any { it.source.provider == p.id || it.target.provider == p.id }
-                        if (inUse) {
-                            scope.launch { snackbar.showSnackbar(ctx.getString(R.string.account_remove_blocked)) }
-                        } else {
-                            p.disconnect(ctx)
-                            store.updateSettings { s ->
-                                s.copy(extraAccounts = s.extraAccounts + (p.serviceId to s.extraAccounts[p.serviceId].orEmpty().filter { it != p.slot }))
-                            }
-                        }
-                    },
+                    onRename = { renaming = p },
+                    onRemove = { remove(p) },
                     onChanged = { refresh++ },
                 )
             }
         }
-        item(key = "files") { FilesCard(snackbar) }
     }
+}
+
+/** Service picker for a new connector. Services that allow one connector only are greyed out once added. */
+@Composable
+private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, onPick: (MusicProvider) -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.connector_pick_title)) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                Providers.services().forEach { s ->
+                    val taken = !s.supportsMultipleAccounts && connectors.any { Providers.byId(it)?.serviceId == s.serviceId }
+                    Row(
+                        Modifier.fillMaxWidth().clickable(enabled = !taken) { onPick(s) }.padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        ProviderBadge(s, 32.dp)
+                        Spacer(Modifier.width(12.dp))
+                        Text(
+                            s.displayName + (if (!s.canWrite) " · " + stringResource(R.string.read_only) else ""),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = if (taken) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
+    )
+}
+
+@Composable
+private fun NameDialog(title: String, initial: String, onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
+    var name by remember { mutableStateOf(initial) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            OutlinedTextField(
+                value = name, onValueChange = { name = it }, singleLine = true,
+                label = { Text(stringResource(R.string.connector_name_label)) }, modifier = Modifier.fillMaxWidth(),
+            )
+        },
+        confirmButton = { TextButton(enabled = name.isNotBlank(), onClick = { onConfirm(name.trim()) }) { Text(stringResource(R.string.ok)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
+    )
 }
 
 @Composable
@@ -149,8 +253,8 @@ private fun ProviderCard(
     quotaUsed: Long?,
     onSetup: (MusicProvider) -> Unit,
     onConnect: () -> Unit,
-    onAddAccount: () -> Unit,
-    onRemoveAccount: () -> Unit,
+    onRename: () -> Unit,
+    onRemove: () -> Unit,
     onChanged: () -> Unit,
 ) {
     val ctx = LocalContext.current
@@ -205,8 +309,8 @@ private fun ProviderCard(
                     if (connected && p.revokeUrl != null) MenuAction(stringResource(R.string.account_revoke, p.displayName), {
                         ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(p.revokeUrl)))
                     }) else null,
-                    if (connected && p.slot.isEmpty() && p.supportsMultipleAccounts) MenuAction(stringResource(R.string.account_add), onAddAccount) else null,
-                    if (p.slot.isNotEmpty()) MenuAction(stringResource(R.string.account_remove), onRemoveAccount, destructive = true) else null,
+                    MenuAction(stringResource(R.string.connector_rename), onRename),
+                    MenuAction(stringResource(R.string.account_remove), onRemove, destructive = true),
                 )
                 OverflowMenu(actions)
                 when {
@@ -225,7 +329,7 @@ private fun ProviderCard(
 }
 
 @Composable
-private fun FilesCard(snackbar: SnackbarHostState) {
+private fun FilesCard(snackbar: SnackbarHostState, onRemove: () -> Unit) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     var lists by remember { mutableStateOf<List<Playlist>>(emptyList()) }
@@ -285,7 +389,8 @@ private fun FilesCard(snackbar: SnackbarHostState) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ProviderBadge(LocalFilesProvider, 40.dp)
                 Spacer(Modifier.width(12.dp))
-                Text(LocalFilesProvider.displayName, style = MaterialTheme.typography.titleMedium)
+                Text(LocalFilesProvider.label(ctx), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                OverflowMenu(listOf(MenuAction(stringResource(R.string.account_remove), onRemove, destructive = true)))
             }
             Spacer(Modifier.height(6.dp))
             Text(stringResource(LocalFilesProvider.noteRes), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
