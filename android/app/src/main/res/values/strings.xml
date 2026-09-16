@@ -70,7 +70,11 @@
     <string name="always_available">Always available</string>
 
     <string name="provider_note_spotify">Requires a Spotify account. Playlists and Liked Songs.</string>
-    <string name="provider_note_youtube">YouTube Music playlists via your Google account. Daily API quota is limited: large syncs may take several days.</string>
+    <string name="provider_note_ytm">YouTube Music playlists and likes through the free companion app "Songport YTM Bridge" (installed separately, not from Google Play). No Google Cloud project, no quota. Not an official Google API: read the notice in the Bridge before using it.</string>
+    <string name="ytm_not_installed_hint">Install the companion app "Songport YTM Bridge" from GitHub, then come back here and press Connect. Prefer the official route? Use the "YouTube Music (Google API)" card below.</string>
+    <string name="ytm_not_installed">Songport YTM Bridge is not installed.</string>
+    <string name="ytm_install">Get the Bridge</string>
+    <string name="provider_note_youtube">Official YouTube Data API with a Google Cloud project of your own. Optional: the plain "YouTube Music" card above works without it. Daily quota is limited: large syncs may take several days.</string>
     <string name="provider_note_tidal">TIDAL playlists (beta).</string>
     <string name="provider_note_deezer">Deezer playlists and favourites (beta).</string>
 

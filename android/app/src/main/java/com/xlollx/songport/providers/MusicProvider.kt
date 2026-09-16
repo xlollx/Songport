@@ -50,6 +50,11 @@ interface MusicProvider {
      */
     val setupGuide: SetupGuide? get() = null
 
+    /** Servizi che passano da un'app compagna: dove scaricarla quando manca (null = non applicabile). */
+    val installUrl: String? get() = null
+    /** Testo mostrato al posto del generico "serve una chiave" quando il servizio non e' configurato. */
+    val notConfiguredRes: Int? get() = null
+
     /** True se questa build (o le impostazioni utente) hanno le credenziali per il servizio. */
     fun isConfigured(ctx: Context): Boolean
 
@@ -117,6 +122,7 @@ object Providers {
         }
         add(SpotifyProvider.SERVICE) { SpotifyProvider(it) }
         add(AppleMusicProvider.SERVICE) { AppleMusicProvider(it) }
+        add(YouTubeBridgeProvider.SERVICE) { YouTubeBridgeProvider(it) }
         add(YouTubeProvider.SERVICE) { YouTubeProvider(it) }
         add(TidalProvider.SERVICE) { TidalProvider(it) }
         add(DeezerProvider.SERVICE) { DeezerProvider(it) }

@@ -31,7 +31,7 @@ import kotlinx.serialization.json.JsonElement
 class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
     override val serviceId = SERVICE
     override val revokeUrl = "https://myaccount.google.com/permissions"
-    override val displayName = "YouTube Music"
+    override val displayName = "YouTube Music (Google API)"
     override val brandColor = 0xFFFF0000
     override val noteRes = R.string.provider_note_youtube
 

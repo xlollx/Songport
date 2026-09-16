@@ -186,7 +186,7 @@ private fun ProviderCard(
                 Text(stringResource(R.string.setup_using_own), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
             } else if (!configured && !connected) {
                 Spacer(Modifier.height(6.dp))
-                Text(stringResource(R.string.not_configured_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                Text(stringResource(p.notConfiguredRes ?: R.string.not_configured_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
             }
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -209,6 +209,10 @@ private fun ProviderCard(
                 OverflowMenu(actions)
                 when {
                     connected -> OutlinedButton(onClick = { p.disconnect(ctx); onChanged() }) { Text(stringResource(R.string.disconnect)) }
+                    // Servizio che passa da un'app compagna non ancora installata: il pulsante la scarica.
+                    !configured && p.installUrl != null -> Button(onClick = {
+                        ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(p.installUrl)))
+                    }) { Text(stringResource(R.string.ytm_install)) }
                     // Nessuna chiave per questo servizio: il pulsante principale porta alla procedura guidata.
                     !configured && p.setupGuide != null -> Button(onClick = { onSetup(p) }) { Text(stringResource(R.string.setup_now)) }
                     else -> Button(enabled = configured, onClick = onConnect) { Text(stringResource(R.string.connect)) }

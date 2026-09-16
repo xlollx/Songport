@@ -68,7 +68,8 @@ Security reports: see [SECURITY.md](SECURITY.md).
 |---------|--------|-------|----------------------|--------|
 | Spotify | complete | OAuth PKCE in the browser | `SPOTIFY_CLIENT_ID`, redirect `songport://callback` | An app in *Development Mode* accepts 5 users and its owner needs Spotify Premium (February 2026 rules). *Extended Quota Mode* requires a registered company and 250,000 monthly active users. Since July 2026 the quota is counted per developer account, not per client ID. That is why the app walks each user through creating their own client ID: on Spotify this is the normal path. |
 | Apple Music | read and add | MusicKit JS in an in-app WebView | `APPLE_DEVELOPER_TOKEN` (ES256 JWT, Apple Developer Program) | The API cannot remove tracks from a playlist: mirror syncs towards Apple Music only add and say so in the report. The developer token expires after at most 6 months. An Apple Music subscription is required. Library tracks do not expose an ISRC. |
-| YouTube Music | via YouTube Data API v3 | Google OAuth | `GOOGLE_CLIENT_ID` (Android OAuth client: package + SHA-1), YouTube Data API enabled, OAuth verification for the `youtube` scope | 10,000 units per day per project (search 100, insert 50), shared by every user of the same build. With own credentials the quota is the user's. No ISRC. |
+| YouTube Music | via the optional [Songport YTM Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Google sign-in inside the Bridge | nothing: the Bridge is installed separately, outside Google Play | Uses the web player's internal interface: not an official API, against the YouTube Terms of Service, may break without notice. No quota. The Bridge shows the notice before sign-in. |
+| YouTube Music (Google API) | via YouTube Data API v3 | Google OAuth | `GOOGLE_CLIENT_ID` (Android OAuth client: package + SHA-1), YouTube Data API enabled, OAuth verification for the `youtube` scope | 10,000 units per day per project (search 100, insert 50), shared by every user of the same build. With own credentials the quota is the user's. No ISRC. |
 | TIDAL | beta | OAuth PKCE | `TIDAL_CLIENT_ID` | API v2 (JSON:API) still evolving; endpoints isolated in `TidalProvider.kt`. Not tested live. |
 | Deezer | beta | OAuth implicit | `DEEZER_APP_ID` and an https redirect page (`docs/deezer-redirect.html`) | Registration of new apps may be closed. Playlists read from Deezer carry no ISRC. Not tested live. |
 | Subsonic / Navidrome (Airsonic, Gonic, LMS, Funkwhale) | complete | server URL, user, password (md5+salt token) | nothing | Starred tracks = likes. |
@@ -200,8 +201,10 @@ intended distribution model: every user stays within their own quota and the pro
 shared key.
 
 - Spotify: a client ID created on developer.spotify.com (the user needs Spotify Premium, a Spotify rule).
-- YouTube Music: a *Desktop* OAuth client from a Google Cloud project with YouTube Data API v3 enabled
-  (client ID and secret); the app uses the loopback flow.
+- YouTube Music: either the optional Bridge app (no key at all; its repository explains what it is
+  and what it risks) or, on the "YouTube Music (Google API)" card, a *Desktop* OAuth client from a
+  Google Cloud project with YouTube Data API v3 enabled (client ID and secret); the app then uses
+  the loopback flow.
 - TIDAL: a client ID from developer.tidal.com.
 - Deezer: an application ID from developers.deezer.com; the https redirect page is provided by the
   project (`docs/deezer-redirect.html`, published on GitHub Pages) and prefilled.

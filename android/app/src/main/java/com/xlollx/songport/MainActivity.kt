@@ -50,6 +50,9 @@ import com.xlollx.songport.data.Store
 import com.xlollx.songport.model.PlaylistRef
 import com.xlollx.songport.model.SyncJob
 import com.xlollx.songport.providers.MusicProvider
+import com.xlollx.songport.providers.Providers
+import com.xlollx.songport.providers.YouTubeBridgeProvider
+import com.xlollx.songport.providers.YouTubeProvider
 import com.xlollx.songport.sync.PlaylistLinks
 import com.xlollx.songport.sync.Scheduler
 import com.xlollx.songport.sync.SyncWorker
@@ -175,7 +178,11 @@ private fun MainScreen(
             snackbar.showSnackbar(ctx.getString(R.string.share_invalid))
         } else {
             tab = MainActivity.TAB_SYNCS
-            editing = newJob().copy(source = PlaylistRef(provider = ref.providerId, playlistId = ref.playlistId, playlistName = ""))
+            // Link di YouTube: se il Bridge e' collegato, la sync nasce gia' su quel connettore.
+            val providerId = if (ref.providerId == YouTubeProvider.SERVICE &&
+                Providers.byId(YouTubeBridgeProvider.SERVICE)?.isConnected(ctx) == true
+            ) YouTubeBridgeProvider.SERVICE else ref.providerId
+            editing = newJob().copy(source = PlaylistRef(provider = providerId, playlistId = ref.playlistId, playlistName = ""))
             snackbar.showSnackbar(ctx.getString(R.string.share_received))
         }
     }
