@@ -303,40 +303,43 @@
         <item quantity="other">%d sync configurate</item>
     </plurals>
     <string-array name="setup_steps_spotify">
-        <item>Apri il portale e accedi con il tuo account Spotify (serve Premium).</item>
-        <item>Tocca "Create app": nome e descrizione li scegli tu.</item>
-        <item>Incolla il redirect qui sotto in "Redirect URIs" e premi Add.</item>
-        <item>Spunta "Web API" e salva.</item>
-        <item>Apri l\'app appena creata, vai in Settings e copia qui il Client ID.</item>
+        <item>Accedi a developer.spotify.com con l\'account Spotify che usi tutti i giorni. Spotify richiede che quell\'account abbia Premium; se ti chiede di accettare i termini per sviluppatori, accetta.</item>
+        <item>Premi "Create app". Nome e descrizione sono liberi (per esempio "Songport"). Lascia vuoto "Website".</item>
+        <item>In "Redirect URIs" incolla esattamente l\'indirizzo mostrato qui sotto e premi "Add". Senza, il login non può tornare all\'app.</item>
+        <item>Sotto "Which API/SDKs are you planning to use?" spunta "Web API", accetta i termini e premi "Save".</item>
+        <item>Apri l\'app appena creata, premi "Settings" (in alto a destra) e copia qui il "Client ID". Il Client secret non serve.</item>
+        <item>Facoltativo: in "User Management" puoi aggiungere fino a 5 altri account Spotify (nome ed e-mail) che potranno usare la tua chiave, per esempio in famiglia.</item>
     </string-array>
     <string-array name="setup_steps_youtube">
-        <item>Apri console.cloud.google.com e crea un progetto (nome libero, per esempio Songport).</item>
-        <item>Menu, "API e servizi", "Libreria": cerca YouTube Data API v3 e premi Abilita.</item>
-        <item>Menu, "Google Auth Platform", "Panoramica", "Inizia": nome app, la tua e-mail come assistenza, pubblico Esterno, la tua e-mail come contatto. Crea.</item>
-        <item>Sempre in Google Auth Platform apri "Pubblico": sotto "Utenti di test" premi "Aggiungi utenti" e inserisci il tuo indirizzo Gmail. Senza questo passo Google rifiuta il login.</item>
-        <item>Google Auth Platform, "Client", "Crea client": tipo di applicazione App desktop. Copia qui ID client e client secret. Nessun redirect da registrare: l\'app ascolta su 127.0.0.1.</item>
+        <item>Accedi a console.cloud.google.com con il tuo account Google e crea un progetto. Il nome è libero, per esempio "Songport". Attendi la notifica di creazione, poi selezionalo.</item>
+        <item>Abilita la YouTube Data API v3: il link apre la sua pagina nella libreria, premi "Abilita".</item>
+        <item>Google Auth Platform, "Panoramica", premi "Inizia": nome app "Songport", la tua e-mail come assistenza, pubblico "Esterno", la tua e-mail come contatto. Accetta e premi "Crea".</item>
+        <item>Google Auth Platform, "Pubblico": sotto "Utenti di test" premi "Aggiungi utenti", inserisci il tuo indirizzo Gmail e salva. Senza questo passo Google rifiuta il login con "accesso bloccato".</item>
+        <item>Google Auth Platform, "Client", "Crea client": tipo di applicazione "App desktop", nome libero. Copia qui ID client e Client secret. Non c\'è altro da registrare: l\'app riceve il login su 127.0.0.1.</item>
     </string-array>
     <string-array name="setup_steps_tidal">
-        <item>Apri il portale sviluppatori TIDAL e accedi.</item>
-        <item>Crea una nuova app.</item>
-        <item>Incolla il redirect qui sotto fra i Redirect URI.</item>
-        <item>Copia qui il Client ID.</item>
+        <item>Accedi a developer.tidal.com con il tuo account TIDAL.</item>
+        <item>Premi "Create new app". Nome e descrizione sono liberi.</item>
+        <item>In "Redirect URIs" incolla esattamente l\'indirizzo mostrato qui sotto e salva.</item>
+        <item>Copia qui il Client ID. Il Client secret non serve.</item>
     </string-array>
     <string-array name="setup_steps_deezer">
-        <item>Apri developers.deezer.com e crea una nuova applicazione.</item>
-        <item>Deezer accetta solo redirect https. Qui sotto trovi già una pagina di redirect pronta: usa quell\'indirizzo sia come dominio dell\'applicazione sia come redirect (oppure pubblica tu docs/deezer-redirect.html).</item>
-        <item>Copia qui l\'Application ID.</item>
+        <item>Accedi a developers.deezer.com con il tuo account Deezer e apri "My Apps".</item>
+        <item>Premi "Create a new Application". Nome e descrizione sono liberi.</item>
+        <item>Deezer accetta solo redirect https. Qui sotto trovi già una pagina di redirect pronta: incolla quell\'indirizzo sia in "Application domain" (senza https://) sia in "Redirect URL after authentication".</item>
+        <item>Salva, poi copia qui l\'"Application ID".</item>
     </string-array>
     <string-array name="setup_steps_apple">
-        <item>Servono l\'Apple Developer Program (99 $/anno) e una chiave MusicKit.</item>
-        <item>Crea la chiave, scarica il file .p8, annota Key ID e Team ID.</item>
-        <item>Genera il JWT ES256 (nel README c\'è lo script pronto) e incollalo qui.</item>
-        <item>Scade al massimo dopo sei mesi: quando smette di funzionare, rigeneralo.</item>
+        <item>Apple Music richiede l\'iscrizione a pagamento all\'Apple Developer Program (99 $ l\'anno) e un abbonamento Apple Music. Senza, usa i link di playlist pubbliche o i file.</item>
+        <item>In "Certificates, Identifiers & Profiles", "Identifiers", crea un Media ID con MusicKit abilitato.</item>
+        <item>In "Keys" crea una chiave con "Media Services (MusicKit)" abilitato e scarica il file .p8 (si scarica una volta sola). Annota il Key ID mostrato accanto e il tuo Team ID (in alto a destra nella pagina dell\'account).</item>
+        <item>Genera il developer token ES256 (JWT) dalla chiave .p8: nel README del progetto c\'è uno script pronto. Incolla qui il token.</item>
+        <item>Il token scade al massimo dopo sei mesi: quando il login smette di funzionare, generane uno nuovo e incollalo di nuovo.</item>
     </string-array>
     <string-array name="setup_steps_lastfm">
-        <item>Apri la pagina API di Last.fm e accedi con il tuo account Last.fm.</item>
-        <item>Compila il modulo (nome e descrizione a piacere, nessun callback) e invia.</item>
-        <item>Copia qui la API key.</item>
+        <item>Accedi a last.fm e apri la pagina di creazione dell\'account API.</item>
+        <item>Compila il modulo: e-mail di contatto, nome e descrizione dell\'applicazione sono liberi. "Callback URL" e "Application homepage" possono restare vuoti. Invia.</item>
+        <item>Copia qui la "API key". Lo "Shared secret" non serve.</item>
     </string-array>
     <!-- Restyling: stati, schermate vuote, intestazione -->
     <string name="more_actions">Altro</string>
