@@ -1,6 +1,7 @@
 package com.xlollx.songport.ui
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -59,6 +60,14 @@ fun LogScreen(data: StoreData, snackbar: SnackbarHostState, onResolve: (String) 
     LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         item(key = "diag") {
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                // Apre una nuova issue su GitHub gia' compilata con il rapporto: l'utente la legge,
+                // toglie quel che vuole e la invia con il proprio account. Nulla parte da solo.
+                TextButton(onClick = {
+                    val body = Diagnostics.report(ctx).take(5000)
+                    val url = "https://github.com/xlollx/Songport/issues/new?title=" + Uri.encode("[Sync error] ") +
+                        "&body=" + Uri.encode("<!-- Describe what you were doing. Remove anything you prefer not to share. -->\n\n```\n$body\n```")
+                    runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+                }) { Text(stringResource(R.string.report_issue)) }
                 TextButton(onClick = {
                     val text = Diagnostics.report(ctx)
                     val share = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text); putExtra(Intent.EXTRA_SUBJECT, "Songport diagnostics") }
