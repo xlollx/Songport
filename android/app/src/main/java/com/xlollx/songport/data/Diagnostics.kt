@@ -41,24 +41,24 @@ object Diagnostics {
         val sb = StringBuilder()
         sb.appendLine("Songport ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
         sb.appendLine("Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT}) · ${Build.MANUFACTURER} ${Build.MODEL}")
-        sb.appendLine("Lingua: ${Locale.getDefault()}")
+        sb.appendLine("Locale: ${Locale.getDefault()}")
         sb.appendLine()
-        sb.appendLine("Servizi:")
+        sb.appendLine("Services:")
         Providers.all().filter { it.requiresAuth }.forEach { p ->
-            sb.appendLine("  ${p.id}: ${if (p.isConnected(ctx)) "collegato" else "no"}" +
-                (if (p.usesOwnCredentials(ctx)) ", credenziali proprie" else "") +
-                (if (!p.isConfigured(ctx)) ", non configurato" else ""))
+            sb.appendLine("  ${p.id}: ${if (p.isConnected(ctx)) "connected" else "no"}" +
+                (if (p.usesOwnCredentials(ctx)) ", own credentials" else "") +
+                (if (!p.isConfigured(ctx)) ", not configured" else ""))
         }
         sb.appendLine()
-        sb.appendLine("Sync configurate: ${data.jobs.size} · cache abbinamenti: ${data.matchCache.size}")
+        sb.appendLine("Syncs: ${data.jobs.size} · match cache: ${data.matchCache.size}")
         data.jobs.forEach { j ->
             sb.appendLine("  ${j.name}: ${j.source.provider} -> ${j.target.provider}, ${j.schedule}, mirror=${j.mirrorRemovals}, on=${j.enabled}")
         }
         sb.appendLine()
-        sb.appendLine("Ultime esecuzioni:")
+        sb.appendLine("Last runs:")
         data.reports.take(15).forEach { r ->
             sb.appendLine("  ${fmt.format(Date(r.startedEpoch))} ${r.jobName}: +${r.added} -${r.removed} nf=${r.unmatched.size}" +
-                (r.error?.let { " ERRORE: $it" } ?: ""))
+                (r.error?.let { " ERROR: $it" } ?: ""))
         }
         sb.appendLine()
         sb.appendLine("Log:")

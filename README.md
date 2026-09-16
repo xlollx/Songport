@@ -14,7 +14,7 @@ The app ships without any service credentials of its own: each user creates a fr
 on the services that require one (Spotify, YouTube Music, TIDAL, Deezer, Last.fm) and the app walks
 them through it in about two minutes. Personal servers and files need nothing.
 
-UI languages: English and Italian. License: GPL-3.0, see [LICENSE](LICENSE).
+UI languages: English, Italian, French and German. License: GPL-3.0, see [LICENSE](LICENSE).
 Security reports: see [SECURITY.md](SECURITY.md).
 
 ---

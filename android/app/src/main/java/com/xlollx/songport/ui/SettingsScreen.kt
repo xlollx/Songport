@@ -3,6 +3,8 @@ package com.xlollx.songport.ui
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -81,6 +83,14 @@ fun SettingsScreen(
                         store.updateSettings { it.copy(appLock = v) }
                     }
                 })
+            }
+            SettingRow(stringResource(R.string.settings_language), stringResource(R.string.settings_language_desc)) {
+                TextButton(onClick = {
+                    // Android 13+ has a per-app language picker; older versions only offer the system one.
+                    val intent = if (Build.VERSION.SDK_INT >= 33) Intent(Settings.ACTION_APP_LOCALE_SETTINGS, Uri.fromParts("package", ctx.packageName, null))
+                    else Intent(Settings.ACTION_LOCALE_SETTINGS)
+                    runCatching { ctx.startActivity(intent) }
+                }) { Text(stringResource(R.string.settings_language_open)) }
             }
         }
 

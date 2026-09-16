@@ -85,6 +85,9 @@
 
     <string name="settings_notifications">Notify after each sync</string>
     <string name="settings_notifications_desc">Show a notification when a scheduled sync adds or removes tracks, or fails.</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_desc">Songport follows the system language: English, Italian, French, German.</string>
+    <string name="settings_language_open">Change</string>
     <string name="settings_advanced">Service keys</string>
     <string name="settings_advanced_desc">Songport ships without keys of its own: Spotify, YouTube Music, TIDAL, Deezer, Last.fm and Apple Music connect through a free key created in your name, so their limits and quotas are yours alone. Here you can see and change them.</string>
     <string name="settings_privacy_options">Ad privacy options</string>

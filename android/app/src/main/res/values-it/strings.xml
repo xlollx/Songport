@@ -85,6 +85,9 @@
 
     <string name="settings_notifications">Notifica dopo ogni sync</string>
     <string name="settings_notifications_desc">Mostra una notifica quando una sync programmata aggiunge o rimuove brani, o fallisce.</string>
+    <string name="settings_language">Lingua</string>
+    <string name="settings_language_desc">Songport segue la lingua di sistema: inglese, italiano, francese, tedesco.</string>
+    <string name="settings_language_open">Cambia</string>
     <string name="settings_advanced">Chiavi dei servizi</string>
     <string name="settings_advanced_desc">Songport non include chiavi proprie: Spotify, YouTube Music, TIDAL, Deezer, Last.fm e Apple Music si collegano con una chiave gratuita creata a tuo nome, così limiti e quote sono solo tuoi. Qui puoi vederle e cambiarle.</string>
     <string name="settings_privacy_options">Opzioni privacy annunci</string>
