@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -120,9 +121,16 @@ fun SetupWizardScreen(provider: MusicProvider, onClose: () -> Unit) {
             }
 
             stringArrayResource(guide.stepsArrayRes).forEachIndexed { i, step ->
-                Row(Modifier.fillMaxWidth()) {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
                     Text("${i + 1}.", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.width(24.dp))
-                    Text(step, style = MaterialTheme.typography.bodyMedium)
+                    Text(step, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                    val link = guide.stepUrls.getOrNull(i)
+                    if (link != null) {
+                        TextButton(
+                            onClick = { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link))) },
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                        ) { Text(stringResource(R.string.setup_open_step)) }
+                    }
                 }
             }
 

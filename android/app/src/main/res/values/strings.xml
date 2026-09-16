@@ -136,6 +136,7 @@
     <string name="setup_redirect_label">Redirect URI to paste in the dashboard</string>
     <string name="setup_copy">Copy</string>
     <string name="setup_copied">Copied</string>
+    <string name="setup_open_step">Open</string>
     <string name="setup_open_dashboard">Open the developer portal</string>
     <string name="setup_save_connect">Save and connect</string>
     <string name="setup_save">Save</string>

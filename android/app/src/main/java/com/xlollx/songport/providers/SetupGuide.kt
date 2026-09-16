@@ -25,4 +25,6 @@ data class SetupGuide(
     val needsRedirectUrl: Boolean = false,
     /** Campo lungo su piu' righe (il JWT di Apple Music). */
     val multiline: Boolean = false,
+    /** Link diretto per ogni passo (stesso ordine di stepsArrayRes); null dove non serve. */
+    val stepUrls: List<String?> = emptyList(),
 )

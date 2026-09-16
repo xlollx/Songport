@@ -41,6 +41,14 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         stepsArrayRes = R.array.setup_steps_youtube,
         fieldLabelRes = R.string.setup_field_client_id,
         needsSecret = true,
+        // La console ricorda l'ultimo progetto scelto: dopo il primo passo i link si aprono gia' dentro.
+        stepUrls = listOf(
+            "https://console.cloud.google.com/projectcreate",
+            "https://console.cloud.google.com/apis/library/youtube.googleapis.com",
+            "https://console.cloud.google.com/auth/overview",
+            "https://console.cloud.google.com/auth/audience",
+            "https://console.cloud.google.com/auth/clients/create",
+        ),
     )
 
     override val defaultClientId: String get() = BuildConfig.GOOGLE_CLIENT_ID

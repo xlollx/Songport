@@ -136,6 +136,7 @@
     <string name="setup_redirect_label">Redirect URI da incollare nella dashboard</string>
     <string name="setup_copy">Copia</string>
     <string name="setup_copied">Copiato</string>
+    <string name="setup_open_step">Apri</string>
     <string name="setup_open_dashboard">Apri il portale sviluppatori</string>
     <string name="setup_save_connect">Salva e collega</string>
     <string name="setup_save">Salva</string>
