@@ -9,6 +9,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# Il token del workflow puo' solo leggere il repository: gli artifact non richiedono altro.
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
