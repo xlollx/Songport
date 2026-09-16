@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Stesso marchio dell'icona, in bianco: la barra di stato lo tinge da sola. -->
+    <group android:scaleX="1.35" android:scaleY="1.35" android:pivotX="54" android:pivotY="54">
+        <path android:pathData="M30.6,40.5 A27,27 0 0 1 77.4,40.5"
+            android:strokeColor="#FFFFFFFF" android:strokeWidth="7" android:strokeLineCap="round" />
+        <path android:pathData="M77.4,67.5 A27,27 0 0 1 30.6,67.5"
+            android:strokeColor="#FFFFFFFF" android:strokeWidth="7" android:strokeLineCap="round" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M83,35 L70.5,42.5 L82.5,49 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M25,73 L37.5,65.5 L25.5,59 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M54.08,61.11 A7,5.6 -20 1 1 40.92,65.89 A7,5.6 -20 1 1 54.08,61.11 Z" />
+        <path android:pathData="M52.6,62.5 L52.6,37.5"
+            android:strokeColor="#FFFFFFFF" android:strokeWidth="4.5" android:strokeLineCap="round" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M52.6,37.2 C58.5,38.6 63.4,42.4 63.2,49.6 C61.6,45.2 58,42.9 52.6,42.6 Z" />
+    </group>
+</vector>

@@ -1,0 +1,23 @@
+# Build
+android/.gradle/
+android/build/
+android/app/build/
+android/captures/
+android/local.properties
+
+# Chiavi di firma: la debug.keystore e' volutamente committata (firma stabile),
+# la chiave di upload del Play Store non deve MAI entrare nel repo.
+*.jks
+*.p8
+upload*.keystore
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Chiave di debug: locale o dal secret DEBUG_KEYSTORE_BASE64 in CI, mai nel repo
+android/app/debug.keystore

@@ -1,0 +1,157 @@
+package com.xlollx.songport.data
+
+import android.content.Context
+import com.xlollx.songport.model.SyncJob
+import com.xlollx.songport.model.SyncReport
+import com.xlollx.songport.net.json
+import com.xlollx.songport.providers.Providers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import java.io.File
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+
+@Serializable
+data class Settings(
+    val notifyOnSync: Boolean = true,
+    /** Client ID inseriti dall'utente, per servizio (vuoto = usa quello della build). */
+    val clientIds: Map<String, String> = emptyMap(),
+    /**
+     * Client secret, solo per i flussi "installed app" che lo richiedono (Google).
+     * Non e' un vero segreto: Google stesso dichiara che nelle app installate non e' confidenziale,
+     * ed e' l'utente a incollare il proprio. Resta comunque sul dispositivo.
+     */
+    val clientSecrets: Map<String, String> = emptyMap(),
+    val deezerRedirectUrl: String = "",
+    /** Account aggiuntivi per servizio: "spotify" -> ["2", "3"]. */
+    val extraAccounts: Map<String, List<String>> = emptyMap(),
+    /** Richiedi impronta/PIN all'apertura dell'app. */
+    val appLock: Boolean = false,
+    /** Schermata di benvenuto gia' vista. */
+    val onboardingDone: Boolean = false,
+)
+
+/** Unita' di quota consumate in un giorno (chiave = data nel fuso del servizio). */
+@Serializable
+data class QuotaDay(val day: String, val units: Long)
+
+@Serializable
+data class StoreData(
+    val jobs: List<SyncJob> = emptyList(),
+    /** Ultimi report, dal piu' recente. */
+    val reports: List<SyncReport> = emptyList(),
+    /** Cache abbinamenti: "srcProvider:trackId>dstProvider" -> id brano sulla destinazione. */
+    val matchCache: Map<String, String> = emptyMap(),
+    val settings: Settings = Settings(),
+    /** Quota API stimata per servizio (oggi YouTube). */
+    val quota: Map<String, QuotaDay> = emptyMap(),
+)
+
+/**
+ * Stato persistente dell'app: un unico file JSON (piccolo), esposto come StateFlow alla UI.
+ * Le scritture sono serializzate su un thread dedicato e atomiche (tmp + rename).
+ */
+class Store private constructor(context: Context) {
+    private val file = File(context.filesDir, "store.json")
+    private val tmp = File(context.filesDir, "store.json.tmp")
+    private val writer = Executors.newSingleThreadScheduledExecutor()
+    private var pendingWrite: java.util.concurrent.ScheduledFuture<*>? = null
+    private val lock = Any()
+
+    private val _state = MutableStateFlow(load().also { Providers.configure(it.settings.extraAccounts) })
+    val state: StateFlow<StoreData> get() = _state
+    val data: StoreData get() = _state.value
+
+    private fun load(): StoreData = try {
+        if (file.exists()) json.decodeFromString<StoreData>(file.readText()) else StoreData()
+    } catch (e: Exception) {
+        StoreData()
+    }
+
+    fun update(fn: (StoreData) -> StoreData) {
+        val next: StoreData
+        synchronized(lock) {
+            next = fn(_state.value)
+            _state.value = next
+        }
+        Providers.configure(next.settings.extraAccounts)
+        scheduleWrite()
+    }
+
+    /**
+     * Le scritture si accumulano per mezzo secondo e poi si scrive l'ultimo stato: digitare nelle
+     * impostazioni o aggiornare la cache brano per brano non riscrive il file a ogni tocco.
+     */
+    private fun scheduleWrite() {
+        synchronized(lock) {
+            pendingWrite?.cancel(false)
+            pendingWrite = writer.schedule({ writeNow() }, WRITE_DELAY_MS, TimeUnit.MILLISECONDS)
+        }
+    }
+
+    private fun writeNow() {
+        val snapshot = _state.value
+        try {
+            tmp.writeText(json.encodeToString(snapshot))
+            if (!tmp.renameTo(file)) { file.writeText(json.encodeToString(snapshot)); tmp.delete() }
+        } catch (_: Exception) { }
+    }
+
+    /** Scrive subito (es. prima che il processo venga fermato). */
+    fun flush() {
+        synchronized(lock) { pendingWrite?.cancel(false); pendingWrite = null }
+        writeNow()
+    }
+
+    // --- helper di comodo ---
+
+    fun job(id: String): SyncJob? = data.jobs.firstOrNull { it.id == id }
+
+    fun upsertJob(job: SyncJob) = update { d ->
+        if (d.jobs.any { it.id == job.id }) d.copy(jobs = d.jobs.map { if (it.id == job.id) job else it })
+        else d.copy(jobs = d.jobs + job)
+    }
+
+    fun deleteJob(id: String) = update { d -> d.copy(jobs = d.jobs.filter { it.id != id }) }
+
+    fun addReport(report: SyncReport) = update { d ->
+        d.copy(
+            reports = (listOf(report) + d.reports).take(MAX_REPORTS),
+            jobs = d.jobs.map { if (it.id == report.jobId) it.copy(lastRunEpoch = report.startedEpoch, lastReportId = report.id) else it },
+        )
+    }
+
+    fun updateReport(id: String, fn: (SyncReport) -> SyncReport) = update { d ->
+        d.copy(reports = d.reports.map { if (it.id == id) fn(it) else it })
+    }
+
+    fun updateSettings(fn: (Settings) -> Settings) = update { d -> d.copy(settings = fn(d.settings)) }
+
+    fun cachedMatch(srcProvider: String, srcTrackId: String, dstProvider: String): String? =
+        data.matchCache[cacheKey(srcProvider, srcTrackId, dstProvider)]
+
+    fun putMatches(entries: Map<String, String>) {
+        if (entries.isEmpty()) return
+        update { d ->
+            var cache = d.matchCache + entries
+            if (cache.size > MAX_CACHE) cache = cache.entries.drop(cache.size - MAX_CACHE).associate { it.key to it.value }
+            d.copy(matchCache = cache)
+        }
+    }
+
+    companion object {
+        private const val MAX_REPORTS = 200
+        private const val WRITE_DELAY_MS = 500L
+        private const val MAX_CACHE = 20_000
+
+        fun cacheKey(srcProvider: String, srcTrackId: String, dstProvider: String) = "$srcProvider:$srcTrackId>$dstProvider"
+
+        @Volatile private var instance: Store? = null
+        fun get(context: Context): Store = instance ?: synchronized(this) {
+            instance ?: Store(context.applicationContext).also { instance = it }
+        }
+    }
+}

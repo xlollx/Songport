@@ -1,0 +1,114 @@
+name: Build
+
+# Compila Songport. Parte a ogni push su main, sulle pull request e a mano
+# da GitHub -> Actions -> "Build" -> "Run workflow".
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    env:
+      # ID OAuth dei servizi (GitHub -> Settings -> Secrets and variables -> Actions -> Variables).
+      # Se mancano l'app compila comunque: il servizio risulta "non configurato" finche' l'utente
+      # non inserisce il proprio client ID nelle impostazioni avanzate.
+      SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID }}
+      TIDAL_CLIENT_ID: ${{ vars.TIDAL_CLIENT_ID }}
+      DEEZER_APP_ID: ${{ vars.DEEZER_APP_ID }}
+      DEEZER_REDIRECT_URL: ${{ vars.DEEZER_REDIRECT_URL }}
+      GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+      # Apple Music: JWT con scadenza (max 6 mesi), quindi sta nei Secrets non nelle Variables.
+      APPLE_DEVELOPER_TOKEN: ${{ secrets.APPLE_DEVELOPER_TOKEN }}
+      LASTFM_API_KEY: ${{ vars.LASTFM_API_KEY }}
+      # AdMob: se assenti si usano gli ID di TEST di Google (annunci di prova).
+      ADMOB_APP_ID: ${{ vars.ADMOB_APP_ID }}
+      ADMOB_BANNER_ID: ${{ vars.ADMOB_BANNER_ID }}
+      PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+      KOFI_URL: ${{ vars.KOFI_URL }}
+      # Keystore di debug (base64) per una firma stabile dell'APK debug; facoltativo.
+      DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          # Il default dell'action installa anche il pacchetto obsoleto "tools", sparito dal
+          # repository Google: senza questa riga lo step fallisce con "Failed to find package 'tools'".
+          packages: platform-tools
+
+      - name: Installa platform e build-tools
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" > /dev/null
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+
+      - name: Test unitari
+        run: gradle testDebugUnitTest --no-daemon --stacktrace
+
+      - name: Chiave di debug fissa (se configurata)
+        # Con il secret DEBUG_KEYSTORE_BASE64 la firma dell'APK debug resta uguale tra le build,
+        # cosi' gli aggiornamenti si installano sopra. Senza, vale una chiave di debug generata al volo.
+        if: ${{ env.DEBUG_KEYSTORE_BASE64 != '' }}
+        run: echo "$DEBUG_KEYSTORE_BASE64" | base64 -d > app/debug.keystore
+
+      - name: Build APK debug
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: Carica l'APK come artifact
+        # Se la quota artifact dell'account e' piena l'upload fallisce, ma la build e' comunque valida.
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: Songport-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          # Gli APK pesano: senza scadenza breve si satura la quota artifact dell'account.
+          retention-days: 7
+
+      # ---- Release per il Play Store (solo se e' configurata la chiave di upload nei Secrets) ----
+      - name: Verifica presenza chiave di release
+        id: key
+        run: |
+          if [ -n "${{ secrets.UPLOAD_KEYSTORE_BASE64 }}" ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Decodifica keystore di upload
+        if: steps.key.outputs.present == 'true'
+        run: echo "${{ secrets.UPLOAD_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/upload.jks"
+
+      - name: Build AAB release firmato
+        if: steps.key.outputs.present == 'true'
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/upload.jks
+          KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+        run: gradle bundleRelease --no-daemon --stacktrace
+
+      - name: Carica l'AAB come artifact
+        if: steps.key.outputs.present == 'true'
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: Songport-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 14

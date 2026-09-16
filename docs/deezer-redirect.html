@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Songport – ritorno all'app</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:system-ui,sans-serif;margin:2rem;color:#222}a{color:#5B3FD9}</style>
+</head>
+<body>
+<h1>Songport</h1>
+<p id="msg">Ritorno all'app…</p>
+<p><a id="link" href="#">Se non succede nulla, tocca qui.</a></p>
+<script>
+  // Deezer accetta solo redirect https. Questa pagina rimanda i parametri (query e fragment,
+  // dove Deezer mette l'access_token) allo schema dell'app: songport://callback
+  var target = 'songport://callback' + location.search + location.hash;
+  document.getElementById('link').href = target;
+  location.replace(target);
+</script>
+</body>
+</html>

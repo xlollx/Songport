@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pressione lunga sull'icona: "Sincronizza tutto" e "Nuova sync". -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="sync_all"
+        android:enabled="true"
+        android:icon="@drawable/ic_notification"
+        android:shortcutShortLabel="@string/shortcut_sync_all_short"
+        android:shortcutLongLabel="@string/shortcut_sync_all_long">
+        <intent
+            android:action="com.xlollx.songport.SYNC_ALL"
+            android:targetPackage="com.xlollx.songport"
+            android:targetClass="com.xlollx.songport.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="new_sync"
+        android:enabled="true"
+        android:icon="@drawable/ic_notification"
+        android:shortcutShortLabel="@string/shortcut_new_short"
+        android:shortcutLongLabel="@string/shortcut_new_long">
+        <intent
+            android:action="com.xlollx.songport.NEW_SYNC"
+            android:targetPackage="com.xlollx.songport"
+            android:targetClass="com.xlollx.songport.MainActivity" />
+    </shortcut>
+</shortcuts>

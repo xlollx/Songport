@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema base solo per la finestra; l'UI e' Jetpack Compose (Material3). -->
+    <style name="Theme.Songport" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+
+    <!-- Schermata di avvio: sfondo del brand e marchio al centro, poi passa al tema normale. -->
+    <style name="Theme.Songport.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.Songport</item>
+    </style>
+</resources>

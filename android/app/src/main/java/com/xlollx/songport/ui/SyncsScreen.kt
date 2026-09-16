@@ -1,0 +1,542 @@
+package com.xlollx.songport.ui
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.xlollx.songport.Notifications
+import com.xlollx.songport.R
+import com.xlollx.songport.data.StoreData
+import com.xlollx.songport.model.Playlist
+import com.xlollx.songport.model.PlaylistRef
+import com.xlollx.songport.model.Progress
+import com.xlollx.songport.model.Schedule
+import com.xlollx.songport.model.SyncJob
+import com.xlollx.songport.providers.MusicProvider
+import com.xlollx.songport.providers.Providers
+import com.xlollx.songport.sync.PlaylistLinks
+import com.xlollx.songport.sync.SyncState
+import java.util.UUID
+
+@Composable
+fun SyncsScreen(
+    data: StoreData,
+    onEdit: (SyncJob) -> Unit,
+    onPreview: (SyncJob) -> Unit,
+    onRun: (SyncJob) -> Unit,
+    onRunAll: () -> Unit,
+    onDelete: (SyncJob) -> Unit,
+    onGoToAccounts: () -> Unit,
+) {
+    val ctx = LocalContext.current
+    val running by SyncState.running.collectAsState()
+    if (data.jobs.isEmpty()) {
+        val anyConnected = remember { Providers.all().any { it.requiresAuth && it.isConnected(ctx) } }
+        if (anyConnected) {
+            EmptyState(Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body_connected))
+        } else {
+            EmptyState(
+                Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body),
+                stringResource(R.string.empty_syncs_cta_accounts), onGoToAccounts,
+            )
+        }
+        return
+    }
+    val lastRun = data.jobs.maxOfOrNull { it.lastRunEpoch } ?: 0L
+    LazyColumn(
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 100.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        item(key = "hero") {
+            val n = data.jobs.size
+            val last = if (lastRun > 0) " · " + stringResource(R.string.hero_last, formatDate(lastRun)) else ""
+            HeroHeader(stringResource(R.string.hero_title), ctx.resources.getQuantityString(R.plurals.hero_jobs, n, n) + last) {
+                Button(
+                    onClick = onRunAll,
+                    enabled = running.isEmpty(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White, contentColor = Brand.Indigo,
+                        disabledContainerColor = Color.White.copy(alpha = 0.5f), disabledContentColor = Brand.Indigo.copy(alpha = 0.6f),
+                    ),
+                ) {
+                    Icon(Icons.Filled.PlayArrow, null); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.sync_all))
+                }
+            }
+        }
+        items(data.jobs, key = { it.id }) { job ->
+            JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete)
+        }
+    }
+}
+
+@Composable
+private fun JobCard(
+    job: SyncJob, data: StoreData, progress: Progress?, isRunning: Boolean,
+    onEdit: (SyncJob) -> Unit, onPreview: (SyncJob) -> Unit, onRun: (SyncJob) -> Unit, onDelete: (SyncJob) -> Unit,
+) {
+    val ctx = LocalContext.current
+    var confirmDelete by remember { mutableStateOf(false) }
+    val report = data.reports.firstOrNull { it.id == job.lastReportId }
+    val src = Providers.byId(job.source.provider)
+    val dst = Providers.byId(job.target.provider)
+    val srcName = playlistDisplayName(job.source.playlistId, job.source.playlistName)
+    val dstName = job.target.playlistName.ifBlank { stringResource(R.string.editor_new_playlist) }
+    Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+        Column(Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.width(56.dp).height(36.dp)) {
+                    ProviderBadge(src, 34.dp)
+                    Box(Modifier.align(Alignment.CenterEnd)) { ProviderBadge(dst, 34.dp) }
+                }
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(job.name.ifBlank { job.source.playlistName }, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(
+                        (src?.label(ctx) ?: job.source.provider) + " · " + srcName +
+                            (if (job.linkedJobId != null) "  ↔  " else "  →  ") +
+                            (dst?.label(ctx) ?: job.target.provider) + " · " + dstName,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2, overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                Spacer(Modifier.width(8.dp))
+                when {
+                    isRunning -> StatusPill(stringResource(R.string.pill_running), Tone.Accent, Icons.Filled.Sync)
+                    !job.enabled -> StatusPill(stringResource(R.string.disabled), Tone.Neutral)
+                    report == null -> StatusPill(stringResource(R.string.pill_never), Tone.Neutral)
+                    report.ok -> StatusPill(stringResource(R.string.pill_ok), Tone.Ok, Icons.Filled.CheckCircle)
+                    else -> StatusPill(stringResource(R.string.pill_error), Tone.Error, Icons.Filled.Warning)
+                }
+            }
+            if (isRunning) {
+                Spacer(Modifier.height(12.dp))
+                LinearProgressIndicator(Modifier.fillMaxWidth())
+                Spacer(Modifier.height(4.dp))
+                Text(progressText(progress), style = MaterialTheme.typography.bodySmall)
+            } else if (report != null) {
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    Notifications.summary(ctx, report), style = MaterialTheme.typography.bodySmall,
+                    color = if (report.ok) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
+                )
+            }
+            Spacer(Modifier.height(6.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Filled.Schedule, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(Modifier.width(6.dp))
+                val last = if (job.lastRunEpoch > 0) formatDate(job.lastRunEpoch) else stringResource(R.string.last_run_never)
+                Text(
+                    scheduleLabel(job.schedule) + (if (job.mirrorRemovals) " · " + stringResource(R.string.editor_mirror) else "") + " · " + last,
+                    style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
+                )
+                FilledTonalIconButton(onClick = { onRun(job) }, enabled = !isRunning) {
+                    Icon(Icons.Filled.PlayArrow, stringResource(R.string.run_now))
+                }
+                OverflowMenu(
+                    listOf(
+                        MenuAction(stringResource(R.string.preview), { onPreview(job) }),
+                        MenuAction(stringResource(R.string.edit), { onEdit(job) }),
+                        MenuAction(stringResource(R.string.delete), { confirmDelete = true }, destructive = true),
+                    ),
+                    enabled = !isRunning,
+                )
+            }
+        }
+    }
+    if (confirmDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text(stringResource(R.string.delete_confirm_title)) },
+            text = { Text(stringResource(R.string.delete_confirm_text)) },
+            confirmButton = { TextButton(onClick = { confirmDelete = false; onDelete(job) }) { Text(stringResource(R.string.yes)) } },
+            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(R.string.no)) } },
+        )
+    }
+}
+
+@Composable
+private fun progressText(p: Progress?): String = when (p?.step) {
+    null -> stringResource(R.string.running)
+    Progress.Step.FETCH_SOURCE -> stringResource(R.string.progress_fetch_source)
+    Progress.Step.CREATE_TARGET -> stringResource(R.string.progress_create_target)
+    Progress.Step.FETCH_TARGET -> stringResource(R.string.progress_fetch_target)
+    Progress.Step.MATCHING -> stringResource(R.string.progress_matching, p?.done ?: 0, p?.total ?: 0)
+    Progress.Step.ADDING -> stringResource(R.string.progress_adding, p?.total ?: 0)
+    Progress.Step.REMOVING -> stringResource(R.string.progress_removing, p?.total ?: 0)
+    Progress.Step.BACKUP -> stringResource(R.string.tools_progress_backup, p?.done ?: 0, p?.total ?: 0)
+    Progress.Step.DEDUPE -> stringResource(R.string.tools_progress_dedupe, p?.done ?: 0, p?.total ?: 0)
+}
+
+// ---------------------------------------------------------------------------------------------
+// Editor
+// ---------------------------------------------------------------------------------------------
+
+private sealed class Loaded {
+    object Loading : Loaded()
+    data class Ok(val items: List<Playlist>) : Loaded()
+    data class Failed(val message: String) : Loaded()
+}
+
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJob?) -> Unit) {
+    val ctx = LocalContext.current
+    BackHandler { onCancel() }
+    val isNew = job.name.isEmpty()
+    val available = remember { Providers.all().filter { it.isConnected(ctx) } }
+
+    var name by remember { mutableStateOf(job.name) }
+    var srcProvider by remember { mutableStateOf(job.source.provider.ifEmpty { available.firstOrNull()?.id ?: "" }) }
+    var srcPlaylist by remember { mutableStateOf<Playlist?>(job.source.playlistId?.let { Playlist(it, job.source.playlistName) }) }
+    val writable = available.filter { it.canWrite }
+    var dstProvider by remember { mutableStateOf(job.target.provider.ifEmpty { writable.getOrNull(1)?.id ?: writable.firstOrNull()?.id ?: "" }) }
+    var createNew by remember { mutableStateOf(job.target.playlistId == null) }
+    var dstPlaylist by remember { mutableStateOf<Playlist?>(job.target.playlistId?.let { Playlist(it, job.target.playlistName) }) }
+    var newName by remember { mutableStateOf(if (job.target.playlistId == null) job.target.playlistName else "") }
+    var schedule by remember { mutableStateOf(job.schedule) }
+    var mirror by remember { mutableStateOf(job.mirrorRemovals) }
+    var wifiOnly by remember { mutableStateOf(job.wifiOnly) }
+    var enabled by remember { mutableStateOf(job.enabled) }
+    var bidirectional by remember { mutableStateOf(job.linkedJobId != null) }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    var srcLists by remember { mutableStateOf<Loaded>(Loaded.Loading) }
+    var dstLists by remember { mutableStateOf<Loaded>(Loaded.Loading) }
+
+    LaunchedEffect(srcProvider) {
+        srcLists = Loaded.Loading
+        srcLists = loadPlaylists(ctx, srcProvider, forTarget = false)
+    }
+    LaunchedEffect(dstProvider) {
+        dstLists = Loaded.Loading
+        dstLists = loadPlaylists(ctx, dstProvider, forTarget = true)
+    }
+    // Job creato da un link condiviso: l'id c'e', il nome ancora no.
+    LaunchedEffect(Unit) {
+        val sp = srcPlaylist
+        if (sp != null && sp.name.isBlank() && sp.id != MusicProvider.LIKED_ID) {
+            val p = Providers.byId(srcProvider)
+            if (p != null) srcPlaylist = runCatching { p.playlistInfo(ctx, sp.id) }.getOrElse { Playlist(sp.id, p.displayName) }
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(if (isNew) R.string.editor_title_new else R.string.editor_title_edit)) },
+                navigationIcon = { IconButton(onClick = onCancel) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
+            )
+        },
+    ) { padding ->
+        Column(Modifier.padding(padding).padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            if (available.isEmpty()) {
+                Text(stringResource(R.string.no_connected_providers), color = MaterialTheme.colorScheme.error)
+            }
+            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.editor_name)) },
+                singleLine = true, modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
+
+            Text(stringResource(R.string.editor_source), style = MaterialTheme.typography.titleMedium)
+            // Il servizio di un link incollato puo' non essere fra quelli collegati (playlist pubblica).
+            val srcProviders = Providers.all().filter { p -> p.isConnected(ctx) || p.id == srcProvider }
+            ProviderPicker(srcProviders, srcProvider) { srcProvider = it; srcPlaylist = null }
+            PlaylistPicker(srcLists, srcPlaylist, label = stringResource(R.string.editor_playlist)) { srcPlaylist = it }
+            LinkImportField { providerId, playlist ->
+                srcProvider = providerId
+                srcPlaylist = playlist
+            }
+
+            Text(stringResource(R.string.editor_target), style = MaterialTheme.typography.titleMedium)
+            ProviderPicker(writable, dstProvider) { dstProvider = it; dstPlaylist = null }
+            val dstObj = Providers.byId(dstProvider)
+            val canCreate = dstObj?.canCreatePlaylists != false
+            if (!canCreate && createNew) createNew = false
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Switch(checked = createNew, enabled = canCreate, onCheckedChange = { createNew = it })
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.editor_new_playlist))
+            }
+            if (!canCreate && dstObj != null) {
+                Text(stringResource(R.string.error_create_unsupported, dstObj.displayName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            if (createNew) {
+                OutlinedTextField(value = newName, onValueChange = { newName = it }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+                    label = { Text(stringResource(R.string.editor_new_playlist_name)) },
+                    placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
+            } else {
+                PlaylistPicker(dstLists, dstPlaylist, label = stringResource(R.string.editor_playlist), onlyOwned = true) { dstPlaylist = it }
+            }
+
+            Text(stringResource(R.string.editor_schedule), style = MaterialTheme.typography.titleMedium)
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                // due righe di chip per stare anche su schermi stretti
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Schedule.entries.take(3).forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Schedule.entries.drop(3).forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
+                    }
+                }
+            }
+            SwitchRow(stringResource(R.string.editor_mirror), stringResource(R.string.editor_mirror_desc), mirror) { mirror = it }
+            val dstProviderObj = Providers.byId(dstProvider)
+            if (mirror && dstProviderObj != null && !dstProviderObj.canRemoveTracks) {
+                Text(
+                    stringResource(R.string.editor_mirror_unsupported, dstProviderObj.displayName),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+            // Bidirezionale: crea la sync gemella al contrario, senza rimozioni (niente cancellazioni a ping-pong).
+            val srcObj = Providers.byId(srcProvider)
+            val biAllowed = !createNew && srcObj?.canWrite == true &&
+                (srcPlaylist?.id != MusicProvider.LIKED_ID || srcObj.supportsLikedTarget) &&
+                (dstPlaylist?.id != MusicProvider.LIKED_ID || dstObj?.supportsLikedSongs == true)
+            if (!biAllowed && bidirectional) bidirectional = false
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.weight(1f)) {
+                    Text(stringResource(R.string.editor_bidirectional))
+                    Text(
+                        stringResource(if (biAllowed) R.string.editor_bidirectional_desc else R.string.editor_bidirectional_unavailable),
+                        style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(checked = bidirectional, enabled = biAllowed, onCheckedChange = { bidirectional = it })
+            }
+            SwitchRow(stringResource(R.string.editor_wifi_only), null, wifiOnly) { wifiOnly = it }
+            SwitchRow(stringResource(R.string.editor_enabled), null, enabled) { enabled = it }
+
+            error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.cancel)) }
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        val sp = srcPlaylist
+                        val dp = dstPlaylist
+                        if (srcProvider.isEmpty() || dstProvider.isEmpty() || sp == null || (!createNew && dp == null)) {
+                            error = ctx.getString(R.string.editor_error_incomplete)
+                            return@Button
+                        }
+                        val srcName = if (sp.id == MusicProvider.LIKED_ID) ctx.getString(R.string.liked_songs) else sp.name
+                        val target = if (createNew) PlaylistRef(dstProvider, null, newName.ifBlank { srcName })
+                        else PlaylistRef(dstProvider, dp!!.id, dp.name)
+                        val main = job.copy(
+                            name = name.ifBlank { srcName },
+                            source = PlaylistRef(srcProvider, sp.id, srcName),
+                            target = target,
+                            schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled,
+                        )
+                        val reverse = if (bidirectional && !createNew && dp != null) SyncJob(
+                            id = job.linkedJobId ?: UUID.randomUUID().toString(),
+                            name = "${main.name} ↔",
+                            source = target,
+                            target = PlaylistRef(srcProvider, sp.id, srcName),
+                            schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled,
+                            linkedJobId = job.id,
+                        ) else null
+                        onSave(main.copy(linkedJobId = reverse?.id), reverse)
+                    },
+                ) { Text(stringResource(R.string.save)) }
+            }
+            Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+private suspend fun loadPlaylists(ctx: android.content.Context, providerId: String, forTarget: Boolean): Loaded {
+    val p = Providers.byId(providerId) ?: return Loaded.Ok(emptyList())
+    // Servizio non collegato (es. playlist pubblica da link): niente elenco, nessun errore.
+    if (!p.isConnected(ctx)) return Loaded.Ok(emptyList())
+    return try {
+        val lists = p.playlists(ctx)
+        // "Brani preferiti": come origine dove il servizio li espone, come destinazione dove si possono scrivere.
+        val withLiked = if (forTarget) p.supportsLikedTarget else p.supportsLikedSongs
+        val liked = if (withLiked) listOf(Playlist(MusicProvider.LIKED_ID, ctx.getString(R.string.liked_songs))) else emptyList()
+        Loaded.Ok(liked + lists)
+    } catch (e: Exception) {
+        Loaded.Failed(e.message ?: ctx.getString(R.string.error_generic))
+    }
+}
+
+@Composable
+private fun SwitchRow(title: String, subtitle: String?, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.weight(1f)) {
+            Text(title)
+            if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Switch(checked = checked, onCheckedChange = onChange)
+    }
+}
+
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+private fun ProviderPicker(available: List<MusicProvider>, selected: String, onSelect: (String) -> Unit) {
+    val ctx = LocalContext.current
+    // Le chip vanno a capo: con gli account multipli e i server personali possono essere molte.
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        available.forEach { p ->
+            FilterChip(
+                selected = p.id == selected,
+                onClick = { onSelect(p.id) },
+                label = { Text(p.label(ctx)) },
+                leadingIcon = { ProviderDot(p) },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PlaylistPicker(loaded: Loaded, selected: Playlist?, label: String, onlyOwned: Boolean = false, onSelect: (Playlist) -> Unit) {
+    when (loaded) {
+        Loaded.Loading -> Row(verticalAlignment = Alignment.CenterVertically) {
+            CircularProgressIndicator(Modifier.width(20.dp).height(20.dp)); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.loading))
+        }
+        is Loaded.Failed -> Text(loaded.message, color = MaterialTheme.colorScheme.error)
+        is Loaded.Ok -> {
+            var expanded by remember { mutableStateOf(false) }
+            val items = if (onlyOwned) loaded.items.filter { it.ownedByMe } else loaded.items
+            ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+                OutlinedTextField(
+                    value = selected?.let { playlistDisplayName(it.id, it.name) } ?: "",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(label) },
+                    placeholder = { Text(stringResource(R.string.editor_choose_playlist)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                )
+                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    items.forEach { p ->
+                        DropdownMenuItem(
+                            text = {
+                                Column {
+                                    Text(playlistDisplayName(p.id, p.name))
+                                    if (p.trackCount >= 0) Text(stringResource(R.string.tracks_count, p.trackCount), style = MaterialTheme.typography.bodySmall)
+                                }
+                            },
+                            onClick = { onSelect(p); expanded = false },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Campo per incollare il link di una playlist pubblica e usarla come origine. */
+@Composable
+private fun LinkImportField(onResolved: (String, Playlist) -> Unit) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var text by remember { mutableStateOf("") }
+    var busy by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    Column(Modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = text,
+            onValueChange = { text = it; error = null },
+            label = { Text(stringResource(R.string.link_paste)) },
+            singleLine = true,
+            enabled = !busy,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+            TextButton(
+                enabled = !busy && text.isNotBlank(),
+                onClick = {
+                    val ref = PlaylistLinks.parse(text)
+                    val provider = ref?.let { Providers.byId(it.providerId) }
+                    if (ref == null || provider == null) {
+                        error = ctx.getString(R.string.link_invalid)
+                    } else if (!provider.canRead(ctx, ref.playlistId)) {
+                        error = ctx.getString(R.string.link_not_connected, provider.displayName)
+                    } else {
+                        error = null
+                        busy = true
+                        scope.launch {
+                            val info = runCatching { provider.playlistInfo(ctx, ref.playlistId) }
+                                .getOrElse { Playlist(ref.playlistId, provider.displayName) }
+                            busy = false
+                            text = ""
+                            onResolved(provider.id, info)
+                        }
+                    }
+                },
+            ) { Text(stringResource(R.string.link_use)) }
+        }
+        if (busy) Text(stringResource(R.string.link_resolving), style = MaterialTheme.typography.bodySmall)
+        error?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
+    }
+}
