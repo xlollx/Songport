@@ -11,6 +11,7 @@ import com.xlollx.songport.model.SyncJob
 import com.xlollx.songport.model.SyncPlan
 import com.xlollx.songport.model.SyncReport
 import com.xlollx.songport.model.Track
+import com.xlollx.songport.providers.LocalFilesProvider
 import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.Providers
 import java.util.UUID
@@ -81,6 +82,8 @@ class SyncEngine(private val ctx: Context) {
             targetCreated = true
             store.upsertJob(job.copy(target = job.target.copy(playlistId = created.id, playlistName = created.name)))
         }
+
+        if (dst.serviceId == LocalFilesProvider.serviceId) notes += ctx.getString(R.string.note_file_target)
 
         onProgress(Progress(Progress.Step.FETCH_TARGET))
         // A playlist created a moment ago is empty: skip the fetch (saves quota, and YouTube's Data API

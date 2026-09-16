@@ -2,6 +2,8 @@ package com.xlollx.songport.ui
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,8 +49,11 @@ import com.xlollx.songport.data.Diagnostics
 import com.xlollx.songport.data.StoreData
 import com.xlollx.songport.model.SyncJob
 import com.xlollx.songport.model.SyncReport
+import com.xlollx.songport.providers.LocalFilesProvider
 import com.xlollx.songport.sync.SyncEngine
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun LogScreen(data: StoreData, snackbar: SnackbarHostState, onResolve: (String) -> Unit) {
@@ -86,6 +91,20 @@ private fun ReportRow(r: SyncReport, job: SyncJob?, snackbar: SnackbarHostState,
     var restoring by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     val hasDetails = r.unmatched.isNotEmpty()
+    // A sync into "File" lands in the app's private folder: offer to save it as a real document.
+    val fileTarget = job?.takeIf { it.target.provider == LocalFilesProvider.serviceId }?.target?.playlistId
+    val canSave = r.ok && fileTarget != null
+    val saveLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(LocalFilesProvider.Export.CSV.mime)) { uri ->
+        if (uri != null && fileTarget != null) scope.launch {
+            try {
+                val text = LocalFilesProvider.exportText(ctx, fileTarget, LocalFilesProvider.Export.CSV)
+                withContext(Dispatchers.IO) { ctx.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { it.write(text) } }
+                snackbar.showSnackbar(ctx.getString(R.string.csv_exported))
+            } catch (e: Exception) {
+                snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+            }
+        }
+    }
     Card(
         Modifier.fillMaxWidth().clickable(enabled = hasDetails) { expanded = !expanded },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
@@ -125,7 +144,7 @@ private fun ReportRow(r: SyncReport, job: SyncJob?, snackbar: SnackbarHostState,
                 }
                 val canRestore = job != null && r.removedTracks.isNotEmpty()
                 val canReview = job != null && (r.unmatchedTracks.isNotEmpty() || r.reviewTracks.isNotEmpty())
-                if (hasDetails || canRestore || canReview) {
+                if (hasDetails || canRestore || canReview || canSave) {
                     Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                         if (hasDetails) {
                             TextButton(onClick = { expanded = !expanded }) {
@@ -148,6 +167,9 @@ private fun ReportRow(r: SyncReport, job: SyncJob?, snackbar: SnackbarHostState,
                         }
                         if (canReview) {
                             TextButton(onClick = { onResolve(r.id) }) { Text(stringResource(R.string.review_open)) }
+                        }
+                        if (canSave) {
+                            TextButton(onClick = { saveLauncher.launch("$fileTarget.csv") }) { Text(stringResource(R.string.log_save_file)) }
                         }
                     }
                 }

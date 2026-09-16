@@ -99,6 +99,8 @@
     <string name="csv_empty">No file playlists yet.</string>
     <string name="csv_imported">Imported %1$d tracks</string>
     <string name="csv_exported">File exported</string>
+    <string name="log_save_file">Save as file…</string>
+    <string name="note_file_target">Saved inside Songport: use “Save as file” here, or Options → Files, to get a CSV or M3U.</string>
 
     <string name="auth_done">Connected to %1$s</string>
     <string name="auth_failed">Login failed: %1$s</string>
