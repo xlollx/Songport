@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.xlollx.songport.BuildConfig
 import com.xlollx.songport.R
 import com.xlollx.songport.auth.AuthFlow
 import com.xlollx.songport.data.Store
@@ -70,7 +71,7 @@ fun SetupWizardScreen(provider: MusicProvider, onClose: () -> Unit) {
     val settings = store.data.settings
     var clientId by remember { mutableStateOf(settings.clientIds[provider.serviceId].orEmpty()) }
     var secret by remember { mutableStateOf(settings.clientSecrets[provider.serviceId].orEmpty()) }
-    var redirectUrl by remember { mutableStateOf(settings.deezerRedirectUrl) }
+    var redirectUrl by remember { mutableStateOf(settings.deezerRedirectUrl.ifBlank { BuildConfig.DEEZER_REDIRECT_URL }) }
     var error by remember { mutableStateOf<String?>(null) }
     var copied by remember { mutableStateOf(false) }
 

@@ -66,8 +66,10 @@ Music & Audio
 ## Content / Play Console questionnaires
 - **Ads**: yes, contains ads (AdMob banner).
 - **In-app purchases**: no. **Subscriptions**: no. The donation button opens an external page and unlocks nothing.
-- **App access**: some features require third-party accounts (Spotify etc.). Give reviewers
-  instructions: "Connect a test Spotify account; the file feature works without any account."
+- **App access**: some features require third-party accounts and the user's own developer key
+  (Spotify etc.). Give reviewers instructions: "Every feature can be exercised with playlist files
+  without any account; music services require the reviewer's own free developer key, created through
+  the in-app wizard."
 - **Target audience**: 18+ (or 16+); not aimed at children.
 - **Families policy**: not applicable.
 - **Foreground services** (Android 14+): type `dataSync`, reason "user-initiated data transfer that
@@ -86,11 +88,10 @@ Music & Audio
 
 ## Release checklist
 - [ ] `versionCode`/`versionName` bumped in `android/app/build.gradle`
-- [ ] GitHub variables: `SPOTIFY_CLIENT_ID`, `GOOGLE_CLIENT_ID`, (`TIDAL_CLIENT_ID`, `DEEZER_APP_ID`, `DEEZER_REDIRECT_URL`), `LASTFM_API_KEY`, `ADMOB_APP_ID`, `ADMOB_BANNER_ID`, `PRIVACY_POLICY_URL`, `KOFI_URL`
-- [ ] GitHub secret `APPLE_DEVELOPER_TOKEN` (MusicKit JWT), to regenerate within 6 months
+- [ ] GitHub variables: `ADMOB_APP_ID`, `ADMOB_BANNER_ID`, `PRIVACY_POLICY_URL`, `KOFI_URL`. Service keys (`SPOTIFY_CLIENT_ID`, `GOOGLE_CLIENT_ID`, `TIDAL_CLIENT_ID`, `DEEZER_APP_ID`, `LASTFM_API_KEY`) are optional: users create their own in the app
+- [ ] Optional: GitHub secret `APPLE_DEVELOPER_TOKEN` (MusicKit JWT), to regenerate within 6 months; without it users paste their own token
 - [ ] GitHub secrets: `UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`, `UPLOAD_KEY_ALIAS`, `UPLOAD_KEY_PASSWORD` (release) and `DEBUG_KEYSTORE_BASE64` (stable debug APK signature)
-- [ ] SHA-1 of the upload key **and** of Play App Signing registered in the Google OAuth client (Android). Do not register the debug key when the repository is public.
-- [ ] Google OAuth verification completed (`youtube` scope), demo video if requested
+- [ ] Only if shipping a shared `GOOGLE_CLIENT_ID`: SHA-1 of the upload key **and** of Play App Signing registered in the Android OAuth client (never the debug key), and Google OAuth verification completed (`youtube` scope)
 - [ ] AdMob app linked to the Play Store; GDPR message (UMP) published in AdMob → Privacy & messaging
 - [ ] Privacy policy online and linked in the listing
 - [ ] Screenshots (phone, 16:9 or 9:16, at least 2); 512×512 icon and 1024×500 feature graphic are in `docs/store/`

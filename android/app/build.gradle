@@ -18,7 +18,7 @@ def tidalClientId   = cfg('TIDAL_CLIENT_ID', '')
 def deezerAppId     = cfg('DEEZER_APP_ID', '')
 // Deezer accetta solo redirect https: una paginetta statica che rimanda a songport://callback
 // (vedi docs/deezer-redirect.html, pubblicabile su GitHub Pages).
-def deezerRedirect  = cfg('DEEZER_REDIRECT_URL', '')
+def deezerRedirect  = cfg('DEEZER_REDIRECT_URL', 'https://xlollx.github.io/Songport/deezer-redirect.html')
 def googleClientId  = cfg('GOOGLE_CLIENT_ID', '')
 // Apple Music: JWT ES256 firmato con la chiave MusicKit (Apple Developer Program).
 // Dura al massimo 6 mesi: va rigenerato e rimesso qui, oppure lo incolla l'utente nelle impostazioni.

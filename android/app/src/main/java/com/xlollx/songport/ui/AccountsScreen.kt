@@ -198,7 +198,7 @@ private fun ProviderCard(
                     )
                 } else Spacer(Modifier.weight(1f))
                 val actions = listOfNotNull(
-                    if (p.setupGuide != null && p.slot.isEmpty()) MenuAction(stringResource(R.string.setup_cta), { onSetup(p) }) else null,
+                    if (p.setupGuide != null && p.slot.isEmpty() && configured) MenuAction(stringResource(R.string.setup_cta), { onSetup(p) }) else null,
                     if (connected && p.revokeUrl != null) MenuAction(stringResource(R.string.account_revoke, p.displayName), {
                         ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(p.revokeUrl)))
                     }) else null,
@@ -206,10 +206,11 @@ private fun ProviderCard(
                     if (p.slot.isNotEmpty()) MenuAction(stringResource(R.string.account_remove), onRemoveAccount, destructive = true) else null,
                 )
                 OverflowMenu(actions)
-                if (connected) {
-                    OutlinedButton(onClick = { p.disconnect(ctx); onChanged() }) { Text(stringResource(R.string.disconnect)) }
-                } else {
-                    Button(enabled = configured, onClick = onConnect) { Text(stringResource(R.string.connect)) }
+                when {
+                    connected -> OutlinedButton(onClick = { p.disconnect(ctx); onChanged() }) { Text(stringResource(R.string.disconnect)) }
+                    // Nessuna chiave per questo servizio: il pulsante principale porta alla procedura guidata.
+                    !configured && p.setupGuide != null -> Button(onClick = { onSetup(p) }) { Text(stringResource(R.string.setup_now)) }
+                    else -> Button(enabled = configured, onClick = onConnect) { Text(stringResource(R.string.connect)) }
                 }
             }
         }

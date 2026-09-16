@@ -10,6 +10,10 @@ Supported: Spotify, Apple Music, YouTube Music, TIDAL (beta), Deezer (beta), Sub
 Jellyfin, Plex, Last.fm and ListenBrainz (read-only), plus playlist files (CSV, TSV, M3U, iTunes XML,
 JSON, pasted text) as a bridge to everything else.
 
+The app ships without any service credentials of its own: each user creates a free developer key
+on the services that require one (Spotify, YouTube Music, TIDAL, Deezer, Last.fm) and the app walks
+them through it in about two minutes. Personal servers and files need nothing.
+
 UI languages: English and Italian. License: GPL-3.0, see [LICENSE](LICENSE).
 Security reports: see [SECURITY.md](SECURITY.md).
 
@@ -187,8 +191,23 @@ across builds so updates install over each other; the file itself is not in the 
 
 ## API configuration
 
-Client IDs are not in the code: they come from the build (*Settings → Secrets and variables →
-Actions*) and, for Spotify, TIDAL, Deezer, Google and Last.fm, can be entered by the user in the app.
+By default the build contains no service credentials. In the app, a service without a key shows a
+**Set up** button that opens a guided wizard: why the key is needed, a link to the developer portal,
+the redirect URI to copy, the field to paste the key, and a real login to verify it. This is the
+intended distribution model: every user stays within their own quota and the project never holds a
+shared key.
+
+- Spotify: a client ID created on developer.spotify.com (the user needs Spotify Premium, a Spotify rule).
+- YouTube Music: a *Desktop* OAuth client from a Google Cloud project with YouTube Data API v3 enabled
+  (client ID and secret); the app uses the loopback flow.
+- TIDAL: a client ID from developer.tidal.com.
+- Deezer: an application ID from developers.deezer.com; the https redirect page is provided by the
+  project (`docs/deezer-redirect.html`, published on GitHub Pages) and prefilled.
+- Last.fm: a free API key.
+- Apple Music: a MusicKit developer token, which requires the paid Apple Developer Program.
+
+A maintainer who wants to ship shared credentials anyway can set the build variables below
+(*Settings → Secrets and variables → Actions*). Users can still override them in the app.
 
 | Variable | Where to get it | Redirect URI to register |
 |----------|-----------------|--------------------------|
@@ -236,7 +255,8 @@ PY
    ```
    Secrets: `UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`, `UPLOAD_KEY_ALIAS`, `UPLOAD_KEY_PASSWORD`.
    With Play App Signing, also register Play's SHA-1 in the Google OAuth client.
-2. Variables: service client IDs, `ADMOB_APP_ID`, `ADMOB_BANNER_ID`, `PRIVACY_POLICY_URL`, `KOFI_URL`.
+2. Variables: `ADMOB_APP_ID`, `ADMOB_BANNER_ID`, `PRIVACY_POLICY_URL`, `KOFI_URL`. Service client IDs are
+   optional (see [API configuration](#api-configuration)).
 3. Bump `versionCode` and `versionName` in `app/build.gradle` for every release.
 4. Play Console: declare ads, fill in *Data safety* and the foreground service declaration
    (`dataSync` type, user-initiated); the policy is in `docs/privacy-policy.md`.

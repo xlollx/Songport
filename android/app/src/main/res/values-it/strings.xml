@@ -61,8 +61,9 @@
 
     <string name="connected_as">Connesso come %1$s</string>
     <string name="not_connected">Non connesso</string>
-    <string name="not_configured">Non configurato</string>
-    <string name="not_configured_hint">Questa build non ha un client ID per questo servizio. Puoi inserire il tuo in Impostazioni › Avanzate.</string>
+    <string name="not_configured">Da configurare</string>
+    <string name="not_configured_hint">Songport non include chiavi dei servizi. Crea la tua chiave gratuita sulla pagina sviluppatori del servizio: ci vogliono circa due minuti e l\'app ti guida passo passo.</string>
+    <string name="setup_now">Configura</string>
     <string name="connect">Collega</string>
     <string name="disconnect">Scollega</string>
     <string name="connecting">Connessione…</string>
@@ -148,7 +149,7 @@
     <string name="setup_why_spotify">Spotify consente 5 utenti per app in modalità sviluppo, e l\'accesso esteso richiede un\'azienda registrata con 250.000 utenti mensili. Con il tuo client ID quel limite vale solo per te.</string>
     <string name="setup_why_youtube">La quota giornaliera di YouTube è condivisa da tutti gli utenti di questa build. Con le tue credenziali usi la tua.</string>
     <string name="setup_why_tidal">Con il tuo client ID non dipendi dai limiti dell\'app condivisa.</string>
-    <string name="setup_why_deezer">Deezer richiede una tua applicazione e una pagina di redirect https che controlli tu.</string>
+    <string name="setup_why_deezer">Deezer richiede un\'app registrata a tuo nome. La pagina https di redirect la fornisce il progetto.</string>
     <string name="setup_why_apple">Il developer token appartiene al tuo account Apple Developer e scade al massimo dopo sei mesi.</string>
     <string name="error_dev_mode_limit">%1$s permette pochi utenti per app. Configura le tue credenziali: è gratis e richiede due minuti.</string>
     <string name="auth_timeout">nessuna risposta dal browser, tempo scaduto</string>
@@ -272,7 +273,7 @@
     <string name="onboarding_step3_title">3. Lasciala lavorare</string>
     <string name="onboarding_step3_desc">Ogni ora, giorno o settimana. I brani che non si riesce ad abbinare vengono elencati, così li sistemi tu.</string>
     <string name="onboarding_security">Accedi sulla pagina di ciascun servizio. Songport conserva solo un token cifrato e revocabile su questo telefono e non ha un server proprio.</string>
-    <string name="onboarding_credentials">Spotify e YouTube limitano quante persone può servire una singola app: quando serve, Songport ti guida a creare le tue credenziali gratuite in due minuti.</string>
+    <string name="onboarding_credentials">Songport non include chiavi proprie dei servizi: per Spotify, YouTube Music, TIDAL e Deezer crei una chiave gratuita sulla pagina sviluppatori del servizio, e l\'app ti guida in circa due minuti. I tuoi dati passano solo tra il tuo telefono e la tua chiave.</string>
     <string name="onboarding_start">Iniziamo</string>
     <string name="settings_show_onboarding">Rivedi l\'introduzione</string>
     <string name="paste_list">Incolla un elenco</string>
@@ -315,8 +316,8 @@
     </string-array>
     <string-array name="setup_steps_deezer">
         <item>Apri developers.deezer.com e crea una nuova applicazione.</item>
-        <item>Deezer accetta solo redirect https: pubblica la pagina docs/deezer-redirect.html (va bene GitHub Pages) e usa quell\'indirizzo come dominio e come redirect.</item>
-        <item>Copia qui l\'Application ID e il tuo URL di redirect.</item>
+        <item>Deezer accetta solo redirect https. Qui sotto trovi già una pagina di redirect pronta: usa quell\'indirizzo sia come dominio dell\'applicazione sia come redirect (oppure pubblica tu docs/deezer-redirect.html).</item>
+        <item>Copia qui l\'Application ID.</item>
     </string-array>
     <string-array name="setup_steps_apple">
         <item>Servono l\'Apple Developer Program (99 $/anno) e una chiave MusicKit.</item>
