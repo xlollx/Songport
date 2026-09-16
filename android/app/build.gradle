@@ -35,7 +35,7 @@ def googleScheme = googleClientId
 def admobAppId    = cfg('ADMOB_APP_ID', 'ca-app-pub-3940256099942544~3347511713')
 def admobBannerId = cfg('ADMOB_BANNER_ID', 'ca-app-pub-3940256099942544/9214589741')
 def kofiUrl       = cfg('KOFI_URL', 'https://ko-fi.com/xlollx')
-def privacyUrl    = cfg('PRIVACY_POLICY_URL', 'https://github.com/xlollx/Songport/blob/main/docs/privacy-policy.md')
+def privacyUrl    = cfg('PRIVACY_POLICY_URL', 'https://xlollx.github.io/Songport/privacy-policy')
 
 def hasReleaseKey = System.getenv('KEYSTORE_FILE') != null && !System.getenv('KEYSTORE_FILE').isEmpty()
 
