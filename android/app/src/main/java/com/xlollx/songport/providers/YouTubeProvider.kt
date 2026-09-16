@@ -5,6 +5,7 @@ import com.xlollx.songport.BuildConfig
 import com.xlollx.songport.R
 import com.xlollx.songport.auth.AuthFlow
 import com.xlollx.songport.auth.AuthScope
+import com.xlollx.songport.data.Diagnostics
 import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
@@ -119,13 +120,29 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         return Playlist(playlistId, p["snippet"]["title"].str ?: playlistId, p["contentDetails"]["itemCount"].int ?: -1, ownedByMe = false)
     }
 
+    private suspend fun isEmptyPlaylist(ctx: Context, playlistId: String): Boolean {
+        val j = runCatching { counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlists?part=contentDetails&id=$playlistId") } }.getOrNull()
+        val p = j["items"].arr.firstOrNull() ?: return false
+        return (p["contentDetails"]["itemCount"].int ?: -1) == 0
+    }
+
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
         data class Raw(val itemId: String, val videoId: String, val title: String, val channel: String?)
         val raws = ArrayList<Raw>()
         var page: String? = null
         do {
-            val j = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=$playlistId" +
-                (page?.let { "&pageToken=$it" } ?: "")) }
+            val j = try {
+                counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=$playlistId" +
+                    (page?.let { "&pageToken=$it" } ?: "")) }
+            } catch (e: ProviderException) {
+                // The Data API answers 404 "playlist cannot be found" for a playlist that exists but is
+                // empty (typically one just created). Check the playlist itself before giving up.
+                if (page == null && e.message?.contains("cannot be found") == true && isEmptyPlaylist(ctx, playlistId)) {
+                    Diagnostics.log(ctx, id, "playlist $playlistId is empty; YouTube reports it as not found")
+                    return emptyList()
+                }
+                throw e
+            }
             for (item in j["items"].arr) {
                 val vid = item["contentDetails"]["videoId"].str ?: continue
                 val title = item["snippet"]["title"].str ?: continue

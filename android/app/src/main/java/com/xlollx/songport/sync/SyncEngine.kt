@@ -83,7 +83,9 @@ class SyncEngine(private val ctx: Context) {
         }
 
         onProgress(Progress(Progress.Step.FETCH_TARGET))
-        val dstTracks = dst.tracks(ctx, targetId)
+        // A playlist created a moment ago is empty: skip the fetch (saves quota, and YouTube's Data API
+        // may not even know the playlist yet).
+        val dstTracks = if (targetCreated) emptyList() else dst.tracks(ctx, targetId)
         val dstById = dstTracks.associateBy { it.id }
         val index = Matcher.TrackIndex(dstTracks)
 
