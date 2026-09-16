@@ -153,10 +153,13 @@ abstract class OAuthProvider : MusicProvider {
         }
         if (!resp.ok) {
             Diagnostics.log(ctx, id, "HTTP ${resp.code} $method ${url.substringBefore('?').take(120)}: ${errorMessage(resp).take(160)}")
-            throw ProviderException("$displayName API ${resp.code}: ${errorMessage(resp)}")
+            throw ProviderException(friendlyApiError(ctx, resp) ?: "$displayName API ${resp.code}: ${errorMessage(resp)}")
         }
         return parseJson(resp.body)
     }
+
+    /** Un servizio puo' spiegare un errore ricorrente con parole sue (es. i 403 di Spotify). */
+    protected open fun friendlyApiError(ctx: Context, resp: HttpResponse): String? = null
 
     private suspend fun raw(t: Tokens, method: String, url: String, body: JsonElement?, extra: Map<String, String>): HttpResponse =
         Http.send(

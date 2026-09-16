@@ -179,6 +179,12 @@
     <string name="result_ignored">%1$d ignorati</string>
     <string name="tools_pick_service">Servizio</string>
     <string name="tools_none">Collega prima un servizio.</string>
+    <string name="spotify_forbidden">Spotify ha rifiutato la richiesta (%1$s). Le app in Development Mode non possono leggere le playlist create da Spotify stessa (Discover Weekly, Release Radar, mix editoriali) e servono solo gli account elencati nello User Management dell\'app. Scegli una playlist creata da te o da un altro utente, oppure aggiungi l\'account su developer.spotify.com.</string>
+    <string name="tools_export_title">Esporta una playlist</string>
+    <string name="tools_export_desc">Salva qualsiasi playlist di questo servizio come file sul telefono, senza cambiare nulla sul servizio.</string>
+    <string name="tools_export_csv">Salva come CSV</string>
+    <string name="tools_export_m3u">Salva come M3U</string>
+    <string name="tools_export_done">%1$d brani esportati</string>
     <string name="tools_backup_title">Backup completo</string>
     <string name="tools_backup_desc">Salva tutte le playlist (e i brani preferiti) come file nella scheda File, pronti da esportare in CSV o M3U. Sul servizio non cambia nulla.</string>
     <string name="tools_backup_run">Esegui il backup</string>

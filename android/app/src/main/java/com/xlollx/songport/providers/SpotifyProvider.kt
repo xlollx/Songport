@@ -60,6 +60,11 @@ class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override fun errorMessage(resp: HttpResponse): String =
         parseJson(resp.body)["error"]["message"].str ?: super.errorMessage(resp)
 
+    // Da novembre 2024 le app in Development Mode non possono leggere le playlist create da Spotify
+    // (Discover Weekly, Release Radar, mix editoriali): la risposta e' un 403 senza spiegazioni.
+    override fun friendlyApiError(ctx: Context, resp: HttpResponse): String? =
+        if (resp.code == 403) ctx.getString(R.string.spotify_forbidden, errorMessage(resp).ifBlank { "403" }) else null
+
     override suspend fun playlists(ctx: Context): List<Playlist> {
         val me = tokens(ctx).userId
         val out = ArrayList<Playlist>()

@@ -1,5 +1,8 @@
 package com.xlollx.songport.ui
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -49,7 +52,12 @@ import com.xlollx.songport.model.Track
 import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.sync.Tools
+import com.xlollx.songport.providers.LocalFilesProvider
+import com.xlollx.songport.sync.CsvCodec
+import com.xlollx.songport.sync.PlaylistFiles
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /** Strumenti che altrove stanno dietro un abbonamento: backup completo e pulizia dei duplicati. */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
@@ -72,8 +80,103 @@ fun ToolsScreen(snackbar: SnackbarHostState) {
                 FilterChip(selected = p.id == provider.id, onClick = { selectedId = p.id }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
             }
         }
+        ExportCard(provider, snackbar)
         BackupCard(provider, snackbar)
         DedupeCard(provider, snackbar)
+    }
+}
+
+/** Una playlist qualsiasi del servizio diventa un file CSV o M3U scelto dal selettore di sistema. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var lists by remember(provider.id) { mutableStateOf<List<Playlist>?>(null) }
+    var selected by remember(provider.id) { mutableStateOf<Playlist?>(null) }
+    var busy by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+    var pendingFormat by remember { mutableStateOf<LocalFilesProvider.Export?>(null) }
+
+    LaunchedEffect(provider.id) {
+        lists = try {
+            val base = provider.playlists(ctx)
+            if (provider.supportsLikedSongs) listOf(Playlist(MusicProvider.LIKED_ID, ctx.getString(R.string.liked_songs))) + base else base
+        } catch (e: Exception) {
+            snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+            emptyList()
+        }
+    }
+
+    fun write(uri: Uri?) {
+        val pl = selected
+        val fmt = pendingFormat
+        pendingFormat = null
+        if (uri == null || pl == null || fmt == null) return
+        busy = true
+        scope.launch {
+            try {
+                val tracks = provider.tracks(ctx, pl.id)
+                val text = when (fmt) {
+                    LocalFilesProvider.Export.CSV -> CsvCodec.encode(tracks)
+                    LocalFilesProvider.Export.M3U -> PlaylistFiles.toM3u(tracks)
+                }
+                withContext(Dispatchers.IO) {
+                    ctx.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { it.write(text) }
+                }
+                snackbar.showSnackbar(ctx.getString(R.string.tools_export_done, tracks.size))
+            } catch (e: Exception) {
+                snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+            }
+            busy = false
+        }
+    }
+    val csvLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(LocalFilesProvider.Export.CSV.mime)) { write(it) }
+    val m3uLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(LocalFilesProvider.Export.M3U.mime)) { write(it) }
+    fun fileName(pl: Playlist, ext: String) = pl.name.replace(Regex("[\\\\/:*?\"<>|]"), "_").ifBlank { "playlist" } + "." + ext
+
+    Card(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Text(stringResource(R.string.tools_export_title), style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(6.dp))
+            Text(stringResource(R.string.tools_export_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(10.dp))
+            val items = lists
+            if (items == null) {
+                Row(verticalAlignment = Alignment.CenterVertically) { CircularProgressIndicator(Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.loading)) }
+            } else {
+                ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+                    OutlinedTextField(
+                        value = selected?.name ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.editor_playlist)) },
+                        placeholder = { Text(stringResource(R.string.editor_choose_playlist)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                    )
+                    ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        items.forEach { p ->
+                            DropdownMenuItem(text = { Text(p.name) }, onClick = { selected = p; expanded = false })
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                if (busy) { CircularProgressIndicator(Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)) }
+                val pl = selected
+                OutlinedButton(enabled = !busy && pl != null, onClick = {
+                    pendingFormat = LocalFilesProvider.Export.CSV
+                    csvLauncher.launch(fileName(pl!!, "csv"))
+                }) { Text(stringResource(R.string.tools_export_csv)) }
+                Spacer(Modifier.width(8.dp))
+                Button(enabled = !busy && pl != null, onClick = {
+                    pendingFormat = LocalFilesProvider.Export.M3U
+                    m3uLauncher.launch(fileName(pl!!, "m3u8"))
+                }) { Text(stringResource(R.string.tools_export_m3u)) }
+            }
+        }
     }
 }
 
