@@ -1,0 +1,6 @@
+# GitHub Pages: serves the privacy policy and the Deezer redirect page from this folder.
+title: Songport
+description: Playlist sync across music services, on your phone.
+theme: jekyll-theme-minimal
+exclude:
+  - play-store-listing.md
