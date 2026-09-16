@@ -302,11 +302,11 @@
         <item>Open the app you just created, go to Settings and copy the Client ID here.</item>
     </string-array>
     <string-array name="setup_steps_youtube">
-        <item>Open Google Cloud Console and create or pick a project.</item>
-        <item>Under "APIs and services" enable YouTube Data API v3.</item>
-        <item>Configure the OAuth consent screen: type External, then add your own Gmail address as a test user.</item>
-        <item>Credentials, Create credentials, OAuth client ID, application type "Desktop app".</item>
-        <item>Copy the client ID and the client secret here. No redirect to register: the app listens on 127.0.0.1.</item>
+        <item>Open console.cloud.google.com and create a project (any name, for example Songport).</item>
+        <item>Menu, "APIs and services", "Library": search YouTube Data API v3 and press Enable.</item>
+        <item>Menu, "Google Auth Platform", "Overview", "Get started": app name, your e-mail as support address, audience External, your e-mail as contact. Create.</item>
+        <item>Still in Google Auth Platform, open "Audience": under "Test users" press "Add users" and add your own Gmail address. Without this step Google refuses the login.</item>
+        <item>Google Auth Platform, "Clients", "Create client": application type Desktop app. Copy the client ID and the client secret here. No redirect to register: the app listens on 127.0.0.1.</item>
     </string-array>
     <string-array name="setup_steps_tidal">
         <item>Open the TIDAL developer portal and sign in.</item>
