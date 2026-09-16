@@ -4,3 +4,4 @@ description: Playlist sync across music services, on your phone.
 theme: jekyll-theme-minimal
 exclude:
   - play-store-listing.md
+  - google-shared-client.md

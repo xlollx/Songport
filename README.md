@@ -144,6 +144,7 @@ Songport/
 │   ├── privacy-policy.md          # privacy policy (EN + IT) to publish and link in the Play listing
 │   ├── play-store-listing.md      # store texts, Data safety answers, release checklist
 │   ├── deezer-redirect.html       # https page → songport://callback
+│   ├── google-shared-client.md    # shipping a shared Google client: verification and quota
 │   └── store/                     # 512×512 icon and 1024×500 feature graphic (en/it)
 └── android/
     ├── build.gradle, settings.gradle, gradle.properties
@@ -207,7 +208,8 @@ shared key.
 - Last.fm: a free API key.
 - Apple Music: a MusicKit developer token, which requires the paid Apple Developer Program.
 
-A maintainer who wants to ship shared credentials anyway can set the build variables below
+A maintainer who wants to ship shared credentials can set the build variables below; for Google
+the full procedure (Android client, verification, quota) is in `docs/google-shared-client.md`. Set them
 (*Settings → Secrets and variables → Actions*). Users can still override them in the app.
 
 | Variable | Where to get it | Redirect URI to register |
