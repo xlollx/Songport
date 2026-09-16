@@ -1,26 +1,54 @@
-# Scheda Google Play – bozze e checklist
+# Google Play listing – drafts and checklist
 
-## Titolo (max 30)
-Songport – sync playlist
+## Title (max 30)
+Songport – playlist sync
 
-## Descrizione breve (max 80)
-Sincronizza le playlist tra Spotify, Apple Music, YouTube Music, TIDAL e Deezer.
+## Short description (max 80)
+Sync playlists across Spotify, Apple Music, YouTube Music, TIDAL and Deezer.
 
-## Descrizione completa (bozza IT)
+## Full description (English draft)
+Keep your playlists identical across music services, without rebuilding them by hand.
+
+- Pick a source playlist and a target one (or let the app create it)
+- Run the sync whenever you want, or schedule it: hourly, every 6 hours, daily or weekly
+- Additions only, or mirror removals too
+- "Liked songs" as a source
+- Paste the link of a public playlist and sync it into your library
+- Import/export files (CSV, M3U, Apple Music/iTunes XML, JSON) for services without an API
+- Preview before every sync: see what will be added or removed, then confirm
+- Fix tracks that were not found yourself: search the target service, pick the right one, the app remembers it
+- Tools: full playlist backup to files, duplicate removal
+- "Share with Songport" from any music app: the link becomes a sync
+
+Works with Spotify, Apple Music, YouTube Music, TIDAL (beta), Deezer (beta), personal
+Navidrome/Subsonic, Jellyfin and Plex servers, Last.fm and ListenBrainz as sources, and files.
+
+Free, no subscriptions, no in-app purchases. The app is supported by a single small banner ad.
+No account to create: everything stays on your phone, access tokens are encrypted and never go
+through external servers.
+
+Scheduled syncs run on your phone, without servers: if the phone is off or battery saving blocks
+the app, they resume at the first opportunity.
+
+Note: Songport is not affiliated with Spotify, Apple, Google/YouTube, TIDAL or Deezer. Service names
+are trademarks of their respective owners and are used only to indicate compatibility.
+
+## Full description (Italian draft)
 Tieni le tue playlist uguali su tutti i servizi musicali, senza rifarle a mano.
 
-• Scegli una playlist di origine e una di destinazione (o lasciala creare all'app)
-• Esegui la sincronizzazione quando vuoi, oppure programmala: ogni ora, 6 ore, giorno o settimana
-• Solo aggiunte, oppure rispecchia anche le rimozioni
-• "Brani preferiti" come origine
-• Incolla il link di una playlist pubblica e sincronizzala nella tua libreria
-• Import/export di file (CSV, M3U, XML di Apple Music/iTunes, JSON) per i servizi senza API
-• Anteprima prima di ogni sync: vedi cosa verrà aggiunto o tolto e confermi
-• I brani non trovati li sistemi tu: cerchi sul servizio di destinazione, scegli quello giusto e l'app se lo ricorda
-• Strumenti: backup completo delle playlist in file, rimozione dei duplicati
-• "Condividi con Songport" da qualsiasi app musicale: il link diventa una sync
+- Scegli una playlist di origine e una di destinazione (o lasciala creare all'app)
+- Esegui la sincronizzazione quando vuoi, oppure programmala: ogni ora, 6 ore, giorno o settimana
+- Solo aggiunte, oppure rispecchia anche le rimozioni
+- "Brani preferiti" come origine
+- Incolla il link di una playlist pubblica e sincronizzala nella tua libreria
+- Import/export di file (CSV, M3U, XML di Apple Music/iTunes, JSON) per i servizi senza API
+- Anteprima prima di ogni sync: vedi cosa verrà aggiunto o tolto e confermi
+- I brani non trovati li sistemi tu: cerchi sul servizio di destinazione, scegli quello giusto e l'app se lo ricorda
+- Strumenti: backup completo delle playlist in file, rimozione dei duplicati
+- "Condividi con Songport" da qualsiasi app musicale: il link diventa una sync
 
-Compatibile con Spotify, Apple Music, YouTube Music, TIDAL (beta), Deezer (beta), server personali Navidrome/Subsonic, Jellyfin e Plex, Last.fm e ListenBrainz come sorgenti, e file.
+Compatibile con Spotify, Apple Music, YouTube Music, TIDAL (beta), Deezer (beta), server personali
+Navidrome/Subsonic, Jellyfin e Plex, Last.fm e ListenBrainz come sorgenti, e file.
 
 Gratuita, senza abbonamenti né acquisti in-app. L'app si sostiene con un solo piccolo banner
 pubblicitario. Nessun account da creare: tutto resta sul tuo telefono, i token di accesso sono
@@ -32,38 +60,38 @@ risparmio energetico blocca l'app, ripartono alla prima occasione utile.
 Nota: Songport non è affiliata a Spotify, Apple, Google/YouTube, TIDAL o Deezer. I nomi dei servizi
 sono marchi dei rispettivi proprietari e sono usati solo per indicare la compatibilità.
 
-## Categoria
-Musica e audio
+## Category
+Music & Audio
 
-## Contenuti / questionari Play Console
-- **Annunci**: SÌ, contiene annunci (banner AdMob).
-- **Acquisti in-app**: no. **Abbonamenti**: no.
-- **Accesso app**: alcune funzioni richiedono l'accesso a account di terzi (Spotify ecc.). Fornire ai
-  revisori istruzioni: "Collegare un account Spotify di prova; la funzione CSV è utilizzabile senza account."
-- **Target audience**: 18+ (o 16+); non rivolta a bambini.
-- **Norme sulle famiglie**: non applicabile.
-- **Servizi in primo piano** (Android 14+): tipo `dataSync`, motivo "trasferimento dati avviato dall'utente
-  che puo' superare i limiti dei lavori in background"; compilare la dichiarazione in Play Console.
-- **Biometria**: usata solo per sbloccare l'app in locale (BiometricPrompt); nessun dato biometrico viene letto o salvato.
+## Content / Play Console questionnaires
+- **Ads**: yes, contains ads (AdMob banner).
+- **In-app purchases**: no. **Subscriptions**: no. The donation button opens an external page and unlocks nothing.
+- **App access**: some features require third-party accounts (Spotify etc.). Give reviewers
+  instructions: "Connect a test Spotify account; the file feature works without any account."
+- **Target audience**: 18+ (or 16+); not aimed at children.
+- **Families policy**: not applicable.
+- **Foreground services** (Android 14+): type `dataSync`, reason "user-initiated data transfer that
+  may exceed background job limits"; fill in the declaration in Play Console.
+- **Biometrics**: used only to unlock the app locally (BiometricPrompt); no biometric data is read or stored.
 
-## Sicurezza dei dati (Data safety) – risposte suggerite
-- Raccoglie o condivide dati? **Sì** (tramite SDK annunci).
-  - **ID dispositivo o altri ID** → raccolto dall'SDK Google Mobile Ads → scopo: Pubblicità/marketing →
-    condiviso con Google → facoltativo (l'utente può negare il consenso) → non è trattato in modo effimero.
-  - **Dati sull'app e sulle prestazioni / diagnostica**: possono essere raccolti dall'SDK annunci → Pubblicità.
-- Dati **non** raccolti dallo sviluppatore: nessun account, e-mail, posizione, contatti, file.
-- Dati cifrati in transito: **Sì** (HTTPS).
-- L'utente può richiedere la cancellazione: **Sì** (disconnessione/disinstallazione; nessun dato sui server dello sviluppatore).
-- Informativa privacy: URL della pagina `docs/privacy-policy.md` pubblicata (GitHub Pages).
+## Data safety – suggested answers
+- Does the app collect or share data? **Yes** (through the ads SDK).
+  - **Device or other IDs** → collected by the Google Mobile Ads SDK → purpose: advertising/marketing →
+    shared with Google → optional (the user can refuse consent) → not processed ephemerally.
+  - **App info and performance / diagnostics**: may be collected by the ads SDK → advertising.
+- Data **not** collected by the developer: no account, e-mail, location, contacts, files.
+- Data encrypted in transit: **yes** (HTTPS).
+- Users can request deletion: **yes** (disconnect/uninstall; no data on developer servers).
+- Privacy policy: URL of the published `docs/privacy-policy.md`.
 
-## Checklist prima dell'invio
-- [ ] `versionCode`/`versionName` aggiornati in `android/app/build.gradle`
-- [ ] Variabili GitHub: `SPOTIFY_CLIENT_ID`, `GOOGLE_CLIENT_ID`, (`TIDAL_CLIENT_ID`, `DEEZER_APP_ID`, `DEEZER_REDIRECT_URL`), `ADMOB_APP_ID`, `ADMOB_BANNER_ID`, `PRIVACY_POLICY_URL`, `KOFI_URL`
-- [ ] Secret GitHub `APPLE_DEVELOPER_TOKEN` (JWT MusicKit) — da rigenerare entro 6 mesi
-- [ ] Secrets GitHub: `UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`, `UPLOAD_KEY_ALIAS`, `UPLOAD_KEY_PASSWORD` (release) e `DEBUG_KEYSTORE_BASE64` (APK debug con firma stabile)
-- [ ] SHA‑1 della chiave di upload **e** di Play App Signing registrate nel client OAuth Google (Android). Non registrare la chiave di debug se il repository è pubblico.
-- [ ] Verifica OAuth Google completata (scope `youtube`), video dimostrativo se richiesto
-- [ ] App AdMob collegata al Play Store; messaggio GDPR (UMP) pubblicato in AdMob → Privacy e messaggistica
-- [ ] Privacy policy online e linkata nella scheda
-- [ ] Screenshot (telefono 16:9 o 9:16, min 2); icona 512×512 e grafica in evidenza 1024×500 già in `docs/store/`
-- [ ] Testato: login Spotify, login Apple Music (WebView MusicKit), sync manuale, sync programmata (attendere 1 ora), import da link pubblico, import/export file, consenso GDPR con VPN UE
+## Release checklist
+- [ ] `versionCode`/`versionName` bumped in `android/app/build.gradle`
+- [ ] GitHub variables: `SPOTIFY_CLIENT_ID`, `GOOGLE_CLIENT_ID`, (`TIDAL_CLIENT_ID`, `DEEZER_APP_ID`, `DEEZER_REDIRECT_URL`), `LASTFM_API_KEY`, `ADMOB_APP_ID`, `ADMOB_BANNER_ID`, `PRIVACY_POLICY_URL`, `KOFI_URL`
+- [ ] GitHub secret `APPLE_DEVELOPER_TOKEN` (MusicKit JWT), to regenerate within 6 months
+- [ ] GitHub secrets: `UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`, `UPLOAD_KEY_ALIAS`, `UPLOAD_KEY_PASSWORD` (release) and `DEBUG_KEYSTORE_BASE64` (stable debug APK signature)
+- [ ] SHA-1 of the upload key **and** of Play App Signing registered in the Google OAuth client (Android). Do not register the debug key when the repository is public.
+- [ ] Google OAuth verification completed (`youtube` scope), demo video if requested
+- [ ] AdMob app linked to the Play Store; GDPR message (UMP) published in AdMob → Privacy & messaging
+- [ ] Privacy policy online and linked in the listing
+- [ ] Screenshots (phone, 16:9 or 9:16, at least 2); 512×512 icon and 1024×500 feature graphic are in `docs/store/`
+- [ ] Tested: Spotify login, Apple Music login (MusicKit WebView), manual sync, scheduled sync (wait 1 hour), import from public link, file import/export, GDPR consent with an EU VPN

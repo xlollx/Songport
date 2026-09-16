@@ -4,208 +4,207 @@
 
 Android app that keeps playlists in sync across music services, manually or on a schedule.
 Free, no account, no subscription: a single banner ad pays for development. Everything runs on the
-phone; there is no Songport server and access tokens never leave the device.
+phone. There is no Songport server and access tokens never leave the device.
 
 Supported: Spotify, Apple Music, YouTube Music, TIDAL (beta), Deezer (beta), Subsonic/Navidrome,
 Jellyfin, Plex, Last.fm and ListenBrainz (read-only), plus playlist files (CSV, TSV, M3U, iTunes XML,
 JSON, pasted text) as a bridge to everything else.
 
-The rest of this document is in Italian. UI strings are in Italian and English.
-License: GPL-3.0, see [LICENSE](LICENSE). Security reports: see [SECURITY.md](SECURITY.md).
+UI languages: English and Italian. License: GPL-3.0, see [LICENSE](LICENSE).
+Security reports: see [SECURITY.md](SECURITY.md).
 
 ---
 
-## Indice
-- [Funzionalità](#funzionalità)
-- [Servizi supportati e limiti](#servizi-supportati-e-limiti)
-- [Come funziona l'abbinamento dei brani](#come-funziona-labbinamento-dei-brani)
-- [Sicurezza degli accessi](#sicurezza-degli-accessi)
-- [Architettura](#architettura)
-- [Struttura del progetto](#struttura-del-progetto)
-- [Compilare](#compilare)
-- [Configurazione delle API](#configurazione-delle-api)
-- [Pubblicità, consenso e donazioni](#pubblicità-consenso-e-donazioni)
-- [Pubblicazione su Google Play](#pubblicazione-su-google-play)
-- [Contribuire](#contribuire)
-- [Limiti noti](#limiti-noti)
+## Contents
+- [Features](#features)
+- [Supported services and their limits](#supported-services-and-their-limits)
+- [How tracks are matched](#how-tracks-are-matched)
+- [How logins are protected](#how-logins-are-protected)
+- [Architecture](#architecture)
+- [Project layout](#project-layout)
+- [Building](#building)
+- [API configuration](#api-configuration)
+- [Ads, consent and donations](#ads-consent-and-donations)
+- [Publishing on Google Play](#publishing-on-google-play)
+- [Contributing](#contributing)
+- [Known limits](#known-limits)
 
 ---
 
-## Funzionalità
+## Features
 
-| Area | Funzione | Note |
-|------|----------|------|
-| Sync | Origine → destinazione tra due servizi qualsiasi | Anche stesso servizio (copia playlist). |
-| | Playlist esistente o creazione automatica della destinazione | La destinazione creata è privata. |
-| | Manuale ("Esegui", "Sincronizza tutto") | Le sync manuali girano in primo piano con notifica di avanzamento. |
-| | Programmata: ogni ora, 6 ore, giorno, settimana | WorkManager, sopravvive ai riavvii; opzione "solo Wi-Fi". |
-| | Solo aggiunte (default) oppure rispecchia le rimozioni | Le rimozioni sono saltate se l'origine risulta vuota. |
-| | Bidirezionale | Un interruttore crea la sync gemella al contrario, senza rimozioni; le due sync si eliminano insieme. |
-| | "Brani preferiti" come origine o destinazione | Spotify, Deezer, Subsonic, Jellyfin, Last.fm, ListenBrainz. |
-| Anteprima | Cosa cambierebbe, prima di farlo | Già presenti, da aggiungere, da rimuovere, non trovati, incerti. |
-| Abbinamento | ISRC, poi titolo + artista + durata | Cache degli abbinamenti; penalizza live, karaoke, cover, sped up quando l'originale non lo è. |
-| Revisione | Abbinamenti incerti da confermare | Sotto l'86% di somiglianza l'abbinamento è accettato ma segnalato; si conferma o si cambia. |
-| Non trovati | Correzione manuale | Ricerca libera sulla destinazione, scelta del risultato, oppure "ignora". |
-| Ripristino | Rimette i brani tolti da una sync a specchio | Dal registro. |
-| Quota YouTube | Anello con le unità usate oggi | Ricerca 100, scrittura 50 su 10.000 al giorno; l'app mostra quanto resta e quanto costerà la sync. |
-| Account multipli | Più account dello stesso servizio | Anche per migrare fra due account. |
-| Strumenti | Backup completo di un servizio | Playlist e preferiti in file locali, esportabili in CSV/M3U. |
-| | Rimozione duplicati | Stesso brano anche con id o versione diversa; tiene la prima copia. |
-| Link | Incolla o condividi il link di una playlist pubblica | Spotify, Apple Music, YouTube, Deezer, TIDAL. |
-| File | Import/export | Legge CSV, TSV, M3U/M3U8, XML Apple Music/iTunes, JSON, elenchi di testo; scrive CSV e M3U. |
-| Widget e scorciatoie | Widget home e pressione lunga sull'icona | Ultima sync, "Sincronizza tutto", "Nuova sync". |
-| Diagnostica | "Condividi dettagli tecnici" nel registro | Versione, dispositivo, servizi, ultime esecuzioni, log degli errori; nessun token. |
-| Sicurezza | Foglio informativo prima di ogni login, token cifrati, blocco con impronta o PIN | Vedi [Sicurezza degli accessi](#sicurezza-degli-accessi). |
-| Lingue | Italiano e inglese | |
+| Area | Feature | Notes |
+|------|---------|-------|
+| Sync | Source → target between any two services | Same service too (playlist copy). |
+| | Existing playlist or automatic creation of the target | Created playlists are private. |
+| | Manual ("Run", "Sync all") | Manual syncs run as a foreground job with a progress notification. |
+| | Scheduled: hourly, every 6 hours, daily, weekly | WorkManager, survives reboots; "Wi-Fi only" option. |
+| | Additions only (default) or mirror removals | Removals are skipped when the source comes back empty. |
+| | Bidirectional | One switch creates the reverse twin sync without removals; the two are deleted together. |
+| | "Liked songs" as source or target | Spotify, Deezer, Subsonic, Jellyfin, Last.fm, ListenBrainz. |
+| Preview | What would change, before doing it | Already present, to add, to remove, not found, uncertain. |
+| Matching | ISRC, then title + artist + duration | Match cache; penalises live, karaoke, cover and sped-up versions when the original is not one. |
+| Review | Uncertain matches to confirm | Below 86% similarity a match is accepted but flagged; confirm or replace it. |
+| Not found | Manual fix | Free search on the target, pick the result, or "ignore". |
+| Restore | Put back tracks removed by a mirror sync | From the log. |
+| YouTube quota | Ring with the units used today | Search 100, write 50 out of 10,000 per day; the app shows what is left and what a sync will cost. |
+| Multiple accounts | Several accounts of the same service | Also for migrating between two accounts. |
+| Tools | Full backup of a service | Playlists and likes into local files, exportable as CSV/M3U. |
+| | Duplicate removal | Same track even with a different id or version; keeps the first copy. |
+| Links | Paste or share a public playlist link | Spotify, Apple Music, YouTube, Deezer, TIDAL. |
+| Files | Import/export | Reads CSV, TSV, M3U/M3U8, Apple Music/iTunes XML, JSON, plain text lists; writes CSV and M3U. |
+| Widget and shortcuts | Home widget and long-press on the icon | Last sync, "Sync all", "New sync". |
+| Diagnostics | "Share technical details" in the log | Version, device, services, last runs, error log; no tokens. |
+| Security | Info sheet before every login, encrypted tokens, fingerprint or PIN lock | See [How logins are protected](#how-logins-are-protected). |
 
-## Servizi supportati e limiti
+## Supported services and their limits
 
-| Servizio | Stato | Login | Cosa serve alla build | Limiti |
-|----------|-------|-------|-----------------------|--------|
-| Spotify | completo | OAuth PKCE nel browser | `SPOTIFY_CLIENT_ID`, redirect `songport://callback` | Un'app in *Development Mode* accetta 5 utenti e il proprietario deve avere Spotify Premium (regole di febbraio 2026). L'*Extended Quota Mode* richiede un'azienda registrata e 250.000 utenti attivi mensili. Dal luglio 2026 la quota è conteggiata per account sviluppatore, non per client ID. Per questo l'app guida ogni utente a creare il proprio client ID: su Spotify è il percorso normale. |
-| Apple Music | lettura e aggiunta | MusicKit JS in una WebView dell'app | `APPLE_DEVELOPER_TOKEN` (JWT ES256, Apple Developer Program) | L'API non permette di togliere brani da una playlist: le sync a specchio aggiungono soltanto e lo segnalano. Il developer token scade al massimo dopo 6 mesi. Serve un abbonamento Apple Music. I brani della libreria non espongono l'ISRC. |
-| YouTube Music | via YouTube Data API v3 | OAuth Google | `GOOGLE_CLIENT_ID` (client OAuth Android: package + SHA-1), YouTube Data API abilitata, verifica OAuth per lo scope `youtube` | Quota 10.000 unità al giorno per progetto (ricerca 100, inserimento 50), condivisa da tutti gli utenti della stessa build. Con credenziali proprie la quota è quella dell'utente. Nessun ISRC. |
-| TIDAL | beta | OAuth PKCE | `TIDAL_CLIENT_ID` | API v2 (JSON:API) in evoluzione; endpoint isolati in `TidalProvider.kt`. Non provato dal vivo. |
-| Deezer | beta | OAuth implicit | `DEEZER_APP_ID` e una pagina https di redirect (`docs/deezer-redirect.html`) | La registrazione di nuove app potrebbe essere chiusa. Le playlist lette non hanno ISRC. Non provato dal vivo. |
-| Subsonic / Navidrome (Airsonic, Gonic, LMS, Funkwhale) | completo | indirizzo, utente, password (token md5+salt) | niente | Brani con stella = preferiti. |
-| Jellyfin | completo | indirizzo, utente, password | niente | Preferiti supportati. |
-| Plex | senza creazione playlist | indirizzo e X-Plex-Token | niente | L'API non crea playlist vuote: si crea in Plex e si sceglie in app. |
-| Last.fm | sola lettura | nome utente | `LASTFM_API_KEY` oppure chiave inserita dall'utente | Solo brani amati, solo come origine. |
-| ListenBrainz | sola lettura | nome utente | niente | Playlist e brani amati, solo come origine. |
-| File | completo | | | Import/export dal selettore file di sistema, oppure "Incolla un elenco". |
-| Amazon Music, Qobuz, SoundCloud, Pandora | non collegabili | | | API riservate a partner o in beta chiusa. Si passa dai file. |
+| Service | Status | Login | What the build needs | Limits |
+|---------|--------|-------|----------------------|--------|
+| Spotify | complete | OAuth PKCE in the browser | `SPOTIFY_CLIENT_ID`, redirect `songport://callback` | An app in *Development Mode* accepts 5 users and its owner needs Spotify Premium (February 2026 rules). *Extended Quota Mode* requires a registered company and 250,000 monthly active users. Since July 2026 the quota is counted per developer account, not per client ID. That is why the app walks each user through creating their own client ID: on Spotify this is the normal path. |
+| Apple Music | read and add | MusicKit JS in an in-app WebView | `APPLE_DEVELOPER_TOKEN` (ES256 JWT, Apple Developer Program) | The API cannot remove tracks from a playlist: mirror syncs towards Apple Music only add and say so in the report. The developer token expires after at most 6 months. An Apple Music subscription is required. Library tracks do not expose an ISRC. |
+| YouTube Music | via YouTube Data API v3 | Google OAuth | `GOOGLE_CLIENT_ID` (Android OAuth client: package + SHA-1), YouTube Data API enabled, OAuth verification for the `youtube` scope | 10,000 units per day per project (search 100, insert 50), shared by every user of the same build. With own credentials the quota is the user's. No ISRC. |
+| TIDAL | beta | OAuth PKCE | `TIDAL_CLIENT_ID` | API v2 (JSON:API) still evolving; endpoints isolated in `TidalProvider.kt`. Not tested live. |
+| Deezer | beta | OAuth implicit | `DEEZER_APP_ID` and an https redirect page (`docs/deezer-redirect.html`) | Registration of new apps may be closed. Playlists read from Deezer carry no ISRC. Not tested live. |
+| Subsonic / Navidrome (Airsonic, Gonic, LMS, Funkwhale) | complete | server URL, user, password (md5+salt token) | nothing | Starred tracks = likes. |
+| Jellyfin | complete | server URL, user, password | nothing | Favourites supported. |
+| Plex | no playlist creation | server URL and X-Plex-Token | nothing | The API does not create empty playlists: create it in Plex and pick it in the app. |
+| Last.fm | read-only | username | `LASTFM_API_KEY` or a key entered by the user | Loved tracks only, source only. |
+| ListenBrainz | read-only | username | nothing | Playlists and loved tracks, source only. |
+| Files | complete | | | Import/export through the system file picker, or "Paste a list". |
+| Amazon Music, Qobuz, SoundCloud, Pandora | not connectable | | | Partner-only or closed-beta APIs. Use files. |
 
-Le credenziali personali si inseriscono da *Account → scheda del servizio → Usa le tue credenziali*:
-passi numerati, link al portale, redirect da copiare, verifica con un login reale.
+Own credentials are entered from *Accounts → service card → Use your own credentials*: numbered
+steps, link to the developer portal, redirect URI to copy, verification with a real login.
 
-Caso Google/YouTube: un client OAuth di tipo *Android* è legato alla firma dell'APK, quindi non è
-sovrascrivibile dall'utente. Con credenziali proprie l'app usa il flusso *installed app*: client di
-tipo *Desktop* e redirect su `http://127.0.0.1:<porta>`, dove l'app apre un server in ascolto solo su
-loopback per la durata dell'autorizzazione (`auth/LoopbackServer.kt`).
+Google/YouTube: an *Android* OAuth client is tied to the APK signature, so the user cannot override
+it. With own credentials the app switches to the *installed app* flow: a *Desktop* client and a
+redirect to `http://127.0.0.1:<port>`, where the app listens on loopback only for the duration of the
+authorisation (`auth/LoopbackServer.kt`).
 
-Apple Music funziona senza backend perché Apple offre MusicKit JS: l'app apre una WebView su una
-pagina servita dai propri asset (origine https reale tramite `WebViewAssetLoader`), MusicKit gestisce
-l'accesso Apple ID e restituisce il *music user token*. Amazon Music non ha un equivalente aperto.
+Apple Music works without a backend because Apple provides MusicKit JS: the app opens a WebView on a
+page served from its own assets (a real https origin through `WebViewAssetLoader`), MusicKit handles
+the Apple ID sign-in and returns the *music user token*. Amazon Music has no open equivalent.
 
-## Come funziona l'abbinamento dei brani
+## How tracks are matched
 
-`sync/Matcher.kt` è Kotlin puro e coperto da test:
+`sync/Matcher.kt` is plain Kotlin and covered by tests:
 
-1. ISRC identico → stesso brano (punteggio 1.0). Spotify, TIDAL e Deezer lo espongono.
-2. Altrimenti titolo normalizzato (minuscolo, senza accenti, senza `(feat. …)`, `- Remastered 2011`,
-   `[Official Video]`; "remix" viene mantenuto) confrontato con Levenshtein e Jaccard sui token;
-   artisti confrontati tra loro; durata come fattore (±3 s pieno, oltre 25 s forte penalità).
-   Soglia 0.70 per i risultati di ricerca, 0.82 per riconoscere i brani già presenti, 0.86 sotto la
-   quale l'abbinamento è segnalato come incerto.
-3. Per YouTube i titoli video vengono spezzati in artista/titolo (`sync/TitleParser.kt`).
-4. Ogni abbinamento finisce in una cache locale (`Store.matchCache`, massimo 20.000 voci).
+1. Identical ISRC → same track (score 1.0). Spotify, TIDAL and Deezer expose it.
+2. Otherwise the normalised title (lowercase, no accents, without `(feat. …)`, `- Remastered 2011`,
+   `[Official Video]`; "remix" is kept) is compared with Levenshtein and token Jaccard; artists are
+   compared with each other; duration is a factor (±3 s full, beyond 25 s strong penalty).
+   Threshold 0.70 for search results, 0.82 to recognise tracks already in the target, 0.86 below
+   which a match is flagged as uncertain.
+3. YouTube video titles are split into artist/title (`sync/TitleParser.kt`).
+4. Every match goes into a local cache (`Store.matchCache`, up to 20,000 entries).
 
-## Sicurezza degli accessi
+## How logins are protected
 
-- La password si digita sul sito del servizio (Custom Tab con barra dell'indirizzo visibile) o nella
-  finestra ufficiale Apple. Per i server personali le credenziali restano sul telefono.
-- L'app riceve solo un token revocabile, cifrato con `EncryptedSharedPreferences` (chiave
-  nell'Android Keystore), escluso dal backup. Scollegare lo cancella; ogni scheda ha il link alla pagina
-  di revoca del servizio.
-- Nessun server intermedio: le richieste vanno dal telefono ai servizi collegati.
-- Prima di ogni "Collega" un foglio mostra il dominio che si aprirà e cosa riceve l'app.
-- Blocco opzionale con impronta, volto o PIN all'apertura (`BiometricPrompt`).
-- Nessuna chiave o segreto nel repository: client ID, developer token, ID AdMob e chiavi di firma
-  arrivano dalla build (variabili e secret di GitHub Actions).
+- The password is typed on the service's own site (Custom Tab with a visible address bar) or in
+  Apple's official window. Personal server credentials stay on the phone.
+- The app only receives a revocable token, encrypted with `EncryptedSharedPreferences` (key in the
+  Android Keystore) and excluded from backups. Disconnecting deletes it; every card links to the
+  service's revocation page.
+- No intermediate server: requests go from the phone to the connected services.
+- Before every "Connect" a sheet shows the domain that will open and what the app receives.
+- Optional fingerprint, face or PIN lock on launch (`BiometricPrompt`).
+- No key or secret in the repository: client IDs, developer token, AdMob IDs and signing keys come
+  from the build (GitHub Actions variables and secrets).
 
-## Architettura
+## Architecture
 
 ```
-MainActivity (tab: Sync, Account, Strumenti, Registro, Impostazioni)          AdBanner (AdMob + UMP)
+MainActivity (tabs: Syncs, Accounts, Tools, Log, Settings)                      AdBanner (AdMob + UMP)
     │
-    ├── SyncEditor / Preview / Review ──▶ Store (store.json: job, report, cache abbinamenti, impostazioni)
+    ├── SyncEditor / Preview / Review ──▶ Store (store.json: jobs, reports, match cache, settings)
     │
-    └── Scheduler (WorkManager: periodico per job, one-shot "esegui ora") ──▶ SyncWorker ──▶ SyncEngine
-                                                                                          │
-                                                        MusicProvider (interfaccia, un'istanza per account)
-                                                        Spotify · AppleMusic · YouTube · Tidal · Deezer
-                                                        Subsonic · Jellyfin · Plex · LastFm · ListenBrainz · LocalFiles
-                                                                                          │
-AuthFlow (PKCE, loopback) · AppleAuthActivity (MusicKit JS) · ServerLoginActivity · TokenStore (cifrato)
-                                                                                          ▼
-                                             API ufficiali dei servizi, chiamate direttamente dal telefono
+    └── Scheduler (WorkManager: periodic per job, one-shot "run now") ──▶ SyncWorker ──▶ SyncEngine
+                                                                                        │
+                                                       MusicProvider (interface, one instance per account)
+                                                       Spotify · AppleMusic · YouTube · Tidal · Deezer
+                                                       Subsonic · Jellyfin · Plex · LastFm · ListenBrainz · LocalFiles
+                                                                                        │
+AuthFlow (PKCE, loopback) · AppleAuthActivity (MusicKit JS) · ServerLoginActivity · TokenStore (encrypted)
+                                                                                        ▼
+                                             Official service APIs, called directly from the phone
 ```
 
-## Struttura del progetto
+## Project layout
 
 ```
 Songport/
 ├── README.md, LICENSE, SECURITY.md
 ├── docs/
-│   ├── privacy-policy.md          # informativa (IT + EN) da pubblicare e linkare nel Play Store
-│   ├── play-store-listing.md      # testi scheda store, risposte "Sicurezza dei dati", checklist
-│   ├── deezer-redirect.html       # pagina https → songport://callback
-│   └── store/                     # icona 512×512 e grafica in evidenza 1024×500 (it/en)
+│   ├── privacy-policy.md          # privacy policy (EN + IT) to publish and link in the Play listing
+│   ├── play-store-listing.md      # store texts, Data safety answers, release checklist
+│   ├── deezer-redirect.html       # https page → songport://callback
+│   └── store/                     # 512×512 icon and 1024×500 feature graphic (en/it)
 └── android/
     ├── build.gradle, settings.gradle, gradle.properties
     └── app/
-        ├── build.gradle           # parametri build: client ID, AdMob, firma release da env/secrets
+        ├── build.gradle           # build parameters: client IDs, AdMob, release signing from env/secrets
         ├── proguard-rules.pro
         └── src/
             ├── main/AndroidManifest.xml
             ├── main/java/com/xlollx/songport/
             │   ├── MainActivity.kt, SongportApp.kt, Notifications.kt
-            │   ├── ads/Ads.kt                 # consenso UMP + banner adattivo
+            │   ├── ads/Ads.kt                 # UMP consent + adaptive banner
             │   ├── auth/                      # Pkce, AuthFlow, AuthCallbackActivity, AppleAuthActivity, LoopbackServer, ServerLoginActivity, LockActivity
-            │   ├── data/                      # Store (JSON, scritture coalescenti), TokenStore (cifrato), Diagnostics
+            │   ├── data/                      # Store (JSON, coalesced writes), TokenStore (encrypted), Diagnostics
             │   ├── model/Models.kt            # Track, Playlist, SyncJob, SyncReport, SyncPlan
-            │   ├── net/                       # Http (OkHttp, retry 429), helper JSON
-            │   ├── providers/                 # MusicProvider e le implementazioni
+            │   ├── net/                       # Http (OkHttp, 429 retry), JSON helpers
+            │   ├── providers/                 # MusicProvider and its implementations
             │   ├── sync/                      # Matcher, Duplicates, TitleParser, CsvCodec, PlaylistFiles, PlaylistLinks, SyncEngine, Tools, Scheduler, QuotaMeter
-            │   ├── ui/                        # schermate Compose e componenti condivisi (Common.kt, Theme.kt)
+            │   ├── ui/                        # Compose screens and shared components (Common.kt, Theme.kt)
             │   └── widget/SyncWidget.kt
-            ├── main/assets/applemusic/auth.html  # pagina MusicKit JS per il login Apple Music
+            ├── main/assets/applemusic/auth.html  # MusicKit JS page for the Apple Music login
             ├── main/res/values(-it)/strings.xml
-            └── test/…/sync/                   # test JUnit (matcher, parser, CSV, link)
+            └── test/…/sync/                   # JUnit tests (matcher, parsers, CSV, links)
 ```
 
-## Compilare
+## Building
 
-Requisiti: JDK 17, Android SDK con platform 36. Da `android/`:
+Requirements: JDK 17, Android SDK with platform 36. From `android/`:
 
 ```bash
-gradle testDebugUnitTest      # test unitari (Kotlin puro, senza emulatore)
+gradle testDebugUnitTest      # unit tests (plain Kotlin, no emulator)
 gradle assembleDebug          # APK in app/build/outputs/apk/debug/
 ```
 
-Oppure aprire `android/` in Android Studio. Senza variabili di build i servizi OAuth compaiono come
-"Non configurato" e si usano con credenziali proprie inserite in app; file e server personali
-funzionano sempre.
+Or open `android/` in Android Studio. Without build variables the OAuth services show as
+"Not configured" and can be used with own credentials entered in the app; files and personal servers
+always work.
 
 Toolchain: AGP 8.11.1, Gradle 8.14.3, Kotlin 2.1.21, compileSdk/targetSdk 36, minSdk 26.
 
 ### GitHub Actions
 
-`.github/workflows/build.yml` parte a ogni push su `main`, sulle pull request e a mano. Esegue i test,
-produce l'APK di debug e, se sono presenti i secret della chiave di upload, l'AAB firmato. Con il secret
-`DEBUG_KEYSTORE_BASE64` (un keystore di debug in base64) la firma dell'APK debug resta uguale tra le
-build e gli aggiornamenti si installano sopra; il file non è nel repository.
+`.github/workflows/build.yml` runs on every push to `main`, on pull requests and manually. It runs the
+tests, builds the debug APK and, when the upload key secrets are present, the signed AAB. With the
+`DEBUG_KEYSTORE_BASE64` secret (a debug keystore in base64) the debug APK keeps the same signature
+across builds so updates install over each other; the file itself is not in the repository.
 
-## Configurazione delle API
+## API configuration
 
-I client ID non sono nel codice: arrivano dalla build (*Settings → Secrets and variables → Actions*) e,
-per Spotify, TIDAL, Deezer, Google e Last.fm, possono essere inseriti dall'utente in app.
+Client IDs are not in the code: they come from the build (*Settings → Secrets and variables →
+Actions*) and, for Spotify, TIDAL, Deezer, Google and Last.fm, can be entered by the user in the app.
 
-| Variabile | Dove ottenerla | Redirect URI da registrare |
-|-----------|----------------|-----------------------------|
+| Variable | Where to get it | Redirect URI to register |
+|----------|-----------------|--------------------------|
 | `SPOTIFY_CLIENT_ID` | developer.spotify.com → Dashboard → Create app (Web API) | `songport://callback` |
-| `GOOGLE_CLIENT_ID` | console.cloud.google.com → Credenziali → client OAuth Android (package `com.xlollx.songport` + SHA-1 della firma di rilascio). Abilitare YouTube Data API v3, configurare la schermata di consenso, richiedere la verifica per lo scope `youtube`. | automatico (schema `com.googleusercontent.apps.<id>`) |
-| `APPLE_DEVELOPER_TOKEN` (secret) | Apple Developer → Keys → MusicKit → chiave `.p8`, Key ID e Team ID, poi il JWT qui sotto | nessuno |
+| `GOOGLE_CLIENT_ID` | console.cloud.google.com → Credentials → Android OAuth client (package `com.xlollx.songport` + SHA-1 of the release signature). Enable YouTube Data API v3, configure the consent screen, request verification for the `youtube` scope. | automatic (`com.googleusercontent.apps.<id>` scheme) |
+| `APPLE_DEVELOPER_TOKEN` (secret) | Apple Developer → Keys → MusicKit → `.p8` key, Key ID and Team ID, then the JWT below | none |
 | `TIDAL_CLIENT_ID` | developer.tidal.com → Dashboard → Create app | `songport://callback` |
-| `DEEZER_APP_ID`, `DEEZER_REDIRECT_URL` | developers.deezer.com → My Apps. Pubblicare `docs/deezer-redirect.html` su un host https e usare quell'URL come redirect e "Application domain". | l'URL https della pagina |
-| `LASTFM_API_KEY` | last.fm/api/account/create | nessuno |
+| `DEEZER_APP_ID`, `DEEZER_REDIRECT_URL` | developers.deezer.com → My Apps. Publish `docs/deezer-redirect.html` on an https host and use that URL as redirect and "Application domain". | the https URL of the page |
+| `LASTFM_API_KEY` | last.fm/api/account/create | none |
 | `ADMOB_APP_ID`, `ADMOB_BANNER_ID` | AdMob | |
-| `PRIVACY_POLICY_URL`, `KOFI_URL` | URL pubblici dell'informativa e della pagina donazioni; `KOFI_URL` vuoto nasconde il pulsante | |
+| `PRIVACY_POLICY_URL`, `KOFI_URL` | public URLs of the privacy policy and the donation page; an empty `KOFI_URL` hides the button | |
 
-Se il repository è pubblico, registrare nel client OAuth Google solo la SHA-1 della chiave di upload e
-di Play App Signing, non quella di debug.
+With a public repository, register only the SHA-1 of the upload key and of Play App Signing in the
+Google OAuth client, never the debug one.
 
-Generare il developer token Apple Music (scade al massimo dopo 6 mesi):
+Generating the Apple Music developer token (expires after at most 6 months):
 
 ```bash
 pip install pyjwt cryptography
@@ -217,50 +216,51 @@ print(jwt.encode({"iss": TEAM_ID, "iat": int(time.time()), "exp": int(time.time(
 PY
 ```
 
-## Pubblicità, consenso e donazioni
+## Ads, consent and donations
 
-- Un solo banner adattivo in fondo alla schermata principale (`ads/Ads.kt`). Niente interstitial, video
-  o annunci a schermo intero.
-- Prima di caricare annunci l'app chiede il consenso con Google UMP; senza consenso non richiede
-  annunci. In *Impostazioni* compare "Opzioni privacy annunci" dove la normativa lo richiede.
-- Di default la build usa gli ID di test di Google. Non testare mai con ID reali.
-- Al primo avvio una scheda spiega perché ci sono le pubblicità e offre un pulsante verso una pagina di
-  donazioni (Ko-fi). La donazione è volontaria e non sblocca nulla, quindi resta fuori dalla fatturazione
-  Google Play. Lo stesso pulsante è in *Impostazioni*.
+- One adaptive banner at the bottom of the main screen (`ads/Ads.kt`). No interstitials, videos or
+  full-screen ads.
+- Before loading ads the app asks for consent through Google UMP; without consent no ads are
+  requested. *Settings* shows "Ad privacy options" where regulations require it.
+- By default the build uses Google's test IDs. Never test with real IDs.
+- On first launch a card explains why the ads are there and offers a button to a donation page
+  (Ko-fi). Donating is voluntary and unlocks nothing, which keeps it outside Google Play billing.
+  The same button is in *Settings*.
 
-## Pubblicazione su Google Play
+## Publishing on Google Play
 
-1. Chiave di upload (mai nel repository):
+1. Upload key (never in the repository):
    ```bash
    keytool -genkeypair -v -keystore upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
-   base64 -w0 upload.jks   # contenuto del secret UPLOAD_KEYSTORE_BASE64
+   base64 -w0 upload.jks   # value of the UPLOAD_KEYSTORE_BASE64 secret
    ```
-   Secret: `UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`, `UPLOAD_KEY_ALIAS`, `UPLOAD_KEY_PASSWORD`.
-   Con Play App Signing va registrata nel client OAuth Google anche la SHA-1 di Play.
-2. Variabili: client ID dei servizi, `ADMOB_APP_ID`, `ADMOB_BANNER_ID`, `PRIVACY_POLICY_URL`, `KOFI_URL`.
-3. Aggiornare `versionCode` e `versionName` in `app/build.gradle` a ogni release.
-4. Play Console: dichiarare gli annunci, compilare *Sicurezza dei dati* e la dichiarazione sui servizi
-   in primo piano (tipo `dataSync`, avviato dall'utente); l'informativa è in `docs/privacy-policy.md`.
-   Testi, risposte e checklist in `docs/play-store-listing.md`.
-5. Non usare loghi ufficiali dei servizi nell'icona o negli screenshot; nella descrizione i nomi si
-   citano solo per indicare la compatibilità.
+   Secrets: `UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`, `UPLOAD_KEY_ALIAS`, `UPLOAD_KEY_PASSWORD`.
+   With Play App Signing, also register Play's SHA-1 in the Google OAuth client.
+2. Variables: service client IDs, `ADMOB_APP_ID`, `ADMOB_BANNER_ID`, `PRIVACY_POLICY_URL`, `KOFI_URL`.
+3. Bump `versionCode` and `versionName` in `app/build.gradle` for every release.
+4. Play Console: declare ads, fill in *Data safety* and the foreground service declaration
+   (`dataSync` type, user-initiated); the policy is in `docs/privacy-policy.md`.
+   Texts, answers and checklist in `docs/play-store-listing.md`.
+5. Do not use the services' official logos in the icon or screenshots; name them in the description
+   only to indicate compatibility.
 
-## Contribuire
+## Contributing
 
-Segnalazioni e pull request sono benvenute. Per un nuovo servizio: implementare `MusicProvider`
-(o estendere `OAuthProvider` / `CredentialsProvider`), registrarlo in `Providers.configure`, aggiungere
-le stringhe in entrambe le lingue e, se serve, un test in `src/test`. Prima di aprire una pull request
-eseguire `gradle testDebugUnitTest`. Le vulnerabilità vanno segnalate come descritto in
-[SECURITY.md](SECURITY.md), non in una issue pubblica.
+Issues and pull requests are welcome. For a new service: implement `MusicProvider` (or extend
+`OAuthProvider` / `CredentialsProvider`), register it in `Providers.configure`, add strings in both
+languages and, where useful, a test in `src/test`. Run `gradle testDebugUnitTest` before opening a
+pull request. Report vulnerabilities as described in [SECURITY.md](SECURITY.md), not in a public
+issue.
 
-## Limiti noti
+## Known limits
 
-- TIDAL e Deezer sono scritti sulle API documentate ma non provati dal vivo.
-- YouTube: quota giornaliera condivisa fra gli utenti della stessa build; il parsing dei titoli video
-  non è perfetto (i dubbi finiscono fra i non trovati, mai aggiunti a caso).
-- Spotify: con il client ID della build solo 5 utenti; ogni utente deve usare il proprio.
-- Apple Music: si aggiunge ma non si rimuove; il developer token va rigenerato ogni 6 mesi.
-- Amazon Music, Qobuz, SoundCloud: nessuna API aperta, solo file.
-- Frequenza minima offerta: 1 ora (WorkManager permetterebbe 15 minuti, ma le quote API no).
-- Le sync programmate girano sul telefono: alcuni produttori fermano le app in secondo piano.
-  In *Impostazioni* c'è il pulsante per escludere l'app dal risparmio energetico.
+- TIDAL and Deezer are written against the documented APIs but not tested live.
+- YouTube: the daily quota is shared by all users of the same build; video title parsing is not
+  perfect (doubtful tracks end up in "not found", never added by guesswork).
+- Spotify: the build's client ID serves 5 users only; each user needs their own.
+- Apple Music: tracks can be added but not removed; the developer token must be regenerated every
+  6 months.
+- Amazon Music, Qobuz, SoundCloud: no open API, files only.
+- Minimum schedule offered: 1 hour (WorkManager would allow 15 minutes, API quotas would not).
+- Scheduled syncs run on the phone: some manufacturers kill background apps. *Settings* has a button
+  to exclude the app from battery optimisation.
