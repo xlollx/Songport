@@ -31,6 +31,7 @@ Security reports: see [SECURITY.md](SECURITY.md).
 - [Ads, consent and donations](#ads-consent-and-donations)
 - [Publishing on Google Play](#publishing-on-google-play)
 - [Contributing](#contributing)
+- [License, copyright and trademark](#license-copyright-and-trademark)
 - [Known limits](#known-limits)
 
 ---
@@ -271,6 +272,18 @@ Issues and pull requests are welcome. For a new service: implement `MusicProvide
 languages and, where useful, a test in `src/test`. Run `gradle testDebugUnitTest` before opening a
 pull request. Report vulnerabilities as described in [SECURITY.md](SECURITY.md), not in a public
 issue.
+
+## License, copyright and trademark
+
+Songport is free software: you can redistribute it and/or modify it under the terms of the GNU
+General Public License, version 3 (see [LICENSE](LICENSE)). Copyright (C) 2026 xlollx and
+contributors. Any distributed build of this code or of a modified version must ship its complete
+source code under the same license, as the GPL requires.
+
+The name "Songport", the app icon and the feature graphics in `docs/store/` are not covered by the
+GPL. They identify this project's official releases and may not be used for forks, rebuilds or
+derived apps without written permission. A fork must use its own name and icon. Names of the music
+services mentioned in this project are trademarks of their respective owners.
 
 ## Known limits
 
