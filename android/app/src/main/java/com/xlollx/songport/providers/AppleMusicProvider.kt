@@ -38,7 +38,7 @@ import java.util.Locale
  * quindi `canRemoveTracks` e' false e le sync a specchio verso Apple Music aggiungono soltanto.
  * Le playlist del catalogo (id `pl.…`, quelle dei link pubblici) si leggono col solo developer token.
  */
-class AppleMusicProvider(override val slot: String = "") : MusicProvider {
+open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     override val serviceId = SERVICE
     override val authDomain = "appleid.apple.com"
     override val revokeUrl = "https://appleid.apple.com/account/manage"
@@ -48,7 +48,7 @@ class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     override val canRemoveTracks = false
 
 
-    override val setupGuide = SetupGuide(
+    override val setupGuide: SetupGuide? = SetupGuide(
         dashboardUrl = "https://developer.apple.com/account/resources/authkeys/list",
         stepUrls = listOf("https://developer.apple.com/programs/enroll/", "https://developer.apple.com/account/resources/identifiers/list/musicId", "https://developer.apple.com/account/resources/authkeys/add", "https://github.com/xlollx/Songport#api-configuration", null),
         whyRes = R.string.setup_why_apple,
@@ -60,8 +60,11 @@ class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     override fun usesOwnCredentials(ctx: Context): Boolean =
         !Store.get(ctx).data.settings.clientIds[serviceId].isNullOrBlank()
 
-    fun developerToken(ctx: Context): String =
+    open fun developerToken(ctx: Context): String =
         Store.get(ctx).data.settings.clientIds[serviceId]?.trim()?.takeIf { it.isNotEmpty() } ?: BuildConfig.APPLE_DEVELOPER_TOKEN
+
+    /** Il music user token della libreria dell'utente (null = non collegato). */
+    protected open fun userToken(ctx: Context): String? = TokenStore(ctx).get(id)?.accessToken
 
     override fun isConfigured(ctx: Context) = developerToken(ctx).isNotBlank()
     override fun isConnected(ctx: Context) = TokenStore(ctx).get(id) != null
@@ -97,7 +100,7 @@ class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     private fun defaultStorefront(): String =
         Locale.getDefault().country.lowercase().takeIf { it.length == 2 } ?: "us"
 
-    private fun storefront(ctx: Context): String =
+    protected open fun storefront(ctx: Context): String =
         TokenStore(ctx).get(id)?.extra?.get("storefront") ?: defaultStorefront()
 
     /**
@@ -112,7 +115,7 @@ class AppleMusicProvider(override val slot: String = "") : MusicProvider {
         headers["Accept"] = "application/json"
         val needsUser = "/v1/me/" in url
         if (needsUser) {
-            val mut = TokenStore(ctx).get(id)?.accessToken
+            val mut = userToken(ctx)
                 ?: throw ProviderException(ctx.getString(R.string.error_not_connected, displayName))
             headers["Music-User-Token"] = mut
         }

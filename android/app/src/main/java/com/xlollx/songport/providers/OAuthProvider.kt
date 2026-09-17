@@ -106,7 +106,7 @@ abstract class OAuthProvider : MusicProvider {
 
     override fun disconnect(ctx: Context) = TokenStore(ctx).clear(id)
 
-    protected suspend fun tokens(ctx: Context): Tokens {
+    protected open suspend fun tokens(ctx: Context): Tokens {
         val store = TokenStore(ctx)
         var t = store.get(id) ?: throw ProviderException(ctx.getString(R.string.error_not_connected, displayName))
         if (t.isExpiringSoon() && t.refreshToken != null) {

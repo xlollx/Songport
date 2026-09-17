@@ -265,6 +265,9 @@
     <string name="sync_stop">Abbrechen</string>
     <string name="sync_paused">Pausiert</string>
     <string name="sync_stopped">Von dir abgebrochen</string>
+    <string name="provider_note_spotify_bridge">Melde dich über die App Songport Bridge auf der Spotify-Seite an, ohne eine Entwickler-App anzulegen. Nutzt die Sitzung des Web-Players: kein offizieller Weg, verstößt gegen die Spotify-Bedingungen und kann aufhören zu funktionieren. Der offizielle Weg mit eigenem Schlüssel bleibt als \"Spotify\" verfügbar.</string>
+    <string name="provider_note_apple_bridge">Melde dich über die App Songport Bridge mit deiner Apple-ID an, ohne Apple Developer Program. Nutzt die Tokens des Web-Players: kein offizieller Weg, verstößt gegen die Apple-Bedingungen und kann aufhören zu funktionieren. Der offizielle Weg mit eigenem Entwickler-Token bleibt als \"Apple Music\" verfügbar.</string>
+    <string name="bridge_needed_hint">Installiere oder aktualisiere die Begleit-App \"Songport Bridge\" (1.2 oder neuer) von GitHub, komm dann hierher zurück und tippe auf Verbinden.</string>
     <string name="security_title">So werden deine Anmeldungen geschützt</string>
     <string name="security_fact_1">Passwörter werden auf den Seiten der Dienste selbst eingegeben, nie in Songport.</string>
     <string name="security_fact_2">Songport speichert nur widerrufbare Zugriffstoken, verschlüsselt mit dem Android Keystore.</string>

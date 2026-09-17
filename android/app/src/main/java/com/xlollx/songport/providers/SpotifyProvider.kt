@@ -27,7 +27,7 @@ import kotlinx.serialization.json.JsonElement
  * Nota: un'app in "Development mode" accetta al massimo 25 utenti registrati nella dashboard;
  * per un'app pubblica l'utente puo' inserire il PROPRIO client ID in Impostazioni > Avanzate.
  */
-class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
+open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val serviceId = SERVICE
     override val revokeUrl = "https://www.spotify.com/account/apps/"
     override val displayName = "Spotify"
@@ -36,7 +36,7 @@ class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
 
-    override val setupGuide = SetupGuide(
+    override val setupGuide: SetupGuide? = SetupGuide(
         dashboardUrl = "https://developer.spotify.com/dashboard",
         redirectUri = AuthFlow.REDIRECT_URI,
         stepUrls = listOf("https://developer.spotify.com/dashboard", "https://developer.spotify.com/dashboard/create", null, null, "https://developer.spotify.com/dashboard", "https://developer.spotify.com/dashboard"),

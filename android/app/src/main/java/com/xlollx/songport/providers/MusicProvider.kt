@@ -126,7 +126,9 @@ object Providers {
             extraAccounts[service].orEmpty().forEach { out += factory(it) }
         }
         add(SpotifyProvider.SERVICE) { SpotifyProvider(it) }
+        add(SpotifyBridgeProvider.SERVICE) { SpotifyBridgeProvider(it) }
         add(AppleMusicProvider.SERVICE) { AppleMusicProvider(it) }
+        add(AppleBridgeProvider.SERVICE) { AppleBridgeProvider(it) }
         add(YouTubeBridgeProvider.SERVICE) { YouTubeBridgeProvider(it) }
         add(YouTubeProvider.SERVICE) { YouTubeProvider(it) }
         add(AmazonBridgeProvider.SERVICE) { AmazonBridgeProvider(it) }
