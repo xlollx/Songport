@@ -41,7 +41,9 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     override val notConfiguredRes = R.string.ytm_not_installed_hint
     override val pluginBased = true
     // The web interface answers 403 to bursts of searches: one at a time, paced by the Bridge.
-    override val searchParallelism = 1
+    // Le ricerche passano dal Bridge come visitatore anonimo (Bridge 1.3.5+), con un ritmo suo per
+    // indirizzo: tre alla volta dimezzano abbondantemente i tempi senza toccare l'account.
+    override val searchParallelism = 3
 
     /** "Configured" here means the Bridge app is installed. */
     override fun isConfigured(ctx: Context): Boolean = installed(ctx)
