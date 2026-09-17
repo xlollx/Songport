@@ -71,6 +71,11 @@ object SyncState {
      */
     fun checkpoint(ctx: Context, jobId: String) {
         while (jobId in _paused.value && jobId !in stopRequested) Thread.sleep(250)
+        stopCheck(ctx, jobId)
+    }
+
+    /** Solo l'interruzione, senza attendere la pausa: per i passi che devono scorrere comunque. */
+    fun stopCheck(ctx: Context, jobId: String) {
         if (jobId in stopRequested) throw SyncStoppedException(ctx.getString(R.string.sync_stopped))
     }
 }
@@ -97,9 +102,11 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                     engine.run(job) { p ->
                         SyncState.progress(job.id, p)
                         if (!scheduled) updateProgress(job, p)
-                        // Pausa o stop chiesti dall'utente: qui, fra un passo e l'altro.
+                        // Pausa o stop chiesti dall'utente: qui, fra un passo e l'altro. L'attesa imposta
+                        // dal servizio e' tempo che deve passare comunque: in pausa il conto alla rovescia
+                        // continua, e' l'abbinamento che si ferma appena l'attesa finisce.
                         if (SyncState.isPaused(job.id) && !scheduled) updateProgress(job, p, paused = true)
-                        SyncState.checkpoint(ctx, job.id)
+                        if (p.step == Progress.Step.WAITING) SyncState.stopCheck(ctx, job.id) else SyncState.checkpoint(ctx, job.id)
                     }
                 } catch (e: kotlinx.coroutines.CancellationException) {
                     // Fermato dal sistema, non dall'utente: WorkManager riprende il lavoro da solo e la
