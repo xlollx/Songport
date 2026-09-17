@@ -24,6 +24,7 @@ French and German. License: GPL-3.0, see [LICENSE](LICENSE). Security reports: s
 ## Contents
 - [Features](#features)
 - [Supported services and their limits](#supported-services-and-their-limits)
+- [Connector plugins](#connector-plugins)
 - [How tracks are matched](#how-tracks-are-matched)
 - [How logins are protected](#how-logins-are-protected)
 - [Architecture](#architecture)
@@ -83,7 +84,7 @@ French and German. License: GPL-3.0, see [LICENSE](LICENSE). Security reports: s
 | Last.fm | read-only | username | `LASTFM_API_KEY` or a key entered by the user | Loved tracks only, source only. |
 | ListenBrainz | read-only | username | nothing | Playlists and loved tracks, source only. |
 | Files | complete | | | Import/export through the system file picker, or "Paste a list". |
-| Amazon Music, Qobuz, SoundCloud, Pandora | not connectable | | | Partner-only or closed-beta APIs. Use files. |
+| Qobuz, SoundCloud, Pandora | not connectable | | | Partner-only or closed-beta APIs. Use files. |
 
 Own credentials are entered from *Accounts → service card → Use your own credentials*: numbered
 steps, link to the developer portal, redirect URI to copy, verification with a real login.
@@ -95,7 +96,57 @@ authorisation (`auth/LoopbackServer.kt`).
 
 Apple Music works without a backend because Apple provides MusicKit JS: the app opens a WebView on a
 page served from its own assets (a real https origin through `WebViewAssetLoader`), MusicKit handles
-the Apple ID sign-in and returns the *music user token*. Amazon Music has no open equivalent.
+the Apple ID sign-in and returns the *music user token*. Amazon Music has no open equivalent, which is
+why it is offered through a connector plugin.
+
+## Connector plugins
+
+Some services have no open API, and on others the official route is heavy for a single user: a
+developer account to register, a paid program, a daily quota to share. For those, Songport defines an
+**open connector interface**: a separate app, a *plugin*, holds the sign-in to a service and answers
+Songport's requests for playlists and tracks.
+
+Songport never includes, downloads or installs a plugin. It discovers one that the user has already
+installed and then offers its services in the account picker, next to the official routes, which stay
+available and unchanged.
+
+### How discovery works
+
+A plugin declares an activity handling the intent action `com.xlollx.songport.action.CONNECTOR`, with
+a `<meta-data>` entry named `com.xlollx.songport.connector.authority` holding the authority of its
+`ContentProvider`. Songport queries that action (`providers/BridgePlugin.kt`), then calls the provider
+with `ContentResolver.call()`; each provider in `providers/*BridgeProvider.kt` maps those calls onto
+the usual `MusicProvider` interface, so the sync engine treats a plugin service like any other. The
+plugin must verify the caller's package name and signing certificate before answering.
+
+### Songport Bridge
+
+[**Songport Bridge**](https://github.com/xlollx/Songport-YTM-Bridge) is the reference plugin, by the
+same author, free and open source (GPL-3.0), distributed on GitHub only and never on Google Play.
+It adds:
+
+| Service | What it adds |
+|---------|--------------|
+| YouTube Music | playlists, liked songs, search and writing without a Google Cloud project and without quota |
+| Amazon Music | the only way to connect it: Amazon's Web API is a closed beta for approved partners |
+| Spotify | sign-in without registering a developer app |
+| Apple Music | sign-in without the Apple Developer Program |
+
+It works by using the same web interfaces the services' own players use. That is against those
+services' terms of use, it can stop working whenever a service changes something, and in the worst
+case a service could restrict the account signed in. The Bridge shows a disclaimer and asks for
+acceptance before the first sign-in. Passwords are typed only on the services' own pages and are never
+seen or stored; the Bridge keeps the session cookies encrypted on the phone and hands Songport only
+data or short-lived tokens.
+
+User-facing page: [xlollx.github.io/Songport/plugins](https://xlollx.github.io/Songport/plugins).
+
+### Two distributions of Songport
+
+The `play` flavor, the one published on Google Play, never names, links to or describes any plugin;
+plugin services appear only when a plugin is already installed, with generic wording. The `full`
+flavor, the APK on GitHub Releases, can point to where a plugin is available. See
+[Publishing on Google Play](#publishing-on-google-play).
 
 ## How tracks are matched
 
