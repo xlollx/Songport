@@ -258,6 +258,8 @@
     <string name="connector_name_label">Nom du connecteur</string>
     <string name="connector_rename">Renommer</string>
     <string name="connect_switch_account">Le navigateur est peut-être déjà connecté à un autre compte %1$s. Sur la page de connexion, choisissez « Ce n\'est pas vous ? » ou changez de compte, puis continuez avec le compte de ce connecteur.</string>
+    <string name="provider_note_amazon">Expérimental, via l\'application compagnon Songport Bridge. Amazon n\'a pas d\'API ouverte : le Bridge utilise l\'interface du lecteur web. La recherche et la lecture des playlists fonctionnent ; la liste de la bibliothèque et l\'écriture sont encore en cours.</string>
+    <string name="amazon_not_installed_hint">Installez ou mettez à jour l\'application compagnon \"Songport Bridge\" (1.1 ou plus récente) depuis GitHub, puis revenez ici et touchez Connecter.</string>
     <string name="security_title">Comment vos connexions sont protégées</string>
     <string name="security_fact_1">Les mots de passe sont saisis sur les pages des services eux-mêmes, jamais dans Songport.</string>
     <string name="security_fact_2">Songport ne conserve que des jetons d\'accès révocables, chiffrés avec l\'Android Keystore.</string>

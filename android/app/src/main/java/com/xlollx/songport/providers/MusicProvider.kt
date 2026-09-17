@@ -129,6 +129,7 @@ object Providers {
         add(AppleMusicProvider.SERVICE) { AppleMusicProvider(it) }
         add(YouTubeBridgeProvider.SERVICE) { YouTubeBridgeProvider(it) }
         add(YouTubeProvider.SERVICE) { YouTubeProvider(it) }
+        add(AmazonBridgeProvider.SERVICE) { AmazonBridgeProvider(it) }
         add(TidalProvider.SERVICE) { TidalProvider(it) }
         add(DeezerProvider.SERVICE) { DeezerProvider(it) }
         add(SubsonicProvider.SERVICE) { SubsonicProvider(it) }
