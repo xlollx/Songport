@@ -4,6 +4,7 @@ import android.content.Context
 import com.xlollx.songport.R
 import com.xlollx.songport.data.Diagnostics
 import com.xlollx.songport.data.Store
+import kotlinx.coroutines.sync.withPermit
 import com.xlollx.songport.model.MatchReview
 import com.xlollx.songport.model.Progress
 import com.xlollx.songport.model.ProviderException
@@ -217,6 +218,11 @@ class SyncEngine(private val ctx: Context) {
      * @return null se ha finito, altrimenti il motivo per cui si e' fermata prima (errore sistemico:
      * limiti di richieste, sessione scaduta). I brani non cercati non vengono consegnati.
      */
+    /** Un semaforo per servizio di destinazione, condiviso da tutte le istanze del motore nel processo. */
+    private companion object {
+        val searchSlots = java.util.concurrent.ConcurrentHashMap<String, kotlinx.coroutines.sync.Semaphore>()
+    }
+
     private suspend fun searchMissing(
         src: MusicProvider, dst: MusicProvider, toSearch: List<Track>,
         onProgress: (Progress) -> Unit, onResult: (Track, Track?, Double?) -> Unit,
@@ -228,6 +234,8 @@ class SyncEngine(private val ctx: Context) {
         var sinceWait = 0
         val chunks = toSearch.chunked(parallel)
         var ci = 0
+        val startedAt = System.currentTimeMillis()
+        var searched = 0
         // Ricerche finite senza esito in questa esecuzione: ricordate, cosi' una ripresa o il giro di
         // domani non le ripetono (le "non trovate" altrimenti si ricercavano ogni volta).
         val misses = ArrayList<String>()
@@ -248,7 +256,10 @@ class SyncEngine(private val ctx: Context) {
                             // Cercato da poco senza esito: resta "non trovato" senza interrogare il servizio.
                             Result.success<Pair<Track?, Double?>>(null to MISS_SCORE)
                         } else {
-                            runCatching { Matcher.bestScored(s, dst.search(ctx, s)) }.map { it?.track to it?.score }
+                            // Slot condivisi fra le sync in corso verso lo stesso servizio: due sync insieme
+                            // non raddoppiano la pressione, se la dividono.
+                            val slots = searchSlots.getOrPut(dst.id) { kotlinx.coroutines.sync.Semaphore(parallel) }
+                            slots.withPermit { runCatching { Matcher.bestScored(s, dst.search(ctx, s)) }.map { it?.track to it?.score } }
                         }
                     }
                 }.awaitAll()
@@ -258,6 +269,7 @@ class SyncEngine(private val ctx: Context) {
             val throttled = results.firstNotNullOfOrNull { r -> (r.exceptionOrNull() as? ProviderException)?.takeIf { isThrottle(it.message) } }
             if (throttled != null && waits < WAIT_SECONDS.size) {
                 val seconds = WAIT_SECONDS[waits++]
+                Diagnostics.log(ctx, "engine", "${dst.displayName} is throttling: ${throttled.message?.take(200)}; waiting ${seconds}s")
                 sinceWait = 0
                 for (s in 1..seconds) {
                     onProgress(Progress(Progress.Step.WAITING, s, seconds))
@@ -289,6 +301,7 @@ class SyncEngine(private val ctx: Context) {
                 } else {
                     consecutiveErrors = 0
                     val (found, score) = r.getOrThrow()
+                    if (score != MISS_SCORE && store.cachedMatch(src.id, s.id, dst.id) == null) searched++
                     if (found == null && score != MISS_SCORE) misses += Store.cacheKey(src.id, s.id, dst.id)
                     if (misses.size >= 50) saveMisses()
                     onResult(s, found, if (score == MISS_SCORE) null else score)
@@ -296,6 +309,10 @@ class SyncEngine(private val ctx: Context) {
             }
         }
         saveMisses()
+        if (searched > 0) {
+            val secs = (System.currentTimeMillis() - startedAt) / 1000
+            Diagnostics.log(ctx, "engine", "${dst.displayName}: $searched searches in ${secs}s (${if (searched > 0) secs * 1000 / searched else 0} ms each), $waits waits")
+        }
         return null
     }
 
