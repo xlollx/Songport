@@ -39,6 +39,8 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     override val revokeUrl = "https://myaccount.google.com/device-activity"
     override val installUrl = INSTALL_URL
     override val notConfiguredRes = R.string.ytm_not_installed_hint
+    // The web interface answers 403 to bursts of searches: one at a time, paced by the Bridge.
+    override val searchParallelism = 1
 
     /** "Configured" here means the Bridge app is installed. */
     override fun isConfigured(ctx: Context): Boolean = installed(ctx)

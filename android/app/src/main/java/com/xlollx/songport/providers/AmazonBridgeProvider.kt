@@ -34,6 +34,7 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     override val authDomain = "amazon.com"
     override val installUrl = YouTubeBridgeProvider.INSTALL_URL
     override val notConfiguredRes = R.string.amazon_not_installed_hint
+    override val searchParallelism = 1
 
     /** "Configured" means a Bridge new enough to know Amazon Music is installed. */
     override fun isConfigured(ctx: Context): Boolean =

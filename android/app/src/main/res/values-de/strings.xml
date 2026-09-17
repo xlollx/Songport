@@ -136,6 +136,7 @@
     <string name="link_not_connected">Verbinde zuerst %1$s, um diesen Link zu lesen.</string>
     <string name="link_resolving">Playlist wird gelesen…</string>
     <string name="note_no_removals">%1$s erlaubt über seine API kein Entfernen von Titeln aus einer Playlist: %2$d Titel wurden belassen.</string>
+    <string name="note_search_interrupted">Suche nach %1$d von %2$d Titeln abgebrochen (%3$s). Das Gefundene wurde übernommen und gemerkt: Starte den Sync später erneut, um fortzufahren.</string>
     <string name="error_no_removals">%1$s kann keine Titel aus einer Playlist entfernen</string>
     <string name="log_notes_title">Hinweise</string>
     <string name="editor_mirror_unsupported">%1$s kann Titel nur hinzufügen: Entfernungen werden übersprungen.</string>

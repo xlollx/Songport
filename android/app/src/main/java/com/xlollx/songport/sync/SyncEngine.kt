@@ -113,14 +113,21 @@ class SyncEngine(private val ctx: Context) {
         val toAdd = LinkedHashMap<String, Track>()
         val unmatched = ArrayList<Track>()
         val uncertain = ArrayList<MatchReview>()
-        searchMissing(src, dst, toSearch, onProgress) { s, found, score ->
+        var searched = 0
+        val interrupted = searchMissing(src, dst, toSearch, onProgress) { s, found, score ->
+            searched++
             if (found != null) {
                 if (found.id !in matchedDstIds) toAdd[found.id] = found
                 matchedDstIds += found.id
                 newCache[Store.cacheKey(src.id, s.id, dst.id)] = found.id
                 if (score != null && score < Matcher.REVIEW_THRESHOLD) uncertain += MatchReview(s, found, score)
+                // Salvataggio progressivo: un errore a meta' strada non butta via le ricerche fatte.
+                if (newCache.size % 100 == 0) store.putMatches(newCache)
             } else unmatched += s
         }
+        // Il servizio ha smesso di rispondere (limiti, sessione): si applica quanto trovato finora e
+        // la prossima esecuzione riparte dalla cache, senza rifare le ricerche.
+        if (interrupted != null) notes += ctx.getString(R.string.note_search_interrupted, searched, toSearch.size, interrupted)
 
         // 3) rimozioni: solo cio' che nella destinazione non corrisponde a nulla dell'origine
         var toRemove: List<Track> = emptyList()
@@ -177,15 +184,18 @@ class SyncEngine(private val ctx: Context) {
     }
 
     /**
-     * Cerca sulla destinazione i brani mancanti, usando la cache quando c'e'. Le ricerche vanno a
-     * gruppi di quattro in parallelo (una playlist da 2000 brani altrimenti dura ore); i risultati
+     * Cerca sulla destinazione i brani mancanti, usando la cache quando c'e'. Le ricerche vanno in
+     * parallelo dove il servizio lo tollera (vedi [MusicProvider.searchParallelism]); i risultati
      * sono consegnati nell'ordine di origine.
+     *
+     * @return null se ha finito, altrimenti il motivo per cui si e' fermata prima (errore sistemico:
+     * limiti di richieste, sessione scaduta). I brani non cercati non vengono consegnati.
      */
     private suspend fun searchMissing(
         src: MusicProvider, dst: MusicProvider, toSearch: List<Track>,
         onProgress: (Progress) -> Unit, onResult: (Track, Track?, Double?) -> Unit,
-    ) {
-        val parallel = 4
+    ): String? {
+        val parallel = dst.searchParallelism.coerceIn(1, 8)
         var consecutiveErrors = 0
         var done = 0
         for (chunk in toSearch.chunked(parallel)) {
@@ -212,8 +222,14 @@ class SyncEngine(private val ctx: Context) {
                     if (e !is ProviderException) throw e
                     consecutiveErrors++
                     val msg = e.message ?: ""
-                    // Errori sistemici (quota, sessione scaduta): inutile insistere.
-                    if (consecutiveErrors >= 3 || msg.contains("quota", true) || msg.contains("reconnect", true)) throw e
+                    // Errori sistemici (quota, limiti, sessione scaduta): inutile insistere. Se non e'
+                    // stato trovato ancora nulla l'errore e' dell'intera sync; altrimenti ci si ferma qui.
+                    val systemic = consecutiveErrors >= 3 || msg.contains("quota", true) || msg.contains("reconnect", true) ||
+                        msg.contains("sign in again", true) || msg.contains("403") || msg.contains("429")
+                    if (systemic) {
+                        if (done - chunk.size + i <= 0) throw e
+                        return msg
+                    }
                     onResult(s, null, null)
                 } else {
                     consecutiveErrors = 0
@@ -222,6 +238,7 @@ class SyncEngine(private val ctx: Context) {
                 }
             }
         }
+        return null
     }
 
     /** Applica un piano: aggiunte, rimozioni, cache e report. */

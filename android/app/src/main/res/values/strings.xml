@@ -136,6 +136,7 @@
     <string name="link_not_connected">Connect %1$s first to read this link.</string>
     <string name="link_resolving">Reading the playlist…</string>
     <string name="note_no_removals">%1$s does not allow removing tracks from a playlist via its API: %2$d tracks were left in place.</string>
+    <string name="note_search_interrupted">Search stopped after %1$d of %2$d tracks (%3$s). What was found has been applied and remembered: run the sync again later to continue.</string>
     <string name="error_no_removals">%1$s cannot remove tracks from a playlist</string>
     <string name="log_notes_title">Notes</string>
     <string name="editor_mirror_unsupported">%1$s can only add tracks: removals will be skipped.</string>

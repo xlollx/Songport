@@ -136,6 +136,7 @@
     <string name="link_not_connected">Collega prima %1$s per leggere questo link.</string>
     <string name="link_resolving">Lettura della playlist…</string>
     <string name="note_no_removals">%1$s non permette di togliere brani da una playlist tramite API: %2$d brani sono rimasti al loro posto.</string>
+    <string name="note_search_interrupted">Ricerca fermata dopo %1$d brani su %2$d (%3$s). Quanto trovato è stato applicato e memorizzato: rilancia la sync più tardi per continuare.</string>
     <string name="error_no_removals">%1$s non può rimuovere brani da una playlist</string>
     <string name="log_notes_title">Note</string>
     <string name="editor_mirror_unsupported">%1$s può solo aggiungere brani: le rimozioni verranno saltate.</string>

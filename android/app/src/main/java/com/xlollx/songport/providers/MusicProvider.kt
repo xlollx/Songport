@@ -54,6 +54,8 @@ interface MusicProvider {
     val installUrl: String? get() = null
     /** Testo mostrato al posto del generico "serve una chiave" quando il servizio non e' configurato. */
     val notConfiguredRes: Int? get() = null
+    /** Ricerche in parallelo tollerate dal servizio (1 per le interfacce web non ufficiali, che bloccano le raffiche). */
+    val searchParallelism: Int get() = 4
 
     /** True se questa build (o le impostazioni utente) hanno le credenziali per il servizio. */
     fun isConfigured(ctx: Context): Boolean

@@ -136,6 +136,7 @@
     <string name="link_not_connected">Connectez d\'abord %1$s pour lire ce lien.</string>
     <string name="link_resolving">Lecture de la playlist…</string>
     <string name="note_no_removals">%1$s ne permet pas de retirer des titres d\'une playlist via son API : %2$d titres ont été laissés en place.</string>
+    <string name="note_search_interrupted">Recherche arrêtée après %1$d titres sur %2$d (%3$s). Ce qui a été trouvé a été appliqué et mémorisé : relancez la sync plus tard pour continuer.</string>
     <string name="error_no_removals">%1$s ne peut pas retirer de titres d\'une playlist</string>
     <string name="log_notes_title">Remarques</string>
     <string name="editor_mirror_unsupported">%1$s ne peut qu\'ajouter des titres : les retraits seront ignorés.</string>
