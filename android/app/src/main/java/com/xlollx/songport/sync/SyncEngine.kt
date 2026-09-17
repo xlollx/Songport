@@ -337,6 +337,7 @@ class SyncEngine(private val ctx: Context) {
      */
     private suspend fun <T> patient(onProgress: (Progress) -> Unit, block: suspend () -> T): T {
         var blockWaits = 0
+        var networkRetries = 0
         while (true) {
             try {
                 return block()
@@ -344,12 +345,29 @@ class SyncEngine(private val ctx: Context) {
                 throw e
             } catch (e: Exception) {
                 val asked = declaredWait(e.message)
-                if (asked == null || blockWaits >= MAX_BLOCK_WAITS) throw e
-                blockWaits++
-                Diagnostics.log(ctx, "engine", "blocked: ${e.message?.take(160)}; waiting ${asked}s")
-                waitVisible(asked, onProgress)
+                when {
+                    asked != null && blockWaits < MAX_BLOCK_WAITS -> {
+                        blockWaits++
+                        Diagnostics.log(ctx, "engine", "blocked: ${e.message?.take(160)}; waiting ${asked}s")
+                        waitVisible(asked, onProgress)
+                    }
+                    // Rete assente per un attimo (cambio Wi-Fi/dati): non e' il servizio, si riprova.
+                    isTransientNetwork(e.message) && networkRetries < 3 -> {
+                        networkRetries++
+                        Diagnostics.log(ctx, "engine", "network hiccup: ${e.message?.take(120)}; retrying in 5s")
+                        waitVisible(5, onProgress)
+                    }
+                    else -> throw e
+                }
             }
         }
+    }
+
+    /** Errori di trasporto che passano da soli: risoluzione del nome, connessione rifiutata o caduta, timeout. */
+    private fun isTransientNetwork(msg: String?): Boolean {
+        val m = msg ?: return false
+        return m.contains("Unable to resolve host", true) || m.contains("unreachable", true) || m.contains("Failed to connect", true) ||
+            m.contains("timeout", true) || m.contains("timed out", true) || m.contains("connection abort", true) || m.contains("reset by peer", true)
     }
 
     /** Secondi di attesa dichiarati dal servizio ("Retry in N s"), entro limiti ragionevoli; null se non li dichiara. */
