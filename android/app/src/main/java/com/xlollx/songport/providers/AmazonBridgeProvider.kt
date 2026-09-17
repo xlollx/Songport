@@ -78,14 +78,23 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return
         withContext(Dispatchers.IO) {
-            call(ctx, "amazon.add", playlistId, Bundle().apply { putStringArray("ids", tracks.map { it.id }.toTypedArray()) })
+            // One web call per track: keep the batches small so a failure is reported precisely.
+            tracks.chunked(25).forEach { chunk ->
+                call(ctx, "amazon.add", playlistId, Bundle().apply {
+                    putStringArray("ids", chunk.map { it.id }.toTypedArray())
+                    putStringArray("titles", chunk.map { it.title }.toTypedArray())
+                })
+            }
         }
     }
 
     override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return
         withContext(Dispatchers.IO) {
-            call(ctx, "amazon.remove", playlistId, Bundle().apply { putStringArray("ids", tracks.map { it.id }.toTypedArray()) })
+            call(ctx, "amazon.remove", playlistId, Bundle().apply {
+                putStringArray("ids", tracks.map { it.id }.toTypedArray())
+                putStringArray("entryIds", tracks.map { it.itemId ?: "" }.toTypedArray())
+            })
         }
     }
 
@@ -97,6 +106,7 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
             artists = j["artists"].arr.mapNotNull { it.str },
             album = j["album"].str ?: "",
             durationMs = j["durationMs"].long ?: 0,
+            itemId = j["setVideoId"].str,
         )
     }
 
