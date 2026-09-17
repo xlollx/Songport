@@ -51,6 +51,8 @@ data class StoreData(
     val reports: List<SyncReport> = emptyList(),
     /** Cache abbinamenti: "srcProvider:trackId>dstProvider" -> id brano sulla destinazione. */
     val matchCache: Map<String, String> = emptyMap(),
+    /** Ricerche senza esito, stessa chiave -> quando (epoch ms): non si ripetono per una settimana. */
+    val missCache: Map<String, Long> = emptyMap(),
     val settings: Settings = Settings(),
     /** Quota API stimata per servizio (oggi YouTube). */
     val quota: Map<String, QuotaDay> = emptyMap(),
@@ -158,7 +160,24 @@ class Store private constructor(context: Context) {
         update { d ->
             var cache = d.matchCache + entries
             if (cache.size > MAX_CACHE) cache = cache.entries.drop(cache.size - MAX_CACHE).associate { it.key to it.value }
-            d.copy(matchCache = cache)
+            // Un abbinamento trovato (o scelto a mano) cancella il ricordo della ricerca fallita.
+            d.copy(matchCache = cache, missCache = d.missCache - entries.keys)
+        }
+    }
+
+    /** True se questa ricerca e' fallita da poco: inutile ripeterla a ogni esecuzione o ripresa. */
+    fun cachedMiss(srcProvider: String, srcTrackId: String, dstProvider: String): Boolean {
+        val at = data.missCache[cacheKey(srcProvider, srcTrackId, dstProvider)] ?: return false
+        return System.currentTimeMillis() - at < MISS_TTL_MS
+    }
+
+    fun putMisses(keys: Collection<String>) {
+        if (keys.isEmpty()) return
+        val now = System.currentTimeMillis()
+        update { d ->
+            var cache = d.missCache.filterValues { now - it < MISS_TTL_MS } + keys.associateWith { now }
+            if (cache.size > MAX_CACHE) cache = cache.entries.drop(cache.size - MAX_CACHE).associate { it.key to it.value }
+            d.copy(missCache = cache)
         }
     }
 
@@ -166,6 +185,8 @@ class Store private constructor(context: Context) {
         private const val MAX_REPORTS = 200
         private const val WRITE_DELAY_MS = 500L
         private const val MAX_CACHE = 20_000
+        /** Una ricerca fallita si ripete dopo una settimana: i cataloghi cambiano, ma non ogni giorno. */
+        private const val MISS_TTL_MS = 7L * 24 * 3_600_000
 
         fun cacheKey(srcProvider: String, srcTrackId: String, dstProvider: String) = "$srcProvider:$srcTrackId>$dstProvider"
 

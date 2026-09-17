@@ -38,6 +38,8 @@ import java.util.UUID
  */
 private val WAIT_SECONDS = intArrayOf(10, 20, 40, 60, 120)
 private const val RESET_AFTER_CHUNKS = 15
+/** Punteggio fittizio di un "non trovato" preso dalla cache dei fallimenti, mai mostrato. */
+private const val MISS_SCORE = -1.0
 
 class SyncEngine(private val ctx: Context) {
     private val store = Store.get(ctx)
@@ -226,6 +228,10 @@ class SyncEngine(private val ctx: Context) {
         var sinceWait = 0
         val chunks = toSearch.chunked(parallel)
         var ci = 0
+        // Ricerche finite senza esito in questa esecuzione: ricordate, cosi' una ripresa o il giro di
+        // domani non le ripetono (le "non trovate" altrimenti si ricercavano ogni volta).
+        val misses = ArrayList<String>()
+        fun saveMisses() { store.putMisses(misses); misses.clear() }
         while (ci < chunks.size) {
             val chunk = chunks[ci]
             // Cosa si sta cercando adesso: la scheda e la notifica lo mostrano, cosi' non sembra fermo.
@@ -238,6 +244,9 @@ class SyncEngine(private val ctx: Context) {
                         if (cached != null) {
                             // Abbinato in passato (o confermato a mano): lo aggiungiamo senza ripetere la ricerca.
                             Result.success<Pair<Track?, Double?>>(dst.rehydrate(s.copy(id = cached, uri = null, itemId = null)) to null)
+                        } else if (store.cachedMiss(src.id, s.id, dst.id)) {
+                            // Cercato da poco senza esito: resta "non trovato" senza interrogare il servizio.
+                            Result.success<Pair<Track?, Double?>>(null to MISS_SCORE)
                         } else {
                             runCatching { Matcher.bestScored(s, dst.search(ctx, s)) }.map { it?.track to it?.score }
                         }
@@ -272,6 +281,7 @@ class SyncEngine(private val ctx: Context) {
                     val systemic = consecutiveErrors >= 3 || msg.contains("quota", true) || msg.contains("reconnect", true) ||
                         msg.contains("sign in again", true) || isThrottle(msg)
                     if (systemic) {
+                        saveMisses()
                         if (done - chunk.size + i <= 0) throw e
                         return msg
                     }
@@ -279,10 +289,13 @@ class SyncEngine(private val ctx: Context) {
                 } else {
                     consecutiveErrors = 0
                     val (found, score) = r.getOrThrow()
-                    onResult(s, found, score)
+                    if (found == null && score != MISS_SCORE) misses += Store.cacheKey(src.id, s.id, dst.id)
+                    if (misses.size >= 50) saveMisses()
+                    onResult(s, found, if (score == MISS_SCORE) null else score)
                 }
             }
         }
+        saveMisses()
         return null
     }
 

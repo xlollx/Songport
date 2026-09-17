@@ -56,7 +56,7 @@ object Diagnostics {
         val leftovers = Providers.all().filter { p -> p.requiresAuth && connectors.none { it.id == p.id } && runCatching { p.isConnected(ctx) }.getOrDefault(false) }
         if (leftovers.isNotEmpty()) sb.appendLine("  leftover sessions: ${leftovers.joinToString { it.id }}")
         sb.appendLine()
-        sb.appendLine("Syncs: ${data.jobs.size} · match cache: ${data.matchCache.size}")
+        sb.appendLine("Syncs: ${data.jobs.size} · match cache: ${data.matchCache.size} · miss cache: ${data.missCache.size}")
         data.jobs.forEach { j ->
             sb.appendLine("  ${j.name}: ${j.source.provider} -> ${j.target.provider}, ${j.schedule}, mirror=${j.mirrorRemovals}, on=${j.enabled}")
         }
