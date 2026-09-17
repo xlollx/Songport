@@ -261,6 +261,23 @@ PY
 
 ## Publishing on Google Play
 
+### Two distributions: `play` and `full`
+
+The app has two product flavors of the same code:
+
+- **`play`** is what goes to Google Play. It never names, links to or describes any companion app.
+  Services that rely on a *connector plugin* (an app installed separately that implements Songport's
+  open connector interface, discovered through the intent action `com.xlollx.songport.action.CONNECTOR`)
+  are offered only when such a plugin is already installed, with generic wording, and are otherwise
+  absent from the service picker. Songport itself only ever calls official APIs and local files, so the
+  Play review sees exactly that. The AAB in the CI artifacts and in every release (`Songport-vX-play.aab`)
+  is this flavor: upload only that to the Play Console.
+- **`full`** is the direct-download build on GitHub Releases (`Songport-vX.apk`). It can point to where a
+  plugin is available and recognises older plugin versions by package name.
+
+Keep the Play listing consistent with the `play` flavor: describe official-API services and file
+import/export only; do not mention plugins or companion apps there.
+
 1. Upload key (never in the repository):
    ```bash
    keytool -genkeypair -v -keystore upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000

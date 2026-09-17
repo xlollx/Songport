@@ -32,26 +32,28 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     override val noteRes = R.string.provider_note_amazon
     override val supportsMultipleAccounts = false
     override val authDomain = "amazon.com"
-    override val installUrl = YouTubeBridgeProvider.INSTALL_URL
+    override val installUrl = BridgePlugin.installUrl
     override val notConfiguredRes = R.string.amazon_not_installed_hint
     override val searchParallelism = 1
+    override val pluginBased = true
 
     /** "Configured" means a Bridge new enough to know Amazon Music is installed. */
     override fun isConfigured(ctx: Context): Boolean =
-        YouTubeBridgeProvider.installed(ctx) && runCatching { call(ctx, "amazon.status").containsKey("connected") }.getOrDefault(false)
+        BridgePlugin.installed(ctx) && runCatching { call(ctx, "amazon.status").containsKey("connected") }.getOrDefault(false)
 
     override fun isConnected(ctx: Context): Boolean =
-        YouTubeBridgeProvider.installed(ctx) && runCatching { call(ctx, "amazon.status").getBoolean("connected", false) }.getOrDefault(false)
+        BridgePlugin.installed(ctx) && runCatching { call(ctx, "amazon.status").getBoolean("connected", false) }.getOrDefault(false)
 
     override fun accountName(ctx: Context): String? =
         runCatching { call(ctx, "amazon.status").getString("account") }.getOrNull()
 
     override fun startAuth(ctx: Context) {
-        if (!YouTubeBridgeProvider.installed(ctx)) {
-            ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(installUrl)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        val pkg = BridgePlugin.packageName(ctx)
+        if (pkg == null) {
+            installUrl?.let { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
             return
         }
-        ctx.startActivity(Intent(LOGIN_ACTION).setPackage(YouTubeBridgeProvider.PACKAGE).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        ctx.startActivity(Intent(LOGIN_ACTION).setPackage(pkg).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
@@ -114,9 +116,9 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
         withContext(Dispatchers.IO) { map(parseJson(call(ctx, method, arg, extras).getString("json") ?: "")) }
 
     private fun call(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
-        if (!YouTubeBridgeProvider.installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))
+        if (!BridgePlugin.installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))
         val b = try {
-            ctx.contentResolver.call(AUTHORITY, method, arg, extras)
+            ctx.contentResolver.call(BridgePlugin.authority(ctx), method, arg, extras)
         } catch (e: Exception) {
             throw ProviderException("Songport Bridge: ${e.message ?: e.javaClass.simpleName}")
         } ?: throw ProviderException("Songport Bridge: no answer")
@@ -127,6 +129,5 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     companion object {
         const val SERVICE = "amazon"
         const val LOGIN_ACTION = "com.xlollx.songport.ytmbridge.AMAZON_LOGIN"
-        private val AUTHORITY: Uri = Uri.parse("content://com.xlollx.songport.ytmbridge.provider")
     }
 }

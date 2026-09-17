@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="provider_note_ytm">YouTube Music über ein Connector-Plugin, eine separat installierte App, die Songports offene Connector-Schnittstelle umsetzt. Songport enthält, lädt oder installiert keine Plugins; es nutzt eines nur, wenn du es schon hast.</string>
+    <string name="ytm_not_installed_hint">Dieser Dienst braucht eine Connector-Plugin-App, die nicht installiert ist. Songport enthält oder lädt keine Plugins.</string>
+    <string name="ytm_not_installed">Das Connector-Plugin ist nicht installiert.</string>
+    <string name="ytm_install">Plugin erforderlich</string>
+    <string name="provider_note_amazon">Amazon Music über ein Connector-Plugin, eine separat installierte App, die Songports offene Connector-Schnittstelle umsetzt. Playlists, Suche, Erstellen, Hinzufügen und Entfernen übernimmt das Plugin.</string>
+    <string name="amazon_not_installed_hint">Dieser Dienst braucht eine Connector-Plugin-App, die nicht installiert ist. Songport enthält oder lädt keine Plugins.</string>
+    <string name="provider_note_spotify_bridge">Spotify über ein Connector-Plugin, das die Spotify-Anmeldung hält; eine Alternative zum offiziellen Weg mit eigenem Entwicklerschlüssel, der als \"Spotify\" verfügbar bleibt.</string>
+    <string name="provider_note_apple_bridge">Apple Music über ein Connector-Plugin, das die Anmeldung mit der Apple-ID hält; eine Alternative zum offiziellen Weg mit eigenem Entwickler-Token, der als \"Apple Music\" verfügbar bleibt.</string>
+    <string name="bridge_needed_hint">Dieser Dienst braucht eine Connector-Plugin-App, die nicht installiert ist. Songport enthält oder lädt keine Plugins.</string>
+</resources>

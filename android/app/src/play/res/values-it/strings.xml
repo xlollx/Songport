@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="provider_note_ytm">YouTube Music tramite un plugin connettore, un\'app installata a parte che implementa l\'interfaccia aperta dei connettori di Songport. Songport non include, scarica né installa plugin: ne usa uno solo se lo hai già.</string>
+    <string name="ytm_not_installed_hint">Questo servizio richiede un\'app plugin connettore che non è installata. Songport non include né scarica plugin.</string>
+    <string name="ytm_not_installed">Il plugin connettore non è installato.</string>
+    <string name="ytm_install">Plugin richiesto</string>
+    <string name="provider_note_amazon">Amazon Music tramite un plugin connettore, un\'app installata a parte che implementa l\'interfaccia aperta dei connettori di Songport. Playlist, ricerca, creazione, aggiunta e rimozione sono gestite dal plugin.</string>
+    <string name="amazon_not_installed_hint">Questo servizio richiede un\'app plugin connettore che non è installata. Songport non include né scarica plugin.</string>
+    <string name="provider_note_spotify_bridge">Spotify tramite un plugin connettore che custodisce l\'accesso a Spotify; un\'alternativa alla via ufficiale con la tua chiave da sviluppatore, che resta disponibile come \"Spotify\".</string>
+    <string name="provider_note_apple_bridge">Apple Music tramite un plugin connettore che custodisce l\'accesso con ID Apple; un\'alternativa alla via ufficiale con il tuo developer token, che resta disponibile come \"Apple Music\".</string>
+    <string name="bridge_needed_hint">Questo servizio richiede un\'app plugin connettore che non è installata. Songport non include né scarica plugin.</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Google Play build: plugin-based services are described generically, with no name and no link. -->
+<resources>
+    <string name="provider_note_ytm">YouTube Music through a connector plugin, an app installed separately that implements Songport\'s open connector interface. Songport does not include, download or install plugins; it uses one only if you already have it.</string>
+    <string name="ytm_not_installed_hint">This service needs a connector plugin app that is not installed. Songport does not include or download plugins.</string>
+    <string name="ytm_not_installed">The connector plugin is not installed.</string>
+    <string name="ytm_install">Plugin required</string>
+    <string name="provider_note_amazon">Amazon Music through a connector plugin, an app installed separately that implements Songport\'s open connector interface. Playlists, search, create, add and remove are supported by the plugin.</string>
+    <string name="amazon_not_installed_hint">This service needs a connector plugin app that is not installed. Songport does not include or download plugins.</string>
+    <string name="provider_note_spotify_bridge">Spotify through a connector plugin that holds the Spotify sign-in; an alternative to the official route with your own developer key, which stays available as \"Spotify\".</string>
+    <string name="provider_note_apple_bridge">Apple Music through a connector plugin that holds the Apple ID sign-in; an alternative to the official route with your own developer token, which stays available as \"Apple Music\".</string>
+    <string name="bridge_needed_hint">This service needs a connector plugin app that is not installed. Songport does not include or download plugins.</string>
+</resources>

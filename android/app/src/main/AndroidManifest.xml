@@ -18,8 +18,10 @@
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https" />
         </intent>
-        <!-- L'app compagna facoltativa per YouTube Music (Songport YTM Bridge). -->
-        <package android:name="com.xlollx.songport.ytmbridge" />
+        <!-- Connector plugins: apps implementing Songport's open connector interface advertise this action. -->
+        <intent>
+            <action android:name="com.xlollx.songport.action.CONNECTOR" />
+        </intent>
     </queries>
 
     <application

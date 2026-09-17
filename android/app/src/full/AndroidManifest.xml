@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Direct-download build only: also recognise plugin versions that predate the discovery action. -->
+    <queries>
+        <package android:name="com.xlollx.songport.ytmbridge" />
+    </queries>
+</manifest>

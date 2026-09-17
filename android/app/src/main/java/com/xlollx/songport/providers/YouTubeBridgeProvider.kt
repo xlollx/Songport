@@ -37,8 +37,9 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     override val supportsMultipleAccounts = false
     override val authDomain = "accounts.google.com"
     override val revokeUrl = "https://myaccount.google.com/device-activity"
-    override val installUrl = INSTALL_URL
+    override val installUrl = BridgePlugin.installUrl
     override val notConfiguredRes = R.string.ytm_not_installed_hint
+    override val pluginBased = true
     // The web interface answers 403 to bursts of searches: one at a time, paced by the Bridge.
     override val searchParallelism = 1
 
@@ -52,11 +53,12 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         runCatching { call(ctx, "status").getString("account") }.getOrNull()
 
     override fun startAuth(ctx: Context) {
-        if (!installed(ctx)) {
-            ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(INSTALL_URL)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        val pkg = BridgePlugin.packageName(ctx)
+        if (pkg == null) {
+            installUrl?.let { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
             return
         }
-        ctx.startActivity(Intent(LOGIN_ACTION).setPackage(PACKAGE).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        ctx.startActivity(Intent(LOGIN_ACTION).setPackage(pkg).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
@@ -130,7 +132,7 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     private fun call(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
         if (!installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))
         val b = try {
-            ctx.contentResolver.call(AUTHORITY, method, arg, extras)
+            ctx.contentResolver.call(BridgePlugin.authority(ctx), method, arg, extras)
         } catch (e: Exception) {
             throw ProviderException("YouTube Music Bridge: ${e.message ?: e.javaClass.simpleName}")
         } ?: throw ProviderException("YouTube Music Bridge: no answer")
@@ -144,13 +146,6 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         const val SERVICE = "ytm"
         const val PACKAGE = "com.xlollx.songport.ytmbridge"
         const val LOGIN_ACTION = "com.xlollx.songport.ytmbridge.LOGIN"
-        const val INSTALL_URL = "https://github.com/xlollx/Songport-YTM-Bridge/releases/latest"
-        private val AUTHORITY: Uri = Uri.parse("content://com.xlollx.songport.ytmbridge.provider")
-
-        fun installed(ctx: Context): Boolean = try {
-            ctx.packageManager.getPackageInfo(PACKAGE, 0); true
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
+        fun installed(ctx: Context): Boolean = BridgePlugin.installed(ctx)
     }
 }

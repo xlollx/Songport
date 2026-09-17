@@ -87,6 +87,8 @@ Music & Audio
 - Privacy policy: URL of the published `docs/privacy-policy.md`.
 
 ## Release checklist
+- [ ] Upload the **`play` flavor** AAB only (`Songport-vX-play.aab` in the GitHub Release, or the `Songport-release-aab` artifact). The `full` APK is for GitHub, never for Play.
+- [ ] Listing text mentions official-API services and file import/export only: no companion apps, plugins or links to them
 - [ ] `versionCode`/`versionName` bumped in `android/app/build.gradle`
 - [ ] GitHub variables: `ADMOB_APP_ID`, `ADMOB_BANNER_ID`, `PRIVACY_POLICY_URL`, `KOFI_URL`. Service keys (`SPOTIFY_CLIENT_ID`, `GOOGLE_CLIENT_ID`, `TIDAL_CLIENT_ID`, `DEEZER_APP_ID`, `LASTFM_API_KEY`) are optional: users create their own in the app
 - [ ] Optional: GitHub secret `APPLE_DEVELOPER_TOKEN` (MusicKit JWT), to regenerate within 6 months; without it users paste their own token

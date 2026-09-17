@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import com.xlollx.songport.BuildConfig
 import com.xlollx.songport.R
 import com.xlollx.songport.model.ProviderException
 
@@ -18,11 +19,12 @@ import com.xlollx.songport.model.ProviderException
  */
 class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     override val serviceId = SERVICE
-    override val displayName = "Apple Music (Bridge)"
+    override val displayName = if (BuildConfig.PLUGIN_LINKS) "Apple Music (Bridge)" else "Apple Music (plugin)"
     override val noteRes = R.string.provider_note_apple_bridge
     override val supportsMultipleAccounts = false
+    override val pluginBased = true
     override val setupGuide: SetupGuide? = null
-    override val installUrl = YouTubeBridgeProvider.INSTALL_URL
+    override val installUrl = BridgePlugin.installUrl
     override val notConfiguredRes = R.string.bridge_needed_hint
 
     // Tokens come from the Bridge; cached briefly so a playlist listing does not call it per request.
@@ -42,27 +44,28 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     override fun storefront(ctx: Context): String = runCatching { tokens(ctx).getString("storefront") }.getOrNull() ?: super.storefront(ctx)
 
     override fun isConfigured(ctx: Context): Boolean =
-        YouTubeBridgeProvider.installed(ctx) && runCatching { call(ctx, "apple.status").containsKey("connected") }.getOrDefault(false)
+        BridgePlugin.installed(ctx) && runCatching { call(ctx, "apple.status").containsKey("connected") }.getOrDefault(false)
     override fun isConnected(ctx: Context): Boolean =
-        YouTubeBridgeProvider.installed(ctx) && runCatching { call(ctx, "apple.status").getBoolean("connected", false) }.getOrDefault(false)
+        BridgePlugin.installed(ctx) && runCatching { call(ctx, "apple.status").getBoolean("connected", false) }.getOrDefault(false)
     override fun accountName(ctx: Context): String? = runCatching { call(ctx, "apple.status").getString("account") }.getOrNull()
     override fun canRead(ctx: Context, playlistId: String): Boolean = isConnected(ctx)
 
     override fun startAuth(ctx: Context) {
-        if (!YouTubeBridgeProvider.installed(ctx)) {
-            ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(installUrl)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        val pkg = BridgePlugin.packageName(ctx)
+        if (pkg == null) {
+            installUrl?.let { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
             return
         }
-        ctx.startActivity(Intent(LOGIN_ACTION).setPackage(YouTubeBridgeProvider.PACKAGE).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        ctx.startActivity(Intent(LOGIN_ACTION).setPackage(pkg).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
     override fun disconnect(ctx: Context) { cache = null; runCatching { call(ctx, "apple.disconnect") } }
 
     private fun call(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
-        if (!YouTubeBridgeProvider.installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))
+        if (!BridgePlugin.installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))
         val b = try {
-            ctx.contentResolver.call(AUTHORITY, method, arg, extras)
+            ctx.contentResolver.call(BridgePlugin.authority(ctx), method, arg, extras)
         } catch (e: Exception) {
             throw ProviderException("Songport Bridge: ${e.message ?: e.javaClass.simpleName}")
         } ?: throw ProviderException("Songport Bridge: no answer")
@@ -73,6 +76,5 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     companion object {
         const val SERVICE = "apple_bridge"
         const val LOGIN_ACTION = "com.xlollx.songport.ytmbridge.APPLE_LOGIN"
-        private val AUTHORITY: Uri = Uri.parse("content://com.xlollx.songport.ytmbridge.provider")
     }
 }

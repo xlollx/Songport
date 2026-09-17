@@ -63,6 +63,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.xlollx.songport.BuildConfig
 import com.xlollx.songport.R
 import com.xlollx.songport.auth.AuthEvents
 import com.xlollx.songport.auth.AuthFlow
@@ -195,8 +196,12 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.connector_pick_title)) },
         text = {
+            val ctx = LocalContext.current
+            // Plugin-based services are offered only when a plugin is installed, unless this build
+            // may point to where to get one.
+            val services = Providers.services().filter { !it.pluginBased || BuildConfig.PLUGIN_LINKS || it.isConfigured(ctx) }
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                Providers.services().forEach { s ->
+                services.forEach { s ->
                     val taken = !s.supportsMultipleAccounts && connectors.any { Providers.byId(it)?.serviceId == s.serviceId }
                     Row(
                         Modifier.fillMaxWidth().clickable(enabled = !taken) { onPick(s) }.padding(vertical = 8.dp),
