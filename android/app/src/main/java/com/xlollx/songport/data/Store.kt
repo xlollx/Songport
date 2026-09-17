@@ -67,7 +67,7 @@ class Store private constructor(context: Context) {
     private var pendingWrite: java.util.concurrent.ScheduledFuture<*>? = null
     private val lock = Any()
 
-    private val _state = MutableStateFlow(load().also { Providers.configure(it.settings.extraAccounts, it.settings.connectorNames) })
+    private val _state = MutableStateFlow(load().also { Providers.configure(it.settings.extraAccounts, it.settings.connectorNames, it.settings.connectors) })
     val state: StateFlow<StoreData> get() = _state
     val data: StoreData get() = _state.value
 
@@ -97,7 +97,7 @@ class Store private constructor(context: Context) {
             next = fn(_state.value)
             _state.value = next
         }
-        Providers.configure(next.settings.extraAccounts, next.settings.connectorNames)
+        Providers.configure(next.settings.extraAccounts, next.settings.connectorNames, next.settings.connectors)
         scheduleWrite()
     }
 

@@ -64,7 +64,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun ToolsScreen(snackbar: SnackbarHostState) {
     val ctx = LocalContext.current
-    val connected = Providers.all().filter { it.requiresAuth && it.isConnected(ctx) }
+    val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
     val provider = connected.firstOrNull { it.id == selectedId } ?: connected.firstOrNull()
 

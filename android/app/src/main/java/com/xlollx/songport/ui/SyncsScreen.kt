@@ -101,7 +101,7 @@ fun SyncsScreen(
     val ctx = LocalContext.current
     val running by SyncState.running.collectAsState()
     if (data.jobs.isEmpty()) {
-        val anyConnected = remember { Providers.all().any { it.requiresAuth && it.isConnected(ctx) } }
+        val anyConnected = remember { Providers.connectors().any { it.requiresAuth && it.isConnected(ctx) } }
         if (anyConnected) {
             EmptyState(Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body_connected))
         } else {
@@ -319,7 +319,13 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
     val ctx = LocalContext.current
     BackHandler { onCancel() }
     val isNew = job.name.isEmpty()
-    val available = remember { Providers.all().filter { it.isConnected(ctx) } }
+    // Solo i connettori aggiunti nella scheda Account: uno tolto di li' non deve piu' essere
+    // scegliibile, anche se il token o la sessione nell'app plugin sono ancora validi. I servizi gia'
+    // usati dal job che si sta modificando restano nell'elenco per non cambiarlo di nascosto.
+    val available = remember {
+        (Providers.connectors().filter { it.isConnected(ctx) } +
+            listOfNotNull(Providers.byId(job.source.provider), Providers.byId(job.target.provider))).distinctBy { it.id }
+    }
 
     var name by remember { mutableStateOf(job.name) }
     var srcProvider by remember { mutableStateOf(job.source.provider.ifEmpty { available.firstOrNull()?.id ?: "" }) }
@@ -382,7 +388,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
 
             Text(stringResource(R.string.editor_source), style = MaterialTheme.typography.titleMedium)
             // Il servizio di un link incollato puo' non essere fra quelli collegati (playlist pubblica).
-            val srcProviders = Providers.all().filter { p -> p.isConnected(ctx) || p.id == srcProvider }
+            val srcProviders = (available + listOfNotNull(Providers.byId(srcProvider))).distinctBy { it.id }
             ProviderPicker(srcProviders, srcProvider) { srcProvider = it; srcPlaylist = null }
             PlaylistPicker(srcLists, srcPlaylist, label = stringResource(R.string.editor_playlist)) { srcPlaylist = it }
             LinkImportField { providerId, playlist ->

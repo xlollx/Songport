@@ -109,11 +109,13 @@ interface MusicProvider {
 object Providers {
     @Volatile private var extraAccounts: Map<String, List<String>> = emptyMap()
     @Volatile private var names: Map<String, String> = emptyMap()
+    @Volatile private var connectorIds: List<String> = emptyList()
     @Volatile private var cached: List<MusicProvider> = build()
 
-    /** Chiamato dallo Store quando cambiano gli account aggiuntivi (servizio -> slot) o i nomi dei connettori. */
-    fun configure(extra: Map<String, List<String>>, connectorNames: Map<String, String> = names) {
+    /** Chiamato dallo Store quando cambiano i connettori scelti, gli account aggiuntivi o i loro nomi. */
+    fun configure(extra: Map<String, List<String>>, connectorNames: Map<String, String> = names, connectors: List<String> = connectorIds) {
         names = connectorNames
+        connectorIds = connectors
         if (extra != extraAccounts) {
             extraAccounts = extra
             cached = build()
@@ -148,6 +150,13 @@ object Providers {
     }
 
     fun all(): List<MusicProvider> = cached
+
+    /**
+     * I connettori aggiunti dall'utente, nell'ordine in cui li ha aggiunti. E' questo l'elenco che la
+     * UI deve mostrare: un servizio tolto dalla scheda Account non deve piu' comparire altrove, anche
+     * se il token o la sessione nell'app plugin sono ancora validi.
+     */
+    fun connectors(): List<MusicProvider> = connectorIds.mapNotNull { id -> cached.firstOrNull { it.id == id } }
     fun byId(id: String): MusicProvider? = cached.firstOrNull { it.id == id }
     /** Un'istanza per servizio (account principale). */
     fun services(): List<MusicProvider> = cached.filter { it.slot.isEmpty() }

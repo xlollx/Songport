@@ -43,12 +43,18 @@ object Diagnostics {
         sb.appendLine("Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT}) · ${Build.MANUFACTURER} ${Build.MODEL}")
         sb.appendLine("Locale: ${Locale.getDefault()}")
         sb.appendLine()
-        sb.appendLine("Services:")
-        Providers.all().filter { it.requiresAuth }.forEach { p ->
+        sb.appendLine("Connectors:")
+        val connectors = Providers.connectors()
+        if (connectors.isEmpty()) sb.appendLine("  (none)")
+        connectors.filter { it.requiresAuth }.forEach { p ->
             sb.appendLine("  ${p.id}: ${if (p.isConnected(ctx)) "connected" else "no"}" +
                 (if (p.usesOwnCredentials(ctx)) ", own credentials" else "") +
                 (if (!p.isConfigured(ctx)) ", not configured" else ""))
         }
+        // Credenziali rimaste da connettori tolti: utili per capire una sincronizzazione che si
+        // riferisce a un servizio non piu' elencato.
+        val leftovers = Providers.all().filter { p -> p.requiresAuth && connectors.none { it.id == p.id } && runCatching { p.isConnected(ctx) }.getOrDefault(false) }
+        if (leftovers.isNotEmpty()) sb.appendLine("  leftover sessions: ${leftovers.joinToString { it.id }}")
         sb.appendLine()
         sb.appendLine("Syncs: ${data.jobs.size} · match cache: ${data.matchCache.size}")
         data.jobs.forEach { j ->
