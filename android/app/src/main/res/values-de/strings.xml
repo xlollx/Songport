@@ -138,6 +138,7 @@
     <string name="link_not_connected">Verbinde zuerst %1$s, um diesen Link zu lesen.</string>
     <string name="link_resolving">Playlist wird gelesen…</string>
     <string name="note_no_removals">%1$s erlaubt über seine API kein Entfernen von Titeln aus einer Playlist: %2$d Titel wurden belassen.</string>
+    <string name="note_removals_deferred">Entfernungen verschoben: Die Suche wurde nicht abgeschlossen, daher bleiben %1$d Titel im Ziel ohne Entsprechung vorerst stehen. Sie werden geprüft, wenn ein Lauf ganz durchläuft.</string>
     <string name="note_search_interrupted">%1$d von %2$d Titeln gesucht, dann hat der Dienst eine längere Pause verlangt (%3$s). Das ist eine Grenze des Dienstes, kein Fehler von Songport: Das Gefundene wurde übernommen und gemerkt. Starte den Sync in ein paar Minuten erneut, um dort weiterzumachen.</string>
     <string name="error_no_removals">%1$s kann keine Titel aus einer Playlist entfernen</string>
     <string name="log_notes_title">Hinweise</string>

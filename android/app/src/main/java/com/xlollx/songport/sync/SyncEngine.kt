@@ -83,7 +83,7 @@ class SyncEngine(private val ctx: Context) {
         val notes = ArrayList<String>()
 
         onProgress(Progress(Progress.Step.FETCH_SOURCE))
-        val allSource = src.tracks(ctx, srcPlaylistId)
+        val allSource = patient(onProgress) { src.tracks(ctx, srcPlaylistId) }
         val ignoredIds = job.ignoredSourceIds.toHashSet()
         val srcTracks = allSource.filter { it.id !in ignoredIds }
         val ignored = allSource.size - srcTracks.size
@@ -97,7 +97,7 @@ class SyncEngine(private val ctx: Context) {
             }
             onProgress(Progress(Progress.Step.CREATE_TARGET))
             val name = job.target.playlistName.ifBlank { job.source.playlistName.ifBlank { job.name } }
-            val created = dst.createPlaylist(ctx, name, MusicProvider.DESCRIPTION)
+            val created = patient(onProgress) { dst.createPlaylist(ctx, name, MusicProvider.DESCRIPTION) }
             targetId = created.id
             targetCreated = true
             store.upsertJob(job.copy(target = job.target.copy(playlistId = created.id, playlistName = created.name)))
@@ -108,7 +108,7 @@ class SyncEngine(private val ctx: Context) {
         onProgress(Progress(Progress.Step.FETCH_TARGET))
         // A playlist created a moment ago is empty: skip the fetch (saves quota, and YouTube's Data API
         // may not even know the playlist yet).
-        val dstTracks = if (targetCreated) emptyList() else dst.tracks(ctx, targetId)
+        val dstTracks = if (targetCreated) emptyList() else patient(onProgress) { dst.tracks(ctx, targetId) }
         val dstById = dstTracks.associateBy { it.id }
         val index = Matcher.TrackIndex(dstTracks)
 
@@ -163,6 +163,9 @@ class SyncEngine(private val ctx: Context) {
         if (job.mirrorRemovals) {
             val extra = dstTracks.filter { it.id !in matchedDstIds }
             when {
+                // Ricerca non completata: un brano della destinazione puo' corrispondere a uno
+                // dell'origine non ancora cercato. Nulla si toglie finche' non si sa.
+                interrupted != null -> if (extra.isNotEmpty()) notes += ctx.getString(R.string.note_removals_deferred, extra.size)
                 !dst.canRemoveTracks -> if (extra.isNotEmpty()) notes += ctx.getString(R.string.note_no_removals, dst.displayName, extra.size)
                 // Origine vuota: quasi certamente un errore, non svuotiamo la destinazione.
                 srcTracks.isEmpty() -> notes += ctx.getString(R.string.error_source_empty)
@@ -326,6 +329,27 @@ class SyncEngine(private val ctx: Context) {
             Diagnostics.log(ctx, "engine", "${dst.displayName}: $searched searches in ${secs}s (${if (searched > 0) secs * 1000 / searched else 0} ms each), $waits waits")
         }
         return null
+    }
+
+    /**
+     * Esegue una chiamata al servizio rispettando i blocchi che dichiara ("Retry in N s"): aspetta il
+     * tempo detto, visibilmente, e riprova, fino al limite; ogni altro errore passa oltre subito.
+     */
+    private suspend fun <T> patient(onProgress: (Progress) -> Unit, block: suspend () -> T): T {
+        var blockWaits = 0
+        while (true) {
+            try {
+                return block()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                val asked = declaredWait(e.message)
+                if (asked == null || blockWaits >= MAX_BLOCK_WAITS) throw e
+                blockWaits++
+                Diagnostics.log(ctx, "engine", "blocked: ${e.message?.take(160)}; waiting ${asked}s")
+                waitVisible(asked, onProgress)
+            }
+        }
     }
 
     /** Secondi di attesa dichiarati dal servizio ("Retry in N s"), entro limiti ragionevoli; null se non li dichiara. */

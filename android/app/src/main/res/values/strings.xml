@@ -138,6 +138,7 @@
     <string name="link_not_connected">Connect %1$s first to read this link.</string>
     <string name="link_resolving">Reading the playlist…</string>
     <string name="note_no_removals">%1$s does not allow removing tracks from a playlist via its API: %2$d tracks were left in place.</string>
+    <string name="note_removals_deferred">Removals postponed: the search was not completed, so %1$d tracks in the target that matched nothing yet were left in place. They will be reviewed when a run completes.</string>
     <string name="note_search_interrupted">%1$d of %2$d tracks searched, then the service asked for a longer pause (%3$s). This is a limit of the service, not a Songport error: what was found has been applied and remembered. Run the sync again in a few minutes to continue from there.</string>
     <string name="error_no_removals">%1$s cannot remove tracks from a playlist</string>
     <string name="log_notes_title">Notes</string>
