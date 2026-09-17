@@ -93,12 +93,20 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
             SyncState.start(job.id)
             Diagnostics.log(ctx, "sync", "start ${job.name} (${if (scheduled) "scheduled" else "manual"})")
             try {
-                val report = engine.run(job) { p ->
-                    SyncState.progress(job.id, p)
-                    if (!scheduled) updateProgress(job, p)
-                    // Pausa o stop chiesti dall'utente: qui, fra un passo e l'altro.
-                    if (SyncState.isPaused(job.id) && !scheduled) updateProgress(job, p, paused = true)
-                    SyncState.checkpoint(ctx, job.id)
+                val report = try {
+                    engine.run(job) { p ->
+                        SyncState.progress(job.id, p)
+                        if (!scheduled) updateProgress(job, p)
+                        // Pausa o stop chiesti dall'utente: qui, fra un passo e l'altro.
+                        if (SyncState.isPaused(job.id) && !scheduled) updateProgress(job, p, paused = true)
+                        SyncState.checkpoint(ctx, job.id)
+                    }
+                } catch (e: kotlinx.coroutines.CancellationException) {
+                    // Fermato dal sistema, non dall'utente: WorkManager riprende il lavoro da solo e la
+                    // cache degli abbinamenti evita di rifare le ricerche. Lo si annota, non e' un errore.
+                    val reason = if (Build.VERSION.SDK_INT >= 31) " (stop reason $stopReason)" else ""
+                    Diagnostics.log(ctx, "sync", "paused by the system$reason ${job.name}: will resume")
+                    throw e
                 }
                 Diagnostics.log(ctx, "sync", "end ${job.name}: +${report.added} -${report.removed} nf=${report.unmatched.size}" + (report.error?.let { " ERR $it" } ?: ""))
                 val notable = report.added > 0 || report.removed > 0 || !report.ok
@@ -184,10 +192,14 @@ object Scheduler {
         store.data.jobs.forEach { apply(ctx, it) }
     }
 
-    /** Esecuzione manuale immediata (di una sync o di tutte con SyncWorker.ALL). */
+    /**
+     * Esecuzione manuale immediata (di una sync o di tutte con SyncWorker.ALL). Senza vincolo di
+     * rete: WorkManager ferma il lavoro ogni volta che il vincolo viene meno anche per un istante
+     * (passaggio Wi-Fi/dati), e una sync lunga finiva "cancellata" a ogni cambio di rete. Se la
+     * rete manca davvero, sono le chiamate ai servizi a fallire, con i loro tentativi.
+     */
     fun runNow(ctx: Context, jobId: String) {
         val req = OneTimeWorkRequestBuilder<SyncWorker>()
-            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
             .setInputData(workDataOf(SyncWorker.KEY_JOB to jobId, SyncWorker.KEY_SCHEDULED to false))
             .addTag("sync")
             .build()

@@ -48,6 +48,10 @@ class SyncEngine(private val ctx: Context) {
         val report = try {
             val plan = plan(job, onProgress)
             apply(job, plan, started, reportId, onProgress)
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Il sistema ha fermato il worker (cambio di rete, limiti): non e' un esito della sync e
+            // WorkManager la fara' ripartire; gli abbinamenti fatti finora sono gia' in cache.
+            throw e
         } catch (e: Exception) {
             Diagnostics.log(ctx, "engine", "${job.name}: ${e.javaClass.simpleName}: ${e.message}")
             SyncReport(reportId, job.id, job.name, started, System.currentTimeMillis() - started,
