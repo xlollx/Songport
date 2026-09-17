@@ -268,6 +268,11 @@
     <string name="sync_stop">Stop</string>
     <string name="sync_paused">Paused</string>
     <string name="sync_stopped">Stopped by you</string>
+    <string name="live_title">Sync activity</string>
+    <string name="live_empty">No track processed yet.</string>
+    <string name="live_found">Found: %1$s</string>
+    <string name="live_cached">From a previous match: %1$s</string>
+    <string name="live_not_found">Not found on the destination</string>
     <string name="provider_note_spotify_bridge">Sign in on Spotify\'s own page through the Songport Bridge app, no developer app to create. Uses the web player\'s session: not an official route, against Spotify\'s terms, may stop working. The official route with your own key stays available as \"Spotify\".</string>
     <string name="provider_note_apple_bridge">Sign in with your Apple ID through the Songport Bridge app, no Apple Developer Program needed. Uses the web player\'s tokens: not an official route, against Apple\'s terms, may stop working. The official route with your own developer token stays available as \"Apple Music\".</string>
     <string name="bridge_needed_hint">Install or update the companion app \"Songport Bridge\" (1.2 or newer) from GitHub, then come back here and tap Connect.</string>

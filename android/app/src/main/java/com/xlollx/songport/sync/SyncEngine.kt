@@ -31,8 +31,13 @@ import java.util.UUID
  * Ogni abbinamento riuscito finisce nella cache, cosi' le sync successive non ripetono le ricerche.
  * I brani che l'utente ha messo fra gli "ignorati" del job non vengono ne' cercati ne' segnalati.
  */
-/** Attese visibili quando il servizio limita le richieste: crescenti, poi ci si ferma con quanto trovato. */
-private val WAIT_SECONDS = intArrayOf(30, 60, 120)
+/**
+ * Attese visibili quando il servizio limita le richieste: brevi e crescenti. Il contatore si azzera
+ * dopo un tratto di ricerche riuscite, cosi' una playlist lunga con limiti intermittenti arriva in
+ * fondo; solo una serie di rifiuti senza progressi fa fermare con quanto trovato.
+ */
+private val WAIT_SECONDS = intArrayOf(10, 20, 40, 60, 120)
+private const val RESET_AFTER_CHUNKS = 15
 
 class SyncEngine(private val ctx: Context) {
     private val store = Store.get(ctx)
@@ -119,6 +124,18 @@ class SyncEngine(private val ctx: Context) {
         var searched = 0
         val interrupted = searchMissing(src, dst, toSearch, onProgress) { s, found, score ->
             searched++
+            SyncState.item(
+                job.id,
+                SyncState.LiveItem(
+                    source = listOfNotNull(s.artists.firstOrNull(), s.title).joinToString(" – "),
+                    result = found?.let { listOfNotNull(it.artists.firstOrNull(), it.title).joinToString(" – ") },
+                    outcome = when {
+                        found == null -> SyncState.Outcome.NOT_FOUND
+                        score == null -> SyncState.Outcome.CACHED
+                        else -> SyncState.Outcome.FOUND
+                    },
+                ),
+            )
             if (found != null) {
                 if (found.id !in matchedDstIds) toAdd[found.id] = found
                 matchedDstIds += found.id
@@ -202,10 +219,13 @@ class SyncEngine(private val ctx: Context) {
         var consecutiveErrors = 0
         var done = 0
         var waits = 0
+        var sinceWait = 0
         val chunks = toSearch.chunked(parallel)
         var ci = 0
         while (ci < chunks.size) {
             val chunk = chunks[ci]
+            // Cosa si sta cercando adesso: la scheda e la notifica lo mostrano, cosi' non sembra fermo.
+            onProgress(Progress(Progress.Step.MATCHING, done, toSearch.size, chunk.first().let { listOfNotNull(it.artists.firstOrNull(), it.title).joinToString(" – ") }))
             // Esito per brano: (trovato, punteggio); punteggio null = preso dalla cache, mai "incerto".
             val results: List<Result<Pair<Track?, Double?>>> = coroutineScope {
                 chunk.map { s ->
@@ -225,12 +245,14 @@ class SyncEngine(private val ctx: Context) {
             val throttled = results.firstNotNullOfOrNull { r -> (r.exceptionOrNull() as? ProviderException)?.takeIf { isThrottle(it.message) } }
             if (throttled != null && waits < WAIT_SECONDS.size) {
                 val seconds = WAIT_SECONDS[waits++]
+                sinceWait = 0
                 for (s in 1..seconds) {
                     onProgress(Progress(Progress.Step.WAITING, s, seconds))
                     kotlinx.coroutines.delay(1000)
                 }
                 continue
             }
+            if (throttled == null && ++sinceWait >= RESET_AFTER_CHUNKS) { waits = 0; sinceWait = 0 }
             ci++
             chunk.forEachIndexed { i, s ->
                 done++

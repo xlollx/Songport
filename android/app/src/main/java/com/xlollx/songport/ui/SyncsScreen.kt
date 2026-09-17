@@ -23,8 +23,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -143,12 +146,18 @@ private fun JobCard(
 ) {
     val ctx = LocalContext.current
     var confirmDelete by remember { mutableStateOf(false) }
+    var liveOpen by remember { mutableStateOf(false) }
+    if (liveOpen && isRunning) LiveSheet(job) { liveOpen = false }
     val report = data.reports.firstOrNull { it.id == job.lastReportId }
     val src = Providers.byId(job.source.provider)
     val dst = Providers.byId(job.target.provider)
     val srcName = playlistDisplayName(job.source.playlistId, job.source.playlistName)
     val dstName = job.target.playlistName.ifBlank { stringResource(R.string.editor_new_playlist) }
-    Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+    Card(
+        // While running, a tap opens the live list of tracks processed so far.
+        Modifier.fillMaxWidth().clickable(enabled = isRunning) { liveOpen = true },
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    ) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.width(56.dp).height(36.dp)) {
@@ -236,13 +245,57 @@ private fun JobCard(
     }
 }
 
+/** Live view of a running sync: what was searched, found, taken from the cache or not found. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LiveSheet(job: SyncJob, onDismiss: () -> Unit) {
+    val all by SyncState.items.collectAsState()
+    val running by SyncState.running.collectAsState()
+    val items = all[job.id].orEmpty()
+    val progress = running[job.id]
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(Modifier.padding(horizontal = 16.dp).padding(bottom = 24.dp)) {
+            Text(stringResource(R.string.live_title), style = MaterialTheme.typography.titleLarge)
+            Text(progressText(progress), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(12.dp))
+            if (items.isEmpty()) Text(stringResource(R.string.live_empty), style = MaterialTheme.typography.bodyMedium)
+            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 480.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                items(items.size) { i ->
+                    val it = items[i]
+                    Row(verticalAlignment = Alignment.Top) {
+                        val (icon, tint) = when (it.outcome) {
+                            SyncState.Outcome.FOUND -> Icons.Filled.CheckCircle to Tones.onSuccessContainer()
+                            SyncState.Outcome.CACHED -> Icons.Filled.CheckCircle to MaterialTheme.colorScheme.onSurfaceVariant
+                            SyncState.Outcome.NOT_FOUND -> Icons.Filled.Warning to MaterialTheme.colorScheme.error
+                        }
+                        Icon(icon, null, tint = tint, modifier = Modifier.size(18.dp).padding(top = 1.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Column {
+                            Text(it.source, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(
+                                when (it.outcome) {
+                                    SyncState.Outcome.FOUND -> stringResource(R.string.live_found, it.result ?: "")
+                                    SyncState.Outcome.CACHED -> stringResource(R.string.live_cached, it.result ?: "")
+                                    SyncState.Outcome.NOT_FOUND -> stringResource(R.string.live_not_found)
+                                },
+                                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1, overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun progressText(p: Progress?): String = when (p?.step) {
     null -> stringResource(R.string.running)
     Progress.Step.FETCH_SOURCE -> stringResource(R.string.progress_fetch_source)
     Progress.Step.CREATE_TARGET -> stringResource(R.string.progress_create_target)
     Progress.Step.FETCH_TARGET -> stringResource(R.string.progress_fetch_target)
-    Progress.Step.MATCHING -> stringResource(R.string.progress_matching, p?.done ?: 0, p?.total ?: 0)
+    Progress.Step.MATCHING -> stringResource(R.string.progress_matching, p?.done ?: 0, p?.total ?: 0) + (p?.label?.let { " · $it" } ?: "")
     Progress.Step.WAITING -> stringResource(R.string.progress_waiting, ((p?.total ?: 0) - (p?.done ?: 0)).coerceAtLeast(0))
     Progress.Step.ADDING -> stringResource(R.string.progress_adding, p?.total ?: 0)
     Progress.Step.REMOVING -> stringResource(R.string.progress_removing, p?.total ?: 0)

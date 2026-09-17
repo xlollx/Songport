@@ -113,7 +113,7 @@ data class SyncPlan(
 )
 
 /** Progresso di una sync in corso, mostrato nella UI. */
-data class Progress(val step: Step, val done: Int = 0, val total: Int = 0) {
+data class Progress(val step: Step, val done: Int = 0, val total: Int = 0, val label: String? = null) {
     /** WAITING: il servizio limita le richieste; done/total = secondi trascorsi/da attendere. */
     enum class Step { FETCH_SOURCE, CREATE_TARGET, FETCH_TARGET, MATCHING, WAITING, ADDING, REMOVING, BACKUP, DEDUPE }
     /** Percentuale del passo corrente, quando il totale e' noto. */

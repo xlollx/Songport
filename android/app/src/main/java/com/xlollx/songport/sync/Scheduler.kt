@@ -37,13 +37,28 @@ object SyncState {
     val paused: StateFlow<Set<String>> get() = _paused
     @Volatile private var stopRequested: Set<String> = emptySet()
 
-    fun start(jobId: String) { _running.value = _running.value + (jobId to null) }
+    /** What happened to one source track during the run, for the live view. */
+    enum class Outcome { FOUND, CACHED, NOT_FOUND }
+    class LiveItem(val source: String, val result: String?, val outcome: Outcome)
+
+    private val _items = MutableStateFlow<Map<String, List<LiveItem>>>(emptyMap())
+    /** Tracks processed so far per running job, newest first (capped). */
+    val items: StateFlow<Map<String, List<LiveItem>>> get() = _items
+
+    fun start(jobId: String) { _running.value = _running.value + (jobId to null); _items.value = _items.value + (jobId to emptyList()) }
     fun progress(jobId: String, p: Progress) { _running.value = _running.value + (jobId to p) }
+    fun item(jobId: String, item: LiveItem) {
+        val cur = _items.value[jobId].orEmpty()
+        _items.value = _items.value + (jobId to (listOf(item) + cur).take(MAX_ITEMS))
+    }
     fun finish(jobId: String) {
         _running.value = _running.value - jobId
         _paused.value = _paused.value - jobId
+        _items.value = _items.value - jobId
         stopRequested = stopRequested - jobId
     }
+
+    private const val MAX_ITEMS = 1000
 
     fun pause(jobId: String) { _paused.value = _paused.value + jobId }
     fun resume(jobId: String) { _paused.value = _paused.value - jobId }
@@ -126,7 +141,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         Progress.Step.FETCH_SOURCE -> ctx.getString(R.string.progress_fetch_source)
         Progress.Step.CREATE_TARGET -> ctx.getString(R.string.progress_create_target)
         Progress.Step.FETCH_TARGET -> ctx.getString(R.string.progress_fetch_target)
-        Progress.Step.MATCHING -> ctx.getString(R.string.progress_matching, p.done, p.total)
+        Progress.Step.MATCHING -> ctx.getString(R.string.progress_matching, p.done, p.total) + (p.label?.let { " · $it" } ?: "")
         Progress.Step.WAITING -> ctx.getString(R.string.progress_waiting, (p.total - p.done).coerceAtLeast(0))
         Progress.Step.ADDING -> ctx.getString(R.string.progress_adding, p.total)
         Progress.Step.REMOVING -> ctx.getString(R.string.progress_removing, p.total)
