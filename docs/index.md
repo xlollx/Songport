@@ -14,5 +14,6 @@ encrypted on the phone and never sent to Songport's developer or to any third pa
 Songport server. Details in the [privacy policy](privacy-policy).
 
 - [Source code and documentation](https://github.com/xlollx/Songport)
+- [Connector plugins](plugins): extra services through separately installed apps
 - [Privacy policy](privacy-policy)
 - [Report a security issue](https://github.com/xlollx/Songport/security)

@@ -184,6 +184,10 @@ fun SettingsScreen(
                     }
                 }
             }
+            // Open source: the repository holds the code, the docs and the connector-plugin page.
+            TextButton(onClick = { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/xlollx/Songport"))) } }) {
+                Text(stringResource(R.string.settings_source_code))
+            }
             TextButton(onClick = { store.updateSettings { it.copy(onboardingDone = false) } }) { Text(stringResource(R.string.settings_show_onboarding)) }
         }
         Spacer(Modifier.height(24.dp))

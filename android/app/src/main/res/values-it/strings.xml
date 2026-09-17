@@ -276,6 +276,8 @@
     <string name="provider_note_spotify_bridge">Accedi dalla pagina di Spotify tramite l\'app Songport Bridge, senza creare un\'app da sviluppatore. Usa la sessione del player web: non è una via ufficiale, è contraria ai termini di Spotify e può smettere di funzionare. La via ufficiale con la tua chiave resta disponibile come \"Spotify\".</string>
     <string name="provider_note_apple_bridge">Accedi con il tuo ID Apple tramite l\'app Songport Bridge, senza Apple Developer Program. Usa i token del player web: non è una via ufficiale, è contraria ai termini di Apple e può smettere di funzionare. La via ufficiale con il tuo developer token resta disponibile come \"Apple Music\".</string>
     <string name="bridge_needed_hint">Installa o aggiorna l\'app compagna \"Songport Bridge\" (1.2 o successiva) da GitHub, poi torna qui e tocca Collega.</string>
+    <string name="settings_source_code">Codice sorgente e documentazione</string>
+    <string name="plugins_more">Songport Bridge, su GitHub, aggiunge YouTube Music, Amazon Music e l\'accesso senza chiavi a Spotify e Apple Music.</string>
     <string name="security_title">Come sono protetti i tuoi accessi</string>
     <string name="security_fact_1">Le password si digitano sulle pagine dei servizi, mai dentro Songport.</string>
     <string name="security_fact_2">Songport conserva solo token di accesso revocabili, cifrati con l\'Android Keystore.</string>

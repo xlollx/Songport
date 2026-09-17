@@ -68,6 +68,7 @@ import com.xlollx.songport.R
 import com.xlollx.songport.auth.AuthEvents
 import com.xlollx.songport.auth.AuthFlow
 import com.xlollx.songport.model.Playlist
+import com.xlollx.songport.providers.BridgePlugin
 import com.xlollx.songport.providers.LocalFilesProvider
 import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.Providers
@@ -218,7 +219,14 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                 }
             }
         },
-        confirmButton = {},
+        // Where to learn about connector plugins: the project documentation (Play build) or the
+        // reference plugin's page (direct-download build).
+        confirmButton = {
+            TextButton(onClick = {
+                val url = if (BuildConfig.PLUGIN_LINKS) BridgePlugin.installUrl ?: ctx.getString(R.string.plugins_more_url) else ctx.getString(R.string.plugins_more_url)
+                runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+            }) { Text(stringResource(R.string.plugins_more), style = MaterialTheme.typography.bodySmall) }
+        },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     )
 }
