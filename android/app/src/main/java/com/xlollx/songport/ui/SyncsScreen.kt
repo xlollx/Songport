@@ -32,7 +32,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -175,10 +177,23 @@ private fun JobCard(
                 }
             }
             if (isRunning) {
+                val pausedSet by SyncState.paused.collectAsState()
+                val paused = job.id in pausedSet
                 Spacer(Modifier.height(12.dp))
-                LinearProgressIndicator(Modifier.fillMaxWidth())
+                val pct = progress?.percent
+                if (pct != null) LinearProgressIndicator(progress = { pct / 100f }, modifier = Modifier.fillMaxWidth())
+                else LinearProgressIndicator(Modifier.fillMaxWidth())
                 Spacer(Modifier.height(4.dp))
-                Text(progressText(progress), style = MaterialTheme.typography.bodySmall)
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        (if (paused) stringResource(R.string.sync_paused) + " · " else "") + progressText(progress) + (pct?.let { " · $it%" } ?: ""),
+                        style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f),
+                    )
+                    IconButton(onClick = { if (paused) SyncState.resume(job.id) else SyncState.pause(job.id) }) {
+                        Icon(if (paused) Icons.Filled.PlayArrow else Icons.Filled.Pause, stringResource(if (paused) R.string.sync_resume else R.string.sync_pause))
+                    }
+                    IconButton(onClick = { SyncState.stop(job.id) }) { Icon(Icons.Filled.Stop, stringResource(R.string.sync_stop)) }
+                }
             } else if (report != null) {
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -277,6 +292,14 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
     LaunchedEffect(dstProvider) {
         dstLists = Loaded.Loading
         dstLists = loadPlaylists(ctx, dstProvider, forTarget = true)
+    }
+    // Liked songs to a service that can like: propose "liked songs" as the target instead of a new playlist.
+    LaunchedEffect(srcPlaylist?.id, dstProvider) {
+        val dstObj = Providers.byId(dstProvider)
+        if (srcPlaylist?.id == MusicProvider.LIKED_ID && dstObj?.supportsLikedTarget == true && dstPlaylist == null) {
+            createNew = false
+            dstPlaylist = Playlist(MusicProvider.LIKED_ID, ctx.getString(R.string.liked_songs))
+        }
     }
     // Job creato da un link condiviso: l'id c'e', il nome ancora no.
     LaunchedEffect(Unit) {

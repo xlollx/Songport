@@ -29,15 +29,38 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.TimeUnit
 
-/** Stato in memoria delle sync in corso (per la UI). */
+/** Stato in memoria delle sync in corso (per la UI), con pausa e interruzione richieste dall'utente. */
 object SyncState {
     private val _running = MutableStateFlow<Map<String, Progress?>>(emptyMap())
     val running: StateFlow<Map<String, Progress?>> get() = _running
+    private val _paused = MutableStateFlow<Set<String>>(emptySet())
+    val paused: StateFlow<Set<String>> get() = _paused
+    @Volatile private var stopRequested: Set<String> = emptySet()
 
     fun start(jobId: String) { _running.value = _running.value + (jobId to null) }
     fun progress(jobId: String, p: Progress) { _running.value = _running.value + (jobId to p) }
-    fun finish(jobId: String) { _running.value = _running.value - jobId }
+    fun finish(jobId: String) {
+        _running.value = _running.value - jobId
+        _paused.value = _paused.value - jobId
+        stopRequested = stopRequested - jobId
+    }
+
+    fun pause(jobId: String) { _paused.value = _paused.value + jobId }
+    fun resume(jobId: String) { _paused.value = _paused.value - jobId }
+    fun stop(jobId: String) { stopRequested = stopRequested + jobId; resume(jobId) }
+    fun isPaused(jobId: String) = jobId in _paused.value
+
+    /**
+     * Chiamato dal motore a ogni passo: attende finche' la sync e' in pausa e interrompe se l'utente
+     * l'ha fermata. Bloccante di proposito: il motore lavora su un thread di WorkManager.
+     */
+    fun checkpoint(ctx: Context, jobId: String) {
+        while (jobId in _paused.value && jobId !in stopRequested) Thread.sleep(250)
+        if (jobId in stopRequested) throw SyncStoppedException(ctx.getString(R.string.sync_stopped))
+    }
 }
+
+class SyncStoppedException(message: String) : Exception(message)
 
 class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
     override suspend fun doWork(): Result {
@@ -57,7 +80,10 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
             try {
                 val report = engine.run(job) { p ->
                     SyncState.progress(job.id, p)
-                    if (!scheduled) updateProgress(job.name, progressText(ctx, p))
+                    if (!scheduled) updateProgress(job, p)
+                    // Pausa o stop chiesti dall'utente: qui, fra un passo e l'altro.
+                    if (SyncState.isPaused(job.id) && !scheduled) updateProgress(job, p, paused = true)
+                    SyncState.checkpoint(ctx, job.id)
                 }
                 Diagnostics.log(ctx, "sync", "end ${job.name}: +${report.added} -${report.removed} nf=${report.unmatched.size}" + (report.error?.let { " ERR $it" } ?: ""))
                 val notable = report.added > 0 || report.removed > 0 || !report.ok
@@ -80,15 +106,17 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         } else ForegroundInfo(Notifications.PROGRESS_ID, n)
     }
 
-    /** Aggiorna la notifica di avanzamento (stesso id del servizio in primo piano). */
-    private fun updateProgress(title: String, text: String) {
+    /** Aggiorna la notifica di avanzamento (stesso id del servizio in primo piano): barra, percentuale, pausa e stop. */
+    private fun updateProgress(job: SyncJob, p: Progress, paused: Boolean = false) {
         val ctx = applicationContext
         if (Build.VERSION.SDK_INT >= 33 &&
             ctx.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) return
+        val text = (if (paused) ctx.getString(R.string.sync_paused) + " · " else "") + progressText(ctx, p) +
+            (p.percent?.let { " · $it%" } ?: "")
         runCatching {
             ctx.getSystemService(NotificationManager::class.java)
-                ?.notify(Notifications.PROGRESS_ID, Notifications.progress(ctx, title, text))
+                ?.notify(Notifications.PROGRESS_ID, Notifications.progress(ctx, job.name, text, p.done, p.total, job.id, paused))
         }
     }
 

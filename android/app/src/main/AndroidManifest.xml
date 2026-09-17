@@ -77,6 +77,11 @@
                 android:resource="@xml/widget_sync_info" />
         </receiver>
 
+        <!-- Pausa / riprendi / interrompi dalla notifica di avanzamento. -->
+        <receiver
+            android:name=".sync.SyncControlReceiver"
+            android:exported="false" />
+
         <!-- WorkManager in primo piano: dichiara il tipo di servizio richiesto da Android 14+. -->
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"

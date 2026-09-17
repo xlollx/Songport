@@ -13,6 +13,9 @@ import com.xlollx.songport.model.SyncReport
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.providers.LocalFilesProvider
 import com.xlollx.songport.providers.MusicProvider
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import com.xlollx.songport.providers.Providers
 import java.util.UUID
 
@@ -173,35 +176,51 @@ class SyncEngine(private val ctx: Context) {
         )
     }
 
-    /** Cerca sulla destinazione i brani mancanti, usando la cache quando c'e'. */
+    /**
+     * Cerca sulla destinazione i brani mancanti, usando la cache quando c'e'. Le ricerche vanno a
+     * gruppi di quattro in parallelo (una playlist da 2000 brani altrimenti dura ore); i risultati
+     * sono consegnati nell'ordine di origine.
+     */
     private suspend fun searchMissing(
         src: MusicProvider, dst: MusicProvider, toSearch: List<Track>,
         onProgress: (Progress) -> Unit, onResult: (Track, Track?, Double?) -> Unit,
     ) {
+        val parallel = 4
         var consecutiveErrors = 0
-        toSearch.forEachIndexed { i, s ->
-            onProgress(Progress(Progress.Step.MATCHING, i + 1, toSearch.size))
-            var score: Double? = null
-            var found: Track? = store.cachedMatch(src.id, s.id, dst.id)?.let { cachedId ->
-                // Abbinato in passato (o confermato a mano): lo aggiungiamo senza ripetere la ricerca.
-                dst.rehydrate(s.copy(id = cachedId, uri = null, itemId = null))
+        var done = 0
+        for (chunk in toSearch.chunked(parallel)) {
+            // Esito per brano: (trovato, punteggio); punteggio null = preso dalla cache, mai "incerto".
+            val results: List<Result<Pair<Track?, Double?>>> = coroutineScope {
+                chunk.map { s ->
+                    async {
+                        val cached = store.cachedMatch(src.id, s.id, dst.id)
+                        if (cached != null) {
+                            // Abbinato in passato (o confermato a mano): lo aggiungiamo senza ripetere la ricerca.
+                            Result.success<Pair<Track?, Double?>>(dst.rehydrate(s.copy(id = cached, uri = null, itemId = null)) to null)
+                        } else {
+                            runCatching { Matcher.bestScored(s, dst.search(ctx, s)) }.map { it?.track to it?.score }
+                        }
+                    }
+                }.awaitAll()
             }
-            if (found == null) {
-                val candidates = try {
-                    dst.search(ctx, s).also { consecutiveErrors = 0 }
-                } catch (e: ProviderException) {
+            chunk.forEachIndexed { i, s ->
+                done++
+                onProgress(Progress(Progress.Step.MATCHING, done, toSearch.size))
+                val r = results[i]
+                val e = r.exceptionOrNull()
+                if (e != null) {
+                    if (e !is ProviderException) throw e
                     consecutiveErrors++
                     val msg = e.message ?: ""
                     // Errori sistemici (quota, sessione scaduta): inutile insistere.
                     if (consecutiveErrors >= 3 || msg.contains("quota", true) || msg.contains("reconnect", true)) throw e
                     onResult(s, null, null)
-                    return@forEachIndexed
+                } else {
+                    consecutiveErrors = 0
+                    val (found, score) = r.getOrThrow()
+                    onResult(s, found, score)
                 }
-                val best = Matcher.bestScored(s, candidates)
-                found = best?.track
-                score = best?.score
             }
-            onResult(s, found, score)
         }
     }
 

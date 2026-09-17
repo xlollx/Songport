@@ -260,6 +260,11 @@
     <string name="connect_switch_account">Der Browser ist vielleicht schon mit einem anderen %1$s-Konto angemeldet. Wähle auf der Anmeldeseite „Nicht du?“ oder wechsle das Konto und fahre dann mit dem Konto dieses Connectors fort.</string>
     <string name="provider_note_amazon">Experimentell, über die Begleit-App Songport Bridge. Amazon hat keine offene API: Die Bridge nutzt die Oberfläche des Web-Players. Suche und Lesen von Playlists funktionieren; Bibliotheksliste und Schreiben werden noch fertiggestellt.</string>
     <string name="amazon_not_installed_hint">Installiere oder aktualisiere die Begleit-App \"Songport Bridge\" (1.1 oder neuer) von GitHub, komm dann hierher zurück und tippe auf Verbinden.</string>
+    <string name="sync_pause">Pause</string>
+    <string name="sync_resume">Fortsetzen</string>
+    <string name="sync_stop">Abbrechen</string>
+    <string name="sync_paused">Pausiert</string>
+    <string name="sync_stopped">Von dir abgebrochen</string>
     <string name="security_title">So werden deine Anmeldungen geschützt</string>
     <string name="security_fact_1">Passwörter werden auf den Seiten der Dienste selbst eingegeben, nie in Songport.</string>
     <string name="security_fact_2">Songport speichert nur widerrufbare Zugriffstoken, verschlüsselt mit dem Android Keystore.</string>

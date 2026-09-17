@@ -29,19 +29,35 @@ object Notifications {
         )
     }
 
-    /** Notifica silenziosa e persistente mentre una sync manuale gira in primo piano. */
-    fun progress(context: Context, title: String, text: String): android.app.Notification {
+    /**
+     * Notifica silenziosa e persistente mentre una sync manuale gira in primo piano. Con un totale
+     * noto la barra e' determinata; con un [jobId] offre Pausa/Riprendi e Interrompi.
+     */
+    fun progress(
+        context: Context, title: String, text: String,
+        done: Int = 0, total: Int = 0, jobId: String? = null, paused: Boolean = false,
+    ): android.app.Notification {
         val open = Intent(context, MainActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP }
         val pi = PendingIntent.getActivity(context, PROGRESS_ID, open, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-        return NotificationCompat.Builder(context, PROGRESS_CHANNEL_ID)
+        val b = NotificationCompat.Builder(context, PROGRESS_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(text)
-            .setProgress(0, 0, true)
+            .setProgress(if (total > 0) total else 0, done, total <= 0)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setContentIntent(pi)
-            .build()
+        if (jobId != null) {
+            fun action(act: String, code: Int): PendingIntent = PendingIntent.getBroadcast(
+                context, code,
+                Intent(context, com.xlollx.songport.sync.SyncControlReceiver::class.java).setAction(act).putExtra(com.xlollx.songport.sync.SyncControlReceiver.EXTRA_JOB, jobId),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
+            if (paused) b.addAction(0, context.getString(R.string.sync_resume), action(com.xlollx.songport.sync.SyncControlReceiver.ACTION_RESUME, 1))
+            else b.addAction(0, context.getString(R.string.sync_pause), action(com.xlollx.songport.sync.SyncControlReceiver.ACTION_PAUSE, 2))
+            b.addAction(0, context.getString(R.string.sync_stop), action(com.xlollx.songport.sync.SyncControlReceiver.ACTION_STOP, 3))
+        }
+        return b.build()
     }
 
     fun canPost(context: Context): Boolean =

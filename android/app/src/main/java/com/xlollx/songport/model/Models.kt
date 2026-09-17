@@ -115,6 +115,8 @@ data class SyncPlan(
 /** Progresso di una sync in corso, mostrato nella UI. */
 data class Progress(val step: Step, val done: Int = 0, val total: Int = 0) {
     enum class Step { FETCH_SOURCE, CREATE_TARGET, FETCH_TARGET, MATCHING, ADDING, REMOVING, BACKUP, DEDUPE }
+    /** Percentuale del passo corrente, quando il totale e' noto. */
+    val percent: Int? get() = if (total > 0) (done * 100 / total).coerceIn(0, 100) else null
 }
 
 class ProviderException(message: String, cause: Throwable? = null) : Exception(message, cause)
