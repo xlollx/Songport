@@ -33,6 +33,7 @@
     <string name="progress_create_target">Creazione playlist di destinazione…</string>
     <string name="progress_fetch_target">Lettura playlist di destinazione…</string>
     <string name="progress_matching">Abbinamento brani %1$d/%2$d…</string>
+    <string name="progress_waiting">Il servizio limita le richieste: si riprende tra %1$d s. Normale con playlist grandi, non è un errore.</string>
     <string name="progress_adding">Aggiunta di %1$d brani…</string>
     <string name="progress_removing">Rimozione di %1$d brani…</string>
 
@@ -88,6 +89,7 @@
     <string name="settings_language">Lingua</string>
     <string name="settings_language_desc">Songport segue la lingua di sistema: inglese, italiano, francese, tedesco.</string>
     <string name="settings_language_open">Cambia</string>
+    <string name="settings_language_system">Lingua di sistema</string>
     <string name="settings_advanced">Chiavi dei servizi</string>
     <string name="settings_advanced_desc">Songport non include chiavi proprie: Spotify, YouTube Music, TIDAL, Deezer, Last.fm e Apple Music si collegano con una chiave gratuita creata a tuo nome, così limiti e quote sono solo tuoi. Qui puoi vederle e cambiarle.</string>
     <string name="settings_privacy_options">Opzioni privacy annunci</string>
@@ -136,7 +138,7 @@
     <string name="link_not_connected">Collega prima %1$s per leggere questo link.</string>
     <string name="link_resolving">Lettura della playlist…</string>
     <string name="note_no_removals">%1$s non permette di togliere brani da una playlist tramite API: %2$d brani sono rimasti al loro posto.</string>
-    <string name="note_search_interrupted">Ricerca fermata dopo %1$d brani su %2$d (%3$s). Quanto trovato è stato applicato e memorizzato: rilancia la sync più tardi per continuare.</string>
+    <string name="note_search_interrupted">Cercati %1$d brani su %2$d, poi il servizio ha chiesto una pausa più lunga (%3$s). È un limite del servizio, non un errore di Songport: quanto trovato è stato applicato e memorizzato. Rilancia la sync tra qualche minuto per continuare da lì.</string>
     <string name="error_no_removals">%1$s non può rimuovere brani da una playlist</string>
     <string name="log_notes_title">Note</string>
     <string name="editor_mirror_unsupported">%1$s può solo aggiungere brani: le rimozioni verranno saltate.</string>

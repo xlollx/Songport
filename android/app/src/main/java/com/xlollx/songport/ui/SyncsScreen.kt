@@ -243,6 +243,7 @@ private fun progressText(p: Progress?): String = when (p?.step) {
     Progress.Step.CREATE_TARGET -> stringResource(R.string.progress_create_target)
     Progress.Step.FETCH_TARGET -> stringResource(R.string.progress_fetch_target)
     Progress.Step.MATCHING -> stringResource(R.string.progress_matching, p?.done ?: 0, p?.total ?: 0)
+    Progress.Step.WAITING -> stringResource(R.string.progress_waiting, ((p?.total ?: 0) - (p?.done ?: 0)).coerceAtLeast(0))
     Progress.Step.ADDING -> stringResource(R.string.progress_adding, p?.total ?: 0)
     Progress.Step.REMOVING -> stringResource(R.string.progress_removing, p?.total ?: 0)
     Progress.Step.BACKUP -> stringResource(R.string.tools_progress_backup, p?.done ?: 0, p?.total ?: 0)

@@ -19,6 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -84,14 +86,28 @@ fun SettingsScreen(
                     }
                 })
             }
-            SettingRow(stringResource(R.string.settings_language), stringResource(R.string.settings_language_desc)) {
-                TextButton(onClick = {
-                    // Android 13+ has a per-app language picker; older versions only offer the system one.
-                    val intent = if (Build.VERSION.SDK_INT >= 33) Intent(Settings.ACTION_APP_LOCALE_SETTINGS, Uri.fromParts("package", ctx.packageName, null))
-                    else Intent(Settings.ACTION_LOCALE_SETTINGS)
-                    runCatching { ctx.startActivity(intent) }
-                }) { Text(stringResource(R.string.settings_language_open)) }
+            // Chosen in-app and applied at once (the activity is recreated), also while a sync runs.
+            var langOpen by remember { mutableStateOf(false) }
+            SettingRow(stringResource(R.string.settings_language), AppLocale.label(ctx, AppLocale.current(ctx))) {
+                TextButton(onClick = { langOpen = true }) { Text(stringResource(R.string.settings_language_open)) }
             }
+            if (langOpen) AlertDialog(
+                onDismissRequest = { langOpen = false },
+                title = { Text(stringResource(R.string.settings_language)) },
+                text = {
+                    Column {
+                        AppLocale.CHOICES.forEach { tag ->
+                            Row(
+                                Modifier.fillMaxWidth().clickable {
+                                    langOpen = false
+                                    (ctx as? Activity)?.let { AppLocale.set(it, tag) }
+                                }.padding(vertical = 10.dp),
+                            ) { Text(AppLocale.label(ctx, tag), style = MaterialTheme.typography.bodyLarge) }
+                        }
+                    }
+                },
+                confirmButton = { TextButton(onClick = { langOpen = false }) { Text(stringResource(R.string.cancel)) } },
+            )
         }
 
         SectionCard(stringResource(R.string.security_title)) {

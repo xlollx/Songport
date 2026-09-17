@@ -31,6 +31,9 @@ import java.util.UUID
  * Ogni abbinamento riuscito finisce nella cache, cosi' le sync successive non ripetono le ricerche.
  * I brani che l'utente ha messo fra gli "ignorati" del job non vengono ne' cercati ne' segnalati.
  */
+/** Attese visibili quando il servizio limita le richieste: crescenti, poi ci si ferma con quanto trovato. */
+private val WAIT_SECONDS = intArrayOf(30, 60, 120)
+
 class SyncEngine(private val ctx: Context) {
     private val store = Store.get(ctx)
 
@@ -198,7 +201,11 @@ class SyncEngine(private val ctx: Context) {
         val parallel = dst.searchParallelism.coerceIn(1, 8)
         var consecutiveErrors = 0
         var done = 0
-        for (chunk in toSearch.chunked(parallel)) {
+        var waits = 0
+        val chunks = toSearch.chunked(parallel)
+        var ci = 0
+        while (ci < chunks.size) {
+            val chunk = chunks[ci]
             // Esito per brano: (trovato, punteggio); punteggio null = preso dalla cache, mai "incerto".
             val results: List<Result<Pair<Track?, Double?>>> = coroutineScope {
                 chunk.map { s ->
@@ -213,6 +220,18 @@ class SyncEngine(private val ctx: Context) {
                     }
                 }.awaitAll()
             }
+            // Il servizio chiede una pausa (403/429 dopo molte ricerche): e' un limite suo, non un
+            // guasto. Si aspetta in modo visibile, sempre piu' a lungo, e si riprova lo stesso gruppo.
+            val throttled = results.firstNotNullOfOrNull { r -> (r.exceptionOrNull() as? ProviderException)?.takeIf { isThrottle(it.message) } }
+            if (throttled != null && waits < WAIT_SECONDS.size) {
+                val seconds = WAIT_SECONDS[waits++]
+                for (s in 1..seconds) {
+                    onProgress(Progress(Progress.Step.WAITING, s, seconds))
+                    kotlinx.coroutines.delay(1000)
+                }
+                continue
+            }
+            ci++
             chunk.forEachIndexed { i, s ->
                 done++
                 onProgress(Progress(Progress.Step.MATCHING, done, toSearch.size))
@@ -225,7 +244,7 @@ class SyncEngine(private val ctx: Context) {
                     // Errori sistemici (quota, limiti, sessione scaduta): inutile insistere. Se non e'
                     // stato trovato ancora nulla l'errore e' dell'intera sync; altrimenti ci si ferma qui.
                     val systemic = consecutiveErrors >= 3 || msg.contains("quota", true) || msg.contains("reconnect", true) ||
-                        msg.contains("sign in again", true) || msg.contains("403") || msg.contains("429")
+                        msg.contains("sign in again", true) || isThrottle(msg)
                     if (systemic) {
                         if (done - chunk.size + i <= 0) throw e
                         return msg
@@ -239,6 +258,13 @@ class SyncEngine(private val ctx: Context) {
             }
         }
         return null
+    }
+
+    /** Il servizio sta limitando le richieste (non un errore dell'app). */
+    private fun isThrottle(msg: String?): Boolean {
+        val m = msg ?: return false
+        return m.contains("403") || m.contains("429") || m.contains("too many", true) || m.contains("rate limit", true) ||
+            m.contains("refused the request", true)
     }
 
     /** Applica un piano: aggiunte, rimozioni, cache e report. */

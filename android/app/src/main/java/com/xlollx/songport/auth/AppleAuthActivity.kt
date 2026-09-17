@@ -30,6 +30,9 @@ import kotlinx.coroutines.launch
  * localStorage). La schermata di Apple ID si apre in una finestra popup, gestita in onCreateWindow.
  */
 class AppleAuthActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(com.xlollx.songport.ui.AppLocale.wrap(newBase))
+    }
 
     private lateinit var container: FrameLayout
     private var popup: WebView? = null

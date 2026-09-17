@@ -53,6 +53,10 @@ import kotlinx.coroutines.launch
  * chiamata reale prima di essere salvate, cifrate, nel telefono.
  */
 class ServerLoginActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(com.xlollx.songport.ui.AppLocale.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val provider = intent.getStringExtra(EXTRA_PROVIDER)?.let { Providers.byId(it) as? CredentialsProvider }

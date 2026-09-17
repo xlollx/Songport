@@ -12,6 +12,10 @@ import com.xlollx.songport.R
  * BiometricPrompt la richiede, mentre il resto dell'app usa ComponentActivity + Compose.
  */
 class LockActivity : FragmentActivity() {
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(com.xlollx.songport.ui.AppLocale.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val prompt = BiometricPrompt(this, ContextCompat.getMainExecutor(this), object : BiometricPrompt.AuthenticationCallback() {

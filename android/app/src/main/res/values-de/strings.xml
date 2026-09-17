@@ -33,6 +33,7 @@
     <string name="progress_create_target">Ziel-Playlist wird erstellt…</string>
     <string name="progress_fetch_target">Ziel-Playlist wird gelesen…</string>
     <string name="progress_matching">Titel werden abgeglichen %1$d/%2$d…</string>
+    <string name="progress_waiting">Der Dienst begrenzt die Anfragen: Weiter in %1$d s. Bei großen Playlists normal, kein Fehler.</string>
     <string name="progress_adding">%1$d Titel werden hinzugefügt…</string>
     <string name="progress_removing">%1$d Titel werden entfernt…</string>
 
@@ -88,6 +89,7 @@
     <string name="settings_language">Sprache</string>
     <string name="settings_language_desc">Songport folgt der Systemsprache: Englisch, Italienisch, Französisch, Deutsch.</string>
     <string name="settings_language_open">Ändern</string>
+    <string name="settings_language_system">Systemsprache</string>
     <string name="settings_advanced">Dienst-Schlüssel</string>
     <string name="settings_advanced_desc">Songport wird ohne eigene Schlüssel ausgeliefert: Spotify, YouTube Music, TIDAL, Deezer, Last.fm und Apple Music werden über einen kostenlosen, auf deinen Namen erstellten Schlüssel verbunden, sodass deren Limits und Kontingente dir allein gehören. Hier kannst du sie einsehen und ändern.</string>
     <string name="settings_privacy_options">Datenschutzoptionen für Werbung</string>
@@ -136,7 +138,7 @@
     <string name="link_not_connected">Verbinde zuerst %1$s, um diesen Link zu lesen.</string>
     <string name="link_resolving">Playlist wird gelesen…</string>
     <string name="note_no_removals">%1$s erlaubt über seine API kein Entfernen von Titeln aus einer Playlist: %2$d Titel wurden belassen.</string>
-    <string name="note_search_interrupted">Suche nach %1$d von %2$d Titeln abgebrochen (%3$s). Das Gefundene wurde übernommen und gemerkt: Starte den Sync später erneut, um fortzufahren.</string>
+    <string name="note_search_interrupted">%1$d von %2$d Titeln gesucht, dann hat der Dienst eine längere Pause verlangt (%3$s). Das ist eine Grenze des Dienstes, kein Fehler von Songport: Das Gefundene wurde übernommen und gemerkt. Starte den Sync in ein paar Minuten erneut, um dort weiterzumachen.</string>
     <string name="error_no_removals">%1$s kann keine Titel aus einer Playlist entfernen</string>
     <string name="log_notes_title">Hinweise</string>
     <string name="editor_mirror_unsupported">%1$s kann Titel nur hinzufügen: Entfernungen werden übersprungen.</string>

@@ -328,8 +328,9 @@ private fun ProviderCard(
     }
 }
 
+/** File playlists: import, paste, export, delete. Shown in Tools always and in Accounts when the File connector is added. */
 @Composable
-private fun FilesCard(snackbar: SnackbarHostState, onRemove: () -> Unit) {
+internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = null) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     var lists by remember { mutableStateOf<List<Playlist>>(emptyList()) }
@@ -390,7 +391,7 @@ private fun FilesCard(snackbar: SnackbarHostState, onRemove: () -> Unit) {
                 ProviderBadge(LocalFilesProvider, 40.dp)
                 Spacer(Modifier.width(12.dp))
                 Text(LocalFilesProvider.label(ctx), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                OverflowMenu(listOf(MenuAction(stringResource(R.string.account_remove), onRemove, destructive = true)))
+                if (onRemove != null) OverflowMenu(listOf(MenuAction(stringResource(R.string.account_remove), onRemove, destructive = true)))
             }
             Spacer(Modifier.height(6.dp))
             Text(stringResource(LocalFilesProvider.noteRes), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

@@ -73,6 +73,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
 
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(com.xlollx.songport.ui.AppLocale.wrap(newBase))
+    }
+
     private val messages = MutableStateFlow<String?>(null)
     private val tabRequests = MutableStateFlow(-1)
     /** Testo arrivato con "Condividi con Songport": contiene (si spera) il link di una playlist. */

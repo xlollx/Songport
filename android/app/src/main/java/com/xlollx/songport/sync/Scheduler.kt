@@ -127,6 +127,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         Progress.Step.CREATE_TARGET -> ctx.getString(R.string.progress_create_target)
         Progress.Step.FETCH_TARGET -> ctx.getString(R.string.progress_fetch_target)
         Progress.Step.MATCHING -> ctx.getString(R.string.progress_matching, p.done, p.total)
+        Progress.Step.WAITING -> ctx.getString(R.string.progress_waiting, (p.total - p.done).coerceAtLeast(0))
         Progress.Step.ADDING -> ctx.getString(R.string.progress_adding, p.total)
         Progress.Step.REMOVING -> ctx.getString(R.string.progress_removing, p.total)
         else -> ""

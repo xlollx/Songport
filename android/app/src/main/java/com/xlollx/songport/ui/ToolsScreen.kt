@@ -68,12 +68,13 @@ fun ToolsScreen(snackbar: SnackbarHostState) {
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
     val provider = connected.firstOrNull { it.id == selectedId } ?: connected.firstOrNull()
 
-    if (provider == null) {
-        EmptyState(Icons.Filled.Build, stringResource(R.string.empty_tools_title), stringResource(R.string.empty_tools_body))
-        return
-    }
-
     Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        // Playlist files (imported, or produced by a sync into "File") live here, not under Accounts.
+        FilesCard(snackbar)
+        if (provider == null) {
+            EmptyState(Icons.Filled.Build, stringResource(R.string.empty_tools_title), stringResource(R.string.empty_tools_body))
+            return@Column
+        }
         Text(stringResource(R.string.tools_pick_service), style = MaterialTheme.typography.titleMedium)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             connected.forEach { p ->
