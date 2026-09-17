@@ -272,15 +272,11 @@ class SyncEngine(private val ctx: Context) {
             val throttled = results.firstNotNullOfOrNull { r -> (r.exceptionOrNull() as? ProviderException)?.takeIf { isThrottle(it.message) } }
             // Un blocco dichiarato dal servizio ("retry in N s") si rispetta alla lettera: e' l'unico
             // modo perche' scada. Le altre pause seguono la scala crescente.
-            val asked = Regex("retry in (\\d+) s").find(throttled?.message ?: "")?.groupValues?.get(1)?.toIntOrNull()
+            val asked = declaredWait(throttled?.message)
             if (throttled != null && asked != null && blockWaits < MAX_BLOCK_WAITS) {
                 blockWaits++
-                val seconds = asked.coerceIn(5, 1800)
-                Diagnostics.log(ctx, "engine", "${dst.displayName} is blocked: ${throttled.message?.take(200)}; waiting ${seconds}s")
-                for (s in 1..seconds) {
-                    onProgress(Progress(Progress.Step.WAITING, s, seconds))
-                    kotlinx.coroutines.delay(1000)
-                }
+                Diagnostics.log(ctx, "engine", "${dst.displayName} is blocked: ${throttled.message?.take(200)}; waiting ${asked}s")
+                waitVisible(asked, onProgress)
                 continue
             }
             if (throttled != null && asked == null && waits < WAIT_SECONDS.size) {
@@ -332,6 +328,18 @@ class SyncEngine(private val ctx: Context) {
         return null
     }
 
+    /** Secondi di attesa dichiarati dal servizio ("Retry in N s"), entro limiti ragionevoli; null se non li dichiara. */
+    private fun declaredWait(msg: String?): Int? =
+        Regex("retry in (\\d+) s", RegexOption.IGNORE_CASE).find(msg ?: "")?.groupValues?.get(1)?.toIntOrNull()?.coerceIn(5, 1800)
+
+    /** Attesa mostrata all'utente secondo per secondo; lo stop la interrompe, la pausa no. */
+    private suspend fun waitVisible(seconds: Int, onProgress: (Progress) -> Unit) {
+        for (s in 1..seconds) {
+            onProgress(Progress(Progress.Step.WAITING, s, seconds))
+            kotlinx.coroutines.delay(1000)
+        }
+    }
+
     /** Il servizio sta limitando le richieste (non un errore dell'app). */
     private fun isThrottle(msg: String?): Boolean {
         val m = msg ?: return false
@@ -353,15 +361,29 @@ class SyncEngine(private val ctx: Context) {
             // brano e' una chiamata a parte: blocchi piccoli, cosi' l'avanzamento si muove ogni pochi
             // brani invece di restare fermo per minuti.
             val chunkSize = if (targetId == MusicProvider.LIKED_ID) 10 else 50
+            var blockWaits = 0
             for (chunk in plan.toAdd.chunked(chunkSize)) {
-                try {
-                    dst.addTracks(ctx, targetId, chunk)
-                    added += chunk.size
-                } catch (e: Exception) {
-                    // Un blocco fallito (id non piu' valido, ecc.): riprova brano per brano.
-                    for (t in chunk) {
-                        try { dst.addTracks(ctx, targetId, listOf(t)); added++ }
-                        catch (e2: Exception) { failed += "$t (${e2.message})" }
+                while (true) {
+                    try {
+                        dst.addTracks(ctx, targetId, chunk)
+                        added += chunk.size
+                        break
+                    } catch (e: Exception) {
+                        // Il servizio ha bloccato l'indirizzo e dice quanto aspettare: si aspetta, come
+                        // nella ricerca, invece di dare per falliti brani che sono solo in attesa.
+                        val asked = declaredWait(e.message)
+                        if (asked != null && blockWaits < MAX_BLOCK_WAITS) {
+                            blockWaits++
+                            Diagnostics.log(ctx, "engine", "${dst.displayName} is blocked while adding: ${e.message?.take(160)}; waiting ${asked}s")
+                            waitVisible(asked, onProgress)
+                            continue
+                        }
+                        // Un blocco fallito (id non piu' valido, ecc.): riprova brano per brano.
+                        for (t in chunk) {
+                            try { dst.addTracks(ctx, targetId, listOf(t)); added++ }
+                            catch (e2: Exception) { failed += "$t (${e2.message})" }
+                        }
+                        break
                     }
                 }
                 onProgress(Progress(Progress.Step.ADDING, added, plan.toAdd.size))
@@ -371,7 +393,15 @@ class SyncEngine(private val ctx: Context) {
         var removed = 0
         if (plan.toRemove.isNotEmpty()) {
             onProgress(Progress(Progress.Step.REMOVING, 0, plan.toRemove.size))
-            dst.removeTracks(ctx, targetId, plan.toRemove)
+            var blockWaits = 0
+            while (true) {
+                try { dst.removeTracks(ctx, targetId, plan.toRemove); break }
+                catch (e: Exception) {
+                    val asked = declaredWait(e.message)
+                    if (asked != null && blockWaits < MAX_BLOCK_WAITS) { blockWaits++; waitVisible(asked, onProgress); continue }
+                    throw e
+                }
+            }
             removed = plan.toRemove.size
         }
 
