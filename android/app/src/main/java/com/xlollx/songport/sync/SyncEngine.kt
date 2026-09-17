@@ -38,6 +38,8 @@ import java.util.UUID
  * fondo; solo una serie di rifiuti senza progressi fa fermare con quanto trovato.
  */
 private val WAIT_SECONDS = intArrayOf(10, 20, 40, 60, 120)
+/** Quante attese dichiarate dal servizio (blocco dell'indirizzo) si accettano prima di fermarsi con quanto fatto. */
+private const val MAX_BLOCK_WAITS = 8
 private const val RESET_AFTER_CHUNKS = 15
 /** Punteggio fittizio di un "non trovato" preso dalla cache dei fallimenti, mai mostrato. */
 private const val MISS_SCORE = -1.0
@@ -231,6 +233,7 @@ class SyncEngine(private val ctx: Context) {
         var consecutiveErrors = 0
         var done = 0
         var waits = 0
+        var blockWaits = 0
         var sinceWait = 0
         val chunks = toSearch.chunked(parallel)
         var ci = 0
@@ -267,7 +270,20 @@ class SyncEngine(private val ctx: Context) {
             // Il servizio chiede una pausa (403/429 dopo molte ricerche): e' un limite suo, non un
             // guasto. Si aspetta in modo visibile, sempre piu' a lungo, e si riprova lo stesso gruppo.
             val throttled = results.firstNotNullOfOrNull { r -> (r.exceptionOrNull() as? ProviderException)?.takeIf { isThrottle(it.message) } }
-            if (throttled != null && waits < WAIT_SECONDS.size) {
+            // Un blocco dichiarato dal servizio ("retry in N s") si rispetta alla lettera: e' l'unico
+            // modo perche' scada. Le altre pause seguono la scala crescente.
+            val asked = Regex("retry in (\\d+) s").find(throttled?.message ?: "")?.groupValues?.get(1)?.toIntOrNull()
+            if (throttled != null && asked != null && blockWaits < MAX_BLOCK_WAITS) {
+                blockWaits++
+                val seconds = asked.coerceIn(5, 1800)
+                Diagnostics.log(ctx, "engine", "${dst.displayName} is blocked: ${throttled.message?.take(200)}; waiting ${seconds}s")
+                for (s in 1..seconds) {
+                    onProgress(Progress(Progress.Step.WAITING, s, seconds))
+                    kotlinx.coroutines.delay(1000)
+                }
+                continue
+            }
+            if (throttled != null && asked == null && waits < WAIT_SECONDS.size) {
                 val seconds = WAIT_SECONDS[waits++]
                 Diagnostics.log(ctx, "engine", "${dst.displayName} is throttling: ${throttled.message?.take(200)}; waiting ${seconds}s")
                 sinceWait = 0
