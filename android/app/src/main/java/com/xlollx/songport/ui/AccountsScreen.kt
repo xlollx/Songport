@@ -193,11 +193,11 @@ fun AccountsScreen(snackbar: SnackbarHostState, showAdd: Boolean, onShowAdd: (Bo
 /** Service picker for a new connector. Services that allow one connector only are greyed out once added. */
 @Composable
 private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, onPick: (MusicProvider) -> Unit) {
+    val ctx = LocalContext.current
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.connector_pick_title)) },
         text = {
-            val ctx = LocalContext.current
             // Plugin-based services are offered only when a plugin is installed, unless this build
             // may point to where to get one.
             val services = Providers.services().filter { !it.pluginBased || BuildConfig.PLUGIN_LINKS || it.isConfigured(ctx) }
