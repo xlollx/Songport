@@ -349,7 +349,11 @@ class SyncEngine(private val ctx: Context) {
         var added = 0
         if (plan.toAdd.isNotEmpty()) {
             onProgress(Progress(Progress.Step.ADDING, 0, plan.toAdd.size))
-            for (chunk in plan.toAdd.chunked(50)) {
+            // Verso una playlist un blocco di 50 e' una chiamata sola. Verso i "brani preferiti" ogni
+            // brano e' una chiamata a parte: blocchi piccoli, cosi' l'avanzamento si muove ogni pochi
+            // brani invece di restare fermo per minuti.
+            val chunkSize = if (targetId == MusicProvider.LIKED_ID) 10 else 50
+            for (chunk in plan.toAdd.chunked(chunkSize)) {
                 try {
                     dst.addTracks(ctx, targetId, chunk)
                     added += chunk.size
