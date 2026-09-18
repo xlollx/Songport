@@ -130,6 +130,9 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         )
     }
 
+    override suspend fun track(ctx: Context, trackId: String): Track? =
+        api(ctx, "GET", "$API/tracks/${Http.enc(trackId)}").takeIf { it["id"].str != null }?.let { toTrack(it) }
+
     private suspend fun searchQuery(ctx: Context, q: String): List<Track> {
         val j = api(ctx, "GET", "$API/search?type=track&limit=5&q=${Http.enc(q)}")
         return j["tracks"]["items"].arr.filter { it["id"].str != null }.map { toTrack(it) }

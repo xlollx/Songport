@@ -88,6 +88,13 @@ interface MusicProvider {
     suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>)
     suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>)
 
+    /**
+     * Un brano di cui si conosce solo l'id (da un link incollato nella revisione), con titolo e
+     * artisti se il servizio permette di leggerli; null quando non li puo' leggere: il brano si
+     * aggiunge comunque, e' l'id che serve.
+     */
+    suspend fun track(ctx: Context, trackId: String): Track? = null
+
     /** Nome (e conteggio) di una playlist di cui si conosce solo l'id, es. da un link incollato. */
     suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist = Playlist(playlistId, playlistId)
 

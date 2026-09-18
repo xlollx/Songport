@@ -276,7 +276,7 @@ class SyncEngine(private val ctx: Context) {
                             // Slot condivisi fra le sync in corso verso lo stesso servizio: due sync insieme
                             // non raddoppiano la pressione, se la dividono.
                             val slots = searchSlots.getOrPut(dst.id) { kotlinx.coroutines.sync.Semaphore(parallel) }
-                            slots.withPermit { runCatching { Matcher.bestScored(s, dst.search(ctx, s)) }.map { it?.track to it?.score } }
+                            slots.withPermit { runCatching { searchScored(dst, s) }.map { it?.track to it?.score } }
                         }
                     }
                 }.awaitAll()
@@ -341,6 +341,30 @@ class SyncEngine(private val ctx: Context) {
         }
         return null
     }
+
+    /**
+     * Cerca [s] sulla destinazione e ne tiene il miglior candidato sopra soglia. La prima query e' quella
+     * del servizio (artisti e titolo cosi' come sono); se non basta si riprova con il titolo pulito e il
+     * primo artista, poi con il solo titolo: alcuni cataloghi rispondono meglio a query corte, e i
+     * candidati sono comunque valutati contro l'artista originale, quindi un omonimo non passa.
+     */
+    private suspend fun searchScored(dst: MusicProvider, s: Track): Matcher.Scored? {
+        Matcher.bestScored(s, dst.search(ctx, s))?.let { return it }
+        val tried = hashSetOf(query(s))
+        val title = Matcher.searchTitle(s.title)
+        val first = s.artists.firstOrNull()?.let { Matcher.searchArtist(it) }?.takeIf { it.isNotBlank() }
+        val variants = listOf(
+            s.copy(title = title, artists = listOfNotNull(first), isrc = null),
+            s.copy(title = title, artists = emptyList(), isrc = null),
+        )
+        for (v in variants) {
+            if (!tried.add(query(v))) continue
+            Matcher.bestScored(s, dst.search(ctx, v))?.let { return it }
+        }
+        return null
+    }
+
+    private fun query(t: Track): String = (t.artists.take(2) + t.title).joinToString(" ").lowercase().trim()
 
     /**
      * Esegue una chiamata al servizio rispettando i blocchi che dichiara ("Retry in N s"): aspetta il
@@ -540,8 +564,16 @@ class SyncEngine(private val ctx: Context) {
     /** Candidati sulla destinazione per una query libera ("Artista - Titolo" o solo titolo). */
     suspend fun searchOnTarget(job: SyncJob, query: String): List<Track> {
         val (_, dst) = providers(job)
+        // Il link del brano incollato: si aggiunge quello, letto dal servizio quando possibile.
+        TrackLinks.parse(query)?.let { ref ->
+            if (!TrackLinks.matches(ref.service, dst.serviceId)) throw ProviderException(ctx.getString(R.string.link_other_service, dst.label(ctx)))
+            val t = runCatching { dst.track(ctx, ref.trackId) }.getOrNull()
+            return listOf(t ?: dst.rehydrate(Track(id = ref.trackId, title = ctx.getString(R.string.link_track_unknown), album = ref.trackId)))
+        }
         val (artists, title) = PlaylistFiles.splitArtistTitle(query)
-        return dst.search(ctx, Track(id = "", title = title, artists = artists))
+        val found = dst.search(ctx, Track(id = "", title = title, artists = artists))
+        // "Artista - Titolo" senza esito: il solo titolo a volte lo trova (l'utente vede l'artista sotto).
+        return if (found.isEmpty() && artists.isNotEmpty()) dst.search(ctx, Track(id = "", title = title)) else found
     }
 
     /**

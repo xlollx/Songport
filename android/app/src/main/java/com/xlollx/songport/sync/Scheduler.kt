@@ -129,11 +129,14 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         return Result.success()
     }
 
+    /** One notification per worker: syncs started separately run side by side, each with its own bar. */
+    private val notificationId: Int get() = Notifications.progressId(inputData.getString(KEY_JOB))
+
     private fun foregroundInfo(title: String, text: String = ""): ForegroundInfo {
         val n = Notifications.progress(applicationContext, title, text)
         return if (Build.VERSION.SDK_INT >= 29) {
-            ForegroundInfo(Notifications.PROGRESS_ID, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
-        } else ForegroundInfo(Notifications.PROGRESS_ID, n)
+            ForegroundInfo(notificationId, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        } else ForegroundInfo(notificationId, n)
     }
 
     /** Aggiorna la notifica di avanzamento (stesso id del servizio in primo piano): barra, percentuale, pausa e stop. */
@@ -144,9 +147,10 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         ) return
         val text = (if (paused) ctx.getString(R.string.sync_paused) + " · " else "") + progressText(ctx, p) +
             (p.percent?.let { " · $it%" } ?: "")
+        val others = (SyncState.running.value.keys - job.id).size
         runCatching {
             ctx.getSystemService(NotificationManager::class.java)
-                ?.notify(Notifications.PROGRESS_ID, Notifications.progress(ctx, job.name, text, p.done, p.total, job.id, paused))
+                ?.notify(notificationId, Notifications.progress(ctx, job.name, text, p.done, p.total, job.id, paused, others))
         }
     }
 

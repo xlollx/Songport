@@ -169,6 +169,13 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         }
     }
 
+    override suspend fun track(ctx: Context, trackId: String): Track? {
+        val v = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/videos?part=snippet,contentDetails&id=${Http.enc(trackId)}") }
+        val item = v["items"].arr.firstOrNull() ?: return null
+        val (title, artists) = TitleParser.parseYouTube(item["snippet"]["title"].str ?: "", item["snippet"]["channelTitle"].str)
+        return Track(id = trackId, title = title, artists = artists, durationMs = Durations.parseIso8601(item["contentDetails"]["duration"].str))
+    }
+
     override suspend fun search(ctx: Context, track: Track): List<Track> {
         val q = (track.artists.take(2) + track.title).joinToString(" ")
         val s = counted(ctx, QuotaMeter.COST_SEARCH) { api(ctx, "GET", "$API/search?part=snippet&type=video&videoCategoryId=10&maxResults=5&q=${Http.enc(q)}") }

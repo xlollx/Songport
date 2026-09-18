@@ -200,6 +200,9 @@
     <string name="review_partial_banner">La sync sta ancora aggiungendo i brani trovati. Questi puoi già sistemarli.</string>
     <string name="unmatched_added">Aggiunto: %1$s</string>
     <string name="unmatched_no_results">Nessun risultato.</string>
+    <string name="unmatched_search_help">Titolo, «artista - titolo» oppure il link del brano</string>
+    <string name="link_other_service">Questo link non è un brano di %1$s</string>
+    <string name="link_track_unknown">Brano dal link</string>
     <string name="result_ignored">%1$d ignorati</string>
     <string name="tools_pick_service">Servizio</string>
     <string name="tools_none">Collega prima un servizio.</string>
@@ -341,6 +344,10 @@
     <string name="import_action">Importa</string>
     <string name="notif_progress_channel">Sync in corso</string>
     <string name="notif_progress_desc">Mostrata mentre una sync manuale è in esecuzione.</string>
+    <plurals name="notif_more_running">
+        <item quantity="one">+%d altra sync in esecuzione</item>
+        <item quantity="other">+%d altre sync in esecuzione</item>
+    </plurals>
     <string name="diag_share">Condividi dettagli tecnici</string>
     <string name="widget_description">Ultima sync e pulsante "Sincronizza tutto".</string>
     <string name="widget_last">Ultima: %1$s · %2$s</string>

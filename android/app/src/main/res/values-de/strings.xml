@@ -200,6 +200,9 @@
     <string name="review_partial_banner">Die Synchronisierung fügt die gefundenen Titel noch hinzu. Diese kannst du schon klären.</string>
     <string name="unmatched_added">Hinzugefügt: %1$s</string>
     <string name="unmatched_no_results">Keine Ergebnisse.</string>
+    <string name="unmatched_search_help">Titel, „Künstler - Titel“ oder der Link des Titels</string>
+    <string name="link_other_service">Dieser Link ist kein Titel von %1$s</string>
+    <string name="link_track_unknown">Titel aus dem Link</string>
     <string name="result_ignored">%1$d ignoriert</string>
     <string name="tools_pick_service">Dienst</string>
     <string name="tools_none">Verbinde zuerst einen Dienst.</string>
@@ -341,6 +344,10 @@
     <string name="import_action">Importieren</string>
     <string name="notif_progress_channel">Laufender Sync</string>
     <string name="notif_progress_desc">Wird angezeigt, während ein manueller Sync läuft.</string>
+    <plurals name="notif_more_running">
+        <item quantity="one">+%d weiterer Sync läuft</item>
+        <item quantity="other">+%d weitere Syncs laufen</item>
+    </plurals>
     <string name="diag_share">Technische Details teilen</string>
     <string name="widget_description">Letzter Sync und eine Schaltfläche \"Alle synchronisieren\".</string>
     <string name="widget_last">Zuletzt: %1$s · %2$s</string>

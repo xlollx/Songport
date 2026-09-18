@@ -16,6 +16,14 @@ object Notifications {
     private const val CHANNEL_ID = "sync_results"
     const val PROGRESS_CHANNEL_ID = "sync_progress"
     const val PROGRESS_ID = 1001
+    private const val PROGRESS_GROUP = "sync_progress"
+
+    /**
+     * Each running sync has its own progress notification: two workers posting under one id would
+     * overwrite each other and only the last to speak would be visible. "Sync all" keeps the base id.
+     */
+    fun progressId(jobId: String?): Int =
+        if (jobId == null || jobId == "*") PROGRESS_ID else PROGRESS_ID + 1 + (jobId.hashCode() and 0xffff)
 
     fun ensureChannel(context: Context) {
         val mgr = context.getSystemService(NotificationManager::class.java)
@@ -31,11 +39,12 @@ object Notifications {
 
     /**
      * Notifica silenziosa e persistente mentre una sync manuale gira in primo piano. Con un totale
-     * noto la barra e' determinata; con un [jobId] offre Pausa/Riprendi e Interrompi.
+     * noto la barra e' determinata; con un [jobId] offre Pausa/Riprendi e Interrompi. Con [others]
+     * altre sync in corso lo dice sotto il testo, cosi' chi vede solo questa sa che non e' l'unica.
      */
     fun progress(
         context: Context, title: String, text: String,
-        done: Int = 0, total: Int = 0, jobId: String? = null, paused: Boolean = false,
+        done: Int = 0, total: Int = 0, jobId: String? = null, paused: Boolean = false, others: Int = 0,
     ): android.app.Notification {
         val open = Intent(context, MainActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP }
         val pi = PendingIntent.getActivity(context, PROGRESS_ID, open, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
@@ -46,10 +55,14 @@ object Notifications {
             .setProgress(if (total > 0) total else 0, done, total <= 0)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
+            .setGroup(PROGRESS_GROUP)
             .setContentIntent(pi)
+        if (others > 0) b.setSubText(context.resources.getQuantityString(R.plurals.notif_more_running, others, others))
         if (jobId != null) {
+            // Request codes differ per job: PendingIntents with equal codes and intents that differ
+            // only in their extras replace each other, and Pause on one sync would pause another.
             fun action(act: String, code: Int): PendingIntent = PendingIntent.getBroadcast(
-                context, code,
+                context, (jobId.hashCode() shl 2) or code,
                 Intent(context, com.xlollx.songport.sync.SyncControlReceiver::class.java).setAction(act).putExtra(com.xlollx.songport.sync.SyncControlReceiver.EXTRA_JOB, jobId),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
             )

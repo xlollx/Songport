@@ -94,6 +94,16 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         return io(ctx, "search", q) { j -> j.arr.mapNotNull { toTrack(it) } }
     }
 
+    /** Titolo e canale da oEmbed di YouTube: pubblico, senza quota e senza passare dal Bridge. */
+    override suspend fun track(ctx: Context, trackId: String): Track? {
+        val r = com.xlollx.songport.net.Http.send("GET", "https://www.youtube.com/oembed?format=json&url=" +
+            com.xlollx.songport.net.Http.enc("https://www.youtube.com/watch?v=$trackId"))
+        if (!r.ok) return null
+        val j = parseJson(r.body)
+        val (title, artists) = com.xlollx.songport.sync.TitleParser.parseYouTube(j["title"].str ?: return null, j["author_name"].str)
+        return Track(id = trackId, title = title, artists = artists)
+    }
+
     override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist =
         io(ctx, "create", null, Bundle().apply { putString("name", name); putString("description", description) }) { j ->
             Playlist(j["id"].str ?: throw ProviderException("YouTube Music: playlist not created"), name, 0)

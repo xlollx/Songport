@@ -200,6 +200,9 @@
     <string name="review_partial_banner">The sync is still adding the tracks it found. You can already fix these.</string>
     <string name="unmatched_added">Added: %1$s</string>
     <string name="unmatched_no_results">No results.</string>
+    <string name="unmatched_search_help">Title, “artist - title”, or the link of the track</string>
+    <string name="link_other_service">This link is not a %1$s track</string>
+    <string name="link_track_unknown">Track from the link</string>
     <string name="result_ignored">%1$d ignored</string>
     <string name="tools_pick_service">Service</string>
     <string name="tools_none">Connect a service first.</string>
@@ -342,6 +345,10 @@
     <string name="import_action">Import</string>
     <string name="notif_progress_channel">Sync in progress</string>
     <string name="notif_progress_desc">Shown while a manual sync is running.</string>
+    <plurals name="notif_more_running">
+        <item quantity="one">+%d more sync running</item>
+        <item quantity="other">+%d more syncs running</item>
+    </plurals>
     <string name="diag_share">Share technical details</string>
     <string name="widget_description">Last sync and a "Sync all" button.</string>
     <string name="widget_last">Last: %1$s · %2$s</string>

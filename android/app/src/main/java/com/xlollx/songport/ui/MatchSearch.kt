@@ -73,6 +73,7 @@ fun MatchSearch(
     OutlinedTextField(
         value = query, onValueChange = { query = it }, singleLine = true, enabled = !busy,
         label = { Text(stringResource(R.string.unmatched_search_hint, targetName)) },
+        supportingText = { Text(stringResource(R.string.unmatched_search_help)) },
         modifier = Modifier.fillMaxWidth(),
     )
     Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {

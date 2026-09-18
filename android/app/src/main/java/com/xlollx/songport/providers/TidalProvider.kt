@@ -136,6 +136,11 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
         return order.mapNotNull { (tid, itemId) -> included[tid]?.let { trackFrom(it, names, itemId) } }
     }
 
+    override suspend fun track(ctx: Context, trackId: String): Track? {
+        val j = api(ctx, "GET", "$API/tracks/$trackId?countryCode=${cc(ctx)}&include=artists")
+        return resolve(ctx, listOfNotNull(j["data"].takeIf { it["id"].str != null })).firstOrNull()
+    }
+
     override suspend fun search(ctx: Context, track: Track): List<Track> {
         track.isrcNorm?.let { isrc ->
             val j = api(ctx, "GET", "$API/tracks?countryCode=${cc(ctx)}&filter[isrc]=$isrc")

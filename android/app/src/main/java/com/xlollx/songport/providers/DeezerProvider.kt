@@ -150,6 +150,8 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
         return out
     }
 
+    override suspend fun track(ctx: Context, trackId: String): Track? = toTrack(dz(ctx, "GET", "/track/$trackId", allowNoData = true))
+
     override suspend fun search(ctx: Context, track: Track): List<Track> {
         track.isrcNorm?.let { isrc ->
             val j = dz(ctx, "GET", "/track/isrc:$isrc", allowNoData = true)
