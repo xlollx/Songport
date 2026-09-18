@@ -11,6 +11,7 @@ import com.xlollx.songport.model.ProviderException
 import com.xlollx.songport.model.SyncJob
 import com.xlollx.songport.model.SyncPlan
 import com.xlollx.songport.model.SyncReport
+import com.xlollx.songport.model.TargetSearch
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.providers.LocalFilesProvider
 import com.xlollx.songport.providers.MusicProvider
@@ -562,18 +563,20 @@ class SyncEngine(private val ctx: Context) {
     // ------------------------------------------------------------------ risoluzione manuale
 
     /**
-     * Candidati sulla destinazione per una query libera ("Artista - Titolo", solo titolo, o un link).
-     * Con il brano d'origine [source] i risultati sono ordinati per somiglianza con esso (titolo,
+     * Ricerca manuale sulla destinazione per una query libera ("Artista - Titolo", solo titolo, o un link).
+     * Con il brano d'origine [source] i candidati sono ordinati per somiglianza con esso (titolo,
      * artista, durata): le versioni dell'artista giusto vengono prima degli omonimi piu' popolari, e
-     * le edizioni ripetute dello stesso brano compaiono una volta sola.
+     * le edizioni ripetute dello stesso brano compaiono una volta sola. Se [source] ha un album, una
+     * seconda ricerca "artista album" elenca i brani di quell'album presenti sul servizio: se mancano
+     * tutti, manca il disco, non solo il brano.
      */
-    suspend fun searchOnTarget(job: SyncJob, query: String, source: Track? = null): List<Track> {
+    suspend fun searchOnTarget(job: SyncJob, query: String, source: Track? = null): TargetSearch {
         val (_, dst) = providers(job)
         // Il link del brano incollato: si aggiunge quello, letto dal servizio quando possibile.
         TrackLinks.parse(query)?.let { ref ->
             if (!TrackLinks.matches(ref.service, dst.serviceId)) throw ProviderException(ctx.getString(R.string.link_other_service, dst.label(ctx)))
             val t = runCatching { dst.track(ctx, ref.trackId) }.getOrNull()
-            return listOf(t ?: dst.rehydrate(Track(id = ref.trackId, title = ctx.getString(R.string.link_track_unknown), album = ref.trackId)))
+            return TargetSearch(listOf(t ?: dst.rehydrate(Track(id = ref.trackId, title = ctx.getString(R.string.link_track_unknown), album = ref.trackId))))
         }
         val (artists, title) = PlaylistFiles.splitArtistTitle(query)
         var found = dst.search(ctx, Track(id = "", title = title, artists = artists))
@@ -584,8 +587,24 @@ class SyncEngine(private val ctx: Context) {
             found = (found + dst.search(ctx, Track(id = "", title = title))).distinctBy { it.id }
         }
         val ranked = if (source != null) found.sortedByDescending { Matcher.score(source, it) } else found
+        val candidates = dedupe(ranked)
+        if (source == null) return TargetSearch(candidates)
+        val album = source.album.trim().takeIf { it.isNotEmpty() } ?: return TargetSearch(candidates)
+        val albumHits = runCatching { dst.search(ctx, Track(id = "", title = album, artists = source.artists.take(1))) }.getOrDefault(emptyList())
+        // Un servizio che non riporta l'album nei risultati non permette di dire se il disco c'e'.
+        if ((albumHits + found).none { it.album.isNotBlank() }) return TargetSearch(candidates)
+        val wanted = Matcher.normalizeTitle(album)
+        val ofAlbum = dedupe((albumHits + found).filter {
+            it.album.isNotBlank() && Matcher.similarity(Matcher.normalizeTitle(it.album), wanted) >= 0.8 &&
+                (source.artists.isEmpty() || Matcher.artistScore(source.artists, it.artists) >= 0.7)
+        }).sortedBy { it.title.lowercase() }
+        return TargetSearch(candidates, album, ofAlbum)
+    }
+
+    /** Una riga per titolo e artisti: le edizioni ripetute di uno stesso brano non aiutano a scegliere. */
+    private fun dedupe(tracks: List<Track>): List<Track> {
         val seen = HashSet<String>()
-        return ranked.filter { seen.add(Matcher.normalizeTitle(it.title) + "|" + it.artists.map { a -> Matcher.normalizeArtist(a) }.sorted().joinToString(",")) }
+        return tracks.filter { seen.add(Matcher.normalizeTitle(it.title) + "|" + it.artists.map { a -> Matcher.normalizeArtist(a) }.sorted().joinToString(",")) }
     }
 
     /**

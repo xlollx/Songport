@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.xlollx.songport.R
+import com.xlollx.songport.model.TargetSearch
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.sync.Durations
 import kotlinx.coroutines.launch
@@ -51,7 +53,7 @@ fun MatchSearch(
     initialQuery: String,
     targetName: String,
     pickLabel: String,
-    search: suspend (String) -> List<Track>,
+    search: suspend (String) -> TargetSearch,
     onPick: suspend (Track) -> Unit,
     onError: (String) -> Unit,
     autoSearch: Boolean = false,
@@ -59,13 +61,13 @@ fun MatchSearch(
 ) {
     val scope = rememberCoroutineScope()
     var query by remember { mutableStateOf(initialQuery) }
-    var candidates by remember { mutableStateOf<List<Track>?>(null) }
+    var candidates by remember { mutableStateOf<TargetSearch?>(null) }
     var busy by remember { mutableStateOf(false) }
     // Aperto per sistemare un brano: la prima ricerca parte da sola, un tocco in meno per ogni brano.
     LaunchedEffect(Unit) {
         if (autoSearch && candidates == null && query.isNotBlank()) {
             busy = true
-            candidates = try { search(query) } catch (e: Exception) { onError(e.message ?: ""); emptyList() }
+            candidates = try { search(query) } catch (e: Exception) { onError(e.message ?: ""); TargetSearch(emptyList()) }
             busy = false
         }
     }
@@ -82,14 +84,13 @@ fun MatchSearch(
         Button(enabled = !busy && query.isNotBlank(), onClick = {
             busy = true
             scope.launch {
-                candidates = try { search(query) } catch (e: Exception) { onError(e.message ?: ""); emptyList() }
+                candidates = try { search(query) } catch (e: Exception) { onError(e.message ?: ""); TargetSearch(emptyList()) }
                 busy = false
             }
         }) { Text(stringResource(R.string.unmatched_search)) }
     }
-    candidates?.let { list ->
-        if (list.isEmpty()) Text(stringResource(R.string.unmatched_no_results), style = MaterialTheme.typography.bodySmall)
-        list.forEach { c ->
+    candidates?.let { result ->
+        val pick: @Composable (Track) -> Unit = { c ->
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 TrackLine(c, Modifier.weight(1f))
                 TextButton(enabled = !busy, onClick = {
@@ -100,6 +101,20 @@ fun MatchSearch(
                     }
                 }) { Text(pickLabel) }
             }
+        }
+        if (result.candidates.isEmpty()) Text(stringResource(R.string.unmatched_no_results), style = MaterialTheme.typography.bodySmall)
+        result.candidates.forEach { pick(it) }
+        // L'album del brano d'origine sulla destinazione: se e' vuoto manca il disco, non solo il brano.
+        val album = result.album
+        val ofAlbum = result.albumTracks
+        if (album != null && ofAlbum != null) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                if (ofAlbum.isEmpty()) stringResource(R.string.search_album_missing, album, targetName)
+                else stringResource(R.string.search_album_section, album, targetName, ofAlbum.size),
+                style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary,
+            )
+            ofAlbum.forEach { pick(it) }
         }
     }
 }

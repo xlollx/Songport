@@ -203,6 +203,8 @@
     <string name="unmatched_search_help">Titolo, «artista - titolo» oppure il link del brano</string>
     <string name="link_other_service">Questo link non è un brano di %1$s</string>
     <string name="link_track_unknown">Brano dal link</string>
+    <string name="search_album_section">Album «%1$s» su %2$s: %3$d brani</string>
+    <string name="search_album_missing">Album «%1$s» non trovato su %2$s</string>
     <string name="result_ignored">%1$d ignorati</string>
     <string name="tools_pick_service">Servizio</string>
     <string name="tools_none">Collega prima un servizio.</string>

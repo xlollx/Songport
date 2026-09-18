@@ -115,6 +115,13 @@ data class SyncPlan(
 )
 
 /** Progresso di una sync in corso, mostrato nella UI. */
+/**
+ * Esito di una ricerca manuale sulla destinazione: i candidati ordinati per somiglianza e, quando
+ * il brano d'origine ha un album, i brani di quell'album trovati sul servizio (null se il servizio
+ * non riporta gli album e quindi non si puo' dire nulla).
+ */
+data class TargetSearch(val candidates: List<Track>, val album: String? = null, val albumTracks: List<Track>? = null)
+
 data class Progress(val step: Step, val done: Int = 0, val total: Int = 0, val label: String? = null) {
     /** WAITING: il servizio limita le richieste; done/total = secondi trascorsi/da attendere. */
     enum class Step { FETCH_SOURCE, CREATE_TARGET, FETCH_TARGET, MATCHING, WAITING, ADDING, REMOVING, BACKUP, DEDUPE }

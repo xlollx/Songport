@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import com.xlollx.songport.R
 import com.xlollx.songport.data.Store
 import com.xlollx.songport.model.MatchReview
+import com.xlollx.songport.model.TargetSearch
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.sync.SyncEngine
@@ -184,7 +185,7 @@ fun ReviewRow(
     expanded: Boolean,
     onToggle: () -> Unit,
     onKeep: () -> Unit,
-    search: suspend (String) -> List<Track>,
+    search: suspend (String) -> TargetSearch,
     onReplace: suspend (Track) -> Unit,
     onError: (String) -> Unit,
 ) {
@@ -223,7 +224,7 @@ private fun UnmatchedRow(
     dstName: String,
     expanded: Boolean,
     onToggle: () -> Unit,
-    search: suspend (String) -> List<Track>,
+    search: suspend (String) -> TargetSearch,
     onPick: suspend (Track) -> Unit,
     onIgnore: () -> Unit,
     onError: (String) -> Unit,
