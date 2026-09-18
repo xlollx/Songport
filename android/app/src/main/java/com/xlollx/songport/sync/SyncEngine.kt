@@ -597,7 +597,7 @@ class SyncEngine(private val ctx: Context) {
                 .filter { it.id !in shown }.sortedByDescending { Matcher.score(source, it) })
         } else emptyList()
         if (source == null) return TargetSearch(candidates, wide = wide)
-        val album = source.album.trim().takeIf { it.isNotEmpty() } ?: return TargetSearch(candidates)
+        val album = source.album.trim().takeIf { it.isNotEmpty() } ?: return TargetSearch(candidates, wide = wide)
         val albumHits = runCatching { dst.search(ctx, Track(id = "", title = album, artists = source.artists.take(1))) }.getOrDefault(emptyList())
         // Un servizio che non riporta l'album nei risultati non permette di dire se il disco c'e'.
         if ((albumHits + found).none { it.album.isNotBlank() }) return TargetSearch(candidates, wide = wide)
