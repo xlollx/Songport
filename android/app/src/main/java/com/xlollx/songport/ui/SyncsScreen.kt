@@ -5,12 +5,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.Column
@@ -97,6 +99,7 @@ fun SyncsScreen(
     onRunAll: () -> Unit,
     onDelete: (SyncJob) -> Unit,
     onGoToAccounts: () -> Unit,
+    onReview: (String) -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val running by SyncState.running.collectAsState()
@@ -134,7 +137,7 @@ fun SyncsScreen(
             }
         }
         items(data.jobs, key = { it.id }) { job ->
-            JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete)
+            JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview)
         }
     }
 }
@@ -143,6 +146,7 @@ fun SyncsScreen(
 private fun JobCard(
     job: SyncJob, data: StoreData, progress: Progress?, isRunning: Boolean,
     onEdit: (SyncJob) -> Unit, onPreview: (SyncJob) -> Unit, onRun: (SyncJob) -> Unit, onDelete: (SyncJob) -> Unit,
+    onReview: (String) -> Unit = {},
 ) {
     val ctx = LocalContext.current
     var confirmDelete by remember { mutableStateOf(false) }
@@ -209,6 +213,17 @@ private fun JobCard(
                     Notifications.summary(ctx, report), style = MaterialTheme.typography.bodySmall,
                     color = if (report.ok) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                 )
+            }
+            // Brani da sistemare a mano: raggiungibili appena la ricerca e' finita, anche mentre la
+            // sync sta ancora aggiungendo, e dopo, finche' ne restano.
+            val toFix = report?.takeIf { it.jobId == job.id }?.let { it.unmatchedTracks.size + it.reviewTracks.size } ?: 0
+            if (toFix > 0 && report != null) {
+                Spacer(Modifier.height(6.dp))
+                FilledTonalButton(onClick = { onReview(report.id) }, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Filled.Build, null, Modifier.size(16.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.review_now, toFix))
+                }
             }
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {

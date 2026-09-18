@@ -52,6 +52,17 @@ class SyncEngine(private val ctx: Context) {
         val reportId = UUID.randomUUID().toString()
         val report = try {
             val plan = plan(job, onProgress)
+            // La ricerca e' finita: i brani non trovati e gli abbinamenti incerti si possono gia'
+            // sistemare mentre l'aggiunta procede. Un report provvisorio li rende raggiungibili.
+            if (plan.unmatched.isNotEmpty() || plan.uncertain.isNotEmpty()) {
+                store.addReport(
+                    SyncReport(
+                        reportId, job.id, job.name, started, System.currentTimeMillis() - started,
+                        sourceCount = plan.sourceCount, unmatched = plan.unmatched.map { it.toString() }, unmatchedTracks = plan.unmatched,
+                        ignored = plan.ignored, reviewTracks = plan.uncertain, notes = plan.notes, partial = true,
+                    ),
+                )
+            }
             apply(job, plan, started, reportId, onProgress)
         } catch (e: kotlinx.coroutines.CancellationException) {
             // Il sistema ha fermato il worker (cambio di rete, limiti): non e' un esito della sync e
@@ -463,6 +474,13 @@ class SyncEngine(private val ctx: Context) {
         }
 
         store.putMatches(plan.newMatches)
+        // Quanto l'utente ha gia' sistemato dal report provvisorio non deve ricomparire.
+        val provisional = store.report(reportId)?.takeIf { it.partial }
+        if (provisional != null) {
+            val stillOpen = provisional.unmatchedTracks.map { it.id }.toHashSet()
+            unmatched.retainAll { it.id in stillOpen }
+        }
+        val reviews = provisional?.reviewTracks ?: plan.uncertain
         return SyncReport(
             id = reportId, jobId = job.id, jobName = job.name, startedEpoch = started,
             durationMs = System.currentTimeMillis() - started,
@@ -470,7 +488,7 @@ class SyncEngine(private val ctx: Context) {
             unmatched = unmatched.map { it.toString() } + failed,
             unmatchedTracks = unmatched,
             ignored = plan.ignored,
-            reviewTracks = plan.uncertain,
+            reviewTracks = reviews,
             removedTracks = if (removed > 0) plan.toRemove else emptyList(),
             notes = plan.notes,
         )

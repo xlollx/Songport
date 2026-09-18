@@ -189,6 +189,12 @@
     <string name="unmatched_add">Aggiungi</string>
     <string name="unmatched_ignore">Ignora</string>
     <string name="unmatched_none">Tutto sistemato.</string>
+    <string name="review_now">%1$d da sistemare · Inizia ora</string>
+    <string name="review_summary">%1$d non trovati · %2$d da rivedere</string>
+    <string name="review_tap_hint">Tocca un brano per cercarlo su %1$s. Ogni scelta viene ricordata per le prossime sync.</string>
+    <string name="review_partial_banner">La sync sta ancora aggiungendo i brani trovati. Questi puoi già sistemarli.</string>
+    <string name="files_show_all">Mostra tutte (%1$d)</string>
+    <string name="files_show_less">Mostra meno</string>
     <string name="unmatched_added">Aggiunto: %1$s</string>
     <string name="unmatched_no_results">Nessun risultato.</string>
     <string name="result_ignored">%1$d ignorati</string>

@@ -87,6 +87,8 @@ data class SyncReport(
     /** Avvisi non bloccanti (es. destinazione che non permette di rimuovere brani). */
     val notes: List<String> = emptyList(),
     val error: String? = null,
+    /** True finche' la sync e' in corso: contiene gia' i brani da rivedere, il resto arriva alla fine. */
+    val partial: Boolean = false,
 ) {
     val ok: Boolean get() = error == null
 }

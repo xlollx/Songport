@@ -139,12 +139,17 @@ class Store private constructor(context: Context) {
 
     fun deleteJob(id: String) = update { d -> d.copy(jobs = d.jobs.filter { it.id != id }) }
 
+    /** Aggiunge il report o, se un provvisorio con lo stesso id esiste gia', lo sostituisce al suo posto. */
     fun addReport(report: SyncReport) = update { d ->
+        val reports = if (d.reports.any { it.id == report.id }) d.reports.map { if (it.id == report.id) report else it }
+            else (listOf(report) + d.reports).take(MAX_REPORTS)
         d.copy(
-            reports = (listOf(report) + d.reports).take(MAX_REPORTS),
+            reports = reports,
             jobs = d.jobs.map { if (it.id == report.jobId) it.copy(lastRunEpoch = report.startedEpoch, lastReportId = report.id) else it },
         )
     }
+
+    fun report(id: String): SyncReport? = data.reports.firstOrNull { it.id == id }
 
     fun updateReport(id: String, fn: (SyncReport) -> SyncReport) = update { d ->
         d.copy(reports = d.reports.map { if (it.id == id) fn(it) else it })

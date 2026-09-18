@@ -123,9 +123,12 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                     }
                     if (p.uncertain.isNotEmpty()) {
                         Text(stringResource(R.string.review_section_uncertain, p.uncertain.size), style = MaterialTheme.typography.titleMedium)
+                        var openReview by remember { mutableStateOf<String?>(null) }
                         p.uncertain.forEach { review ->
                             ReviewRow(
                                 review = review, dstName = dstName,
+                                expanded = openReview == review.source.id,
+                                onToggle = { openReview = if (openReview == review.source.id) null else review.source.id },
                                 onKeep = { plan = p.copy(uncertain = p.uncertain - review) },
                                 search = { q -> engine.searchOnTarget(job, q) },
                                 onReplace = { chosen ->

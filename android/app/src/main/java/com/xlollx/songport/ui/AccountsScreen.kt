@@ -35,7 +35,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Card
@@ -343,6 +343,9 @@ private fun ProviderCard(
 
 /** File playlists: import, paste, export, delete. Shown in Tools always and in Accounts when the File connector is added. */
 @Composable
+/** File playlists shown before "show all". */
+private const val FILES_PREVIEW = 5
+
 internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = null) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -408,19 +411,24 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
             }
             Spacer(Modifier.height(6.dp))
             Text(stringResource(LocalFilesProvider.noteRes), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(Modifier.height(6.dp))
-            Text(stringResource(R.string.csv_playlists_hint), style = MaterialTheme.typography.bodySmall)
+            // The how-to only while there is nothing yet: once files exist, the list speaks for itself.
+            if (lists.isEmpty()) {
+                Spacer(Modifier.height(6.dp))
+                Text(stringResource(R.string.csv_playlists_hint), style = MaterialTheme.typography.bodySmall)
+            }
             Spacer(Modifier.height(10.dp))
             if (lists.isEmpty()) Text(stringResource(R.string.csv_empty), style = MaterialTheme.typography.bodyMedium)
-            lists.forEach { pl ->
+            // A few rows by default, the rest behind "show all": backups of many playlists are common.
+            var showAll by remember { mutableStateOf(false) }
+            val shown = if (showAll || lists.size <= FILES_PREVIEW) lists else lists.take(FILES_PREVIEW)
+            shown.forEach { pl ->
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Column(Modifier.weight(1f)) {
-                        Text(pl.name)
-                        Text(stringResource(R.string.tracks_count, pl.trackCount), style = MaterialTheme.typography.bodySmall)
-                    }
+                    Text(pl.name, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.tracks_count, pl.trackCount), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     var menu by remember { mutableStateOf(false) }
                     Box {
-                        IconButton(onClick = { menu = true }) { Icon(Icons.Filled.Share, stringResource(R.string.csv_export)) }
+                        IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, stringResource(R.string.csv_export)) }
                         DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.csv_export_csv)) },
@@ -430,11 +438,17 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
                                 text = { Text(stringResource(R.string.csv_export_m3u)) },
                                 onClick = { menu = false; exporting = pl.id; m3uLauncher.launch(pl.name + ".m3u8") },
                             )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },
+                                onClick = { menu = false; LocalFilesProvider.delete(ctx, pl.id); version++ },
+                            )
                         }
                     }
-                    IconButton(onClick = { LocalFilesProvider.delete(ctx, pl.id); version++ }) {
-                        Icon(Icons.Filled.Delete, stringResource(R.string.delete))
-                    }
+                }
+            }
+            if (lists.size > FILES_PREVIEW) {
+                TextButton(onClick = { showAll = !showAll }) {
+                    Text(if (showAll) stringResource(R.string.files_show_less) else stringResource(R.string.files_show_all, lists.size))
                 }
             }
             Spacer(Modifier.height(8.dp))

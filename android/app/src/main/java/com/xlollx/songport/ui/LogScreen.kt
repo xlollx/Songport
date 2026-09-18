@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.xlollx.songport.Notifications
 import com.xlollx.songport.R
@@ -140,7 +141,8 @@ private fun ReportRow(r: SyncReport, job: SyncJob?, snackbar: SnackbarHostState,
                 if (expanded && hasDetails) {
                     Spacer(Modifier.height(8.dp))
                     Text(stringResource(R.string.log_unmatched_title), style = MaterialTheme.typography.labelMedium)
-                    r.unmatched.forEach { Text("• $it", style = MaterialTheme.typography.bodySmall) }
+                    r.unmatched.take(5).forEach { Text("• $it", style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    if (r.unmatched.size > 5) Text(stringResource(R.string.preview_more, r.unmatched.size - 5), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 val canRestore = job != null && r.removedTracks.isNotEmpty()
                 val canReview = job != null && (r.unmatchedTracks.isNotEmpty() || r.reviewTracks.isNotEmpty())

@@ -299,6 +299,7 @@ private fun MainScreen(
                         j.linkedJobId?.let { l -> store.deleteJob(l); Scheduler.cancel(ctx, l) }
                     },
                     onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS },
+                    onReview = { unmatchedReport = it },
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }) { wizardFor = it }
                 MainActivity.TAB_TOOLS -> ToolsScreen(snackbar)

@@ -47,8 +47,8 @@ android {
         applicationId "com.xlollx.songport"
         minSdk 26
         targetSdk 36
-        versionCode 25
-        versionName "1.0.24"
+        versionCode 26
+        versionName "1.0.25"
 
         buildConfigField "String", "SPOTIFY_CLIENT_ID", "\"${spotifyClientId}\""
         buildConfigField "String", "TIDAL_CLIENT_ID", "\"${tidalClientId}\""

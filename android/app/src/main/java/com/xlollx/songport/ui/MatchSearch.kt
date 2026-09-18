@@ -14,6 +14,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,12 +54,21 @@ fun MatchSearch(
     search: suspend (String) -> List<Track>,
     onPick: suspend (Track) -> Unit,
     onError: (String) -> Unit,
+    autoSearch: Boolean = false,
     extraActions: @Composable (busy: Boolean) -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     var query by remember { mutableStateOf(initialQuery) }
     var candidates by remember { mutableStateOf<List<Track>?>(null) }
     var busy by remember { mutableStateOf(false) }
+    // Aperto per sistemare un brano: la prima ricerca parte da sola, un tocco in meno per ogni brano.
+    LaunchedEffect(Unit) {
+        if (autoSearch && candidates == null && query.isNotBlank()) {
+            busy = true
+            candidates = try { search(query) } catch (e: Exception) { onError(e.message ?: ""); emptyList() }
+            busy = false
+        }
+    }
 
     OutlinedTextField(
         value = query, onValueChange = { query = it }, singleLine = true, enabled = !busy,

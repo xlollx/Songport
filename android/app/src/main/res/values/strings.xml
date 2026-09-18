@@ -189,6 +189,12 @@
     <string name="unmatched_add">Add</string>
     <string name="unmatched_ignore">Ignore</string>
     <string name="unmatched_none">Everything has been sorted out.</string>
+    <string name="review_now">%1$d to fix · Start now</string>
+    <string name="review_summary">%1$d not found · %2$d to double-check</string>
+    <string name="review_tap_hint">Tap a track to search for it on %1$s. Every choice is remembered for the next syncs.</string>
+    <string name="review_partial_banner">The sync is still adding the tracks it found. You can already fix these.</string>
+    <string name="files_show_all">Show all (%1$d)</string>
+    <string name="files_show_less">Show fewer</string>
     <string name="unmatched_added">Added: %1$s</string>
     <string name="unmatched_no_results">No results.</string>
     <string name="result_ignored">%1$d ignored</string>

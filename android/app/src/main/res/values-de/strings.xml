@@ -189,6 +189,12 @@
     <string name="unmatched_add">Hinzufügen</string>
     <string name="unmatched_ignore">Ignorieren</string>
     <string name="unmatched_none">Alles ist erledigt.</string>
+    <string name="review_now">%1$d zu klären · Jetzt beginnen</string>
+    <string name="review_summary">%1$d nicht gefunden · %2$d zu prüfen</string>
+    <string name="review_tap_hint">Tippe auf einen Titel, um ihn auf %1$s zu suchen. Jede Entscheidung wird für die nächsten Synchronisierungen gemerkt.</string>
+    <string name="review_partial_banner">Die Synchronisierung fügt die gefundenen Titel noch hinzu. Diese kannst du schon klären.</string>
+    <string name="files_show_all">Alle anzeigen (%1$d)</string>
+    <string name="files_show_less">Weniger anzeigen</string>
     <string name="unmatched_added">Hinzugefügt: %1$s</string>
     <string name="unmatched_no_results">Keine Ergebnisse.</string>
     <string name="result_ignored">%1$d ignoriert</string>
