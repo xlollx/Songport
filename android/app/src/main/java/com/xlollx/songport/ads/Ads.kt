@@ -13,6 +13,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
@@ -54,6 +55,12 @@ object Ads {
 
     private fun initSdk(context: Context) {
         if (!initialized.compareAndSet(false, true)) return
+        // The developer's own phones get test ads with the real ad units: clicks there would count
+        // as invalid traffic. Ids come from the build (ADMOB_TEST_DEVICES); emulators are test devices anyway.
+        val testDevices = BuildConfig.ADMOB_TEST_DEVICES.split(',').map { it.trim() }.filter { it.isNotEmpty() }
+        if (testDevices.isNotEmpty()) {
+            MobileAds.setRequestConfiguration(RequestConfiguration.Builder().setTestDeviceIds(testDevices).build())
+        }
         MobileAds.initialize(context.applicationContext) { _canRequestAds.value = true }
     }
 

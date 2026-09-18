@@ -328,7 +328,17 @@ PY
   full-screen ads.
 - Before loading ads the app asks for consent through Google UMP; without consent no ads are
   requested. *Settings* shows "Ad privacy options" where regulations require it.
-- By default the build uses Google's test IDs. Never test with real IDs.
+- By default the build uses Google's test IDs (`ADMOB_APP_ID` and `ADMOB_BANNER_ID` unset): such a
+  build shows Google's sample ads and earns nothing. Set both repository variables and release a new
+  version before a public beta. Never test with real IDs: list the developer's phones in
+  `ADMOB_TEST_DEVICES` (comma-separated hashed ids, printed by the SDK in logcat on the first request,
+  or register the phones in AdMob → Settings → Test devices) so they get test ads with the real units.
+- Going live also needs, in AdMob: a **GDPR message** under *Privacy & messaging* for this app
+  (without it European users get no consent form, so the app requests no ads for them), the app
+  **linked to its Play listing** once published, and an **app-ads.txt** at the root of the developer
+  website named in the listing (`https://<domain>/app-ads.txt`, one line:
+  `google.com, pub-<publisher id>, DIRECT, f08c47fec0942fa0`). A GitHub Pages *project* site does not
+  work for that, the file must be at the domain root, for instance a `<user>.github.io` repository.
 - On first launch a card explains why the ads are there and offers a button to a donation page
   (Ko-fi). Donating is voluntary and unlocks nothing, which keeps it outside Google Play billing.
   The same button is in *Settings*.
