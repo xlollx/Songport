@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Songport Bridge (YouTube Music, Amazon Music, Spotify/Apple sign-in without developer keys)
+    url: https://github.com/xlollx/Songport-YTM-Bridge/issues/new/choose
+    about: Problems that appear only with a Bridge connector belong in the Bridge repository.
+  - name: Security issue
+    url: https://github.com/xlollx/Songport/security/advisories/new
+    about: Please report vulnerabilities privately, not as a public issue.

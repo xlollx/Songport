@@ -21,7 +21,30 @@ French and German. License: GPL-3.0, see [LICENSE](LICENSE). Security reports: s
 
 ---
 
+## Public beta
+
+Songport is in **open beta**: the features are complete and used daily by the developer, and now
+they need other libraries, phones and habits. Everything you meet is meant to work; if it does not,
+that is exactly what to report.
+
+- **Install**: the signed APK from the [Releases](https://github.com/xlollx/Songport/releases/latest)
+  page (updates install over it), or the Google Play open-testing track once listed there. The Play
+  build uses official APIs only; the GitHub build can also use the
+  [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) for YouTube Music and Amazon Music.
+- **What helps most**: a sync of a big playlist (a thousand tracks and more), the review of the tracks
+  that were not found (one-tap proposals, the "likeliest" list, pasting a track link), scheduled syncs
+  surviving the night, and backups of a whole account.
+- **How to report**: open an [issue](https://github.com/xlollx/Songport/issues/new/choose) and attach
+  the **technical details report** (Log tab → *Share technical details*): versions, connectors, the
+  last sync steps and plugin statistics, never tokens or track lists. Italian is welcome.
+- **Known rough edges**: see [Known limits](#known-limits). Matching depends on each catalogue's search:
+  a track "not found" is usually missing or titled differently on the destination, and the review
+  screen exists for those.
+
+---
+
 ## Contents
+- [Public beta](#public-beta)
 - [Features](#features)
 - [Supported services and their limits](#supported-services-and-their-limits)
 - [Connector plugins](#connector-plugins)
@@ -368,12 +391,22 @@ services mentioned in this project are trademarks of their respective owners.
 ## Known limits
 
 - TIDAL and Deezer are written against the documented APIs but not tested live.
-- YouTube: the daily quota is shared by all users of the same build; video title parsing is not
-  perfect (doubtful tracks end up in "not found", never added by guesswork).
-- Spotify: the build's client ID serves 5 users only; each user needs their own.
+- YouTube (official API): the daily quota is 10,000 units per key, about 100 searches; long syncs
+  need the Bridge or several days. Video title parsing is not perfect (doubtful tracks end up in
+  "not found", never added by guesswork).
+- YouTube Music through the Bridge: Google's abuse detection can block the address for a few minutes
+  after many searches; the app waits the declared time and resumes, so a first sync of a thousand
+  tracks can take an hour or two.
+- Spotify: a Spotify developer client in development mode serves 5 users only; each user needs their
+  own, or the Bridge sign-in.
 - Apple Music: tracks can be added but not removed; the developer token must be regenerated every
   6 months.
-- Amazon Music, Qobuz, SoundCloud: no open API, files only.
+- Amazon Music: through the Bridge only, mapped from the web player's own calls; search results are
+  what its player would show, playlist by playlist.
+- Qobuz, SoundCloud: no open API, files only.
+- Matching is by title, artists and duration (and ISRC when both sides expose it): remixes, live
+  versions and covers are kept apart on purpose, and a track with a different title on the
+  destination ends up in the review screen rather than being guessed.
 - Minimum schedule offered: 1 hour (WorkManager would allow 15 minutes, API quotas would not).
 - Scheduled syncs run on the phone: some manufacturers kill background apps. *Settings* has a button
   to exclude the app from battery optimisation.

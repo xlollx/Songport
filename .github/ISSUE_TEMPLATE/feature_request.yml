@@ -1,0 +1,17 @@
+name: Feature request
+description: A service, an option or a change in how something works. Italiano va benissimo.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like
+      description: The problem you are trying to solve counts more than the exact solution.
+    validations:
+      required: true
+  - type: dropdown
+    id: services
+    attributes:
+      label: Services involved, if any
+      multiple: true
+      options: [Spotify, YouTube Music, Apple Music, Amazon Music, TIDAL, Deezer, Subsonic/Navidrome, Jellyfin, Plex, Last.fm, ListenBrainz, Files, Other]
