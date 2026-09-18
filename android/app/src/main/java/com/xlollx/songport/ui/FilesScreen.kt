@@ -34,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,12 +47,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.xlollx.songport.R
-import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.providers.LocalFilesProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -68,10 +69,11 @@ fun FilesScreen(onClose: () -> Unit) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
-    var lists by remember { mutableStateOf<List<Playlist>>(emptyList()) }
+    var lists by remember { mutableStateOf<List<LocalFilesProvider.Entry>>(emptyList()) }
     var version by remember { mutableIntStateOf(0) }
     var query by remember { mutableStateOf("") }
-    LaunchedEffect(version) { lists = withContext(Dispatchers.IO) { LocalFilesProvider.playlists(ctx) } }
+    var openVersions by remember { mutableStateOf<Set<String>>(emptySet()) }
+    LaunchedEffect(version) { lists = withContext(Dispatchers.IO) { LocalFilesProvider.entries(ctx) } }
     BackHandler { onClose() }
 
     // One launcher per format: CreateDocument fixes the MIME type when it is built.
@@ -91,8 +93,10 @@ fun FilesScreen(onClose: () -> Unit) {
     val m3uLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(LocalFilesProvider.Export.M3U.mime)) { writeExport(it, LocalFilesProvider.Export.M3U) }
 
     val filtered = lists.filter { query.isBlank() || it.name.contains(query.trim(), ignoreCase = true) }
-    // "Service - Name" backups group under the service; anything else under a plain heading.
-    val groups = filtered.groupBy { it.name.substringBefore(" - ", "").trim() }
+    // Backups group under their service, then by playlist: the newest version is the row, the
+    // older ones fold under it. Imports and other files sit under a plain heading.
+    val groups = filtered.groupBy { it.service ?: "" }
+        .mapValues { (_, items) -> items.groupBy { it.base }.values.map { v -> v.sortedByDescending { it.writtenAt } }.sortedBy { it.first().title.lowercase() } }
         .toSortedMap(compareBy<String> { it.isEmpty() }.thenBy { it.lowercase() })
     val total = lists.sumOf { it.trackCount.coerceAtLeast(0) }
 
@@ -125,38 +129,70 @@ fun FilesScreen(onClose: () -> Unit) {
                     modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
                 )
             }
-            groups.forEach { (group, items) ->
+            groups.forEach { (group, playlists) ->
                 item(key = "g-$group") {
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        (group.ifEmpty { stringResource(R.string.files_group_other) }) + " · " + items.size,
+                        (group.ifEmpty { stringResource(R.string.files_group_other) }) + " · " + playlists.size,
                         style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                items(items, key = { it.id }) { pl ->
+                items(playlists, key = { "p-" + it.first().base }) { versions ->
+                    val latest = versions.first()
+                    val key = latest.base
+                    val open = key in openVersions
                     Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-                        Row(Modifier.padding(start = 12.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                if (group.isEmpty()) pl.name else pl.name.substringAfter(" - ").trim(),
-                                style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
+                        Column {
+                            FileRow(
+                                title = latest.title, entry = latest,
+                                onExport = { format -> exporting = latest.id; if (format == LocalFilesProvider.Export.CSV) csvLauncher.launch(latest.name + ".csv") else m3uLauncher.launch(latest.name + ".m3u8") },
+                                onDelete = { LocalFilesProvider.delete(ctx, latest.id); version++ },
                             )
-                            Spacer(Modifier.width(8.dp))
-                            Text(stringResource(R.string.tracks_count, pl.trackCount), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            var menu by remember { mutableStateOf(false) }
-                            Box {
-                                IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, stringResource(R.string.csv_export)) }
-                                DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                                    DropdownMenuItem(text = { Text(stringResource(R.string.csv_export_csv)) }, onClick = { menu = false; exporting = pl.id; csvLauncher.launch(pl.name + ".csv") })
-                                    DropdownMenuItem(text = { Text(stringResource(R.string.csv_export_m3u)) }, onClick = { menu = false; exporting = pl.id; m3uLauncher.launch(pl.name + ".m3u8") })
-                                    DropdownMenuItem(
-                                        text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },
-                                        onClick = { menu = false; LocalFilesProvider.delete(ctx, pl.id); version++ },
+                            if (versions.size > 1) {
+                                TextButton(onClick = { openVersions = if (open) openVersions - key else openVersions + key }, modifier = Modifier.padding(start = 4.dp)) {
+                                    Text(
+                                        if (open) stringResource(R.string.files_hide_versions)
+                                        else pluralStringResource(R.plurals.files_versions, versions.size - 1, versions.size - 1),
+                                        style = MaterialTheme.typography.labelMedium,
+                                    )
+                                }
+                                if (open) versions.drop(1).forEach { v ->
+                                    FileRow(
+                                        title = null, entry = v,
+                                        onExport = { format -> exporting = v.id; if (format == LocalFilesProvider.Export.CSV) csvLauncher.launch(v.name + ".csv") else m3uLauncher.launch(v.name + ".m3u8") },
+                                        onDelete = { LocalFilesProvider.delete(ctx, v.id); version++ },
                                     )
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+/** One file: its name (or just the date for an older version), track count and when it was written, with the menu. */
+@Composable
+private fun FileRow(title: String?, entry: LocalFilesProvider.Entry, onExport: (LocalFilesProvider.Export) -> Unit, onDelete: () -> Unit) {
+    Row(Modifier.padding(start = 12.dp, top = 2.dp, bottom = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            if (title != null) Text(title, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                stringResource(R.string.tracks_count, entry.trackCount) + " · " + formatDate(entry.writtenAt),
+                style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        var menu by remember { mutableStateOf(false) }
+        Box {
+            IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, stringResource(R.string.csv_export)) }
+            DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                DropdownMenuItem(text = { Text(stringResource(R.string.csv_export_csv)) }, onClick = { menu = false; onExport(LocalFilesProvider.Export.CSV) })
+                DropdownMenuItem(text = { Text(stringResource(R.string.csv_export_m3u)) }, onClick = { menu = false; onExport(LocalFilesProvider.Export.M3U) })
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },
+                    onClick = { menu = false; onDelete() },
+                )
             }
         }
     }

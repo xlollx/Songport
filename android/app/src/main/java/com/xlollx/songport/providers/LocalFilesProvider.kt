@@ -109,4 +109,67 @@ object LocalFilesProvider : MusicProvider {
     }
 
     fun delete(ctx: Context, playlistId: String) { file(ctx, playlistId).delete() }
+
+    // --- backups: one version per run, dated, with retention ---
+
+    /** How many versions of one playlist's backup are kept; older ones are removed at the next backup. */
+    const val KEEP_VERSIONS = 5
+
+    /**
+     * A file playlist as the Files screen shows it. Backups are "Service - Playlist (yyyy-MM-dd HH.mm)";
+     * [service] and [base] come from the name, [writtenAt] from the stamp, or from the file when the
+     * name has none (imports, and backups made before versions existed).
+     */
+    data class Entry(
+        val id: String, val name: String, val trackCount: Int,
+        val service: String?, val base: String, val stamped: Boolean, val writtenAt: Long,
+    ) {
+        /** The playlist's own name, without the service prefix and the stamp. */
+        val title: String get() = if (service == null) base else base.substringAfter(" - ").trim()
+    }
+
+    /** A fresh formatter per use: SimpleDateFormat is not thread-safe, and backups and the Files screen may overlap. */
+    private fun stamp() = java.text.SimpleDateFormat("yyyy-MM-dd HH.mm", java.util.Locale.ROOT)
+    private val STAMP_TAIL = Regex(""" \((\d{4}-\d{2}-\d{2} \d{2}\.\d{2})\)$""")
+    private val COPY_TAIL = Regex(""" \(\d+\)$""")
+
+    fun entries(ctx: Context): List<Entry> =
+        dir(ctx).listFiles { f -> f.extension == "csv" }.orEmpty().map { f ->
+            val name = f.nameWithoutExtension
+            val tail = STAMP_TAIL.find(name)
+            val stampedAt = tail?.let { runCatching { stamp().parse(it.groupValues[1])?.time }.getOrNull() }
+            val base = COPY_TAIL.replace(STAMP_TAIL.replace(name, ""), "")
+            Entry(
+                id = name, name = name, trackCount = CsvCodec.parse(f.readText()).size,
+                service = base.substringBefore(" - ", "").trim().takeIf { it.isNotEmpty() },
+                base = base, stamped = stampedAt != null, writtenAt = stampedAt ?: f.lastModified(),
+            )
+        }
+
+    enum class BackupOutcome { WRITTEN, UNCHANGED }
+
+    /**
+     * Writes one dated version of a service playlist's backup, unless the newest version already has
+     * exactly these tracks, then trims that playlist's versions to [KEEP_VERSIONS]. Files a sync reads
+     * or writes ([protectedIds]) are never removed, whatever their age.
+     */
+    fun writeBackup(ctx: Context, service: String, playlistName: String, tracks: List<Track>, protectedIds: Set<String>, now: Long = System.currentTimeMillis()): BackupOutcome {
+        val base = CsvCodec.safeName("$service - $playlistName")
+        val versions = entries(ctx).filter { it.base == base && it.service != null }.sortedByDescending { it.writtenAt }
+        val text = CsvCodec.encode(tracks)
+        if (versions.firstOrNull()?.let { file(ctx, it.id).readText() } == text) return BackupOutcome.UNCHANGED
+        val when_ = stamp().format(java.util.Date(now))
+        var id = "$base ($when_)"
+        var n = 2
+        while (file(ctx, id).exists()) { id = "$base ($when_) ($n)"; n++ }
+        file(ctx, id).writeText(text)
+        versions.drop(KEEP_VERSIONS - 1).filter { it.id !in protectedIds }.forEach { file(ctx, it.id).delete() }
+        return BackupOutcome.WRITTEN
+    }
+
+    /** Ids of the file playlists some sync reads or writes: retention leaves them alone. */
+    fun protectedIds(ctx: Context): Set<String> =
+        com.xlollx.songport.data.Store.get(ctx).data.jobs.flatMap { j ->
+            listOfNotNull(j.source.takeIf { it.provider == serviceId }?.playlistId, j.target.takeIf { it.provider == serviceId }?.playlistId)
+        }.toSet()
 }

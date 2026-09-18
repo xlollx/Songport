@@ -215,9 +215,15 @@
     <string name="tools_export_m3u">Save as M3U</string>
     <string name="tools_export_done">%1$d tracks exported</string>
     <string name="tools_backup_title">Full backup</string>
-    <string name="tools_backup_desc">Saves every playlist (and your liked songs) as files in the Files tab, ready to export as CSV or M3U. Nothing is changed on the service.</string>
+    <string name="tools_backup_desc">Saves every playlist (and your liked songs) as files in the Files screen, ready to export as CSV or M3U. Each run adds a dated version; the last %1$d versions of each playlist are kept, and a playlist that has not changed is not written again. Nothing is changed on the service.</string>
     <string name="tools_backup_run">Back up now</string>
     <string name="tools_backup_done">%1$d playlists, %2$d tracks saved</string>
+    <string name="tools_backup_unchanged">%1$d unchanged</string>
+    <string name="files_hide_versions">Hide earlier versions</string>
+    <plurals name="files_versions">
+        <item quantity="one">%d earlier version</item>
+        <item quantity="other">%d earlier versions</item>
+    </plurals>
     <string name="tools_dedupe_title">Remove duplicates</string>
     <string name="tools_dedupe_desc">Finds tracks that appear twice in a playlist, even with a different ID or version, and keeps the first copy.</string>
     <string name="tools_dedupe_scan">Find duplicates</string>

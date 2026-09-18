@@ -13,7 +13,7 @@ import com.xlollx.songport.providers.MusicProvider
  */
 object Tools {
 
-    data class BackupResult(val playlists: Int, val tracks: Int, val failed: List<String>)
+    data class BackupResult(val playlists: Int, val tracks: Int, val failed: List<String>, val unchanged: Int = 0)
 
     /**
      * Salva tutte le playlist (e i preferiti, se il servizio li espone) come file CSV locali,
@@ -26,20 +26,24 @@ object Tools {
         }
         var tracks = 0
         var done = 0
+        var unchanged = 0
         val failed = ArrayList<String>()
+        val inUse = LocalFilesProvider.protectedIds(ctx)
+        val now = System.currentTimeMillis()
         for (pl in lists) {
             onProgress(Progress(Progress.Step.BACKUP, done, lists.size))
             try {
                 val items = provider.tracks(ctx, pl.id)
-                val name = "${provider.displayName} - ${pl.name}"
-                LocalFilesProvider.importTracks(ctx, name, items)
+                // One dated version per run; a playlist that has not changed since the last backup
+                // is not written again, so the Files screen holds versions, not copies.
+                if (LocalFilesProvider.writeBackup(ctx, provider.displayName, pl.name, items, inUse, now) == LocalFilesProvider.BackupOutcome.UNCHANGED) unchanged++
                 tracks += items.size
             } catch (e: Exception) {
                 failed += "${pl.name} (${e.message})"
             }
             done++
         }
-        return BackupResult(lists.size - failed.size, tracks, failed)
+        return BackupResult(lists.size - failed.size, tracks, failed, unchanged)
     }
 
     /** Brani doppi in una playlist, raggruppati (il primo di ogni gruppo e' quello da tenere). */

@@ -215,9 +215,15 @@
     <string name="tools_export_m3u">Als M3U speichern</string>
     <string name="tools_export_done">%1$d Titel exportiert</string>
     <string name="tools_backup_title">Vollständiges Backup</string>
-    <string name="tools_backup_desc">Speichert alle Playlists (und deine Lieblingssongs) als Dateien im Tab Dateien, bereit zum Export als CSV oder M3U. Auf dem Dienst wird nichts geändert.</string>
+    <string name="tools_backup_desc">Speichert alle Playlists (und deine Lieblingssongs) als Dateien im Bildschirm Dateien, bereit zum Export als CSV oder M3U. Jeder Lauf fügt eine Version mit Datum und Uhrzeit hinzu; die letzten %1$d Versionen jeder Playlist bleiben erhalten, und eine unveränderte Playlist wird nicht neu geschrieben. Auf dem Dienst wird nichts geändert.</string>
     <string name="tools_backup_run">Jetzt sichern</string>
     <string name="tools_backup_done">%1$d Playlists, %2$d Titel gespeichert</string>
+    <string name="tools_backup_unchanged">%1$d unverändert</string>
+    <string name="files_hide_versions">Ältere Versionen ausblenden</string>
+    <plurals name="files_versions">
+        <item quantity="one">%d ältere Version</item>
+        <item quantity="other">%d ältere Versionen</item>
+    </plurals>
     <string name="tools_dedupe_title">Duplikate entfernen</string>
     <string name="tools_dedupe_desc">Findet Titel, die in einer Playlist doppelt vorkommen, auch mit anderer ID oder Version, und behält die erste Kopie.</string>
     <string name="tools_dedupe_scan">Duplikate suchen</string>

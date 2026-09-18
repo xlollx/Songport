@@ -215,9 +215,15 @@
     <string name="tools_export_m3u">Enregistrer en M3U</string>
     <string name="tools_export_done">%1$d titres exportés</string>
     <string name="tools_backup_title">Sauvegarde complète</string>
-    <string name="tools_backup_desc">Enregistre toutes les playlists (et vos titres likés) comme fichiers dans l\'onglet Fichiers, prêts à exporter en CSV ou M3U. Rien n\'est modifié sur le service.</string>
+    <string name="tools_backup_desc">Enregistre toutes les playlists (et vos titres likés) comme fichiers dans l\'écran Fichiers, prêts à exporter en CSV ou M3U. Chaque exécution ajoute une version datée ; les %1$d dernières versions de chaque playlist sont conservées, et une playlist inchangée n\'est pas réécrite. Rien n\'est modifié sur le service.</string>
     <string name="tools_backup_run">Sauvegarder maintenant</string>
     <string name="tools_backup_done">%1$d playlists, %2$d titres enregistrés</string>
+    <string name="tools_backup_unchanged">%1$d inchangées</string>
+    <string name="files_hide_versions">Masquer les versions précédentes</string>
+    <plurals name="files_versions">
+        <item quantity="one">%d version précédente</item>
+        <item quantity="other">%d versions précédentes</item>
+    </plurals>
     <string name="tools_dedupe_title">Supprimer les doublons</string>
     <string name="tools_dedupe_desc">Trouve les titres présents deux fois dans une playlist, même avec un ID ou une version différente, et conserve la première copie.</string>
     <string name="tools_dedupe_scan">Chercher les doublons</string>

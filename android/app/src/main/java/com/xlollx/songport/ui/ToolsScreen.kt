@@ -191,7 +191,7 @@ private fun BackupCard(provider: MusicProvider, snackbar: SnackbarHostState) {
         Column(Modifier.padding(16.dp)) {
             Text(stringResource(R.string.tools_backup_title), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(6.dp))
-            Text(stringResource(R.string.tools_backup_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.tools_backup_desc, LocalFilesProvider.KEEP_VERSIONS), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(10.dp))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 if (busy) {
@@ -204,6 +204,7 @@ private fun BackupCard(provider: MusicProvider, snackbar: SnackbarHostState) {
                         try {
                             val r = Tools.backupAll(ctx, provider) { progress = it }
                             snackbar.showSnackbar(ctx.getString(R.string.tools_backup_done, r.playlists, r.tracks) +
+                                (if (r.unchanged > 0) " · " + ctx.getString(R.string.tools_backup_unchanged, r.unchanged) else "") +
                                 (if (r.failed.isNotEmpty()) " · " + r.failed.joinToString(", ") else ""))
                         } catch (e: Exception) {
                             snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
