@@ -50,7 +50,7 @@ jobs:
           java-version: '17'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
         with:
           # Il default dell'action installa anche il pacchetto obsoleto "tools", sparito dal
           # repository Google: senza questa riga lo step fallisce con "Failed to find package 'tools'".
