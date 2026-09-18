@@ -561,8 +561,13 @@ class SyncEngine(private val ctx: Context) {
 
     // ------------------------------------------------------------------ risoluzione manuale
 
-    /** Candidati sulla destinazione per una query libera ("Artista - Titolo" o solo titolo). */
-    suspend fun searchOnTarget(job: SyncJob, query: String): List<Track> {
+    /**
+     * Candidati sulla destinazione per una query libera ("Artista - Titolo", solo titolo, o un link).
+     * Con il brano d'origine [source] i risultati sono ordinati per somiglianza con esso (titolo,
+     * artista, durata): le versioni dell'artista giusto vengono prima degli omonimi piu' popolari, e
+     * le edizioni ripetute dello stesso brano compaiono una volta sola.
+     */
+    suspend fun searchOnTarget(job: SyncJob, query: String, source: Track? = null): List<Track> {
         val (_, dst) = providers(job)
         // Il link del brano incollato: si aggiunge quello, letto dal servizio quando possibile.
         TrackLinks.parse(query)?.let { ref ->
@@ -571,9 +576,16 @@ class SyncEngine(private val ctx: Context) {
             return listOf(t ?: dst.rehydrate(Track(id = ref.trackId, title = ctx.getString(R.string.link_track_unknown), album = ref.trackId)))
         }
         val (artists, title) = PlaylistFiles.splitArtistTitle(query)
-        val found = dst.search(ctx, Track(id = "", title = title, artists = artists))
-        // "Artista - Titolo" senza esito: il solo titolo a volte lo trova (l'utente vede l'artista sotto).
-        return if (found.isEmpty() && artists.isNotEmpty()) dst.search(ctx, Track(id = "", title = title)) else found
+        var found = dst.search(ctx, Track(id = "", title = title, artists = artists))
+        // "Artista - Titolo" senza un candidato convincente: il solo titolo a volte lo trova, e con il
+        // brano d'origine noto l'ordinamento riporta comunque l'artista giusto in cima.
+        val convincing = source != null && Matcher.bestScored(source, found) != null
+        if (artists.isNotEmpty() && (found.isEmpty() || (source != null && !convincing))) {
+            found = (found + dst.search(ctx, Track(id = "", title = title))).distinctBy { it.id }
+        }
+        val ranked = if (source != null) found.sortedByDescending { Matcher.score(source, it) } else found
+        val seen = HashSet<String>()
+        return ranked.filter { seen.add(Matcher.normalizeTitle(it.title) + "|" + it.artists.map { a -> Matcher.normalizeArtist(a) }.sorted().joinToString(",")) }
     }
 
     /**

@@ -130,7 +130,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                                 expanded = openReview == review.source.id,
                                 onToggle = { openReview = if (openReview == review.source.id) null else review.source.id },
                                 onKeep = { plan = p.copy(uncertain = p.uncertain - review) },
-                                search = { q -> engine.searchOnTarget(job, q) },
+                                search = { q -> engine.searchOnTarget(job, q, review.source) },
                                 onReplace = { chosen ->
                                     engine.rematchInPlan(job, review, chosen)
                                     plan = p.copy(

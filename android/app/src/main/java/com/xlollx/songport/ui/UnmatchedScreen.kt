@@ -123,7 +123,7 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
                         review = review, dstName = dstName,
                         expanded = expanded == "r-" + review.source.id, onToggle = { toggle("r-" + review.source.id) },
                         onKeep = { engine.confirmMatch(reportId, review) },
-                        search = { q -> engine.searchOnTarget(job, q) },
+                        search = { q -> engine.searchOnTarget(job, q, review.source) },
                         onReplace = { chosen -> engine.replaceMatch(job, reportId, review, chosen) },
                         onError = ::fail,
                     )
@@ -135,7 +135,7 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
                     UnmatchedRow(
                         track = track, dstName = dstName,
                         expanded = expanded == "u-" + track.id, onToggle = { toggle("u-" + track.id) },
-                        search = { q -> engine.searchOnTarget(job, q) },
+                        search = { q -> engine.searchOnTarget(job, q, track) },
                         onPick = { c -> engine.resolveManually(job, reportId, track, c) },
                         onIgnore = { engine.ignore(job, reportId, track) },
                         onError = ::fail,
