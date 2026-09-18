@@ -370,6 +370,9 @@ class SyncEngine(private val ctx: Context) {
             m.contains("timeout", true) || m.contains("timed out", true) || m.contains("connection abort", true) || m.contains("reset by peer", true)
     }
 
+    /** "Artista – Titolo", come nella vista dal vivo della fase di ricerca. */
+    private fun Track.live(): String = listOfNotNull(artists.firstOrNull(), title).joinToString(" – ")
+
     /** Secondi di attesa dichiarati dal servizio ("Retry in N s"), entro limiti ragionevoli; null se non li dichiara. */
     private fun declaredWait(msg: String?): Int? =
         Regex("retry in (\\d+) s", RegexOption.IGNORE_CASE).find(msg ?: "")?.groupValues?.get(1)?.toIntOrNull()?.coerceIn(5, 1800)
@@ -405,10 +408,13 @@ class SyncEngine(private val ctx: Context) {
             val chunkSize = if (targetId == MusicProvider.LIKED_ID) 10 else 50
             var blockWaits = 0
             for (chunk in plan.toAdd.chunked(chunkSize)) {
+                // Cosa si sta aggiungendo adesso, in scheda e nella vista dal vivo, come per la ricerca.
+                onProgress(Progress(Progress.Step.ADDING, added, plan.toAdd.size, chunk.first().live()))
                 while (true) {
                     try {
                         dst.addTracks(ctx, targetId, chunk)
                         added += chunk.size
+                        chunk.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.ADDED)) }
                         break
                     } catch (e: Exception) {
                         // Il servizio ha bloccato l'indirizzo e dice quanto aspettare: si aspetta, come
@@ -422,8 +428,13 @@ class SyncEngine(private val ctx: Context) {
                         }
                         // Un blocco fallito (id non piu' valido, ecc.): riprova brano per brano.
                         for (t in chunk) {
-                            try { dst.addTracks(ctx, targetId, listOf(t)); added++ }
-                            catch (e2: Exception) { failed += "$t (${e2.message})" }
+                            try {
+                                dst.addTracks(ctx, targetId, listOf(t)); added++
+                                SyncState.item(job.id, SyncState.LiveItem(t.live(), null, SyncState.Outcome.ADDED))
+                            } catch (e2: Exception) {
+                                failed += "$t (${e2.message})"
+                                SyncState.item(job.id, SyncState.LiveItem(t.live(), e2.message?.take(80), SyncState.Outcome.ADD_FAILED))
+                            }
                         }
                         break
                     }
@@ -434,10 +445,14 @@ class SyncEngine(private val ctx: Context) {
 
         var removed = 0
         if (plan.toRemove.isNotEmpty()) {
-            onProgress(Progress(Progress.Step.REMOVING, 0, plan.toRemove.size))
+            onProgress(Progress(Progress.Step.REMOVING, 0, plan.toRemove.size, plan.toRemove.first().live()))
             var blockWaits = 0
             while (true) {
-                try { dst.removeTracks(ctx, targetId, plan.toRemove); break }
+                try {
+                    dst.removeTracks(ctx, targetId, plan.toRemove)
+                    plan.toRemove.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.REMOVED)) }
+                    break
+                }
                 catch (e: Exception) {
                     val asked = declaredWait(e.message)
                     if (asked != null && blockWaits < MAX_BLOCK_WAITS) { blockWaits++; waitVisible(asked, onProgress); continue }

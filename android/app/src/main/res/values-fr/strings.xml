@@ -274,6 +274,9 @@
     <string name="live_found">Trouvé : %1$s</string>
     <string name="live_cached">D\'une correspondance précédente : %1$s</string>
     <string name="live_not_found">Introuvable sur la destination</string>
+    <string name="live_added">Ajouté à la destination</string>
+    <string name="live_add_failed">Non ajouté : %1$s</string>
+    <string name="live_removed">Retiré de la destination</string>
     <string name="provider_note_spotify_bridge">Connectez-vous sur la page de Spotify via l\'application Songport Bridge, sans créer d\'application développeur. Utilise la session du lecteur web : voie non officielle, contraire aux conditions de Spotify, peut cesser de fonctionner. La voie officielle avec votre propre clé reste disponible sous \"Spotify\".</string>
     <string name="provider_note_apple_bridge">Connectez-vous avec votre identifiant Apple via l\'application Songport Bridge, sans Apple Developer Program. Utilise les jetons du lecteur web : voie non officielle, contraire aux conditions d\'Apple, peut cesser de fonctionner. La voie officielle avec votre propre jeton développeur reste disponible sous \"Apple Music\".</string>
     <string name="bridge_needed_hint">Installez ou mettez à jour l\'application compagnon \"Songport Bridge\" (1.2 ou plus récente) depuis GitHub, puis revenez ici et touchez Connecter.</string>

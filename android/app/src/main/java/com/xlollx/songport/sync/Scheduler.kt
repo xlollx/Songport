@@ -38,7 +38,7 @@ object SyncState {
     @Volatile private var stopRequested: Set<String> = emptySet()
 
     /** What happened to one source track during the run, for the live view. */
-    enum class Outcome { FOUND, CACHED, NOT_FOUND }
+    enum class Outcome { FOUND, CACHED, NOT_FOUND, ADDED, ADD_FAILED, REMOVED }
     class LiveItem(val source: String, val result: String?, val outcome: Outcome)
 
     private val _items = MutableStateFlow<Map<String, List<LiveItem>>>(emptyMap())
@@ -158,8 +158,8 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         Progress.Step.FETCH_TARGET -> ctx.getString(R.string.progress_fetch_target)
         Progress.Step.MATCHING -> ctx.getString(R.string.progress_matching, p.done, p.total) + (p.label?.let { " · $it" } ?: "")
         Progress.Step.WAITING -> ctx.getString(R.string.progress_waiting, (p.total - p.done).coerceAtLeast(0))
-        Progress.Step.ADDING -> ctx.getString(R.string.progress_adding, p.total)
-        Progress.Step.REMOVING -> ctx.getString(R.string.progress_removing, p.total)
+        Progress.Step.ADDING -> ctx.getString(R.string.progress_adding, p.total) + (p.label?.let { " · $it" } ?: "")
+        Progress.Step.REMOVING -> ctx.getString(R.string.progress_removing, p.total) + (p.label?.let { " · $it" } ?: "")
         else -> ""
     }
 

@@ -267,6 +267,9 @@ private fun LiveSheet(job: SyncJob, onDismiss: () -> Unit) {
                             SyncState.Outcome.FOUND -> Icons.Filled.CheckCircle to Tones.onSuccessContainer()
                             SyncState.Outcome.CACHED -> Icons.Filled.CheckCircle to MaterialTheme.colorScheme.onSurfaceVariant
                             SyncState.Outcome.NOT_FOUND -> Icons.Filled.Warning to MaterialTheme.colorScheme.error
+                            SyncState.Outcome.ADDED -> Icons.Filled.CheckCircle to Tones.onSuccessContainer()
+                            SyncState.Outcome.ADD_FAILED -> Icons.Filled.Warning to MaterialTheme.colorScheme.error
+                            SyncState.Outcome.REMOVED -> Icons.Filled.CheckCircle to MaterialTheme.colorScheme.onSurfaceVariant
                         }
                         Icon(icon, null, tint = tint, modifier = Modifier.size(18.dp).padding(top = 1.dp))
                         Spacer(Modifier.width(8.dp))
@@ -277,6 +280,9 @@ private fun LiveSheet(job: SyncJob, onDismiss: () -> Unit) {
                                     SyncState.Outcome.FOUND -> stringResource(R.string.live_found, it.result ?: "")
                                     SyncState.Outcome.CACHED -> stringResource(R.string.live_cached, it.result ?: "")
                                     SyncState.Outcome.NOT_FOUND -> stringResource(R.string.live_not_found)
+                                    SyncState.Outcome.ADDED -> stringResource(R.string.live_added)
+                                    SyncState.Outcome.ADD_FAILED -> stringResource(R.string.live_add_failed, it.result ?: "")
+                                    SyncState.Outcome.REMOVED -> stringResource(R.string.live_removed)
                                 },
                                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1, overflow = TextOverflow.Ellipsis,
@@ -297,8 +303,8 @@ private fun progressText(p: Progress?): String = when (p?.step) {
     Progress.Step.FETCH_TARGET -> stringResource(R.string.progress_fetch_target)
     Progress.Step.MATCHING -> stringResource(R.string.progress_matching, p?.done ?: 0, p?.total ?: 0) + (p?.label?.let { " · $it" } ?: "")
     Progress.Step.WAITING -> stringResource(R.string.progress_waiting, ((p?.total ?: 0) - (p?.done ?: 0)).coerceAtLeast(0))
-    Progress.Step.ADDING -> stringResource(R.string.progress_adding, p?.total ?: 0)
-    Progress.Step.REMOVING -> stringResource(R.string.progress_removing, p?.total ?: 0)
+    Progress.Step.ADDING -> stringResource(R.string.progress_adding, p?.total ?: 0) + (p?.label?.let { " · $it" } ?: "")
+    Progress.Step.REMOVING -> stringResource(R.string.progress_removing, p?.total ?: 0) + (p?.label?.let { " · $it" } ?: "")
     Progress.Step.BACKUP -> stringResource(R.string.tools_progress_backup, p?.done ?: 0, p?.total ?: 0)
     Progress.Step.DEDUPE -> stringResource(R.string.tools_progress_dedupe, p?.done ?: 0, p?.total ?: 0)
 }
