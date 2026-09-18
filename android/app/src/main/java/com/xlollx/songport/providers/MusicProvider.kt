@@ -89,6 +89,13 @@ interface MusicProvider {
     suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>)
 
     /**
+     * Ricerca su un catalogo piu' largo del servizio (per YouTube Music i video di YouTube, che una
+     * playlist accetta comunque). Usata solo quando [search] non ha dato nulla di accettabile; vuota
+     * per i servizi che non hanno un catalogo del genere.
+     */
+    suspend fun searchWide(ctx: Context, track: Track): List<Track> = emptyList()
+
+    /**
      * Un brano di cui si conosce solo l'id (da un link incollato nella revisione), con titolo e
      * artisti se il servizio permette di leggerli; null quando non li puo' leggere: il brano si
      * aggiunge comunque, e' l'id che serve.

@@ -206,6 +206,7 @@
     <string name="search_album_section">Dall\'album «%1$s» su %2$s · %3$d brani</string>
     <string name="search_album_missing">Album «%1$s» non trovato su %2$s</string>
     <string name="search_other_results">Altri risultati</string>
+    <string name="search_videos_section">Video di YouTube · %1$d</string>
     <string name="result_ignored">%1$d ignorati</string>
     <string name="tools_pick_service">Servizio</string>
     <string name="tools_none">Collega prima un servizio.</string>

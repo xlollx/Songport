@@ -362,7 +362,8 @@ class SyncEngine(private val ctx: Context) {
             if (!tried.add(query(v))) continue
             Matcher.bestScored(s, dst.search(ctx, v))?.let { return it }
         }
-        return null
+        // Last resort, where the service has one: a wider catalogue (YouTube videos for YouTube Music).
+        return Matcher.bestScored(s, dst.searchWide(ctx, s))
     }
 
     private fun query(t: Track): String = (t.artists.take(2) + t.title).joinToString(" ").lowercase().trim()
@@ -589,11 +590,17 @@ class SyncEngine(private val ctx: Context) {
         }
         val ranked = if (source != null) found.sortedByDescending { Matcher.score(source, it) } else found
         val candidates = dedupe(ranked)
-        if (source == null) return TargetSearch(candidates)
+        // Nothing convincing among the songs: the wider catalogue, shown apart so the user knows what it is.
+        val wide = if (source != null && Matcher.bestScored(source, found) == null) {
+            val shown = candidates.map { it.id }.toHashSet()
+            dedupe(runCatching { dst.searchWide(ctx, source.copy(title = title, artists = artists.ifEmpty { source.artists })) }.getOrDefault(emptyList())
+                .filter { it.id !in shown }.sortedByDescending { Matcher.score(source, it) })
+        } else emptyList()
+        if (source == null) return TargetSearch(candidates, wide = wide)
         val album = source.album.trim().takeIf { it.isNotEmpty() } ?: return TargetSearch(candidates)
         val albumHits = runCatching { dst.search(ctx, Track(id = "", title = album, artists = source.artists.take(1))) }.getOrDefault(emptyList())
         // Un servizio che non riporta l'album nei risultati non permette di dire se il disco c'e'.
-        if ((albumHits + found).none { it.album.isNotBlank() }) return TargetSearch(candidates)
+        if ((albumHits + found).none { it.album.isNotBlank() }) return TargetSearch(candidates, wide = wide)
         val wanted = Matcher.normalizeTitle(album)
         // The album's tracks come first, the likeliest match on top: the wanted song may be there
         // under a slightly different title. The other results follow, without repeating them.
@@ -602,7 +609,7 @@ class SyncEngine(private val ctx: Context) {
                 (source.artists.isEmpty() || Matcher.artistScore(source.artists, it.artists) >= 0.7)
         }).sortedByDescending { Matcher.score(source, it) }
         val inAlbum = ofAlbum.map { it.id }.toHashSet()
-        return TargetSearch(candidates.filter { it.id !in inAlbum }, album, ofAlbum)
+        return TargetSearch(candidates.filter { it.id !in inAlbum }, album, ofAlbum, wide)
     }
 
     /** Una riga per titolo e artisti: le edizioni ripetute di uno stesso brano non aiutano a scegliere. */

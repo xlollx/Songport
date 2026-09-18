@@ -116,7 +116,7 @@ fun MatchSearch(
             )
             ofAlbum.forEach { pick(it) }
         }
-        if (result.candidates.isEmpty() && ofAlbum.isNullOrEmpty()) {
+        if (result.candidates.isEmpty() && ofAlbum.isNullOrEmpty() && result.wide.isEmpty()) {
             Text(stringResource(R.string.unmatched_no_results), style = MaterialTheme.typography.bodySmall)
         } else if (result.candidates.isNotEmpty()) {
             if (albumShown) {
@@ -124,6 +124,12 @@ fun MatchSearch(
                 Text(stringResource(R.string.search_other_results), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             result.candidates.forEach { pick(it) }
+        }
+        // The wider catalogue (YouTube videos), apart: the user should know these are not catalogue songs.
+        if (result.wide.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            Text(stringResource(R.string.search_videos_section, result.wide.size), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            result.wide.forEach { pick(it) }
         }
     }
 }

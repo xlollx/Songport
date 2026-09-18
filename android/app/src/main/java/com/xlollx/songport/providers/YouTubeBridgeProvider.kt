@@ -94,6 +94,12 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         return io(ctx, "search", q) { j -> j.arr.mapNotNull { toTrack(it) } }
     }
 
+    /** YouTube videos, for a song the music catalogue does not have (an old Bridge ignores the flag and repeats the songs). */
+    override suspend fun searchWide(ctx: Context, track: Track): List<Track> {
+        val q = (track.artists.take(2) + track.title).joinToString(" ")
+        return io(ctx, "search", q, Bundle().apply { putBoolean("videos", true) }) { j -> j.arr.mapNotNull { toTrack(it) } }
+    }
+
     /** Titolo e canale da oEmbed di YouTube: pubblico, senza quota e senza passare dal Bridge. */
     override suspend fun track(ctx: Context, trackId: String): Track? {
         val r = com.xlollx.songport.net.Http.send("GET", "https://www.youtube.com/oembed?format=json&url=" +
