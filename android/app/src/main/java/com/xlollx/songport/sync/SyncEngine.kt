@@ -44,9 +44,13 @@ private const val MAX_BLOCK_WAITS = 8
 private const val RESET_AFTER_CHUNKS = 15
 /** Punteggio fittizio di un "non trovato" preso dalla cache dei fallimenti, mai mostrato. */
 private const val MISS_SCORE = -1.0
+/** Below the match threshold but close enough to be worth proposing in the review. */
+private const val HINT_THRESHOLD = 0.45
 
 class SyncEngine(private val ctx: Context) {
     private val store = Store.get(ctx)
+    /** Best candidate under the threshold per source track searched in this run: the review's proposals. */
+    private val hints = java.util.concurrent.ConcurrentHashMap<String, Track>()
 
     suspend fun run(job: SyncJob, onProgress: (Progress) -> Unit = {}): SyncReport {
         val started = System.currentTimeMillis()
@@ -61,6 +65,7 @@ class SyncEngine(private val ctx: Context) {
                         reportId, job.id, job.name, started, System.currentTimeMillis() - started,
                         sourceCount = plan.sourceCount, unmatched = plan.unmatched.map { it.toString() }, unmatchedTracks = plan.unmatched,
                         ignored = plan.ignored, reviewTracks = plan.uncertain, notes = plan.notes, partial = true,
+                        suggestions = suggestionsFor(plan.unmatched),
                     ),
                 )
             }
@@ -350,21 +355,37 @@ class SyncEngine(private val ctx: Context) {
      * candidati sono comunque valutati contro l'artista originale, quindi un omonimo non passa.
      */
     private suspend fun searchScored(dst: MusicProvider, s: Track): Matcher.Scored? {
-        Matcher.bestScored(s, dst.search(ctx, s))?.let { return it }
-        val tried = hashSetOf(query(s))
-        val title = Matcher.searchTitle(s.title)
-        val first = s.artists.firstOrNull()?.let { Matcher.searchArtist(it) }?.takeIf { it.isNotBlank() }
-        val variants = listOf(
-            s.copy(title = title, artists = listOfNotNull(first), isrc = null),
-            s.copy(title = title, artists = emptyList(), isrc = null),
-        )
-        for (v in variants) {
-            if (!tried.add(query(v))) continue
-            Matcher.bestScored(s, dst.search(ctx, v))?.let { return it }
+        var runnerUp: Matcher.Scored? = null
+        fun consider(found: List<Track>): Matcher.Scored? {
+            val best = Matcher.bestScored(s, found, 0.0) ?: return null
+            if (best.score >= Matcher.DEFAULT_THRESHOLD) return best
+            if (best.score > (runnerUp?.score ?: 0.0)) runnerUp = best
+            return null
         }
-        // Last resort, where the service has one: a wider catalogue (YouTube videos for YouTube Music).
-        return Matcher.bestScored(s, dst.searchWide(ctx, s))
+        try {
+            consider(dst.search(ctx, s))?.let { return it }
+            val tried = hashSetOf(query(s))
+            val title = Matcher.searchTitle(s.title)
+            val first = s.artists.firstOrNull()?.let { Matcher.searchArtist(it) }?.takeIf { it.isNotBlank() }
+            val variants = listOf(
+                s.copy(title = title, artists = listOfNotNull(first), isrc = null),
+                s.copy(title = title, artists = emptyList(), isrc = null),
+            )
+            for (v in variants) {
+                if (!tried.add(query(v))) continue
+                consider(dst.search(ctx, v))?.let { return it }
+            }
+            // Last resort, where the service has one: a wider catalogue (YouTube videos for YouTube Music).
+            consider(dst.searchWide(ctx, s))?.let { return it }
+            return null
+        } finally {
+            // Not found, but something came close: the review offers it as a one-tap proposal.
+            runnerUp?.takeIf { it.score >= HINT_THRESHOLD }?.let { hints[s.id] = it.track }
+        }
     }
+
+    private fun suggestionsFor(unmatched: List<Track>): Map<String, Track> =
+        unmatched.mapNotNull { t -> hints[t.id]?.let { t.id to it } }.toMap()
 
     private fun query(t: Track): String = (t.artists.take(2) + t.title).joinToString(" ").lowercase().trim()
 
@@ -517,6 +538,7 @@ class SyncEngine(private val ctx: Context) {
             reviewTracks = reviews,
             removedTracks = if (removed > 0) plan.toRemove else emptyList(),
             notes = plan.notes,
+            suggestions = suggestionsFor(unmatched),
         )
     }
 
@@ -565,51 +587,55 @@ class SyncEngine(private val ctx: Context) {
 
     /**
      * Ricerca manuale sulla destinazione per una query libera ("Artista - Titolo", solo titolo, o un link).
-     * Con il brano d'origine [source] i candidati sono ordinati per somiglianza con esso (titolo,
-     * artista, durata): le versioni dell'artista giusto vengono prima degli omonimi piu' popolari, e
-     * le edizioni ripetute dello stesso brano compaiono una volta sola. Se [source] ha un album, una
-     * seconda ricerca "artista album" elenca per primi i brani di quell'album presenti sul servizio,
-     * il piu' simile in testa: il brano cercato potrebbe esserci con un titolo un po' diverso, e se
-     * non c'e' nessuno manca il disco, non solo il brano.
+     * Con il brano d'origine [source] ogni risultato ha un punteggio di somiglianza (titolo, artista,
+     * durata) e una provenienza: il catalogo dei brani, l'album del brano d'origine (una seconda
+     * ricerca "artista album", quando l'album e' noto), o il catalogo largo (i video di YouTube), che
+     * si interroga solo se i brani non hanno dato nulla di convincente. Le edizioni ripetute di uno
+     * stesso brano compaiono una volta sola.
      */
     suspend fun searchOnTarget(job: SyncJob, query: String, source: Track? = null): TargetSearch {
         val (_, dst) = providers(job)
+        fun hit(t: Track, kind: TargetSearch.Kind) = TargetSearch.Hit(t, if (source != null) Matcher.score(source, t) else 0.0, kind)
         // Il link del brano incollato: si aggiunge quello, letto dal servizio quando possibile.
         TrackLinks.parse(query)?.let { ref ->
             if (!TrackLinks.matches(ref.service, dst.serviceId)) throw ProviderException(ctx.getString(R.string.link_other_service, dst.label(ctx)))
             val t = runCatching { dst.track(ctx, ref.trackId) }.getOrNull()
-            return TargetSearch(listOf(t ?: dst.rehydrate(Track(id = ref.trackId, title = ctx.getString(R.string.link_track_unknown), album = ref.trackId))))
+            return TargetSearch(listOf(hit(t ?: dst.rehydrate(Track(id = ref.trackId, title = ctx.getString(R.string.link_track_unknown), album = ref.trackId)), TargetSearch.Kind.SONG)))
         }
         val (artists, title) = PlaylistFiles.splitArtistTitle(query)
-        var found = dst.search(ctx, Track(id = "", title = title, artists = artists))
-        // "Artista - Titolo" senza un candidato convincente: il solo titolo a volte lo trova, e con il
-        // brano d'origine noto l'ordinamento riporta comunque l'artista giusto in cima.
-        val convincing = source != null && Matcher.bestScored(source, found) != null
-        if (artists.isNotEmpty() && (found.isEmpty() || (source != null && !convincing))) {
-            found = (found + dst.search(ctx, Track(id = "", title = title))).distinctBy { it.id }
+        var songs = dst.search(ctx, Track(id = "", title = title, artists = artists))
+        // "Artista - Titolo" senza un candidato convincente: il solo titolo a volte lo trova.
+        fun convincing() = source == null || Matcher.bestScored(source, songs) != null
+        if (artists.isNotEmpty() && (songs.isEmpty() || !convincing())) {
+            songs = (songs + dst.search(ctx, Track(id = "", title = title))).distinctBy { it.id }
         }
-        val ranked = if (source != null) found.sortedByDescending { Matcher.score(source, it) } else found
-        val candidates = dedupe(ranked)
-        // Nothing convincing among the songs: the wider catalogue, shown apart so the user knows what it is.
-        val wide = if (source != null && Matcher.bestScored(source, found) == null) {
-            val shown = candidates.map { it.id }.toHashSet()
-            dedupe(runCatching { dst.searchWide(ctx, source.copy(title = title, artists = artists.ifEmpty { source.artists })) }.getOrDefault(emptyList())
-                .filter { it.id !in shown }.sortedByDescending { Matcher.score(source, it) })
-        } else emptyList()
-        if (source == null) return TargetSearch(candidates, wide = wide)
-        val album = source.album.trim().takeIf { it.isNotEmpty() } ?: return TargetSearch(candidates, wide = wide)
-        val albumHits = runCatching { dst.search(ctx, Track(id = "", title = album, artists = source.artists.take(1))) }.getOrDefault(emptyList())
-        // Un servizio che non riporta l'album nei risultati non permette di dire se il disco c'e'.
-        if ((albumHits + found).none { it.album.isNotBlank() }) return TargetSearch(candidates, wide = wide)
-        val wanted = Matcher.normalizeTitle(album)
-        // The album's tracks come first, the likeliest match on top: the wanted song may be there
-        // under a slightly different title. The other results follow, without repeating them.
-        val ofAlbum = dedupe((albumHits + found).filter {
-            it.album.isNotBlank() && Matcher.similarity(Matcher.normalizeTitle(it.album), wanted) >= 0.8 &&
-                (source.artists.isEmpty() || Matcher.artistScore(source.artists, it.artists) >= 0.7)
-        }).sortedByDescending { Matcher.score(source, it) }
-        val inAlbum = ofAlbum.map { it.id }.toHashSet()
-        return TargetSearch(candidates.filter { it.id !in inAlbum }, album, ofAlbum, wide)
+        val hits = ArrayList<TargetSearch.Hit>()
+        val seen = HashSet<String>()
+        fun add(tracks: List<Track>, kind: TargetSearch.Kind) = dedupe(tracks).filter { seen.add(it.id) }.forEach { hits += hit(it, kind) }
+        var album: String? = null
+        var albumFound: Boolean? = null
+        if (source != null) {
+            source.album.trim().takeIf { it.isNotEmpty() }?.let { name ->
+                val byAlbum = runCatching { dst.search(ctx, Track(id = "", title = name, artists = source.artists.take(1))) }.getOrDefault(emptyList())
+                // Un servizio che non riporta l'album nei risultati non permette di dire se il disco c'e'.
+                if ((byAlbum + songs).any { it.album.isNotBlank() }) {
+                    val wanted = Matcher.normalizeTitle(name)
+                    val ofAlbum = (byAlbum + songs).filter {
+                        it.album.isNotBlank() && Matcher.similarity(Matcher.normalizeTitle(it.album), wanted) >= 0.8 &&
+                            (source.artists.isEmpty() || Matcher.artistScore(source.artists, it.artists) >= 0.7)
+                    }
+                    album = name
+                    albumFound = ofAlbum.isNotEmpty()
+                    add(ofAlbum, TargetSearch.Kind.ALBUM)
+                }
+            }
+        }
+        add(songs, TargetSearch.Kind.SONG)
+        if (source != null && !convincing()) {
+            val wide = runCatching { dst.searchWide(ctx, source.copy(title = title, artists = artists.ifEmpty { source.artists })) }.getOrDefault(emptyList())
+            add(wide, TargetSearch.Kind.VIDEO)
+        }
+        return TargetSearch(if (source != null) hits.sortedByDescending { it.score } else hits, album, albumFound)
     }
 
     /** Una riga per titolo e artisti: le edizioni ripetute di uno stesso brano non aiutano a scegliere. */
@@ -641,6 +667,7 @@ class SyncEngine(private val ctx: Context) {
             r.copy(
                 unmatchedTracks = r.unmatchedTracks.filter { it.id != track.id },
                 unmatched = r.unmatched.filter { it != track.toString() },
+                suggestions = r.suggestions - track.id,
             )
         }
     }

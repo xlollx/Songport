@@ -196,7 +196,7 @@
     <string name="files_group_other">Altre</string>
     <string name="review_now">%1$d da sistemare · Inizia ora</string>
     <string name="review_summary">%1$d non trovati · %2$d da rivedere</string>
-    <string name="review_tap_hint">Tocca un brano per cercarlo su %1$s. Ogni scelta viene ricordata per le prossime sync.</string>
+    <string name="review_tap_hint">Accetta una proposta con un tocco, oppure apri un brano per cercarlo su %1$s. Ogni scelta viene ricordata per le prossime sync.</string>
     <string name="review_partial_banner">La sync sta ancora aggiungendo i brani trovati. Questi puoi già sistemarli.</string>
     <string name="unmatched_added">Aggiunto: %1$s</string>
     <string name="unmatched_no_results">Nessun risultato.</string>
@@ -207,6 +207,10 @@
     <string name="search_album_missing">Album «%1$s» non trovato su %2$s</string>
     <string name="search_other_results">Altri risultati</string>
     <string name="search_videos_section">Video di YouTube · %1$d</string>
+    <string name="search_top">Più probabili</string>
+    <string name="search_suggested">Proposta</string>
+    <string name="search_tag_album">album</string>
+    <string name="search_tag_video">video</string>
     <string name="result_ignored">%1$d ignorati</string>
     <string name="tools_pick_service">Servizio</string>
     <string name="tools_none">Collega prima un servizio.</string>

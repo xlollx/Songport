@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -134,7 +135,7 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
                 item(key = "h-unmatched") { SectionTitle(stringResource(R.string.review_section_unmatched, tracks.size)) }
                 items(tracks, key = { "u-" + it.id }) { track ->
                     UnmatchedRow(
-                        track = track, dstName = dstName,
+                        track = track, dstName = dstName, suggestion = report.suggestions[track.id],
                         expanded = expanded == "u-" + track.id, onToggle = { toggle("u-" + track.id) },
                         search = { q -> engine.searchOnTarget(job, q, track) },
                         onPick = { c -> engine.resolveManually(job, reportId, track, c) },
@@ -155,7 +156,10 @@ private fun SectionTitle(text: String) {
 
 /** Riga chiusa: titolo e artista in una riga, freccia a destra. Aperta: le azioni. */
 @Composable
-private fun CollapsibleRow(track: Track, expanded: Boolean, onToggle: () -> Unit, trailing: @Composable () -> Unit = {}, content: @Composable () -> Unit) {
+private fun CollapsibleRow(
+    track: Track, expanded: Boolean, onToggle: () -> Unit,
+    trailing: @Composable () -> Unit = {}, below: (@Composable () -> Unit)? = null, content: @Composable () -> Unit,
+) {
     Card(Modifier.fillMaxWidth().clickable(onClick = onToggle)) {
         Column(Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -170,6 +174,7 @@ private fun CollapsibleRow(track: Track, expanded: Boolean, onToggle: () -> Unit
                 trailing()
                 Icon(if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
+            below?.invoke()
             AnimatedVisibility(expanded) {
                 Column(Modifier.padding(top = 10.dp)) { content() }
             }
@@ -222,6 +227,7 @@ fun ReviewRow(
 private fun UnmatchedRow(
     track: Track,
     dstName: String,
+    suggestion: Track?,
     expanded: Boolean,
     onToggle: () -> Unit,
     search: suspend (String) -> TargetSearch,
@@ -229,7 +235,26 @@ private fun UnmatchedRow(
     onIgnore: () -> Unit,
     onError: (String) -> Unit,
 ) {
-    CollapsibleRow(track = track, expanded = expanded, onToggle = onToggle) {
+    val scope = rememberCoroutineScope()
+    var accepting by remember { mutableStateOf(false) }
+    // The sync's own runner-up, when it had one: accepted with a tap, no search to read through.
+    val proposal: (@Composable () -> Unit)? = if (suggestion != null && !expanded) {
+        {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
+                Text(stringResource(R.string.search_suggested), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                Spacer(Modifier.width(8.dp))
+                TrackLine(suggestion, Modifier.weight(1f))
+                FilledTonalButton(enabled = !accepting, onClick = {
+                    accepting = true
+                    scope.launch {
+                        try { onPick(suggestion) } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { onError(e.message ?: "") }
+                        accepting = false
+                    }
+                }) { Text(stringResource(R.string.unmatched_add)) }
+            }
+        }
+    } else null
+    CollapsibleRow(track = track, expanded = expanded, onToggle = onToggle, below = proposal) {
         MatchSearch(
             initialQuery = if (track.artists.isEmpty()) track.title else "${track.artistLine} - ${track.title}",
             targetName = dstName,

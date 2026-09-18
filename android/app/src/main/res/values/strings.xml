@@ -196,7 +196,7 @@
     <string name="files_group_other">Other</string>
     <string name="review_now">%1$d to fix · Start now</string>
     <string name="review_summary">%1$d not found · %2$d to double-check</string>
-    <string name="review_tap_hint">Tap a track to search for it on %1$s. Every choice is remembered for the next syncs.</string>
+    <string name="review_tap_hint">Accept a proposal with one tap, or open a track to search %1$s. Every choice is remembered for the next syncs.</string>
     <string name="review_partial_banner">The sync is still adding the tracks it found. You can already fix these.</string>
     <string name="unmatched_added">Added: %1$s</string>
     <string name="unmatched_no_results">No results.</string>
@@ -207,6 +207,10 @@
     <string name="search_album_missing">Album “%1$s” not found on %2$s</string>
     <string name="search_other_results">Other results</string>
     <string name="search_videos_section">YouTube videos · %1$d</string>
+    <string name="search_top">Likeliest</string>
+    <string name="search_suggested">Proposal</string>
+    <string name="search_tag_album">album</string>
+    <string name="search_tag_video">video</string>
     <string name="result_ignored">%1$d ignored</string>
     <string name="tools_pick_service">Service</string>
     <string name="tools_none">Connect a service first.</string>

@@ -1,14 +1,22 @@
 package com.xlollx.songport.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -34,9 +42,18 @@ import kotlinx.coroutines.launch
 
 /** Riga compatta "titolo · artista · album · durata" di un brano. */
 @Composable
-fun TrackLine(t: Track, modifier: Modifier = Modifier, emphasis: Boolean = false) {
+fun TrackLine(t: Track, modifier: Modifier = Modifier, emphasis: Boolean = false, tag: String? = null) {
     Column(modifier) {
-        Text(t.title, style = if (emphasis) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(t.title, style = if (emphasis) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f, fill = false))
+            if (tag != null) {
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    tag, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.shapes.extraSmall).padding(horizontal = 5.dp, vertical = 1.dp),
+                )
+            }
+        }
         Text(
             listOfNotNull(t.artistLine.ifBlank { null }, t.album.ifBlank { null }, Durations.format(t.durationMs).ifBlank { null }).joinToString(" · "),
             style = MaterialTheme.typography.bodySmall,
@@ -91,46 +108,60 @@ fun MatchSearch(
         }) { Text(stringResource(R.string.unmatched_search)) }
     }
     candidates?.let { result ->
-        val pick: @Composable (Track) -> Unit = { c ->
+        val pick: @Composable (TargetSearch.Hit, Boolean) -> Unit = { h, primary ->
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                TrackLine(c, Modifier.weight(1f))
-                TextButton(enabled = !busy, onClick = {
+                TrackLine(h.track, Modifier.weight(1f), tag = when (h.kind) {
+                    TargetSearch.Kind.ALBUM -> stringResource(R.string.search_tag_album)
+                    TargetSearch.Kind.VIDEO -> stringResource(R.string.search_tag_video)
+                    TargetSearch.Kind.SONG -> null
+                })
+                val act = {
                     busy = true
                     scope.launch {
-                        try { onPick(c) } catch (e: CancellationException) { throw e } catch (e: Exception) { onError(e.message ?: "") }
+                        try { onPick(h.track) } catch (e: CancellationException) { throw e } catch (e: Exception) { onError(e.message ?: "") }
                         busy = false
                     }
-                }) { Text(pickLabel) }
+                    Unit
+                }
+                if (primary) FilledTonalButton(enabled = !busy, onClick = act) { Text(pickLabel) }
+                else TextButton(enabled = !busy, onClick = act) { Text(pickLabel) }
             }
         }
-        // The source track's album on the destination comes first: the wanted song may be in it
-        // under another title, and an empty album says the record itself is missing.
-        val album = result.album
-        val ofAlbum = result.albumTracks
-        val albumShown = album != null && ofAlbum != null
-        if (album != null && ofAlbum != null) {
-            Text(
-                if (ofAlbum.isEmpty()) stringResource(R.string.search_album_missing, album, targetName)
-                else stringResource(R.string.search_album_section, album, targetName, ofAlbum.size),
-                style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary,
-            )
-            ofAlbum.forEach { pick(it) }
-        }
-        if (result.candidates.isEmpty() && ofAlbum.isNullOrEmpty() && result.wide.isEmpty()) {
+        if (result.hits.isEmpty()) {
             Text(stringResource(R.string.unmatched_no_results), style = MaterialTheme.typography.bodySmall)
-        } else if (result.candidates.isNotEmpty()) {
-            if (albumShown) {
-                Spacer(Modifier.height(8.dp))
-                Text(stringResource(R.string.search_other_results), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            result.candidates.forEach { pick(it) }
+            return@let
         }
-        // The wider catalogue (YouTube videos), apart: the user should know these are not catalogue songs.
-        if (result.wide.isNotEmpty()) {
-            Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.search_videos_section, result.wide.size), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            result.wide.forEach { pick(it) }
+        // The few likeliest first, whatever they came from: most fixes are one look and one tap.
+        val top = result.hits.take(TOP_HITS)
+        Text(stringResource(R.string.search_top), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+        top.forEachIndexed { i, h -> pick(h, i == 0 && h.score >= PRIMARY_SCORE) }
+        val rest = result.hits.drop(TOP_HITS)
+        // Everything else folded by origin: the album (or the news that it is missing), the other
+        // songs, the videos. Open only what you need.
+        val album = result.album
+        if (album != null && result.albumFound == false) {
+            Spacer(Modifier.height(6.dp))
+            Text(stringResource(R.string.search_album_missing, album, targetName), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
+        FoldedHits(if (album != null) stringResource(R.string.search_album_section, album, targetName, rest.count { it.kind == TargetSearch.Kind.ALBUM }) else "", rest.filter { it.kind == TargetSearch.Kind.ALBUM }, pick)
+        FoldedHits(stringResource(R.string.search_other_results) + " · " + rest.count { it.kind == TargetSearch.Kind.SONG }, rest.filter { it.kind == TargetSearch.Kind.SONG }, pick)
+        FoldedHits(stringResource(R.string.search_videos_section, rest.count { it.kind == TargetSearch.Kind.VIDEO }), rest.filter { it.kind == TargetSearch.Kind.VIDEO }, pick)
     }
 }
 
+private const val TOP_HITS = 3
+/** From this similarity up, the first proposal gets the prominent button. */
+private const val PRIMARY_SCORE = 0.5
+
+/** A section of results closed by default: its title with the count, the rows on tap. */
+@Composable
+private fun FoldedHits(title: String, hits: List<TargetSearch.Hit>, pick: @Composable (TargetSearch.Hit, Boolean) -> Unit) {
+    if (hits.isEmpty()) return
+    var open by remember { mutableStateOf(false) }
+    Spacer(Modifier.height(4.dp))
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { open = !open }) {
+        Text(title, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+        Icon(if (open) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+    if (open) hits.forEach { pick(it, false) }
+}

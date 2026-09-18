@@ -196,7 +196,7 @@
     <string name="files_group_other">Autres</string>
     <string name="review_now">%1$d à régler · Commencer</string>
     <string name="review_summary">%1$d introuvables · %2$d à vérifier</string>
-    <string name="review_tap_hint">Touchez un titre pour le chercher sur %1$s. Chaque choix est mémorisé pour les prochaines synchronisations.</string>
+    <string name="review_tap_hint">Acceptez une proposition d\'un geste, ou ouvrez un morceau pour le chercher sur %1$s. Chaque choix est mémorisé pour les prochaines syncs.</string>
     <string name="review_partial_banner">La synchronisation ajoute encore les titres trouvés. Vous pouvez déjà régler ceux-ci.</string>
     <string name="unmatched_added">Ajouté : %1$s</string>
     <string name="unmatched_no_results">Aucun résultat.</string>
@@ -207,6 +207,10 @@
     <string name="search_album_missing">Album « %1$s » introuvable sur %2$s</string>
     <string name="search_other_results">Autres résultats</string>
     <string name="search_videos_section">Vidéos YouTube · %1$d</string>
+    <string name="search_top">Les plus probables</string>
+    <string name="search_suggested">Proposition</string>
+    <string name="search_tag_album">album</string>
+    <string name="search_tag_video">vidéo</string>
     <string name="result_ignored">%1$d ignorés</string>
     <string name="tools_pick_service">Service</string>
     <string name="tools_none">Connectez d\'abord un service.</string>

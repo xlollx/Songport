@@ -89,6 +89,11 @@ data class SyncReport(
     val error: String? = null,
     /** True finche' la sync e' in corso: contiene gia' i brani da rivedere, il resto arriva alla fine. */
     val partial: Boolean = false,
+    /**
+     * Per i non trovati, il candidato migliore rimasto sotto soglia (id del brano d'origine -> brano
+     * della destinazione): una proposta da accettare con un tocco, senza rifare la ricerca.
+     */
+    val suggestions: Map<String, Track> = emptyMap(),
 ) {
     val ok: Boolean get() = error == null
 }
@@ -116,11 +121,16 @@ data class SyncPlan(
 
 /** Progresso di una sync in corso, mostrato nella UI. */
 /**
- * Esito di una ricerca manuale sulla destinazione: i candidati ordinati per somiglianza e, quando
- * il brano d'origine ha un album, i brani di quell'album trovati sul servizio (null se il servizio
- * non riporta gli album e quindi non si puo' dire nulla).
+ * Esito di una ricerca manuale sulla destinazione: tutti i risultati con punteggio e provenienza,
+ * gia' ordinati dal piu' simile, e l'album del brano d'origine (trovato o no; null se il servizio non
+ * riporta gli album e quindi non si puo' dire nulla).
  */
-data class TargetSearch(val candidates: List<Track>, val album: String? = null, val albumTracks: List<Track>? = null, val wide: List<Track> = emptyList())
+data class TargetSearch(val hits: List<Hit>, val album: String? = null, val albumFound: Boolean? = null) {
+    /** Where a result came from: the song catalogue, the source track's album, or a wider catalogue (YouTube videos). */
+    enum class Kind { SONG, ALBUM, VIDEO }
+    data class Hit(val track: Track, val score: Double, val kind: Kind)
+    fun of(kind: Kind): List<Hit> = hits.filter { it.kind == kind }
+}
 
 data class Progress(val step: Step, val done: Int = 0, val total: Int = 0, val label: String? = null) {
     /** WAITING: il servizio limita le richieste; done/total = secondi trascorsi/da attendere. */
