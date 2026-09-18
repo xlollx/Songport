@@ -69,6 +69,7 @@ import com.xlollx.songport.ui.SyncEditorScreen
 import com.xlollx.songport.ui.SyncsScreen
 import com.xlollx.songport.ui.ToolsScreen
 import com.xlollx.songport.ui.UnmatchedScreen
+import com.xlollx.songport.ui.FilesScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
 
@@ -167,6 +168,7 @@ private fun MainScreen(
     var editing by remember { mutableStateOf<SyncJob?>(null) }
     var wizardFor by remember { mutableStateOf<MusicProvider?>(null) }
     var unmatchedReport by remember { mutableStateOf<String?>(null) }
+    var filesOpen by remember { mutableStateOf(false) }
     var previewJob by remember { mutableStateOf<SyncJob?>(null) }
     var addConnector by remember { mutableStateOf(false) }
 
@@ -217,6 +219,10 @@ private fun MainScreen(
     val unmatched = unmatchedReport
     if (unmatched != null) {
         UnmatchedScreen(unmatched) { unmatchedReport = null }
+        return
+    }
+    if (filesOpen) {
+        FilesScreen { filesOpen = false }
         return
     }
 
@@ -301,8 +307,8 @@ private fun MainScreen(
                     onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS },
                     onReview = { unmatchedReport = it },
                 )
-                MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }) { wizardFor = it }
-                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar)
+                MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
+                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true })
                 MainActivity.TAB_LOG -> LogScreen(data, snackbar) { unmatchedReport = it }
                 else -> SettingsScreen(data, store, snackbar) { wizardFor = it }
             }

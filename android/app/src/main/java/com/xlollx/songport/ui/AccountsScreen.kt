@@ -35,11 +35,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -83,7 +83,7 @@ import kotlinx.coroutines.withContext
  */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun AccountsScreen(snackbar: SnackbarHostState, showAdd: Boolean, onShowAdd: (Boolean) -> Unit, onSetup: (MusicProvider) -> Unit) {
+fun AccountsScreen(snackbar: SnackbarHostState, showAdd: Boolean, onShowAdd: (Boolean) -> Unit, onSetup: (MusicProvider) -> Unit, onManageFiles: () -> Unit = {}) {
     val ctx = LocalContext.current
     val store = remember { Store.get(ctx) }
     val data by store.state.collectAsState()
@@ -175,7 +175,7 @@ fun AccountsScreen(snackbar: SnackbarHostState, showAdd: Boolean, onShowAdd: (Bo
         item(key = "intro") { TrustBanner() }
         items(providers, key = { it.id }) { p ->
             key(refresh) {
-                if (!p.requiresAuth) FilesCard(snackbar, onRemove = { remove(p) })
+                if (!p.requiresAuth) FilesCard(snackbar, onRemove = { remove(p) }, onManage = onManageFiles)
                 else ProviderCard(
                     p = p,
                     quotaUsed = if (p.serviceId == YouTubeProvider.SERVICE) QuotaMeter.used(data, YouTubeProvider.SERVICE) else null,
@@ -343,10 +343,7 @@ private fun ProviderCard(
 
 /** File playlists: import, paste, export, delete. Shown in Tools always and in Accounts when the File connector is added. */
 @Composable
-/** File playlists shown before "show all". */
-private const val FILES_PREVIEW = 5
-
-internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = null) {
+internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = null, onManage: () -> Unit = {}) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     var lists by remember { mutableStateOf<List<Playlist>>(emptyList()) }
@@ -418,37 +415,14 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
             }
             Spacer(Modifier.height(10.dp))
             if (lists.isEmpty()) Text(stringResource(R.string.csv_empty), style = MaterialTheme.typography.bodyMedium)
-            // A few rows by default, the rest behind "show all": backups of many playlists are common.
-            var showAll by remember { mutableStateOf(false) }
-            val shown = if (showAll || lists.size <= FILES_PREVIEW) lists else lists.take(FILES_PREVIEW)
-            shown.forEach { pl ->
+            // The playlists live on their own screen: here only how many there are and a way in.
+            if (lists.isNotEmpty()) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Text(pl.name, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.tracks_count, pl.trackCount), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    var menu by remember { mutableStateOf(false) }
-                    Box {
-                        IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, stringResource(R.string.csv_export)) }
-                        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.csv_export_csv)) },
-                                onClick = { menu = false; exporting = pl.id; csvLauncher.launch(pl.name + ".csv") },
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.csv_export_m3u)) },
-                                onClick = { menu = false; exporting = pl.id; m3uLauncher.launch(pl.name + ".m3u8") },
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },
-                                onClick = { menu = false; LocalFilesProvider.delete(ctx, pl.id); version++ },
-                            )
-                        }
-                    }
-                }
-            }
-            if (lists.size > FILES_PREVIEW) {
-                TextButton(onClick = { showAll = !showAll }) {
-                    Text(if (showAll) stringResource(R.string.files_show_less) else stringResource(R.string.files_show_all, lists.size))
+                    Text(
+                        stringResource(R.string.files_summary, lists.size, lists.sumOf { it.trackCount.coerceAtLeast(0) }),
+                        style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f),
+                    )
+                    FilledTonalButton(onClick = onManage) { Text(stringResource(R.string.files_manage)) }
                 }
             }
             Spacer(Modifier.height(8.dp))

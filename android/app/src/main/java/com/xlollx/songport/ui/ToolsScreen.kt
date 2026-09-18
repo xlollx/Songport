@@ -62,7 +62,7 @@ import kotlinx.coroutines.withContext
 /** Strumenti che altrove stanno dietro un abbonamento: backup completo e pulizia dei duplicati. */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun ToolsScreen(snackbar: SnackbarHostState) {
+fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
@@ -70,7 +70,7 @@ fun ToolsScreen(snackbar: SnackbarHostState) {
 
     Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         // Playlist files (imported, or produced by a sync into "File") live here, not under Accounts.
-        FilesCard(snackbar)
+        FilesCard(snackbar, onManage = onManageFiles)
         if (provider == null) {
             EmptyState(Icons.Filled.Build, stringResource(R.string.empty_tools_title), stringResource(R.string.empty_tools_body))
             return@Column
