@@ -203,8 +203,9 @@
     <string name="unmatched_search_help">Titel, „Künstler - Titel“ oder der Link des Titels</string>
     <string name="link_other_service">Dieser Link ist kein Titel von %1$s</string>
     <string name="link_track_unknown">Titel aus dem Link</string>
-    <string name="search_album_section">Album „%1$s“ auf %2$s: %3$d Titel</string>
+    <string name="search_album_section">Aus dem Album „%1$s“ auf %2$s · %3$d Titel</string>
     <string name="search_album_missing">Album „%1$s“ auf %2$s nicht gefunden</string>
+    <string name="search_other_results">Weitere Ergebnisse</string>
     <string name="result_ignored">%1$d ignoriert</string>
     <string name="tools_pick_service">Dienst</string>
     <string name="tools_none">Verbinde zuerst einen Dienst.</string>

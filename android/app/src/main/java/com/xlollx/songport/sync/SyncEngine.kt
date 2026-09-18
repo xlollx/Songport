@@ -567,8 +567,9 @@ class SyncEngine(private val ctx: Context) {
      * Con il brano d'origine [source] i candidati sono ordinati per somiglianza con esso (titolo,
      * artista, durata): le versioni dell'artista giusto vengono prima degli omonimi piu' popolari, e
      * le edizioni ripetute dello stesso brano compaiono una volta sola. Se [source] ha un album, una
-     * seconda ricerca "artista album" elenca i brani di quell'album presenti sul servizio: se mancano
-     * tutti, manca il disco, non solo il brano.
+     * seconda ricerca "artista album" elenca per primi i brani di quell'album presenti sul servizio,
+     * il piu' simile in testa: il brano cercato potrebbe esserci con un titolo un po' diverso, e se
+     * non c'e' nessuno manca il disco, non solo il brano.
      */
     suspend fun searchOnTarget(job: SyncJob, query: String, source: Track? = null): TargetSearch {
         val (_, dst) = providers(job)
@@ -594,11 +595,14 @@ class SyncEngine(private val ctx: Context) {
         // Un servizio che non riporta l'album nei risultati non permette di dire se il disco c'e'.
         if ((albumHits + found).none { it.album.isNotBlank() }) return TargetSearch(candidates)
         val wanted = Matcher.normalizeTitle(album)
+        // The album's tracks come first, the likeliest match on top: the wanted song may be there
+        // under a slightly different title. The other results follow, without repeating them.
         val ofAlbum = dedupe((albumHits + found).filter {
             it.album.isNotBlank() && Matcher.similarity(Matcher.normalizeTitle(it.album), wanted) >= 0.8 &&
                 (source.artists.isEmpty() || Matcher.artistScore(source.artists, it.artists) >= 0.7)
-        }).sortedBy { it.title.lowercase() }
-        return TargetSearch(candidates, album, ofAlbum)
+        }).sortedByDescending { Matcher.score(source, it) }
+        val inAlbum = ofAlbum.map { it.id }.toHashSet()
+        return TargetSearch(candidates.filter { it.id !in inAlbum }, album, ofAlbum)
     }
 
     /** Una riga per titolo e artisti: le edizioni ripetute di uno stesso brano non aiutano a scegliere. */

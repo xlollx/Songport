@@ -29,6 +29,7 @@ import com.xlollx.songport.R
 import com.xlollx.songport.model.TargetSearch
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.sync.Durations
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 /** Riga compatta "titolo · artista · album · durata" di un brano. */
@@ -67,7 +68,7 @@ fun MatchSearch(
     LaunchedEffect(Unit) {
         if (autoSearch && candidates == null && query.isNotBlank()) {
             busy = true
-            candidates = try { search(query) } catch (e: Exception) { onError(e.message ?: ""); TargetSearch(emptyList()) }
+            candidates = try { search(query) } catch (e: CancellationException) { throw e } catch (e: Exception) { onError(e.message ?: ""); TargetSearch(emptyList()) }
             busy = false
         }
     }
@@ -84,7 +85,7 @@ fun MatchSearch(
         Button(enabled = !busy && query.isNotBlank(), onClick = {
             busy = true
             scope.launch {
-                candidates = try { search(query) } catch (e: Exception) { onError(e.message ?: ""); TargetSearch(emptyList()) }
+                candidates = try { search(query) } catch (e: CancellationException) { throw e } catch (e: Exception) { onError(e.message ?: ""); TargetSearch(emptyList()) }
                 busy = false
             }
         }) { Text(stringResource(R.string.unmatched_search)) }
@@ -96,25 +97,33 @@ fun MatchSearch(
                 TextButton(enabled = !busy, onClick = {
                     busy = true
                     scope.launch {
-                        try { onPick(c) } catch (e: Exception) { onError(e.message ?: "") }
+                        try { onPick(c) } catch (e: CancellationException) { throw e } catch (e: Exception) { onError(e.message ?: "") }
                         busy = false
                     }
                 }) { Text(pickLabel) }
             }
         }
-        if (result.candidates.isEmpty()) Text(stringResource(R.string.unmatched_no_results), style = MaterialTheme.typography.bodySmall)
-        result.candidates.forEach { pick(it) }
-        // L'album del brano d'origine sulla destinazione: se e' vuoto manca il disco, non solo il brano.
+        // The source track's album on the destination comes first: the wanted song may be in it
+        // under another title, and an empty album says the record itself is missing.
         val album = result.album
         val ofAlbum = result.albumTracks
+        val albumShown = album != null && ofAlbum != null
         if (album != null && ofAlbum != null) {
-            Spacer(Modifier.height(8.dp))
             Text(
                 if (ofAlbum.isEmpty()) stringResource(R.string.search_album_missing, album, targetName)
                 else stringResource(R.string.search_album_section, album, targetName, ofAlbum.size),
                 style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary,
             )
             ofAlbum.forEach { pick(it) }
+        }
+        if (result.candidates.isEmpty() && ofAlbum.isNullOrEmpty()) {
+            Text(stringResource(R.string.unmatched_no_results), style = MaterialTheme.typography.bodySmall)
+        } else if (result.candidates.isNotEmpty()) {
+            if (albumShown) {
+                Spacer(Modifier.height(8.dp))
+                Text(stringResource(R.string.search_other_results), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            result.candidates.forEach { pick(it) }
         }
     }
 }
