@@ -53,6 +53,8 @@ data class StoreData(
     val matchCache: Map<String, String> = emptyMap(),
     /** Ricerche senza esito, stessa chiave -> quando (epoch ms): non si ripetono per una settimana. */
     val missCache: Map<String, Long> = emptyMap(),
+    /** Source tracks the user declared absent from a destination service (same keys as the caches). */
+    val ignoredTracks: Set<String> = emptySet(),
     val settings: Settings = Settings(),
     /** Quota API stimata per servizio (oggi YouTube). */
     val quota: Map<String, QuotaDay> = emptyMap(),
@@ -159,6 +161,13 @@ class Store private constructor(context: Context) {
 
     fun cachedMatch(srcProvider: String, srcTrackId: String, dstProvider: String): String? =
         data.matchCache[cacheKey(srcProvider, srcTrackId, dstProvider)]
+
+    /** "Ignore" in the review: this source track is not on that service, whichever sync meets it. */
+    fun isIgnored(srcProvider: String, srcTrackId: String, dstProvider: String): Boolean =
+        cacheKey(srcProvider, srcTrackId, dstProvider) in data.ignoredTracks
+
+    fun putIgnored(srcProvider: String, srcTrackId: String, dstProvider: String) =
+        update { d -> d.copy(ignoredTracks = d.ignoredTracks + cacheKey(srcProvider, srcTrackId, dstProvider)) }
 
     fun putMatches(entries: Map<String, String>) {
         if (entries.isEmpty()) return

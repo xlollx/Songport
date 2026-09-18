@@ -101,8 +101,9 @@ class SyncEngine(private val ctx: Context) {
 
         onProgress(Progress(Progress.Step.FETCH_SOURCE))
         val allSource = patient(onProgress) { src.tracks(ctx, srcPlaylistId) }
+        // Ignored in this sync, or declared absent from this destination service by any sync.
         val ignoredIds = job.ignoredSourceIds.toHashSet()
-        val srcTracks = allSource.filter { it.id !in ignoredIds }
+        val srcTracks = allSource.filter { it.id !in ignoredIds && !store.isIgnored(src.id, it.id, dst.id) }
         val ignored = allSource.size - srcTracks.size
 
         var targetId = job.target.playlistId
@@ -656,9 +657,13 @@ class SyncEngine(private val ctx: Context) {
         dropUnmatched(reportId, sourceTrack)
     }
 
-    /** L'utente non vuole piu' vedere questo brano: finisce fra gli ignorati del job. */
+    /**
+     * L'utente non vuole piu' vedere questo brano: e' assente dalla destinazione, e lo resta per ogni
+     * sync verso quel servizio, non solo per questa (come gli abbinamenti scelti a mano).
+     */
     fun ignore(job: SyncJob, reportId: String, sourceTrack: Track) {
         store.upsertJob(job.copy(ignoredSourceIds = (job.ignoredSourceIds + sourceTrack.id).distinct()))
+        runCatching { val (src, dst) = providers(job); store.putIgnored(src.id, sourceTrack.id, dst.id) }
         dropUnmatched(reportId, sourceTrack)
     }
 
