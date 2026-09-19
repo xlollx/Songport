@@ -24,6 +24,7 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
     override val displayName = "ListenBrainz"
     override val brandColor = 0xFFEB743B
     override val noteRes = R.string.provider_note_listenbrainz
+    override val beta = true
     override val canWrite = false
     override val canRemoveTracks = false
     override val supportsLikedSongs = true

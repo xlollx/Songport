@@ -245,6 +245,8 @@
     <string name="share_received">Link received: choose where to sync it.</string>
     <string name="share_invalid">The shared text has no recognisable playlist link.</string>
     <string name="read_only">read-only</string>
+    <string name="beta">beta</string>
+    <string name="beta_note">Connector in beta: it works, but it has seen less use than the others. If something goes wrong, please report it.</string>
     <string name="provider_note_subsonic">Your own music server: Navidrome, Airsonic, Gonic, LMS, Funkwhale and anything speaking the Subsonic API. No registration, no quota. Starred songs count as liked songs.</string>
     <string name="provider_note_jellyfin">Your Jellyfin server. No registration, no quota. Favourites count as liked songs.</string>
     <string name="provider_note_plex">Your Plex Media Server, with your X-Plex-Token. Plex cannot create an empty playlist from the API: create it in Plex, then pick it here.</string>

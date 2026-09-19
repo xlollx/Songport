@@ -26,6 +26,13 @@ interface MusicProvider {
     val supportsLikedTarget: Boolean get() = false
     /** False per sorgenti locali (file) che non richiedono login. */
     val requiresAuth: Boolean get() = true
+    /**
+     * Connettore in beta: scritto sulle API documentate del servizio e funzionante nei test, ma
+     * usato da poche persone, quindi con piu' probabilita' di incontrare un caso non previsto.
+     * La UI lo dichiara e invita a segnalare, invece di lasciarlo scoprire all'utente.
+     */
+    val beta: Boolean get() = false
+
     /** False per le sorgenti in sola lettura (Last.fm, ListenBrainz): mai come destinazione. */
     val canWrite: Boolean get() = true
     /** False dove la playlist va creata nell'app del servizio (Plex). */

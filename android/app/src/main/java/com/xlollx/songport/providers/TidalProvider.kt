@@ -31,6 +31,7 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
     override val displayName = "TIDAL"
     override val brandColor = 0xFF111111
     override val noteRes = R.string.provider_note_tidal
+    override val beta = true
 
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://developer.tidal.com/dashboard",

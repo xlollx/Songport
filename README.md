@@ -6,9 +6,13 @@ Android app that keeps playlists in sync across music services, manually or on a
 Free, no account, no subscription: a single banner ad pays for development. Everything runs on the
 phone. There is no Songport server and access tokens never leave the device.
 
-Supported: Spotify, Apple Music, YouTube Music, TIDAL (beta), Deezer (beta), Subsonic/Navidrome,
+Supported: Spotify, Apple Music, YouTube Music, Amazon Music, TIDAL, Deezer, Subsonic/Navidrome,
 Jellyfin, Plex, Last.fm and ListenBrainz (read-only), plus playlist files (CSV, TSV, M3U, iTunes XML,
 JSON, pasted text) as a bridge to everything else.
+
+Apple Music, TIDAL, Deezer, the personal servers, Last.fm and ListenBrainz are marked **beta** in the
+app: they are written against each service's documented API and work, but they have had far less
+real-world use than the rest, so a report about them is especially welcome.
 
 The app ships without any service credentials of its own: each user creates a free developer key
 on the services that require one (Spotify, YouTube Music, TIDAL, Deezer, Last.fm) and the app walks
@@ -31,7 +35,7 @@ that is exactly what to report.
   page (updates install over it), or the Google Play open-testing track once listed there. The Play
   build uses official APIs only; the GitHub build can also use the
   [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) for YouTube Music and Amazon Music.
-- **What helps most**: a sync of a big playlist (a thousand tracks and more), the review of the tracks
+- **What helps most**: the connectors marked *beta* in Accounts, a sync of a big playlist (a thousand tracks and more), the review of the tracks
   that were not found (one-tap proposals, the "likeliest" list, pasting a track link), scheduled syncs
   surviving the night, and backups of a whole account.
 - **How to report**: open an [issue](https://github.com/xlollx/Songport/issues/new/choose) and attach
@@ -93,19 +97,19 @@ that is exactly what to report.
 | Service | Status | Login | What the build needs | Limits |
 |---------|--------|-------|----------------------|--------|
 | Spotify | complete | OAuth PKCE in the browser | `SPOTIFY_CLIENT_ID`, redirect `songport://callback` | An app in *Development Mode* accepts 5 users and its owner needs Spotify Premium (February 2026 rules). *Extended Quota Mode* requires a registered company and 250,000 monthly active users. Since July 2026 the quota is counted per developer account, not per client ID. That is why the app walks each user through creating their own client ID: on Spotify this is the normal path. |
-| Apple Music | read and add | MusicKit JS in an in-app WebView | `APPLE_DEVELOPER_TOKEN` (ES256 JWT, Apple Developer Program) | The API cannot remove tracks from a playlist: mirror syncs towards Apple Music only add and say so in the report. The developer token expires after at most 6 months. An Apple Music subscription is required. Library tracks do not expose an ISRC. |
+| Apple Music | read and add, beta | MusicKit JS in an in-app WebView | `APPLE_DEVELOPER_TOKEN` (ES256 JWT, Apple Developer Program) | The API cannot remove tracks from a playlist: mirror syncs towards Apple Music only add and say so in the report. The developer token expires after at most 6 months. An Apple Music subscription is required. Library tracks do not expose an ISRC. |
 | YouTube Music | via the optional [Songport YTM Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Google sign-in inside the Bridge | nothing: the Bridge is installed separately, outside Google Play | Uses the web player's internal interface: not an official API, against the YouTube Terms of Service, may break without notice. No quota. The Bridge shows the notice before sign-in. |
 | YouTube Music (Google API) | via YouTube Data API v3 | Google OAuth | `GOOGLE_CLIENT_ID` (Android OAuth client: package + SHA-1), YouTube Data API enabled, OAuth verification for the `youtube` scope | 10,000 units per day per project (search 100, insert 50), shared by every user of the same build. With own credentials the quota is the user's. No ISRC. |
 | Spotify (Bridge) | complete, via the [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Spotify sign-in inside the Bridge | nothing | The Bridge captures the web player's short-lived Web API token and hands it to Songport, which then runs the same Spotify code as above. Not an official route, against Spotify's terms, may break without notice. |
 | Apple Music (Bridge) | read and add, via the Songport Bridge | Apple ID sign-in inside the Bridge | nothing | The Bridge reads the web player's developer token and the music user token cookie; Songport then runs the same Apple Music code as above. Not an official route, against Apple's terms, may break without notice. |
 | Amazon Music | complete, via the [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Amazon sign-in inside the Bridge | nothing | Amazon's official Web API is a closed beta for approved partners, so the Bridge uses the web player's interface (library playlists, playlist rows with their entry ids, search, create, add, remove). Not an official API, may break without notice. |
-| TIDAL | beta | OAuth PKCE | `TIDAL_CLIENT_ID` | API v2 (JSON:API) still evolving; endpoints isolated in `TidalProvider.kt`. Not tested live. |
-| Deezer | beta | OAuth implicit | `DEEZER_APP_ID` and an https redirect page (`docs/deezer-redirect.html`) | Registration of new apps may be closed. Playlists read from Deezer carry no ISRC. Not tested live. |
-| Subsonic / Navidrome (Airsonic, Gonic, LMS, Funkwhale) | complete | server URL, user, password (md5+salt token) | nothing | Starred tracks = likes. |
-| Jellyfin | complete | server URL, user, password | nothing | Favourites supported. |
-| Plex | no playlist creation | server URL and X-Plex-Token | nothing | The API does not create empty playlists: create it in Plex and pick it in the app. |
-| Last.fm | read-only | username | `LASTFM_API_KEY` or a key entered by the user | Loved tracks only, source only. |
-| ListenBrainz | read-only | username | nothing | Playlists and loved tracks, source only. |
+| TIDAL | beta | OAuth PKCE | `TIDAL_CLIENT_ID` | API v2 (JSON:API) still evolving; endpoints isolated in `TidalProvider.kt`. Beta: limited real-world use. |
+| Deezer | beta | OAuth implicit | `DEEZER_APP_ID` and an https redirect page (`docs/deezer-redirect.html`) | Registration of new apps may be closed. Playlists read from Deezer carry no ISRC. Beta: limited real-world use. |
+| Subsonic / Navidrome (Airsonic, Gonic, LMS, Funkwhale) | complete, beta | server URL, user, password (md5+salt token) | nothing | Starred tracks = likes. |
+| Jellyfin | complete, beta | server URL, user, password | nothing | Favourites supported. |
+| Plex | no playlist creation, beta | server URL and X-Plex-Token | nothing | The API does not create empty playlists: create it in Plex and pick it in the app. |
+| Last.fm | read-only, beta | username | `LASTFM_API_KEY` or a key entered by the user | Loved tracks only, source only. |
+| ListenBrainz | read-only, beta | username | nothing | Playlists and loved tracks, source only. |
 | Files | complete | | | Import/export through the system file picker, or "Paste a list". |
 | Qobuz, SoundCloud, Pandora | not connectable | | | Partner-only or closed-beta APIs. Use files. |
 
@@ -400,7 +404,9 @@ services mentioned in this project are trademarks of their respective owners.
 
 ## Known limits
 
-- TIDAL and Deezer are written against the documented APIs but not tested live.
+- The connectors marked *beta* in the app (Apple Music, TIDAL, Deezer, Subsonic/Navidrome, Jellyfin,
+  Plex, Last.fm, ListenBrainz) follow each service's documented API and work, but have had limited
+  real-world use: the app says so on the connector's card and asks for reports.
 - YouTube (official API): the daily quota is 10,000 units per key, about 100 searches; long syncs
   need the Bridge or several days. Video title parsing is not perfect (doubtful tracks end up in
   "not found", never added by guesswork).

@@ -23,6 +23,7 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
     override val displayName = "Jellyfin"
     override val brandColor = 0xFF00A4DC
     override val noteRes = R.string.provider_note_jellyfin
+    override val beta = true
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
     override val loginForm = LoginForm(needsUrl = true, needsUser = true, needsSecret = true, hintRes = R.string.login_hint_jellyfin)

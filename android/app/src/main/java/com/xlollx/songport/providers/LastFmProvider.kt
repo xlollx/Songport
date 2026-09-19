@@ -25,6 +25,7 @@ class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
     override val displayName = "Last.fm"
     override val brandColor = 0xFFD51007
     override val noteRes = R.string.provider_note_lastfm
+    override val beta = true
     override val canWrite = false
     override val canRemoveTracks = false
     override val supportsLikedSongs = true

@@ -26,6 +26,7 @@ class PlexProvider(override val slot: String = "") : CredentialsProvider() {
     override val displayName = "Plex"
     override val brandColor = 0xFFE5A00D
     override val noteRes = R.string.provider_note_plex
+    override val beta = true
     override val canCreatePlaylists = false
     override val loginForm = LoginForm(needsUrl = true, needsUser = false, needsSecret = true, secretLabelRes = R.string.login_token, hintRes = R.string.login_hint_plex)
 

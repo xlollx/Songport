@@ -45,6 +45,7 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     override val displayName = "Apple Music"
     override val brandColor = 0xFFFA243C
     override val noteRes = R.string.provider_note_apple
+    override val beta = true
     override val canRemoveTracks = false
 
 

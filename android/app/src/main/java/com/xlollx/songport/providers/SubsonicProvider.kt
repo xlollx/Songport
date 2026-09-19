@@ -28,6 +28,7 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
     override val displayName = "Subsonic / Navidrome"
     override val brandColor = 0xFF2E7D32
     override val noteRes = R.string.provider_note_subsonic
+    override val beta = true
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
     override val loginForm = LoginForm(needsUrl = true, needsUser = true, needsSecret = true, hintRes = R.string.login_hint_subsonic)

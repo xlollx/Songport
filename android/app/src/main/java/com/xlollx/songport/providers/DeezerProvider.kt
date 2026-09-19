@@ -34,6 +34,7 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
     override val displayName = "Deezer"
     override val brandColor = 0xFFA238FF
     override val noteRes = R.string.provider_note_deezer
+    override val beta = true
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
 

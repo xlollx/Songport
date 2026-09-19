@@ -245,6 +245,8 @@
     <string name="share_received">Link empfangen: Wähle, wohin er synchronisiert werden soll.</string>
     <string name="share_invalid">Der geteilte Text enthält keinen erkennbaren Playlist-Link.</string>
     <string name="read_only">nur lesen</string>
+    <string name="beta">Beta</string>
+    <string name="beta_note">Connector in der Beta: Er funktioniert, wurde aber weniger genutzt als die anderen. Wenn etwas nicht stimmt, melde es bitte.</string>
     <string name="provider_note_subsonic">Dein eigener Musikserver: Navidrome, Airsonic, Gonic, LMS, Funkwhale und alles, was die Subsonic-API spricht. Keine Registrierung, kein Kontingent. Markierte Songs zählen als Lieblingssongs.</string>
     <string name="provider_note_jellyfin">Dein Jellyfin-Server. Keine Registrierung, kein Kontingent. Favoriten zählen als Lieblingssongs.</string>
     <string name="provider_note_plex">Dein Plex Media Server mit deinem X-Plex-Token. Plex kann über die API keine leere Playlist erstellen: Erstelle sie in Plex und wähle sie dann hier aus.</string>

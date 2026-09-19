@@ -245,6 +245,8 @@
     <string name="share_received">Link ricevuto: scegli dove sincronizzarlo.</string>
     <string name="share_invalid">Il testo condiviso non contiene un link a una playlist riconosciuta.</string>
     <string name="read_only">sola lettura</string>
+    <string name="beta">beta</string>
+    <string name="beta_note">Connettore in beta: funziona, ma è stato usato meno degli altri. Se qualcosa non va, segnalalo.</string>
     <string name="provider_note_subsonic">Il tuo server musicale: Navidrome, Airsonic, Gonic, LMS, Funkwhale e tutto ciò che parla l\'API Subsonic. Nessuna registrazione, nessuna quota. I brani con la stella valgono come preferiti.</string>
     <string name="provider_note_jellyfin">Il tuo server Jellyfin. Nessuna registrazione, nessuna quota. I preferiti di Jellyfin valgono come brani preferiti.</string>
     <string name="provider_note_plex">Il tuo Plex Media Server, con il tuo X-Plex-Token. Plex non permette di creare una playlist vuota dall\'API: creala in Plex e poi scegli quella.</string>

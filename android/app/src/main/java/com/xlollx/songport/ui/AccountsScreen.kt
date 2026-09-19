@@ -211,7 +211,8 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                         ProviderBadge(s, 32.dp)
                         Spacer(Modifier.width(12.dp))
                         Text(
-                            s.displayName + (if (!s.canWrite) " · " + stringResource(R.string.read_only) else ""),
+                            s.displayName + (if (!s.canWrite) " · " + stringResource(R.string.read_only) else "") +
+                                (if (s.beta) " · " + stringResource(R.string.beta) else ""),
                             style = MaterialTheme.typography.bodyLarge,
                             color = if (taken) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
                         )
@@ -282,7 +283,8 @@ private fun ProviderCard(
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
-                        p.label(ctx) + (if (!p.canWrite) " · " + stringResource(R.string.read_only) else ""),
+                        p.label(ctx) + (if (!p.canWrite) " · " + stringResource(R.string.read_only) else "") +
+                            (if (p.beta) " · " + stringResource(R.string.beta) else ""),
                         style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     )
                     Text(
@@ -300,6 +302,11 @@ private fun ProviderCard(
                 else if (!configured) StatusPill(stringResource(R.string.not_configured), Tone.Neutral)
             }
             if (connected && quotaUsed != null) QuotaCard(used = quotaUsed, sharedCredentials = !p.usesOwnCredentials(ctx))
+            // Detto una volta, dove si sceglie di usarlo: meglio qui che come sorpresa a sync finita.
+            if (p.beta) {
+                Spacer(Modifier.height(6.dp))
+                Text(stringResource(R.string.beta_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary)
+            }
             if (p.usesOwnCredentials(ctx)) {
                 Spacer(Modifier.height(6.dp))
                 Text(stringResource(R.string.setup_using_own), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)

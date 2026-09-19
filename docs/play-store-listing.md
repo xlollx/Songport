@@ -20,8 +20,9 @@ Keep your playlists identical across music services, without rebuilding them by 
 - Tools: full playlist backup to files, duplicate removal
 - "Share with Songport" from any music app: the link becomes a sync
 
-Works with Spotify, Apple Music, YouTube Music, TIDAL (beta), Deezer (beta), personal
-Navidrome/Subsonic, Jellyfin and Plex servers, Last.fm and ListenBrainz as sources, and files.
+Works with Spotify, Apple Music, YouTube Music, TIDAL, Deezer, personal Navidrome/Subsonic, Jellyfin
+and Plex servers, Last.fm and ListenBrainz as sources, and files. Some connectors are marked beta in
+the app: they work, but they have had less use than the others.
 
 Free, no subscriptions, no in-app purchases. The app is supported by a single small banner ad.
 No account to create: everything stays on your phone, access tokens are encrypted and never go
@@ -47,8 +48,9 @@ Tieni le tue playlist uguali su tutti i servizi musicali, senza rifarle a mano.
 - Strumenti: backup completo delle playlist in file, rimozione dei duplicati
 - "Condividi con Songport" da qualsiasi app musicale: il link diventa una sync
 
-Compatibile con Spotify, Apple Music, YouTube Music, TIDAL (beta), Deezer (beta), server personali
-Navidrome/Subsonic, Jellyfin e Plex, Last.fm e ListenBrainz come sorgenti, e file.
+Compatibile con Spotify, Apple Music, YouTube Music, TIDAL, Deezer, server personali
+Navidrome/Subsonic, Jellyfin e Plex, Last.fm e ListenBrainz come sorgenti, e file. Alcuni connettori
+sono indicati come beta nell'app: funzionano, ma sono stati usati meno degli altri.
 
 Gratuita, senza abbonamenti né acquisti in-app. L'app si sostiene con un solo piccolo banner
 pubblicitario. Nessun account da creare: tutto resta sul tuo telefono, i token di accesso sono

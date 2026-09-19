@@ -245,6 +245,8 @@
     <string name="share_received">Lien reçu : choisissez où le synchroniser.</string>
     <string name="share_invalid">Le texte partagé ne contient aucun lien de playlist reconnaissable.</string>
     <string name="read_only">lecture seule</string>
+    <string name="beta">bêta</string>
+    <string name="beta_note">Connecteur en bêta : il fonctionne, mais il a été moins utilisé que les autres. Si quelque chose ne va pas, signalez-le.</string>
     <string name="provider_note_subsonic">Votre propre serveur musical : Navidrome, Airsonic, Gonic, LMS, Funkwhale et tout ce qui parle l\'API Subsonic. Aucune inscription, aucun quota. Les titres marqués d\'une étoile comptent comme titres likés.</string>
     <string name="provider_note_jellyfin">Votre serveur Jellyfin. Aucune inscription, aucun quota. Les favoris comptent comme titres likés.</string>
     <string name="provider_note_plex">Votre Plex Media Server, avec votre X-Plex-Token. Plex ne peut pas créer une playlist vide via l\'API : créez-la dans Plex, puis choisissez-la ici.</string>
