@@ -44,6 +44,20 @@ private const val MAX_BLOCK_WAITS = 8
 private const val RESET_AFTER_CHUNKS = 15
 /** Punteggio fittizio di un "non trovato" preso dalla cache dei fallimenti, mai mostrato. */
 private const val MISS_SCORE = -1.0
+/**
+ * Attese crescenti quando la rete non risponde. Una sync programmata parte spesso mentre il telefono
+ * si sta svegliando: WorkManager la lancia appena il sistema dichiara la rete "connessa", ma il DNS
+ * puo' arrivare qualche decina di secondi dopo. Quindici secondi di tentativi non bastavano.
+ */
+private val NETWORK_RETRY_SECONDS = intArrayOf(5, 15, 30, 60, 120)
+
+/** Errori di trasporto che passano da soli: risoluzione del nome, connessione rifiutata o caduta, timeout. */
+internal fun isTransientNetwork(msg: String?): Boolean {
+    val m = msg ?: return false
+    return m.contains("Unable to resolve host", true) || m.contains("unreachable", true) || m.contains("Failed to connect", true) ||
+        m.contains("timeout", true) || m.contains("timed out", true) || m.contains("connection abort", true) || m.contains("reset by peer", true)
+}
+
 /** Below the match threshold but close enough to be worth proposing in the review. */
 private const val HINT_THRESHOLD = 0.45
 
@@ -410,23 +424,17 @@ class SyncEngine(private val ctx: Context) {
                         Diagnostics.log(ctx, "engine", "blocked: ${e.message?.take(160)}; waiting ${asked}s")
                         waitVisible(asked, onProgress)
                     }
-                    // Rete assente per un attimo (cambio Wi-Fi/dati): non e' il servizio, si riprova.
-                    isTransientNetwork(e.message) && networkRetries < 3 -> {
-                        networkRetries++
-                        Diagnostics.log(ctx, "engine", "network hiccup: ${e.message?.take(120)}; retrying in 5s")
-                        waitVisible(5, onProgress)
+                    // Rete assente per un attimo (risveglio programmato, cambio Wi-Fi/dati): non e' il
+                    // servizio, si riprova con attese crescenti.
+                    isTransientNetwork(e.message) && networkRetries < NETWORK_RETRY_SECONDS.size -> {
+                        val seconds = NETWORK_RETRY_SECONDS[networkRetries++]
+                        Diagnostics.log(ctx, "engine", "network hiccup: ${e.message?.take(120)}; retrying in ${seconds}s")
+                        waitVisible(seconds, onProgress)
                     }
                     else -> throw e
                 }
             }
         }
-    }
-
-    /** Errori di trasporto che passano da soli: risoluzione del nome, connessione rifiutata o caduta, timeout. */
-    private fun isTransientNetwork(msg: String?): Boolean {
-        val m = msg ?: return false
-        return m.contains("Unable to resolve host", true) || m.contains("unreachable", true) || m.contains("Failed to connect", true) ||
-            m.contains("timeout", true) || m.contains("timed out", true) || m.contains("connection abort", true) || m.contains("reset by peer", true)
     }
 
     /** "Artista – Titolo", come nella vista dal vivo della fase di ricerca. */

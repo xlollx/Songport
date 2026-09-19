@@ -90,6 +90,8 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         val store = Store.get(ctx)
         val jobs = if (jobId == ALL) store.data.jobs.filter { it.enabled } else listOfNotNull(store.job(jobId))
         val engine = SyncEngine(ctx)
+        // Rete ancora assente al risveglio: non e' un esito della sync, la si rimette in coda.
+        var retryLater = false
         // Le sync manuali possono durare piu' dei 10 minuti concessi a un lavoro in background
         // (migliaia di brani verso YouTube): in primo piano, con una notifica di avanzamento.
         if (!scheduled) runCatching { setForeground(foregroundInfo(ctx.getString(R.string.running))) }
@@ -116,8 +118,15 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                     throw e
                 }
                 Diagnostics.log(ctx, "sync", "end ${job.name}: +${report.added} -${report.removed} nf=${report.unmatched.size}" + (report.error?.let { " ERR $it" } ?: ""))
+                // Una sync programmata morta per mancanza di rete non ha "fallito": WorkManager la
+                // riprova col suo backoff, quindi niente notifica d'errore per una giornata persa.
+                val networkGone = scheduled && !report.ok && isTransientNetwork(report.error)
+                if (networkGone) {
+                    retryLater = true
+                    Diagnostics.log(ctx, "sync", "no network for ${job.name}: will retry")
+                }
                 val notable = report.added > 0 || report.removed > 0 || !report.ok
-                if (store.data.settings.notifyOnSync && (scheduled || !report.ok) && notable) {
+                if (!networkGone && store.data.settings.notifyOnSync && (scheduled || !report.ok) && notable) {
                     Notifications.syncResult(ctx, report)
                 }
             } finally {
@@ -126,7 +135,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         }
         SyncWidget.refresh(ctx)
         store.flush()
-        return Result.success()
+        return if (retryLater) Result.retry() else Result.success()
     }
 
     /** One notification per worker: syncs started separately run side by side, each with its own bar. */
