@@ -434,6 +434,9 @@
     <string name="empty_tools_title">Collega un servizio</string>
     <string name="empty_tools_body">Backup e pulizia dei duplicati lavorano sui servizi che hai collegato.</string>
     <string name="settings_section_general">Generale</string>
+    <string name="settings_log">Registro delle sync</string>
+    <string name="settings_log_desc">Esito delle ultime sincronizzazioni e i dettagli tecnici da allegare a una segnalazione.</string>
+    <string name="settings_open">Apri</string>
     <string name="accounts_intro">Accedi dalla pagina ufficiale di ogni servizio. Songport non vede mai la tua password.</string>
     <string name="show_details">Dettagli</string>
     <string name="hide_details">Nascondi dettagli</string>

@@ -35,7 +35,7 @@ that is exactly what to report.
   that were not found (one-tap proposals, the "likeliest" list, pasting a track link), scheduled syncs
   surviving the night, and backups of a whole account.
 - **How to report**: open an [issue](https://github.com/xlollx/Songport/issues/new/choose) and attach
-  the **technical details report** (Log tab → *Share technical details*): versions, connectors, the
+  the **technical details report** (Settings → *Sync log* → *Share technical details*): versions, connectors, the
   last sync steps and plugin statistics, never tokens or track lists. Italian is welcome.
 - **Known rough edges**: see [Known limits](#known-limits). Matching depends on each catalogue's search:
   a track "not found" is usually missing or titled differently on the destination, and the review

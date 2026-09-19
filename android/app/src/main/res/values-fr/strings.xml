@@ -434,6 +434,9 @@
     <string name="empty_tools_title">Connectez un service</string>
     <string name="empty_tools_body">La sauvegarde et le nettoyage des doublons fonctionnent sur les services que vous avez connectés.</string>
     <string name="settings_section_general">Général</string>
+    <string name="settings_log">Journal des syncs</string>
+    <string name="settings_log_desc">Résultat des dernières synchronisations et les détails techniques à joindre à un signalement.</string>
+    <string name="settings_open">Ouvrir</string>
     <string name="accounts_intro">Vous vous connectez sur la page officielle de chaque service. Songport ne voit jamais votre mot de passe.</string>
     <string name="show_details">Détails</string>
     <string name="hide_details">Masquer les détails</string>

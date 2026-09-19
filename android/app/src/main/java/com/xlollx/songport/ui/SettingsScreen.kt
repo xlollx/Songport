@@ -63,6 +63,7 @@ fun SettingsScreen(
     store: Store,
     snackbar: SnackbarHostState,
     onSetup: (MusicProvider) -> Unit,
+    onOpenLog: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val privacyRequired by Ads.privacyOptionsRequired.collectAsState()
@@ -74,6 +75,9 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         SectionCard(stringResource(R.string.settings_section_general)) {
+            SettingRow(stringResource(R.string.settings_log), stringResource(R.string.settings_log_desc)) {
+                TextButton(onClick = onOpenLog) { Text(stringResource(R.string.settings_open)) }
+            }
             SettingRow(stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_desc)) {
                 Switch(checked = data.settings.notifyOnSync, onCheckedChange = { v -> store.updateSettings { it.copy(notifyOnSync = v) } })
             }

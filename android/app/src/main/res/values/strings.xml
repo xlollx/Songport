@@ -435,6 +435,9 @@
     <string name="empty_tools_title">Connect a service</string>
     <string name="empty_tools_body">Backup and duplicate cleanup work on the services you have connected.</string>
     <string name="settings_section_general">General</string>
+    <string name="settings_log">Sync log</string>
+    <string name="settings_log_desc">Outcome of the last syncs, and the technical details to attach to a report.</string>
+    <string name="settings_open">Open</string>
     <string name="accounts_intro">You log in on each service\'s official page. Songport never sees your password.</string>
     <string name="show_details">Details</string>
     <string name="hide_details">Hide details</string>

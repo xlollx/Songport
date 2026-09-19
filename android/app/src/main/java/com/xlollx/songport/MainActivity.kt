@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -146,6 +145,7 @@ class MainActivity : ComponentActivity() {
         const val TAB_SYNCS = 0
         const val TAB_ACCOUNTS = 1
         const val TAB_TOOLS = 2
+        /** Non e' una scheda: la notifica di esito chiede cosi' la schermata del registro. */
         const val TAB_LOG = 3
         const val TAB_SETTINGS = 4
 
@@ -169,6 +169,7 @@ private fun MainScreen(
     var wizardFor by remember { mutableStateOf<MusicProvider?>(null) }
     var unmatchedReport by remember { mutableStateOf<String?>(null) }
     var filesOpen by remember { mutableStateOf(false) }
+    var logOpen by remember { mutableStateOf(false) }
     var previewJob by remember { mutableStateOf<SyncJob?>(null) }
     var addConnector by remember { mutableStateOf(false) }
 
@@ -200,7 +201,13 @@ private fun MainScreen(
     val authMessage by AuthEvents.message.collectAsState()
     LaunchedEffect(authMessage) { authMessage?.let { snackbar.showSnackbar(it); AuthEvents.consume() } }
     val requestedTab by tabRequests.collectAsState()
-    LaunchedEffect(requestedTab) { if (requestedTab >= 0) { tab = requestedTab; tabRequests.value = -1 } }
+    LaunchedEffect(requestedTab) {
+        if (requestedTab >= 0) {
+            // Il registro non e' piu' una scheda: la notifica lo apre sopra le Opzioni, da cui si raggiunge.
+            if (requestedTab == MainActivity.TAB_LOG) { tab = MainActivity.TAB_SETTINGS; logOpen = true } else tab = requestedTab
+            tabRequests.value = -1
+        }
+    }
 
     if (!data.settings.onboardingDone) {
         OnboardingScreen { store.updateSettings { it.copy(onboardingDone = true) } }
@@ -223,6 +230,10 @@ private fun MainScreen(
     }
     if (filesOpen) {
         FilesScreen { filesOpen = false }
+        return
+    }
+    if (logOpen) {
+        LogScreen(data, onClose = { logOpen = false }) { unmatchedReport = it }
         return
     }
 
@@ -252,7 +263,6 @@ private fun MainScreen(
         Triple(R.string.tab_syncs, Icons.Filled.Sync, MainActivity.TAB_SYNCS),
         Triple(R.string.tab_accounts, Icons.Filled.AccountCircle, MainActivity.TAB_ACCOUNTS),
         Triple(R.string.tab_tools, Icons.Filled.Build, MainActivity.TAB_TOOLS),
-        Triple(R.string.tab_log, Icons.Filled.History, MainActivity.TAB_LOG),
         Triple(R.string.tab_settings, Icons.Filled.Settings, MainActivity.TAB_SETTINGS),
     )
 
@@ -309,8 +319,7 @@ private fun MainScreen(
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
                 MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true })
-                MainActivity.TAB_LOG -> LogScreen(data, snackbar) { unmatchedReport = it }
-                else -> SettingsScreen(data, store, snackbar) { wizardFor = it }
+                else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
             }
         }
     }

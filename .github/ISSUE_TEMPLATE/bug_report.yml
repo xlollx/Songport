@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         Thanks for testing the beta. The **technical details report** is what makes a report actionable:
-        in Songport open the **Log** tab → **Share technical details** and paste it below. It contains
+        in Songport open **Settings** → **Sync log** → **Share technical details** and paste it below. It contains
         versions, connectors, the last sync steps and the plugin statistics; it never contains tokens,
         passwords or track lists.
   - type: input
@@ -35,7 +35,7 @@ body:
     id: report
     attributes:
       label: Technical details report
-      description: Log tab → Share technical details → paste here.
+      description: Settings → Sync log → Share technical details → paste here.
       render: text
   - type: input
     id: device
