@@ -19,3 +19,8 @@
     @android.webkit.JavascriptInterface <methods>;
 }
 -keepattributes JavascriptInterface
+
+# Tink (dentro androidx.security:security-crypto) cita annotazioni Error Prone che servono solo a
+# compilare e non arrivano a runtime. Nella build Play le portava per caso l'SDK degli annunci; senza
+# di esso R8 si ferma su "Missing class". Sono solo annotazioni: si possono ignorare.
+-dontwarn com.google.errorprone.annotations.**
