@@ -47,6 +47,8 @@ object BridgeCore {
                     invalidate(arg)
                     Bundle()
                 }
+                "rename" -> { client.renamePlaylist(arg ?: return err("missing playlist id"), extras?.getString("name") ?: ""); Bundle() }
+                "delete" -> { client.deletePlaylist(arg ?: return err("missing playlist id")); invalidate(arg); Bundle() }
                 "remove" -> {
                     val items = json.decodeFromString<List<RemoveItem>>(extras?.getString("json") ?: "[]")
                     client.removeTracks(arg ?: return err("missing playlist id"), items)

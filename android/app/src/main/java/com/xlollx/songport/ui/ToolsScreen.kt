@@ -60,7 +60,7 @@ import kotlinx.coroutines.withContext
 /** Strumenti che altrove stanno dietro un abbonamento: backup completo e pulizia dei duplicati. */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}) {
+fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
@@ -81,6 +81,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
                 FilterChip(selected = p.id == provider.id, onClick = { selectedId = p.id }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
             }
         }
+        ManageCard(provider, onOpen = { onManage(provider) })
         ExportCard(provider, snackbar)
         MakePlaylistCard(provider, snackbar)
         TransferCard(onOpen = onTransfer)
@@ -171,6 +172,26 @@ private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
                         ExportMenuItems { fmt -> formats = false; pendingFormat = fmt; export(fmt, pl!!.name) }
                     }
                 }
+            }
+        }
+    }
+}
+
+/** Le playlist del servizio in un elenco, per rinominarle, eliminarle o esportarle. */
+@Composable
+private fun ManageCard(provider: MusicProvider, onOpen: () -> Unit) {
+    Card(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Text(stringResource(R.string.tools_manage_title), style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(6.dp))
+            Text(stringResource(R.string.tools_manage_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (!provider.canRenamePlaylists && !provider.canDeletePlaylists) {
+                Spacer(Modifier.height(6.dp))
+                Text(stringResource(R.string.error_manage_unsupported, provider.displayName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Spacer(Modifier.height(10.dp))
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = onOpen) { Text(stringResource(R.string.tools_manage_open)) }
             }
         }
     }

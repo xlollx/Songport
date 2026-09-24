@@ -51,6 +51,10 @@ interface MusicProvider {
      */
     val canRemoveTracks: Boolean get() = true
 
+    /** Rinominare ed eliminare le proprie playlist: dove l'API lo permette (Apple Music e Amazon no). */
+    val canRenamePlaylists: Boolean get() = canWrite && canCreatePlaylists
+    val canDeletePlaylists: Boolean get() = canRenamePlaylists
+
     /**
      * Istruzioni per far usare all'utente le proprie credenziali. Null = non applicabile
      * (il ponte a file non ha nulla da configurare).
@@ -94,6 +98,12 @@ interface MusicProvider {
     suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist
     suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>)
     suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>)
+    suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        throw com.xlollx.songport.model.ProviderException(ctx.getString(com.xlollx.songport.R.string.error_manage_unsupported, displayName))
+    }
+    suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        throw com.xlollx.songport.model.ProviderException(ctx.getString(com.xlollx.songport.R.string.error_manage_unsupported, displayName))
+    }
 
     /**
      * La pagina di ricerca del servizio per [query], nel suo sito o nella sua app (i link si aprono

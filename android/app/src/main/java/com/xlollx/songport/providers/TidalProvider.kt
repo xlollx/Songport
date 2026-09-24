@@ -173,6 +173,15 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
         }
     }
 
+    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        api(ctx, "PATCH", "$API/playlists/$playlistId?countryCode=${cc(ctx)}",
+            jsonObj("data" to mapOf("type" to "playlists", "id" to playlistId, "attributes" to mapOf("name" to name))))
+    }
+
+    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        api(ctx, "DELETE", "$API/playlists/$playlistId")
+    }
+
     override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         tracks.filter { it.itemId != null }.chunked(20).forEach { chunk ->
             api(ctx, "DELETE", "$API/playlists/$playlistId/relationships/items",

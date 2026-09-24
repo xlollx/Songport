@@ -180,6 +180,14 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
         return Playlist(j["id"].long?.toString() ?: throw ProviderException("Deezer: playlist not created"), name, 0)
     }
 
+    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        dz(ctx, "POST", "/playlist/$playlistId", mapOf("title" to name))
+    }
+
+    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        dz(ctx, "DELETE", "/playlist/$playlistId")
+    }
+
     override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.forEach { dz(ctx, "POST", "/user/me/tracks", mapOf("track_id" to it.id)) }

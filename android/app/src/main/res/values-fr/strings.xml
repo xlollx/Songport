@@ -322,6 +322,21 @@
     <string name="ai_extend_title">Allonger la playlist</string>
     <string name="ai_extend_hint">L\'IA reçoit la même description et les titres déjà présents, et en propose de nouveaux à ajouter.</string>
     <string name="ai_extend_added">%1$d titres ajoutés : la synchro a démarré.</string>
+    <string name="error_manage_unsupported">%1$s ne permet pas de renommer ou de supprimer des playlists depuis d\'autres applications.</string>
+    <string name="tools_manage_title">Gérer les playlists</string>
+    <string name="tools_manage_desc">Vos playlists sur ce service en une seule liste : renommez-les ou supprimez-les quand le service le permet, ou exportez-les.</string>
+    <string name="tools_manage_open">Ouvrir la liste</string>
+    <string name="manage_title">Playlists · %1$s</string>
+    <string name="manage_rename">Renommer</string>
+    <string name="manage_rename_title">Nouveau nom</string>
+    <string name="manage_delete_confirm">Supprimer « %1$s » de %2$s ? Cette action est irréversible.</string>
+    <string name="manage_renamed">Renommée</string>
+    <string name="manage_deleted">Playlist supprimée</string>
+    <string name="manage_none">Aucune de vos playlists sur ce service.</string>
+    <plurals name="manage_delete_used">
+        <item quantity="one">%1$d synchro utilise cette playlist et échouera tant que vous ne la modifiez pas.</item>
+        <item quantity="other">%1$d synchros utilisent cette playlist et échoueront tant que vous ne les modifiez pas.</item>
+    </plurals>
     <plurals name="ai_review_confirm">
         <item quantity="one">Créer avec %1$d titre</item>
         <item quantity="other">Créer avec %1$d titres</item>

@@ -99,6 +99,14 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
         return Playlist(j["Id"].str ?: throw ProviderException("$displayName: playlist not created"), name, 0)
     }
 
+    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        api(ctx, "POST", "/Playlists/$playlistId", jsonObj("Name" to name))
+    }
+
+    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        api(ctx, "DELETE", "/Items/$playlistId")
+    }
+
     override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.forEach { api(ctx, "POST", "/Users/${uid(ctx)}/FavoriteItems/${it.id}") }

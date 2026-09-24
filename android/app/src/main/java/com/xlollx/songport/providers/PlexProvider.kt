@@ -28,6 +28,8 @@ class PlexProvider(override val slot: String = "") : CredentialsProvider() {
     override val noteRes = R.string.provider_note_plex
     override val beta = true
     override val canCreatePlaylists = false
+    override val canRenamePlaylists: Boolean get() = true
+    override val canDeletePlaylists: Boolean get() = true
     override val loginForm = LoginForm(needsUrl = true, needsUser = false, needsSecret = true, secretLabelRes = R.string.login_token, hintRes = R.string.login_hint_plex)
 
     override suspend fun login(ctx: Context, url: String, user: String, secret: String) {
@@ -72,6 +74,14 @@ class PlexProvider(override val slot: String = "") : CredentialsProvider() {
 
     override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist =
         throw ProviderException(ctx.getString(R.string.error_create_unsupported, displayName))
+
+    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        api(ctx, "PUT", "/playlists/$playlistId?title=${Http.enc(name)}")
+    }
+
+    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        api(ctx, "DELETE", "/playlists/$playlistId")
+    }
 
     override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         val machine = creds(ctx).extra["machine"] ?: throw ProviderException("$displayName: reconnect")

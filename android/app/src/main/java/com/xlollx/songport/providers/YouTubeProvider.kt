@@ -210,6 +210,16 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         }
     }
 
+    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        counted(ctx, QuotaMeter.COST_WRITE) {
+            api(ctx, "PUT", "$API/playlists?part=snippet", jsonObj("id" to playlistId, "snippet" to mapOf("title" to name)))
+        }
+    }
+
+    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        counted(ctx, QuotaMeter.COST_WRITE) { api(ctx, "DELETE", "$API/playlists?id=$playlistId") }
+    }
+
     override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         for (t in tracks) {
             val itemId = t.itemId ?: continue

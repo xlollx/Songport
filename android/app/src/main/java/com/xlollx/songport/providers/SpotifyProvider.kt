@@ -165,6 +165,15 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         return Playlist(j["id"].str ?: throw ProviderException("Spotify: playlist not created"), name, 0)
     }
 
+    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        api(ctx, "PUT", "$API/playlists/$playlistId", jsonObj("name" to name))
+    }
+
+    /** Spotify has no delete: a playlist you stop following disappears from your library. */
+    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        api(ctx, "DELETE", "$API/playlists/$playlistId/followers")
+    }
+
     override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.map { it.id }.chunked(50).forEach { ids -> api(ctx, "PUT", "$API/me/tracks", jsonObj("ids" to ids)) }

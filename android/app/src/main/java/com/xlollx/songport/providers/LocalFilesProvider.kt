@@ -65,6 +65,28 @@ object LocalFilesProvider : MusicProvider {
         f.writeText(CsvCodec.encode(merged))
     }
 
+    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        val f = file(ctx, playlistId)
+        if (!f.exists()) return
+        val base = CsvCodec.safeName(name)
+        var candidate = base
+        var n = 2
+        while (candidate != playlistId && file(ctx, candidate).exists()) { candidate = "$base ($n)"; n++ }
+        if (candidate == playlistId) return
+        if (!f.renameTo(file(ctx, candidate))) throw com.xlollx.songport.model.ProviderException("$displayName: rename failed")
+        // Syncs point at the file by name: follow it.
+        val store = com.xlollx.songport.data.Store.get(ctx)
+        store.data.jobs.filter { j -> (j.source.provider == id && j.source.playlistId == playlistId) || (j.target.provider == id && j.target.playlistId == playlistId) }
+            .forEach { j ->
+                store.upsertJob(j.copy(
+                    source = if (j.source.provider == id && j.source.playlistId == playlistId) j.source.copy(playlistId = candidate, playlistName = candidate) else j.source,
+                    target = if (j.target.provider == id && j.target.playlistId == playlistId) j.target.copy(playlistId = candidate, playlistName = candidate) else j.target,
+                ))
+            }
+    }
+
+    override suspend fun deletePlaylist(ctx: Context, playlistId: String) { file(ctx, playlistId).delete() }
+
     override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         val f = file(ctx, playlistId)
         if (!f.exists()) return

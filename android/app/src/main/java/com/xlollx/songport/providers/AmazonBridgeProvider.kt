@@ -26,6 +26,9 @@ import kotlinx.serialization.json.JsonElement
  * answers those with a clear "not available yet" until then.
  */
 class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
+    // The web protocol for renaming and deleting is not mapped yet.
+    override val canRenamePlaylists: Boolean get() = false
+    override val canDeletePlaylists: Boolean get() = false
     override val serviceId = SERVICE
     override val displayName = "Amazon Music"
     override val brandColor = 0xFF1AB0D6

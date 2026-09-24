@@ -322,6 +322,21 @@
     <string name="ai_extend_title">Playlist verlängern</string>
     <string name="ai_extend_hint">Die KI bekommt dieselbe Beschreibung und die schon enthaltenen Titel und schlägt neue zum Hinzufügen vor.</string>
     <string name="ai_extend_added">%1$d Titel hinzugefügt: Die Sync läuft.</string>
+    <string name="error_manage_unsupported">%1$s erlaubt es nicht, Playlists aus anderen Apps umzubenennen oder zu löschen.</string>
+    <string name="tools_manage_title">Playlists verwalten</string>
+    <string name="tools_manage_desc">Deine Playlists auf diesem Dienst in einer Liste: umbenennen oder löschen, wo der Dienst es zulässt, oder exportieren.</string>
+    <string name="tools_manage_open">Liste öffnen</string>
+    <string name="manage_title">Playlists · %1$s</string>
+    <string name="manage_rename">Umbenennen</string>
+    <string name="manage_rename_title">Neuer Name</string>
+    <string name="manage_delete_confirm">„%1$s“ von %2$s löschen? Das lässt sich nicht rückgängig machen.</string>
+    <string name="manage_renamed">Umbenannt</string>
+    <string name="manage_deleted">Playlist gelöscht</string>
+    <string name="manage_none">Keine eigenen Playlists auf diesem Dienst.</string>
+    <plurals name="manage_delete_used">
+        <item quantity="one">%1$d Sync nutzt diese Playlist und schlägt fehl, bis du sie änderst.</item>
+        <item quantity="other">%1$d Syncs nutzen diese Playlist und schlagen fehl, bis du sie änderst.</item>
+    </plurals>
     <plurals name="ai_review_confirm">
         <item quantity="one">Mit %1$d Titel erstellen</item>
         <item quantity="other">Mit %1$d Titeln erstellen</item>

@@ -322,6 +322,21 @@
     <string name="ai_extend_title">Allunga la playlist</string>
     <string name="ai_extend_hint">L\'AI riceve la stessa descrizione e i brani già in playlist, e ne propone di nuovi da aggiungere.</string>
     <string name="ai_extend_added">%1$d brani aggiunti: la sync è partita.</string>
+    <string name="error_manage_unsupported">%1$s non permette di rinominare o eliminare playlist da altre app.</string>
+    <string name="tools_manage_title">Gestisci le playlist</string>
+    <string name="tools_manage_desc">Le tue playlist su questo servizio in un unico elenco: rinominale o eliminale dove il servizio lo permette, oppure esportale.</string>
+    <string name="tools_manage_open">Apri l\'elenco</string>
+    <string name="manage_title">Playlist · %1$s</string>
+    <string name="manage_rename">Rinomina</string>
+    <string name="manage_rename_title">Nuovo nome</string>
+    <string name="manage_delete_confirm">Eliminare “%1$s” da %2$s? Non si può annullare.</string>
+    <string name="manage_renamed">Rinominata</string>
+    <string name="manage_deleted">Playlist eliminata</string>
+    <string name="manage_none">Nessuna tua playlist su questo servizio.</string>
+    <plurals name="manage_delete_used">
+        <item quantity="one">%1$d sync usa questa playlist e fallirà finché non la modifichi.</item>
+        <item quantity="other">%1$d sync usano questa playlist e falliranno finché non le modifichi.</item>
+    </plurals>
     <plurals name="ai_review_confirm">
         <item quantity="one">Crea con %1$d brano</item>
         <item quantity="other">Crea con %1$d brani</item>

@@ -47,6 +47,8 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     override val noteRes = R.string.provider_note_apple
     override val beta = true
     override val canRemoveTracks = false
+    override val canRenamePlaylists: Boolean get() = false
+    override val canDeletePlaylists: Boolean get() = false
 
 
     override val setupGuide: SetupGuide? = SetupGuide(

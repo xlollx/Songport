@@ -322,6 +322,21 @@
     <string name="ai_extend_title">Alargar la playlist</string>
     <string name="ai_extend_hint">La IA recibe la misma descripción y las canciones ya presentes, y propone otras nuevas para añadir.</string>
     <string name="ai_extend_added">%1$d canciones añadidas: la sincronización ha empezado.</string>
+    <string name="error_manage_unsupported">%1$s no permite renombrar ni eliminar playlists desde otras apps.</string>
+    <string name="tools_manage_title">Gestionar playlists</string>
+    <string name="tools_manage_desc">Tus playlists en este servicio en una sola lista: renómbralas o elimínalas donde el servicio lo permita, o expórtalas.</string>
+    <string name="tools_manage_open">Abrir la lista</string>
+    <string name="manage_title">Playlists · %1$s</string>
+    <string name="manage_rename">Renombrar</string>
+    <string name="manage_rename_title">Nuevo nombre</string>
+    <string name="manage_delete_confirm">¿Eliminar “%1$s” de %2$s? No se puede deshacer.</string>
+    <string name="manage_renamed">Renombrada</string>
+    <string name="manage_deleted">Playlist eliminada</string>
+    <string name="manage_none">No tienes playlists en este servicio.</string>
+    <plurals name="manage_delete_used">
+        <item quantity="one">%1$d sincronización usa esta playlist y fallará hasta que la edites.</item>
+        <item quantity="other">%1$d sincronizaciones usan esta playlist y fallarán hasta que las edites.</item>
+    </plurals>
     <plurals name="ai_review_confirm">
         <item quantity="one">Crear con %1$d canción</item>
         <item quantity="other">Crear con %1$d canciones</item>

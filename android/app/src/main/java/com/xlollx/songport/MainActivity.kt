@@ -66,6 +66,7 @@ import com.xlollx.songport.ui.SetupWizardScreen
 import com.xlollx.songport.ui.SettingsScreen
 import com.xlollx.songport.ui.SyncEditorScreen
 import com.xlollx.songport.ui.TransferScreen
+import com.xlollx.songport.ui.PlaylistsScreen
 import com.xlollx.songport.ui.SyncsScreen
 import com.xlollx.songport.ui.ToolsScreen
 import com.xlollx.songport.ui.UnmatchedScreen
@@ -172,6 +173,7 @@ private fun MainScreen(
     var filesOpen by remember { mutableStateOf(false) }
     var logOpen by remember { mutableStateOf(false) }
     var transferOpen by remember { mutableStateOf(false) }
+    var manageProvider by remember { mutableStateOf<MusicProvider?>(null) }
     var previewJob by remember { mutableStateOf<SyncJob?>(null) }
     var addConnector by remember { mutableStateOf(false) }
 
@@ -236,6 +238,10 @@ private fun MainScreen(
     }
     if (logOpen) {
         LogScreen(data, onClose = { logOpen = false }) { unmatchedReport = it }
+        return
+    }
+    manageProvider?.let { p ->
+        PlaylistsScreen(p) { manageProvider = null }
         return
     }
     if (transferOpen) {
@@ -324,7 +330,7 @@ private fun MainScreen(
                     onReview = { unmatchedReport = it },
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
-                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS })
+                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it })
                 else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
             }
         }

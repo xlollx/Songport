@@ -28,6 +28,8 @@ import kotlinx.serialization.json.JsonElement
  * [YouTubeProvider] for whoever prefers it.
  */
 class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
+    override val canRenamePlaylists: Boolean get() = BridgePlugin.builtIn
+    override val canDeletePlaylists: Boolean get() = BridgePlugin.builtIn
     override val serviceId = SERVICE
     override val displayName = "YouTube Music"
     override val brandColor = 0xFFFF0000
@@ -116,6 +118,14 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         io(ctx, "create", null, Bundle().apply { putString("name", name); putString("description", description) }) { j ->
             Playlist(j["id"].str ?: throw ProviderException("YouTube Music: playlist not created"), name, 0)
         }
+
+    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        withContext(Dispatchers.IO) { call(ctx, "rename", playlistId, Bundle().apply { putString("name", name) }) }
+    }
+
+    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        withContext(Dispatchers.IO) { call(ctx, "delete", playlistId) }
+    }
 
     override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return

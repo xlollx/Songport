@@ -111,6 +111,14 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
         }
     }
 
+    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        call(ctx, "updatePlaylist", listOf("playlistId" to playlistId, "name" to name))
+    }
+
+    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        call(ctx, "deletePlaylist", listOf("id" to playlistId))
+    }
+
     override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.chunked(50).forEach { chunk -> call(ctx, "unstar", chunk.map { "id" to it.id }) }

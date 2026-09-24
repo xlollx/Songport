@@ -380,6 +380,18 @@ class YtmClient(private val ctx: Context) {
         return PlaylistDto(id, name, 0)
     }
 
+    fun renamePlaylist(playlistId: String, name: String) {
+        val resp = call(
+            "browse/edit_playlist",
+            mapOf("playlistId" to playlistId.removePrefix("VL"), "actions" to listOf(mapOf("action" to "ACTION_SET_PLAYLIST_NAME", "playlistName" to name))),
+        )
+        checkStatus(resp)
+    }
+
+    fun deletePlaylist(playlistId: String) {
+        call("playlist/delete", mapOf("playlistId" to playlistId.removePrefix("VL")))
+    }
+
     fun addTracks(playlistId: String, videoIds: List<String>) {
         if (playlistId == LIKED) {
             videoIds.forEach { call("like/like", mapOf("target" to mapOf("videoId" to it))) }
