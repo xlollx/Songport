@@ -25,6 +25,11 @@ Download: the signed APK of every version is on the
 French and German. License: GPL-3.0, see [LICENSE](LICENSE). Security reports: see
 [SECURITY.md](SECURITY.md).
 
+<a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="54" alt="Get it on Obtainium"></a>
+
+With [Obtainium](https://github.com/ImranR98/Obtainium) each new release reaches the phone by itself:
+tap the badge on the phone, or add `https://github.com/xlollx/Songport` in Obtainium.
+
 ---
 
 ## Public beta
