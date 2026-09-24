@@ -25,7 +25,6 @@ Builds:
     subdir: android/app
     gradle:
       - full
-    prebuild: sed -i -e '/playImplementation/d' build.gradle
 
 AllowedAPKSigningKeys: 21eadf268c72f85565961a6045bf4be5abaf256d680d1e0d808d93ed22d35032
 
