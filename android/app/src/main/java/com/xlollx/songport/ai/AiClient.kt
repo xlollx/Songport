@@ -14,6 +14,7 @@ import com.xlollx.songport.net.parseJson
 import com.xlollx.songport.net.str
 import com.xlollx.songport.sync.PlaylistFiles
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import java.util.concurrent.TimeUnit
@@ -71,12 +72,24 @@ object AiClient {
     private suspend fun post(url: String, headers: Map<String, String>, body: String): String = withContext(Dispatchers.IO) {
         val req = Request.Builder().url(url).apply { headers.forEach { (k, v) -> header(k, v) } }
             .post(Http.jsonBody(body)).build()
-        client.newCall(req).execute().use { resp ->
-            val text = resp.body?.string() ?: ""
-            if (!resp.isSuccessful) throw ProviderException(errorMessage(resp.code, text))
-            text
+        // "Sovraccarico, riprova" (503/529) e i limiti di frequenza (429) passano da soli in pochi
+        // secondi: si riprova tre volte con attese crescenti prima di darlo per fallito.
+        var attempt = 0
+        var result = 0 to ""
+        while (true) {
+            result = client.newCall(req).execute().use { resp -> resp.code to (resp.body?.string() ?: "") }
+            if (result.first in RETRY_CODES && attempt < 3) {
+                attempt++
+                delay(3000L * attempt)
+                continue
+            }
+            break
         }
+        if (result.first !in 200..299) throw ProviderException(errorMessage(result.first, result.second))
+        result.second
     }
+
+    private val RETRY_CODES = setOf(429, 500, 502, 503, 529)
 
     private fun errorMessage(code: Int, body: String): String {
         val j = runCatching { parseJson(body) }.getOrNull()

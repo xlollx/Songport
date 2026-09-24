@@ -310,6 +310,13 @@
     <string name="ai_done_sync">%1$d brani proposti: la sync verso %2$s è partita, seguila in Sync.</string>
     <string name="ai_default_name">Mix AI</string>
     <string name="settings_ai_desc">La tua chiave e il modello per il generatore di playlist in Strumenti.</string>
+    <string name="ai_review_title">Playlist proposta</string>
+    <string name="ai_review_hint">Togli quello che non vuoi, poi conferma: i brani verranno cercati su %1$s e quelli non trovati saranno lì da rivedere.</string>
+    <string name="ai_review_remove">Togli</string>
+    <plurals name="ai_review_confirm">
+        <item quantity="one">Crea con %1$d brano</item>
+        <item quantity="other">Crea con %1$d brani</item>
+    </plurals>
     <string name="settings_battery">Le sync programmate non partono?</string>
     <string name="settings_battery_desc">Alcuni telefoni (Xiaomi, Huawei, Oppo, Samsung) fermano le app in secondo piano. Escludi Songport dal risparmio energetico perché la pianificazione venga rispettata.</string>
     <string name="settings_battery_button">Apri le impostazioni batteria</string>

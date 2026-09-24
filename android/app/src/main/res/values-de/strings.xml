@@ -310,6 +310,13 @@
     <string name="ai_done_sync">%1$d Titel vorgeschlagen: Die Sync nach %2$s läuft, verfolge sie unter Syncs.</string>
     <string name="ai_default_name">KI-Mix</string>
     <string name="settings_ai_desc">Dein Schlüssel und Modell für den Playlist-Generator unter Werkzeuge.</string>
+    <string name="ai_review_title">Vorgeschlagene Playlist</string>
+    <string name="ai_review_hint">Entferne, was du nicht willst, und bestätige dann: Die Titel werden auf %1$s gesucht, und nicht Gefundenes bleibt zur Prüfung.</string>
+    <string name="ai_review_remove">Entfernen</string>
+    <plurals name="ai_review_confirm">
+        <item quantity="one">Mit %1$d Titel erstellen</item>
+        <item quantity="other">Mit %1$d Titeln erstellen</item>
+    </plurals>
     <string name="settings_battery">Geplante Syncs laufen nicht?</string>
     <string name="settings_battery_desc">Manche Handys (Xiaomi, Huawei, Oppo, Samsung) stoppen Hintergrund-Apps. Nimm Songport von der Akku-Optimierung aus, damit der Zeitplan eingehalten wird.</string>
     <string name="settings_battery_button">Akku-Einstellungen öffnen</string>

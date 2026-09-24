@@ -308,6 +308,12 @@
     <string name="ai_done_sync">已提出 %1$d 首歌曲：到 %2$s 的同步已开始，请在“同步”中查看。</string>
     <string name="ai_default_name">AI 混音集</string>
     <string name="settings_ai_desc">用于“工具”中歌单生成器的密钥和模型。</string>
+    <string name="ai_review_title">建议的歌单</string>
+    <string name="ai_review_hint">删掉不想要的，然后确认：这些歌曲会在 %1$s 上查找，找不到的会留待复查。</string>
+    <string name="ai_review_remove">删除</string>
+    <plurals name="ai_review_confirm">
+        <item quantity="other">创建，共 %1$d 首歌曲</item>
+    </plurals>
     <string name="settings_battery">计划同步没有运行？</string>
     <string name="settings_battery_desc">部分手机（小米、华为、OPPO、三星）会停止后台应用。请将 Songport 排除在电池优化之外，以确保按计划运行。</string>
     <string name="settings_battery_button">打开电池设置</string>

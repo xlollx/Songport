@@ -308,6 +308,12 @@
     <string name="ai_done_sync">%1$d 曲を提案しました。%2$s への同期を開始しました。「同期」で確認できます。</string>
     <string name="ai_default_name">AI ミックス</string>
     <string name="settings_ai_desc">「ツール」のプレイリスト生成に使うキーとモデル。</string>
+    <string name="ai_review_title">提案されたプレイリスト</string>
+    <string name="ai_review_hint">不要な曲を削除して確認してください。曲は %1$s で検索され、見つからなかった曲は確認用に残ります。</string>
+    <string name="ai_review_remove">削除</string>
+    <plurals name="ai_review_confirm">
+        <item quantity="other">%1$d 曲で作成</item>
+    </plurals>
     <string name="settings_battery">スケジュールした同期が実行されない場合</string>
     <string name="settings_battery_desc">一部の端末（Xiaomi、Huawei、Oppo、Samsung）はバックグラウンドのアプリを停止します。スケジュールどおりに実行されるよう、Songport を電池の最適化の対象から除外してください。</string>
     <string name="settings_battery_button">電池の設定を開く</string>

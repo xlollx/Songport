@@ -9,6 +9,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.text.style.TextOverflow
+import com.xlollx.songport.model.Track
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -74,8 +84,39 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
     var busy by remember { mutableStateOf(false) }
     val targets = remember { (Providers.connectors().filter { it.isConnected(ctx) } + LocalFilesProvider).distinctBy { it.id }.filter { it.canWrite && it.canCreatePlaylists } }
     var targetId by remember { mutableStateOf(targets.firstOrNull { it.requiresAuth }?.id ?: LocalFilesProvider.id) }
+    // The AI's proposal, shown for a look (and a prune) before anything is created.
+    var proposed by remember { mutableStateOf<List<Track>?>(null) }
 
     if (setupOpen) AiSetupDialog(config, onDismiss = { setupOpen = false }) { config = it; setupOpen = false }
+    val target = targets.firstOrNull { it.id == targetId } ?: LocalFilesProvider
+    proposed?.let { list ->
+        AiReviewDialog(list, target.label(ctx), onDismiss = { proposed = null }) { kept ->
+            proposed = null
+            val finalName = name.trim().ifBlank { ctx.getString(R.string.ai_default_name) }
+            scope.launch {
+                try {
+                    val fileId = withContext(Dispatchers.IO) { LocalFilesProvider.importTracks(ctx, finalName, kept) }
+                    if (target.id == LocalFilesProvider.id) {
+                        snackbar.showSnackbar(ctx.getString(R.string.ai_done_file, kept.size, fileId))
+                    } else {
+                        val job = SyncJob(
+                            id = UUID.randomUUID().toString(),
+                            name = finalName,
+                            source = PlaylistRef(provider = LocalFilesProvider.id, playlistId = fileId, playlistName = fileId),
+                            target = PlaylistRef(provider = target.id, playlistId = null, playlistName = finalName),
+                        )
+                        Store.get(ctx).upsertJob(job)
+                        Scheduler.runNow(ctx, job.id)
+                        onSyncStarted()
+                        snackbar.showSnackbar(ctx.getString(R.string.ai_done_sync, kept.size, target.label(ctx)))
+                    }
+                    prompt = ""; seeds = ""; name = ""
+                } catch (e: Exception) {
+                    snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+                }
+            }
+        }
+    }
 
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
@@ -133,34 +174,17 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
                 }
                 Button(enabled = !busy && prompt.isNotBlank(), onClick = {
                     busy = true
-                    val target = targets.firstOrNull { it.id == targetId } ?: LocalFilesProvider
-                    val finalName = name.trim().ifBlank { ctx.getString(R.string.ai_default_name) }
                     val seedLines = seeds.lines().map { it.trim() }.filter { it.isNotEmpty() }
                     scope.launch {
-                        try {
+                        val outcome = runCatching {
                             val language = java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH)
-                            val tracks = AiClient.generate(c, AiClient.Prompt(prompt, count.toInt(), seedLines, language))
-                            if (tracks.isEmpty()) throw com.xlollx.songport.model.ProviderException(ctx.getString(R.string.ai_empty))
-                            val fileId = withContext(Dispatchers.IO) { LocalFilesProvider.importTracks(ctx, finalName, tracks) }
-                            if (target.id == LocalFilesProvider.id) {
-                                snackbar.showSnackbar(ctx.getString(R.string.ai_done_file, tracks.size, fileId))
-                            } else {
-                                val job = SyncJob(
-                                    id = UUID.randomUUID().toString(),
-                                    name = finalName,
-                                    source = PlaylistRef(provider = LocalFilesProvider.id, playlistId = fileId, playlistName = fileId),
-                                    target = PlaylistRef(provider = target.id, playlistId = null, playlistName = finalName),
-                                )
-                                Store.get(ctx).upsertJob(job)
-                                Scheduler.runNow(ctx, job.id)
-                                snackbar.showSnackbar(ctx.getString(R.string.ai_done_sync, tracks.size, target.label(ctx)))
-                                onSyncStarted()
-                            }
-                            prompt = ""; seeds = ""; name = ""
-                        } catch (e: Exception) {
-                            snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+                            AiClient.generate(c, AiClient.Prompt(prompt, count.toInt(), seedLines, language))
                         }
+                        // The spinner stops before the snackbar, which suspends until it is dismissed.
                         busy = false
+                        outcome.onFailure { e -> snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic)) }
+                        val tracks = outcome.getOrNull() ?: return@launch
+                        if (tracks.isEmpty()) snackbar.showSnackbar(ctx.getString(R.string.ai_empty)) else proposed = tracks
                     }
                 }) { Text(stringResource(R.string.ai_generate)) }
             }
@@ -249,5 +273,36 @@ fun AiSetupDialog(initial: AiClient.Config?, onDismiss: () -> Unit, onSaved: (Ai
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
             }
         },
+    )
+}
+
+/** La lista proposta dall'AI: si toglie quello che non si vuole, poi si conferma. */
+@Composable
+private fun AiReviewDialog(tracks: List<Track>, targetLabel: String, onDismiss: () -> Unit, onConfirm: (List<Track>) -> Unit) {
+    var kept by remember { mutableStateOf(tracks) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.ai_review_title)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.ai_review_hint, targetLabel), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(Modifier.height(8.dp))
+                LazyColumn(Modifier.heightIn(max = 380.dp)) {
+                    items(kept, key = { it.id }) { t ->
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                            Column(Modifier.weight(1f)) {
+                                Text(t.title, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                Text(listOf(t.artistLine, t.album).filter { it.isNotBlank() }.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            }
+                            IconButton(onClick = { kept = kept - t }) { Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.ai_review_remove)) }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(enabled = kept.isNotEmpty(), onClick = { onConfirm(kept) }) { Text(pluralStringResource(R.plurals.ai_review_confirm, kept.size, kept.size)) }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     )
 }

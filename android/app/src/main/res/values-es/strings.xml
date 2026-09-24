@@ -310,6 +310,13 @@
     <string name="ai_done_sync">%1$d canciones propuestas: la sincronización hacia %2$s ha empezado, síguela en Sincros.</string>
     <string name="ai_default_name">Mix IA</string>
     <string name="settings_ai_desc">Tu clave y modelo para el generador de playlists en Herramientas.</string>
+    <string name="ai_review_title">Playlist propuesta</string>
+    <string name="ai_review_hint">Quita lo que no quieras y confirma: las canciones se buscarán en %1$s y las que no se encuentren quedarán por revisar.</string>
+    <string name="ai_review_remove">Quitar</string>
+    <plurals name="ai_review_confirm">
+        <item quantity="one">Crear con %1$d canción</item>
+        <item quantity="other">Crear con %1$d canciones</item>
+    </plurals>
     <string name="settings_battery">¿No se ejecutan las sincronizaciones programadas?</string>
     <string name="settings_battery_desc">Algunos teléfonos (Xiaomi, Huawei, Oppo, Samsung) detienen las apps en segundo plano. Excluye Songport de la optimización de batería para que se respete la programación.</string>
     <string name="settings_battery_button">Abrir ajustes de batería</string>

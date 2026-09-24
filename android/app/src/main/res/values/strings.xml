@@ -310,6 +310,13 @@
     <string name="ai_done_sync">%1$d tracks proposed: the sync towards %2$s has started, follow it in Syncs.</string>
     <string name="ai_default_name">AI mix</string>
     <string name="settings_ai_desc">Your key and model for the playlist generator in Tools.</string>
+    <string name="ai_review_title">Proposed playlist</string>
+    <string name="ai_review_hint">Remove what you do not want, then confirm: the tracks will be looked up on %1$s and anything not found will be there to review.</string>
+    <string name="ai_review_remove">Remove</string>
+    <plurals name="ai_review_confirm">
+        <item quantity="one">Create with %1$d track</item>
+        <item quantity="other">Create with %1$d tracks</item>
+    </plurals>
     <string name="settings_battery">Scheduled syncs not running?</string>
     <string name="settings_battery_desc">Some phones (Xiaomi, Huawei, Oppo, Samsung) stop background apps. Exclude Songport from battery optimisation so the schedule is respected.</string>
     <string name="settings_battery_button">Open battery settings</string>
