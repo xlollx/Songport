@@ -1,5 +1,6 @@
 package com.xlollx.songport.ui
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +41,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,10 +62,56 @@ import com.xlollx.songport.providers.LocalFilesProvider
 import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.sync.Scheduler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
+
+/**
+ * Stato della scheda del generatore, fuori dalla schermata: testi, destinazione e la richiesta in
+ * corso sopravvivono al cambio di scheda (la Column di Strumenti viene ricomposta da zero) e i
+ * testi anche alla chiusura dell'app. La chiamata all'AI gira in uno scope proprio: se l'utente
+ * va a guardare le sync mentre aspetta, la risposta lo trova al ritorno.
+ */
+object AiDraft {
+    var prompt by mutableStateOf("")
+    var seeds by mutableStateOf("")
+    var name by mutableStateOf("")
+    var count by mutableStateOf(25f)
+    var targetId by mutableStateOf("")
+    var busy by mutableStateOf(false)
+    /** The AI's proposal, shown for a look (and a prune) before anything is created. */
+    var proposed by mutableStateOf<List<Track>?>(null)
+    /** Error of the last request, shown once by whoever is on screen. */
+    var error by mutableStateOf<String?>(null)
+    /** Models offered by the configured provider, read once per key/vendor. */
+    var models by mutableStateOf<List<String>>(emptyList())
+
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private var loaded = false
+
+    private fun prefs(ctx: Context) = ctx.getSharedPreferences("ai_draft", Context.MODE_PRIVATE)
+
+    fun load(ctx: Context) {
+        if (loaded) return
+        loaded = true
+        val p = prefs(ctx)
+        prompt = p.getString("prompt", "") ?: ""
+        seeds = p.getString("seeds", "") ?: ""
+        name = p.getString("name", "") ?: ""
+        count = p.getFloat("count", 25f)
+        targetId = p.getString("target", "") ?: ""
+    }
+
+    fun persist(ctx: Context) {
+        prefs(ctx).edit().putString("prompt", prompt).putString("seeds", seeds).putString("name", name)
+            .putFloat("count", count).putString("target", targetId).apply()
+    }
+
+    fun clearText(ctx: Context) { prompt = ""; seeds = ""; name = ""; persist(ctx) }
+}
 
 /**
  * "Generatore di playlist" (beta): l'utente descrive, la SUA AI propone, Songport cerca. La lista
@@ -74,30 +123,28 @@ import java.util.UUID
 @Composable
 fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
     val ctx = LocalContext.current
-    val scope = rememberCoroutineScope()
+    val d = AiDraft
+    remember { d.load(ctx); true }
     var config by remember { mutableStateOf(AiClient.config(ctx)) }
     var setupOpen by remember { mutableStateOf(false) }
-    var prompt by remember { mutableStateOf("") }
-    var seeds by remember { mutableStateOf("") }
-    var count by remember { mutableStateOf(25f) }
-    var name by remember { mutableStateOf("") }
-    var busy by remember { mutableStateOf(false) }
     val targets = remember { (Providers.connectors().filter { it.isConnected(ctx) } + LocalFilesProvider).distinctBy { it.id }.filter { it.canWrite && it.canCreatePlaylists } }
-    var targetId by remember { mutableStateOf(targets.firstOrNull { it.requiresAuth }?.id ?: LocalFilesProvider.id) }
-    // The AI's proposal, shown for a look (and a prune) before anything is created.
-    var proposed by remember { mutableStateOf<List<Track>?>(null) }
+    val target = targets.firstOrNull { it.id == d.targetId } ?: targets.firstOrNull { it.requiresAuth } ?: LocalFilesProvider
 
-    if (setupOpen) AiSetupDialog(config, onDismiss = { setupOpen = false }) { config = it; setupOpen = false }
-    val target = targets.firstOrNull { it.id == targetId } ?: LocalFilesProvider
-    proposed?.let { list ->
-        AiReviewDialog(list, target.label(ctx), onDismiss = { proposed = null }) { kept ->
-            proposed = null
-            val finalName = name.trim().ifBlank { ctx.getString(R.string.ai_default_name) }
-            scope.launch {
+    // Errors of a request that may have finished while another tab was open.
+    LaunchedEffect(d.error) { d.error?.let { snackbar.showSnackbar(it); d.error = null } }
+
+    if (setupOpen) AiSetupDialog(config, onDismiss = { setupOpen = false }) { config = it; d.models = emptyList(); setupOpen = false }
+    d.proposed?.let { list ->
+        AiReviewDialog(list, target.label(ctx), onDismiss = { d.proposed = null }) { kept ->
+            d.proposed = null
+            val finalName = d.name.trim().ifBlank { ctx.getString(R.string.ai_default_name) }
+            val app = ctx.applicationContext
+            d.scope.launch {
                 try {
-                    val fileId = withContext(Dispatchers.IO) { LocalFilesProvider.importTracks(ctx, finalName, kept) }
+                    val fileId = withContext(Dispatchers.IO) { LocalFilesProvider.importTracks(app, finalName, kept) }
                     if (target.id == LocalFilesProvider.id) {
-                        snackbar.showSnackbar(ctx.getString(R.string.ai_done_file, kept.size, fileId))
+                        d.clearText(app)
+                        snackbar.showSnackbar(app.getString(R.string.ai_done_file, kept.size, fileId))
                     } else {
                         val job = SyncJob(
                             id = UUID.randomUUID().toString(),
@@ -105,14 +152,14 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
                             source = PlaylistRef(provider = LocalFilesProvider.id, playlistId = fileId, playlistName = fileId),
                             target = PlaylistRef(provider = target.id, playlistId = null, playlistName = finalName),
                         )
-                        Store.get(ctx).upsertJob(job)
-                        Scheduler.runNow(ctx, job.id)
+                        Store.get(app).upsertJob(job)
+                        Scheduler.runNow(app, job.id)
+                        d.clearText(app)
                         onSyncStarted()
-                        snackbar.showSnackbar(ctx.getString(R.string.ai_done_sync, kept.size, target.label(ctx)))
+                        snackbar.showSnackbar(app.getString(R.string.ai_done_sync, kept.size, target.label(app)))
                     }
-                    prompt = ""; seeds = ""; name = ""
                 } catch (e: Exception) {
-                    snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+                    d.error = e.message ?: app.getString(R.string.error_generic)
                 }
             }
         }
@@ -135,60 +182,88 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
                 }
                 return@Column
             }
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text("${c.vendor.label} · ${c.model}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f))
-                TextButton(onClick = { setupOpen = true }) { Text(stringResource(R.string.ai_setup_change)) }
-            }
+            // Provider and model on one line; the model is a menu right here, the rest is in the dialog.
+            ModelRow(c, onChange = { setupOpen = true }) { m -> AiClient.save(ctx, c.copy(model = m)); config = c.copy(model = m) }
             OutlinedTextField(
-                value = prompt, onValueChange = { prompt = it }, minLines = 2, maxLines = 5,
+                value = d.prompt, onValueChange = { d.prompt = it; d.persist(ctx) }, minLines = 2, maxLines = 5,
                 label = { Text(stringResource(R.string.ai_prompt)) }, placeholder = { Text(stringResource(R.string.ai_prompt_hint)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(
-                value = seeds, onValueChange = { seeds = it }, minLines = 1, maxLines = 5,
+                value = d.seeds, onValueChange = { d.seeds = it; d.persist(ctx) }, minLines = 1, maxLines = 5,
                 label = { Text(stringResource(R.string.ai_seeds)) }, placeholder = { Text(stringResource(R.string.ai_seeds_hint)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.ai_count, count.toInt()), style = MaterialTheme.typography.bodyMedium)
-            Slider(value = count, onValueChange = { count = it }, valueRange = 5f..100f, steps = 18)
+            Text(stringResource(R.string.ai_count, d.count.toInt()), style = MaterialTheme.typography.bodyMedium)
+            Slider(value = d.count, onValueChange = { d.count = it }, onValueChangeFinished = { d.persist(ctx) }, valueRange = 5f..100f, steps = 18)
             Text(stringResource(R.string.ai_target), style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(4.dp))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 targets.forEach { p ->
-                    FilterChip(selected = p.id == targetId, onClick = { targetId = p.id }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
+                    FilterChip(selected = p.id == target.id, onClick = { d.targetId = p.id; d.persist(ctx) }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
                 }
             }
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(
-                value = name, onValueChange = { name = it }, singleLine = true,
+                value = d.name, onValueChange = { d.name = it; d.persist(ctx) }, singleLine = true,
                 label = { Text(stringResource(R.string.editor_new_playlist_name)) }, placeholder = { Text(stringResource(R.string.ai_default_name)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(10.dp))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                if (busy) {
+                if (d.busy) {
                     CircularProgressIndicator(Modifier.size(18.dp)); Spacer(Modifier.width(8.dp))
                     Text(stringResource(R.string.ai_generating), style = MaterialTheme.typography.bodySmall); Spacer(Modifier.width(8.dp))
                 }
-                Button(enabled = !busy && prompt.isNotBlank(), onClick = {
-                    busy = true
-                    val seedLines = seeds.lines().map { it.trim() }.filter { it.isNotEmpty() }
-                    scope.launch {
-                        val outcome = runCatching {
-                            val language = java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH)
-                            AiClient.generate(c, AiClient.Prompt(prompt, count.toInt(), seedLines, language))
-                        }
-                        // The spinner stops before the snackbar, which suspends until it is dismissed.
-                        busy = false
-                        outcome.onFailure { e -> snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic)) }
+                Button(enabled = !d.busy && d.prompt.isNotBlank(), onClick = {
+                    d.busy = true
+                    val app = ctx.applicationContext
+                    val seedLines = d.seeds.lines().map { it.trim() }.filter { it.isNotEmpty() }
+                    val request = AiClient.Prompt(d.prompt, d.count.toInt(), seedLines, java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH))
+                    d.scope.launch {
+                        val outcome = runCatching { AiClient.generate(c, request) }
+                        d.busy = false
+                        outcome.onFailure { e -> d.error = e.message ?: app.getString(R.string.error_generic) }
                         val tracks = outcome.getOrNull() ?: return@launch
-                        if (tracks.isEmpty()) snackbar.showSnackbar(ctx.getString(R.string.ai_empty)) else proposed = tracks
+                        if (tracks.isEmpty()) d.error = app.getString(R.string.ai_empty) else d.proposed = tracks
                     }
                 }) { Text(stringResource(R.string.ai_generate)) }
             }
         }
+    }
+}
+
+/** "Fornitore · modello  Cambia": il modello si sceglie da un menu letto dall'API, il resto nel dialogo. */
+@Composable
+private fun ModelRow(c: AiClient.Config, onChange: () -> Unit, onModel: (String) -> Unit) {
+    val ctx = LocalContext.current
+    val d = AiDraft
+    var open by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(false) }
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+        Text(c.vendor.label + " · ", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        androidx.compose.foundation.layout.Box(Modifier.weight(1f)) {
+            TextButton(contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 4.dp), onClick = {
+                if (d.models.isNotEmpty()) { open = true; return@TextButton }
+                loading = true
+                d.scope.launch {
+                    val r = runCatching { AiClient.models(c) }
+                    loading = false
+                    r.onSuccess { d.models = it; if (it.isEmpty()) d.error = ctx.getString(R.string.ai_models_none) else open = true }
+                        .onFailure { e -> d.error = e.message ?: ctx.getString(R.string.error_generic) }
+                }
+            }) {
+                if (loading) { CircularProgressIndicator(Modifier.size(14.dp)); Spacer(Modifier.width(6.dp)) }
+                Text(c.model, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Icon(Icons.Filled.ArrowDropDown, contentDescription = stringResource(R.string.ai_model))
+            }
+            DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+                d.models.forEach { m -> DropdownMenuItem(text = { Text(m) }, onClick = { open = false; onModel(m) }) }
+            }
+        }
+        TextButton(onClick = onChange) { Text(stringResource(R.string.ai_setup_change)) }
     }
 }
 
@@ -265,11 +340,11 @@ fun AiSetupDialog(initial: AiClient.Config?, onDismiss: () -> Unit, onSaved: (Ai
             }
         },
         confirmButton = {
-            TextButton(enabled = current().complete, onClick = { AiClient.save(ctx, current()); onSaved(current()) }) { Text(stringResource(R.string.save)) }
+            TextButton(enabled = current().complete, onClick = { AiClient.save(ctx, current()); AiDraft.models = emptyList(); onSaved(current()) }) { Text(stringResource(R.string.save)) }
         },
         dismissButton = {
             Row {
-                if (initial != null) TextButton(onClick = { AiClient.clear(ctx); onSaved(null) }) { Text(stringResource(R.string.ai_forget), color = MaterialTheme.colorScheme.error) }
+                if (initial != null) TextButton(onClick = { AiClient.clear(ctx); AiDraft.models = emptyList(); onSaved(null) }) { Text(stringResource(R.string.ai_forget), color = MaterialTheme.colorScheme.error) }
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
             }
         },
