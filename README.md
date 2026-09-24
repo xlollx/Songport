@@ -349,8 +349,13 @@ PY
   work for that, the file must be at the domain root, for instance a `<user>.github.io` repository.
 - On first launch a card explains how the app is funded (the ads in the Play build, donations in the
   GitHub one) and offers a button to a donation page (Ko-fi). Donating is voluntary and unlocks
-  nothing, which keeps it outside Google Play billing. The same button is in *Settings*, and the
-  repository's *Sponsor* button (`.github/FUNDING.yml`) points to the same page.
+  nothing. *Settings* has the Ko-fi button and GitHub Sponsors (`KOFI_URL`, `SPONSORS_URL`), and the
+  repository's *Sponsor* button (`.github/FUNDING.yml`) offers both.
+- In the GitHub build only, the first successful sync that adds at least 100 tracks arms a one-time
+  card on the Syncs screen ("You just moved 1,322 tracks") with a coffee button (`sync/SupportPrompt.kt`).
+  Either answer closes it for good.
+- Before publishing on Google Play, check its payments policy on links to external donation pages:
+  if they are not allowed there, hide the donation buttons in the `play` flavor.
 
 ## Publishing on Google Play
 

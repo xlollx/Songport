@@ -38,6 +38,10 @@ data class Settings(
     val appLock: Boolean = false,
     /** Schermata di benvenuto gia' vista. */
     val onboardingDone: Boolean = false,
+    /** Sync che ha fatto scattare la richiesta di contributo, finche' l'utente non risponde. */
+    val supportPromptReport: String? = null,
+    /** Richiesta di contributo gia' mostrata e chiusa: non torna piu'. */
+    val supportPromptDone: Boolean = false,
 )
 
 /** Unita' di quota consumate in un giorno (chiave = data nel fuso del servizio). */

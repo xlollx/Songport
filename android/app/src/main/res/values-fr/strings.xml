@@ -451,4 +451,8 @@
     <string name="support_title">Songport vous plaît ?</string>
     <string name="support_body">Si le cœur vous en dit, offrez un café au développeur sur Ko-fi. Totalement facultatif : rien n\'est déverrouillé, l\'application reste complète pour tout le monde.</string>
     <string name="support_button">Offrir un café</string>
+    <string name="support_sponsors">GitHub Sponsors</string>
+    <string name="support_prompt_title">Vous venez de déplacer %1$s morceaux</string>
+    <string name="support_prompt_body">Avec la sync « %1$s ». Songport est gratuite et sans publicité, et vit de contributions volontaires : si elle vous a fait gagner du temps, vous pouvez offrir un café au développeur.</string>
+    <string name="support_prompt_later">Pas maintenant</string>
 </resources>

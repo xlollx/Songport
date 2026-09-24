@@ -79,6 +79,10 @@ import androidx.compose.ui.unit.dp
 import com.xlollx.songport.Notifications
 import com.xlollx.songport.R
 import com.xlollx.songport.data.StoreData
+import androidx.compose.material.icons.filled.Favorite
+import com.xlollx.songport.sync.SupportPrompt
+import com.xlollx.songport.data.Store
+import com.xlollx.songport.BuildConfig
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.PlaylistRef
 import com.xlollx.songport.model.Progress
@@ -136,6 +140,9 @@ fun SyncsScreen(
                 }
             }
         }
+        // Una volta sola, dopo la prima sync grande: il momento in cui si vede quanto tempo ha fatto risparmiare.
+        val support = SupportPrompt.pending(Store.get(ctx))
+        if (support != null) item(key = "support") { SupportCard(support) }
         items(data.jobs, key = { it.id }) { job ->
             JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview)
         }
@@ -642,5 +649,36 @@ private fun LinkImportField(onResolved: (String, Playlist) -> Unit) {
         }
         if (busy) Text(stringResource(R.string.link_resolving), style = MaterialTheme.typography.bodySmall)
         error?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
+    }
+}
+
+/** La richiesta di contributo: cosa ha appena fatto l'app, perche' e' gratis, un tocco per offrire un caffe'. */
+@Composable
+private fun SupportCard(report: com.xlollx.songport.model.SyncReport) {
+    val ctx = LocalContext.current
+    val store = remember { Store.get(ctx) }
+    val count = remember(report.added) { java.text.NumberFormat.getIntegerInstance().format(report.added) }
+    Card(
+        Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(stringResource(R.string.support_prompt_title, count), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onTertiaryContainer)
+            Text(stringResource(R.string.support_prompt_body, report.jobName), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onTertiaryContainer)
+            Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                TextButton(onClick = { SupportPrompt.close(store) }) {
+                    Text(stringResource(R.string.support_prompt_later), color = MaterialTheme.colorScheme.onTertiaryContainer)
+                }
+                Spacer(Modifier.width(8.dp))
+                FilledTonalButton(onClick = {
+                    if (BuildConfig.KOFI_URL.isNotBlank()) openSupport(ctx) else openSponsors(ctx)
+                    SupportPrompt.close(store)
+                }) {
+                    Icon(Icons.Filled.Favorite, null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.support_button))
+                }
+            }
+        }
     }
 }

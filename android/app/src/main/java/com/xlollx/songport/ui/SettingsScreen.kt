@@ -52,9 +52,13 @@ import com.xlollx.songport.providers.Providers
 import kotlinx.coroutines.launch
 
 /** Apre la pagina Ko-fi: donazione volontaria, nessuna funzione legata. */
-fun openSupport(ctx: android.content.Context) {
-    if (BuildConfig.KOFI_URL.isBlank()) return
-    runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.KOFI_URL))) }
+fun openSupport(ctx: android.content.Context) = openUrl(ctx, BuildConfig.KOFI_URL)
+
+fun openSponsors(ctx: android.content.Context) = openUrl(ctx, BuildConfig.SPONSORS_URL)
+
+private fun openUrl(ctx: android.content.Context, url: String) {
+    if (url.isBlank()) return
+    runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }
 
 @Composable
@@ -126,11 +130,17 @@ fun SettingsScreen(
 
         SectionCard(stringResource(R.string.support_title)) {
             Text(stringResource(R.string.support_body), style = MaterialTheme.typography.bodyMedium)
-            if (BuildConfig.KOFI_URL.isNotBlank()) {
-                FilledTonalButton(onClick = { openSupport(ctx) }) {
-                    Icon(Icons.Filled.Favorite, null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.support_button))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (BuildConfig.KOFI_URL.isNotBlank()) {
+                    FilledTonalButton(onClick = { openSupport(ctx) }) {
+                        Icon(Icons.Filled.Favorite, null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.support_button))
+                    }
+                }
+                // Per chi ha un account GitHub: anche un contributo mensile.
+                if (BuildConfig.SPONSORS_URL.isNotBlank()) {
+                    OutlinedButton(onClick = { openSponsors(ctx) }) { Text(stringResource(R.string.support_sponsors)) }
                 }
             }
             Text(stringResource(if (Ads.enabled) R.string.settings_ads_note else R.string.settings_free_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

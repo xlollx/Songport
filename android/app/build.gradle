@@ -41,6 +41,7 @@ def admobBannerId = cfg('ADMOB_BANNER_ID', 'ca-app-pub-8339336051440231/97298879
 // veri, cosi' chi sviluppa non genera traffico non valido sul proprio telefono.
 def admobTestDevices = cfg('ADMOB_TEST_DEVICES', '')
 def kofiUrl       = cfg('KOFI_URL', 'https://ko-fi.com/xlollx')
+def sponsorsUrl   = cfg('SPONSORS_URL', 'https://github.com/sponsors/xlollx')
 def privacyUrl    = cfg('PRIVACY_POLICY_URL', 'https://xlollx.github.io/Songport/privacy-policy')
 
 def hasReleaseKey = System.getenv('KEYSTORE_FILE') != null && !System.getenv('KEYSTORE_FILE').isEmpty()
@@ -53,8 +54,8 @@ android {
         applicationId "com.xlollx.songport"
         minSdk 26
         targetSdk 36
-        versionCode 42
-        versionName "1.0.41"
+        versionCode 43
+        versionName "1.0.42"
 
         buildConfigField "String", "SPOTIFY_CLIENT_ID", "\"${spotifyClientId}\""
         buildConfigField "String", "TIDAL_CLIENT_ID", "\"${tidalClientId}\""
@@ -68,6 +69,7 @@ android {
         buildConfigField "String", "ADMOB_TEST_DEVICES", "\"${admobTestDevices}\""
         buildConfigField "String", "PRIVACY_POLICY_URL", "\"${privacyUrl}\""
         buildConfigField "String", "KOFI_URL", "\"${kofiUrl}\""
+        buildConfigField "String", "SPONSORS_URL", "\"${sponsorsUrl}\""
 
         manifestPlaceholders = [googleRedirectScheme: googleScheme, admobAppId: admobAppId]
     }
