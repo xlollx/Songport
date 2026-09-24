@@ -19,9 +19,9 @@ Repo: https://github.com/xlollx/Songport.git
 Binaries: https://github.com/xlollx/Songport/releases/download/v%v/Songport-v%v.apk
 
 Builds:
-  - versionName: 1.0.44
-    versionCode: 45
-    commit: 88c0f3b869a8c98812f939193291e34b8dd12f79
+  - versionName: 1.0.45
+    versionCode: 46
+    commit: d8bf3055833f3c5707a01a8358e8efb275c284da
     subdir: android/app
     gradle:
       - full
@@ -31,5 +31,5 @@ AllowedAPKSigningKeys: 21eadf268c72f85565961a6045bf4be5abaf256d680d1e0d808d93ed2
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 1.0.44
-CurrentVersionCode: 45
+CurrentVersion: 1.0.45
+CurrentVersionCode: 46
