@@ -2,7 +2,7 @@
 
 ![Songport](docs/store/feature_en.png)
 
-<p align="center"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" width="160" alt="Syncs"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg" width="160" alt="New sync"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg" width="160" alt="Review of tracks not found"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.jpg" width="160" alt="Tools"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.jpg" width="160" alt="Settings"></p>
+<p align="center"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" width="160" alt="Syncs"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg" width="160" alt="New sync"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg" width="160" alt="Choosing a service"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.jpg" width="160" alt="Review of tracks not found"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.jpg" width="160" alt="Tools"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.jpg" width="160" alt="Settings"></p>
 
 Android app that keeps playlists in sync across music services, manually or on a schedule.
 Free, no account, no subscription, and no ads in the GitHub build: development lives on voluntary
