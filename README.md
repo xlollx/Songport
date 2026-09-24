@@ -3,8 +3,8 @@
 ![Songport](docs/store/feature_en.png)
 
 Android app that keeps playlists in sync across music services, manually or on a schedule.
-Free, no account, no subscription: a single banner ad pays for development. Everything runs on the
-phone. There is no Songport server and access tokens never leave the device.
+Free, no account, no subscription, and no ads in the GitHub build: development lives on voluntary
+donations. Everything runs on the phone. There is no Songport server and access tokens never leave the device.
 
 Supported: Spotify, Apple Music, YouTube Music, Amazon Music, TIDAL, Deezer, Subsonic/Navidrome,
 Jellyfin, Plex, Last.fm and ListenBrainz (read-only), plus playlist files (CSV, TSV, M3U, iTunes XML,
@@ -328,8 +328,12 @@ PY
 
 ## Ads, consent and donations
 
-- One adaptive banner at the bottom of the main screen (`ads/Ads.kt`). No interstitials, videos or
-  full-screen ads.
+- **The GitHub build (`full` flavor) has no ads and does not include the ads SDK.** AdMob serves ads
+  only to apps listed on Google Play or the App Store; in a directly downloaded APK the SDK would bring
+  only the consent form and Google's code. `src/full/.../ads/Ads.kt` is an empty twin of the real one,
+  and the ads dependencies are `playImplementation`.
+- The Play build (`play` flavor, `src/play/.../ads/Ads.kt`) shows one adaptive banner at the bottom of
+  the main screen. No interstitials, videos or full-screen ads.
 - Before loading ads the app asks for consent through Google UMP; without consent no ads are
   requested. *Settings* shows "Ad privacy options" where regulations require it.
 - Release builds carry Songport's own AdMob ids (defaults in `app/build.gradle`; a fork sets its own
@@ -343,9 +347,10 @@ PY
   website named in the listing (`https://<domain>/app-ads.txt`, one line:
   `google.com, pub-<publisher id>, DIRECT, f08c47fec0942fa0`). A GitHub Pages *project* site does not
   work for that, the file must be at the domain root, for instance a `<user>.github.io` repository.
-- On first launch a card explains why the ads are there and offers a button to a donation page
-  (Ko-fi). Donating is voluntary and unlocks nothing, which keeps it outside Google Play billing.
-  The same button is in *Settings*.
+- On first launch a card explains how the app is funded (the ads in the Play build, donations in the
+  GitHub one) and offers a button to a donation page (Ko-fi). Donating is voluntary and unlocks
+  nothing, which keeps it outside Google Play billing. The same button is in *Settings*, and the
+  repository's *Sponsor* button (`.github/FUNDING.yml`) points to the same page.
 
 ## Publishing on Google Play
 

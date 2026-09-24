@@ -16,7 +16,8 @@ TIDAL, Deezer) and local files. All processing happens **on your device**.
 - **Personal server credentials** (Subsonic/Navidrome, Jellyfin, Plex) and Last.fm/ListenBrainz **usernames** entered by the user: stored encrypted on the device only, used only towards the server you specify.
 - **Playlist content** (titles, artists, ISRC) read from the connected services to run syncs, plus a
   local match cache. Stays on the device.
-- **Advertising data**: the app shows one banner via Google AdMob. The Google Mobile Ads SDK may collect
+- **Advertising data** (Google Play version only; the version downloaded from GitHub contains no
+  advertising SDK and collects no advertising data): the app shows one banner via Google AdMob. The Google Mobile Ads SDK may collect
   the advertising ID, IP address, device and app information to serve and measure ads, according to the
   consent you give in the GDPR form (Google UMP). See https://policies.google.com/technologies/partner-sites.
   You can change your choice in *Settings › Ad privacy options*.
@@ -49,7 +50,8 @@ YouTube Music, TIDAL, Deezer) e file locali. Tutta l'elaborazione avviene **sul 
 - **Credenziali dei server personali** (Subsonic/Navidrome, Jellyfin, Plex) e **nomi utente** Last.fm/ListenBrainz inseriti dall'utente: salvati cifrati solo sul dispositivo, usati solo verso il server indicato.
 - **Contenuto delle playlist** (titoli, artisti, ISRC) letto dai servizi collegati per eseguire le sync e
   una cache locale degli abbinamenti. Restano sul dispositivo.
-- **Dati pubblicitari**: l'app mostra un banner tramite Google AdMob. L'SDK Google Mobile Ads può
+- **Dati pubblicitari** (solo nella versione Google Play; la versione scaricata da GitHub non contiene
+  alcun SDK pubblicitario e non raccoglie dati pubblicitari): l'app mostra un banner tramite Google AdMob. L'SDK Google Mobile Ads può
   raccogliere l'identificatore pubblicitario, indirizzo IP, informazioni sul dispositivo e sull'app per
   fornire e misurare gli annunci, in base al consenso espresso tramite il modulo GDPR (Google UMP).
   Informativa Google: https://policies.google.com/technologies/partner-sites.

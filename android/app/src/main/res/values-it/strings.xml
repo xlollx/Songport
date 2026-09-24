@@ -445,6 +445,9 @@
     <!-- Pubblicità e donazioni -->
     <string name="ads_why_title">Perché ci sono le pubblicità?</string>
     <string name="ads_why_body">Songport è gratis, senza abbonamenti e senza funzioni bloccate. Un solo banner piccolo, mai a tutto schermo, paga il caffè dello sviluppatore e le ore passate a tenere in piedi ogni servizio. Se dovesse darti fastidio, apri una segnalazione su GitHub.</string>
+    <string name="settings_free_note">Songport è gratuita, senza pubblicità e senza abbonamenti. Nulla lascia il telefono a parte le richieste ai servizi musicali che colleghi.</string>
+    <string name="free_why_title">Gratis, senza pubblicità</string>
+    <string name="free_why_body">Songport non ha pubblicità, abbonamenti né funzioni bloccate. Vive di contributi volontari: se ti fa risparmiare tempo, puoi offrire un caffè allo sviluppatore.</string>
     <string name="support_title">Ti piace Songport?</string>
     <string name="support_body">Se ti va, offri un caffè allo sviluppatore su Ko-fi. Del tutto facoltativo: non si sblocca nulla, l\'app resta completa per tutti.</string>
     <string name="support_button">Offrimi un caffè</string>

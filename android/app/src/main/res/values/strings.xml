@@ -446,6 +446,9 @@
     <!-- Pubblicità e donazioni -->
     <string name="ads_why_title">Why the ads?</string>
     <string name="ads_why_body">Songport is free, with no subscriptions and no locked features. One small banner, never full-screen, pays for the developer\'s coffee and the hours spent keeping every service working. If it ever bothers you, open an issue on GitHub.</string>
+    <string name="settings_free_note">Songport is free, with no ads and no subscriptions. Nothing leaves the phone except the requests to the music services you connect.</string>
+    <string name="free_why_title">Free, no ads</string>
+    <string name="free_why_body">Songport has no ads, no subscriptions and no locked features. It lives on voluntary contributions: if it saves you time, you can buy the developer a coffee.</string>
     <string name="support_title">Like Songport?</string>
     <string name="support_body">If you feel like it, buy the developer a coffee on Ko-fi. Totally optional: nothing is unlocked, the app stays complete for everyone.</string>
     <string name="support_button">Buy me a coffee</string>

@@ -23,11 +23,16 @@ import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * Monetizzazione "non invasiva": un solo banner adattivo in fondo alla schermata principale.
- * Niente interstitial, niente video. Prima di caricare annunci si raccoglie il consenso GDPR/UE
- * con Google UMP (User Messaging Platform); senza consenso valido non si richiedono annunci.
+ * Monetizzazione "non invasiva", solo nella build Google Play: un solo banner adattivo in fondo alla
+ * schermata principale. Niente interstitial, niente video. Prima di caricare annunci si raccoglie il
+ * consenso GDPR/UE con Google UMP (User Messaging Platform); senza consenso valido non si richiedono
+ * annunci. La build GitHub ha al suo posto una versione vuota (src/full) e non include l'SDK: AdMob
+ * serve annunci solo alle app pubblicate su uno store, quindi li' porterebbe solo il popup del consenso.
  */
 object Ads {
+    /** True in questa build: la UI mostra la nota sugli annunci e le opzioni privacy. */
+    const val enabled = true
+
     private val initialized = AtomicBoolean(false)
     private val _canRequestAds = MutableStateFlow(false)
     val canRequestAds: StateFlow<Boolean> get() = _canRequestAds

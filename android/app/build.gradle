@@ -53,8 +53,8 @@ android {
         applicationId "com.xlollx.songport"
         minSdk 26
         targetSdk 36
-        versionCode 41
-        versionName "1.0.40"
+        versionCode 42
+        versionName "1.0.41"
 
         buildConfigField "String", "SPOTIFY_CLIENT_ID", "\"${spotifyClientId}\""
         buildConfigField "String", "TIDAL_CLIENT_ID", "\"${tidalClientId}\""
@@ -185,8 +185,9 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1'
 
     // Pubblicità (banner AdMob) + consenso GDPR (UMP)
-    implementation 'com.google.android.gms:play-services-ads:24.4.0'
-    implementation 'com.google.android.ump:user-messaging-platform:3.2.0'
+    // Solo la build Play mostra annunci: la build GitHub non include ne' l'SDK ne' il modulo del consenso.
+    playImplementation 'com.google.android.gms:play-services-ads:24.4.0'
+    playImplementation 'com.google.android.ump:user-messaging-platform:3.2.0'
 
     testImplementation 'junit:junit:4.13.2'
 }

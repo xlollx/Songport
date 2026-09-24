@@ -445,6 +445,9 @@
     <!-- Werbung und Spenden -->
     <string name="ads_why_title">Warum Werbung?</string>
     <string name="ads_why_body">Songport ist kostenlos, ohne Abos und ohne gesperrte Funktionen. Ein kleines Banner, nie im Vollbild, zahlt dem Entwickler den Kaffee und die Stunden, die es kostet, jeden Dienst am Laufen zu halten. Falls es dich je stört, eröffne ein Issue auf GitHub.</string>
+    <string name="settings_free_note">Songport ist kostenlos, ohne Werbung und ohne Abo. Nichts verlässt das Telefon außer den Anfragen an die Musikdienste, die du verbindest.</string>
+    <string name="free_why_title">Kostenlos, ohne Werbung</string>
+    <string name="free_why_body">Songport hat keine Werbung, kein Abo und keine gesperrten Funktionen. Es lebt von freiwilligen Beiträgen: Wenn es dir Zeit spart, kannst du dem Entwickler einen Kaffee spendieren.</string>
     <string name="support_title">Gefällt dir Songport?</string>
     <string name="support_body">Wenn du magst, spendiere dem Entwickler einen Kaffee auf Ko-fi. Völlig freiwillig: Nichts wird freigeschaltet, die App bleibt für alle vollständig.</string>
     <string name="support_button">Spendier mir einen Kaffee</string>

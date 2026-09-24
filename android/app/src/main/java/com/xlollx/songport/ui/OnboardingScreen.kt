@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.xlollx.songport.BuildConfig
 import com.xlollx.songport.R
+import com.xlollx.songport.ads.Ads
 
 /** Primo avvio: le tre mosse, come sono protetti gli accessi, perche' ci sono le pubblicita'. */
 @Composable
@@ -83,8 +84,9 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
                 ) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(stringResource(R.string.ads_why_title), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onTertiaryContainer)
-                        Text(stringResource(R.string.ads_why_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onTertiaryContainer)
+                        // Con gli annunci si spiega perche' ci sono; senza, che l'app vive di contributi volontari.
+                        Text(stringResource(if (Ads.enabled) R.string.ads_why_title else R.string.free_why_title), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onTertiaryContainer)
+                        Text(stringResource(if (Ads.enabled) R.string.ads_why_body else R.string.free_why_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onTertiaryContainer)
                         if (BuildConfig.KOFI_URL.isNotBlank()) {
                             TextButton(onClick = { openSupport(ctx) }) {
                                 Icon(Icons.Filled.Favorite, null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onTertiaryContainer)

@@ -133,7 +133,7 @@ fun SettingsScreen(
                     Text(stringResource(R.string.support_button))
                 }
             }
-            Text(stringResource(R.string.settings_ads_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(if (Ads.enabled) R.string.settings_ads_note else R.string.settings_free_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
         SectionCard(stringResource(R.string.settings_advanced)) {

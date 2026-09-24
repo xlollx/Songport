@@ -35,11 +35,6 @@
         android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.Songport">
 
-        <!-- AdMob: App ID (di default quello di TEST Google; il vero arriva da ADMOB_APP_ID). -->
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="${admobAppId}" />
-
         <activity
             android:name=".MainActivity"
             android:theme="@style/Theme.Songport.Starting"
