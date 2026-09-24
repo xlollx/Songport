@@ -1,0 +1,34 @@
+# F-Droid
+
+Songport's GitHub build (`full` flavor) is F-Droid compatible: only free libraries (AndroidX, Kotlin,
+OkHttp, Tink), no ads SDK, no trackers, no prebuilt binaries in the repository, no self-updater. The
+`play` flavor carries the ads SDK and is never built by F-Droid.
+
+What F-Droid reads from this repository:
+
+- `fastlane/metadata/android/<locale>/`: title, short and full description, changelog per
+  `versionCode`, icon and feature graphic. Phone screenshots go in `images/phoneScreenshots/`.
+- `.github/FUNDING.yml`: donation links.
+- `android/gradle/wrapper/`: the Gradle version (the wrapper JAR is the official 8.14.3 one,
+  SHA-256 `7d3a4ac4…6172`, as listed on gradle.org).
+
+## Submitting
+
+1. Create an account on gitlab.com and fork https://gitlab.com/fdroid/fdroiddata.
+2. Add `com.xlollx.songport.yml` from this folder as `metadata/com.xlollx.songport.yml`.
+3. Open a merge request with the "App inclusion" template. The CI of fdroiddata builds the app; the
+   reviewers comment there if something needs changing.
+
+After inclusion F-Droid picks up new versions by itself from the `vX.Y.Z` tags.
+
+## Signing and the Bridge
+
+F-Droid signs its build with its own key, different from the GitHub one. Two consequences:
+
+- Updating between the GitHub and the F-Droid version needs an uninstall first (data is lost).
+- The Songport Bridge only answers to Songport builds whose certificate it knows. Once F-Droid has
+  published Songport, its signing certificate SHA-256 (shown on the app's F-Droid page) goes into
+  `Allowed.SHA256` in the Bridge, and a Bridge release follows.
+
+Reproducible builds would let F-Droid ship the GitHub-signed APK instead, removing both points; that
+needs the GitHub CI build to be bit-for-bit repeatable without the repository variables.

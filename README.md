@@ -258,8 +258,9 @@ Songport/
 Requirements: JDK 17, Android SDK with platform 36. From `android/`:
 
 ```bash
-gradle testDebugUnitTest      # unit tests (plain Kotlin, no emulator)
-gradle assembleDebug          # APK in app/build/outputs/apk/debug/
+./gradlew testFullDebugUnitTest   # unit tests (plain Kotlin, no emulator)
+./gradlew assembleFullDebug       # GitHub build, APK in app/build/outputs/apk/full/debug/
+./gradlew assemblePlayDebug       # Google Play build, with the ads SDK
 ```
 
 Or open `android/` in Android Studio. Without build variables the OAuth services show as

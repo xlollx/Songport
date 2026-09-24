@@ -1,0 +1,13 @@
+<p>Tieni le tue playlist uguali su tutti i servizi musicali, senza rifarle a mano. Tutto gira sul telefono: nessun account, nessun server, nessuna pubblicità, nessun tracciamento.</p>
+<ul>
+<li>Scegli una playlist di origine e una di destinazione, oppure lascia che l'app la crei</li>
+<li>Sincronizza a mano o in modo programmato: ogni ora, ogni 6 ore, ogni giorno o ogni settimana</li>
+<li>Solo aggiunte, oppure rispecchia anche le rimozioni</li>
+<li>I brani preferiti come origine</li>
+<li>Rivedi i brani non trovati: proposte con un tocco, prima i risultati più probabili, i brani dell'album d'origine, oppure incolla il link del brano</li>
+<li>Importa ed esporta file di playlist (CSV, M3U, XML di iTunes, JSON) per i servizi senza API</li>
+<li>Backup di un intero account in versioni datate, rimozione dei doppioni</li>
+</ul>
+<p>Funziona con Spotify, Apple Music, YouTube Music, TIDAL, Deezer, server Subsonic/Navidrome, Jellyfin e Plex, Last.fm e ListenBrainz come origini, e file. I servizi che richiedono una chiave sviluppatore si configurano con una guida nell'app; la chiave e ogni token di accesso restano cifrati sul dispositivo.</p>
+<p>Facoltativo: <a href="https://github.com/xlollx/Songport-YTM-Bridge">Songport Bridge</a>, da installare a parte, aggiunge YouTube Music e Amazon Music tramite i loro player web, senza chiavi sviluppatore.</p>
+<p>Songport non è affiliata a nessuno di questi servizi; i loro nomi sono usati solo per indicare la compatibilità.</p>

@@ -1,0 +1,4 @@
+Keine Werbung und kein Werbe-SDK: Songport lebt von freiwilligen Beiträgen.
+Nicht gefundene Titel prüfen: Vorschläge mit einem Tippen, wahrscheinlichste zuerst, Titel des Quellalbums, YouTube-Videos als letzte Möglichkeit, Link des Titels.
+Geplante Syncs überstehen ein Handy, das vor dem Netz aufwacht.
+Sicherungen als datierte Versionen. Protokoll in die Einstellungen verschoben.

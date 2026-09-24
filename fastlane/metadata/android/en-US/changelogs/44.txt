@@ -1,0 +1,4 @@
+No ads and no ads SDK: Songport lives on voluntary contributions.
+Review of tracks not found: one-tap proposals, likeliest results first, the source album's tracks, YouTube videos as a last resort, paste a track link.
+Scheduled syncs survive a phone that wakes up before its network.
+Backups as dated versions. Sync log moved to Settings.

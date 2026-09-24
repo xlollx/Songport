@@ -50,12 +50,18 @@ android {
     namespace 'com.xlollx.songport'
     compileSdk 36
 
+    // Nessun blocco di metadati delle dipendenze cifrato con la chiave di Google dentro l'APK:
+    // F-Droid lo chiede, e all'APK non serve. Il bundle per Play lo mantiene.
+    dependenciesInfo {
+        includeInApk = false
+    }
+
     defaultConfig {
         applicationId "com.xlollx.songport"
         minSdk 26
         targetSdk 36
-        versionCode 43
-        versionName "1.0.42"
+        versionCode 44
+        versionName "1.0.43"
 
         buildConfigField "String", "SPOTIFY_CLIENT_ID", "\"${spotifyClientId}\""
         buildConfigField "String", "TIDAL_CLIENT_ID", "\"${tidalClientId}\""

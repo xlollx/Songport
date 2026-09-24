@@ -1,0 +1,13 @@
+<p>Gardez vos playlists identiques sur tous les services musicaux, sans les refaire à la main. Tout fonctionne sur le téléphone : pas de compte, pas de serveur, pas de publicité, pas de pistage.</p>
+<ul>
+<li>Choisissez une playlist source et une playlist cible, ou laissez l'application la créer</li>
+<li>Synchronisez à la main ou selon un planning : toutes les heures, toutes les 6 heures, chaque jour ou chaque semaine</li>
+<li>Ajouts seulement, ou reflet des suppressions aussi</li>
+<li>Les titres aimés comme source</li>
+<li>Révisez les titres introuvables : propositions en un geste, résultats les plus probables d'abord, titres de l'album d'origine, ou collez le lien du titre</li>
+<li>Importez et exportez des fichiers de playlist (CSV, M3U, XML iTunes, JSON) pour les services sans API</li>
+<li>Sauvegardes d'un compte entier en versions datées, suppression des doublons</li>
+</ul>
+<p>Fonctionne avec Spotify, Apple Music, YouTube Music, TIDAL, Deezer, les serveurs Subsonic/Navidrome, Jellyfin et Plex, Last.fm et ListenBrainz comme sources, et des fichiers. Les services qui demandent une clé de développeur se configurent avec un guide intégré ; la clé et chaque jeton d'accès restent chiffrés sur l'appareil.</p>
+<p>Facultatif : <a href="https://github.com/xlollx/Songport-YTM-Bridge">Songport Bridge</a>, installé à part, ajoute YouTube Music et Amazon Music via leurs lecteurs web, sans clé de développeur.</p>
+<p>Songport n'est affiliée à aucun de ces services ; leurs noms servent uniquement à indiquer la compatibilité.</p>
