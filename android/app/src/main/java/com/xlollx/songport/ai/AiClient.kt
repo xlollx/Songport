@@ -7,6 +7,7 @@ import com.xlollx.songport.model.ProviderException
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.net.Http
 import com.xlollx.songport.net.arr
+import com.xlollx.songport.net.int
 import com.xlollx.songport.net.get
 import com.xlollx.songport.net.jsonArr
 import com.xlollx.songport.net.jsonObj
@@ -178,20 +179,64 @@ object AiClient {
     }
 
     /** La playlist proposta, come brani senza id (li trovera' la ricerca del servizio di destinazione). */
-    suspend fun generate(c: Config, r: Prompt): List<Track> {
-        val text = when (c.vendor) {
+    suspend fun generate(c: Config, r: Prompt): List<Track> = parseTracks(complete(c, system(r), user(r)))
+
+    data class Suggestion(val match: Int?, val queries: List<String>, val note: String)
+
+    /**
+     * Aiuto nella revisione di un brano non trovato: dati il brano d'origine e i risultati gia' visti,
+     * il modello indica quale risultato e' lo stesso brano (se c'e'), oppure con quali altre parole
+     * cercarlo (titolo originale, artista principale, versione), o dice che sul servizio non c'e'.
+     */
+    suspend fun suggestMatch(c: Config, source: Track, candidates: List<Track>, service: String, language: String): Suggestion {
+        val system = """
+            You help a playlist sync app match one recording on $service. Reply with ONLY a JSON object:
+            {"match": <1-based number of the candidate that is the same recording, or null>,
+             "queries": [<up to 3 alternative search strings likely to find it on $service, empty if it is probably not there>],
+             "note": "<one short sentence in $language explaining, for a person>"}
+            A remaster, the album version or the same song on a compilation counts as a match; a live, cover,
+            karaoke, remix or sped-up version does not. Good alternative queries: the original title when the
+            given one is a translation or alias, the main artist when the listed one is a guest, the title alone.
+        """.trimIndent()
+        val user = buildString {
+            append("Track to find: ").append(source.toString())
+            if (source.album.isNotBlank()) append(" · album: ").append(source.album)
+            if (source.durationMs > 0) append(" · ").append(source.durationMs / 1000).append(" s")
+            append('\n')
+            if (candidates.isEmpty()) append("No candidates were found.\n")
+            else {
+                append("Candidates found on ").append(service).append(":\n")
+                candidates.take(15).forEachIndexed { i, t ->
+                    append(i + 1).append(". ").append(t.toString())
+                    if (t.album.isNotBlank()) append(" · ").append(t.album)
+                    if (t.durationMs > 0) append(" · ").append(t.durationMs / 1000).append(" s")
+                    append('\n')
+                }
+            }
+        }
+        val text = complete(c, system, user)
+        val start = text.indexOf('{'); val end = text.lastIndexOf('}')
+        val j = parseJson(if (start >= 0 && end > start) text.substring(start, end + 1) else text)
+        val match = j["match"].int?.takeIf { it in 1..candidates.size }
+        val queries = j["queries"].arr.mapNotNull { it.str?.trim()?.takeIf { q -> q.isNotEmpty() } }.take(3)
+        return Suggestion(match, queries, j["note"].str.orEmpty())
+    }
+
+    /** Una richiesta, una risposta testuale, qualunque sia il fornitore. */
+    private suspend fun complete(c: Config, system: String, user: String): String {
+        return when (c.vendor) {
             Vendor.ANTHROPIC -> {
                 val body = jsonObj(
-                    "model" to c.model, "max_tokens" to 8192, "system" to system(r),
-                    "messages" to jsonArr(listOf(jsonObj("role" to "user", "content" to user(r)))),
+                    "model" to c.model, "max_tokens" to 8192, "system" to system,
+                    "messages" to jsonArr(listOf(jsonObj("role" to "user", "content" to user))),
                 )
                 val resp = post("${c.base}/messages", mapOf("x-api-key" to c.apiKey, "anthropic-version" to ANTHROPIC_VERSION), body.toString())
                 parseJson(resp)["content"].arr.mapNotNull { it["text"].str }.joinToString("")
             }
             Vendor.GEMINI -> {
                 val body = jsonObj(
-                    "systemInstruction" to jsonObj("parts" to jsonArr(listOf(jsonObj("text" to system(r))))),
-                    "contents" to jsonArr(listOf(jsonObj("role" to "user", "parts" to jsonArr(listOf(jsonObj("text" to user(r))))))),
+                    "systemInstruction" to jsonObj("parts" to jsonArr(listOf(jsonObj("text" to system)))),
+                    "contents" to jsonArr(listOf(jsonObj("role" to "user", "parts" to jsonArr(listOf(jsonObj("text" to user)))))),
                     "generationConfig" to jsonObj("responseMimeType" to "application/json"),
                 )
                 val resp = post("${c.base}/models/${c.model}:generateContent?key=${Http.enc(c.apiKey)}", emptyMap(), body.toString())
@@ -200,13 +245,12 @@ object AiClient {
             else -> {
                 val body = jsonObj(
                     "model" to c.model,
-                    "messages" to jsonArr(listOf(jsonObj("role" to "system", "content" to system(r)), jsonObj("role" to "user", "content" to user(r)))),
+                    "messages" to jsonArr(listOf(jsonObj("role" to "system", "content" to system), jsonObj("role" to "user", "content" to user))),
                 )
                 val resp = post("${c.base}/chat/completions", bearer(c), body.toString())
                 parseJson(resp)["choices"][0]["message"]["content"].str ?: ""
             }
         }
-        return parseTracks(text)
     }
 
     /** Dal testo del modello alla lista: si isola l'array JSON (i modelli aggiungono a volte prosa o recinti). */

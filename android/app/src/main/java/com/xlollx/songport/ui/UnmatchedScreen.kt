@@ -101,6 +101,11 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
         val dst = Providers.byId(job.target.provider)
         val dstName = dst?.displayName ?: job.target.provider
         val webSearch: ((String) -> String?)? = dst?.let { d -> { q: String -> d.webSearchUrl(ctx, q) } }
+        // The user's AI, when they connected one for the generator: the same key helps here.
+        val ai = remember { com.xlollx.songport.ai.AiClient.config(ctx)?.takeIf { it.complete } }
+        val language = remember { java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH) }
+        fun askFor(source: Track): (suspend (List<Track>) -> com.xlollx.songport.ai.AiClient.Suggestion)? =
+            ai?.let { cfg -> { cands -> com.xlollx.songport.ai.AiClient.suggestMatch(cfg, source, cands, dstName, language) } }
         fun fail(msg: String) { scope.launch { snackbar.showSnackbar(msg.ifBlank { ctx.getString(R.string.error_generic) }) } }
         fun toggle(id: String) { expanded = if (expanded == id) null else id }
 
@@ -128,7 +133,7 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
                         expanded = expanded == "r-" + review.source.id, onToggle = { toggle("r-" + review.source.id) },
                         onKeep = { engine.confirmMatch(reportId, review) },
                         search = { q -> engine.searchOnTarget(job, q, review.source) },
-                        webSearchUrl = webSearch,
+                        webSearchUrl = webSearch, askAi = askFor(review.source),
                         onReplace = { chosen -> engine.replaceMatch(job, reportId, review, chosen) },
                         onError = ::fail,
                     )
@@ -141,7 +146,7 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
                         track = track, dstName = dstName, suggestion = report.suggestions[track.id],
                         expanded = expanded == "u-" + track.id, onToggle = { toggle("u-" + track.id) },
                         search = { q -> engine.searchOnTarget(job, q, track) },
-                        webSearchUrl = webSearch,
+                        webSearchUrl = webSearch, askAi = askFor(track),
                         onPick = { c -> engine.resolveManually(job, reportId, track, c) },
                         onIgnore = { engine.ignore(job, reportId, track) },
                         onError = ::fail,
@@ -198,6 +203,7 @@ fun ReviewRow(
     onReplace: suspend (Track) -> Unit,
     onError: (String) -> Unit,
     webSearchUrl: ((String) -> String?)? = null,
+    askAi: (suspend (List<Track>) -> com.xlollx.songport.ai.AiClient.Suggestion)? = null,
 ) {
     var changing by remember { mutableStateOf(false) }
     CollapsibleRow(
@@ -221,7 +227,7 @@ fun ReviewRow(
             val initial = if (review.source.artists.isEmpty()) review.source.title else "${review.source.artistLine} - ${review.source.title}"
             MatchSearch(
                 initialQuery = initial, targetName = dstName, pickLabel = stringResource(R.string.review_use_this),
-                search = search, onPick = onReplace, onError = onError, autoSearch = true, webSearchUrl = webSearchUrl,
+                search = search, onPick = onReplace, onError = onError, autoSearch = true, webSearchUrl = webSearchUrl, askAi = askAi,
                 extraActions = { TextButton(onClick = { changing = false }) { Text(stringResource(R.string.cancel)) } },
             )
         }
@@ -240,6 +246,7 @@ private fun UnmatchedRow(
     onIgnore: () -> Unit,
     onError: (String) -> Unit,
     webSearchUrl: ((String) -> String?)? = null,
+    askAi: (suspend (List<Track>) -> com.xlollx.songport.ai.AiClient.Suggestion)? = null,
 ) {
     val scope = rememberCoroutineScope()
     var accepting by remember { mutableStateOf(false) }
@@ -265,7 +272,7 @@ private fun UnmatchedRow(
             initialQuery = if (track.artists.isEmpty()) track.title else "${track.artistLine} - ${track.title}",
             targetName = dstName,
             pickLabel = stringResource(R.string.unmatched_add),
-            search = search, onPick = onPick, onError = onError, autoSearch = true, webSearchUrl = webSearchUrl,
+            search = search, onPick = onPick, onError = onError, autoSearch = true, webSearchUrl = webSearchUrl, askAi = askAi,
             extraActions = { busy -> TextButton(enabled = !busy, onClick = onIgnore) { Text(stringResource(R.string.unmatched_ignore)) } },
         )
     }

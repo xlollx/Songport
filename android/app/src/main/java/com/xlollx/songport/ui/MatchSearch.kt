@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.ExpandLess
@@ -41,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.xlollx.songport.R
+import com.xlollx.songport.ai.AiClient
 import com.xlollx.songport.model.TargetSearch
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.sync.Durations
@@ -85,12 +87,16 @@ fun MatchSearch(
     autoSearch: Boolean = false,
     webSearchUrl: ((String) -> String?)? = null,
     extraActions: @Composable (busy: Boolean) -> Unit = {},
+    /** The user's AI, when configured: looks at the candidates and says which one it is, or how else to search. */
+    askAi: (suspend (List<Track>) -> AiClient.Suggestion)? = null,
 ) {
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
     var query by remember { mutableStateOf(initialQuery) }
     var candidates by remember { mutableStateOf<TargetSearch?>(null) }
     var busy by remember { mutableStateOf(false) }
+    var aiNote by remember { mutableStateOf<String?>(null) }
+    var aiPick by remember { mutableStateOf<String?>(null) }
     // Aperto per sistemare un brano: la prima ricerca parte da sola, un tocco in meno per ogni brano.
     LaunchedEffect(Unit) {
         if (autoSearch && candidates == null && query.isNotBlank()) {
@@ -129,6 +135,35 @@ fun MatchSearch(
                 Text(stringResource(R.string.search_open_in, targetName), maxLines = 1)
             }
         }
+        if (askAi != null) TextButton(enabled = !busy, onClick = {
+            busy = true; aiNote = null
+            scope.launch {
+                try {
+                    val seen = candidates?.hits?.map { it.track } ?: emptyList()
+                    val s = askAi(seen)
+                    aiNote = s.note.ifBlank { null }
+                    val current = candidates ?: TargetSearch(emptyList())
+                    val picked = s.match?.let { seen.getOrNull(it - 1) }
+                    // Its choice goes first, tagged; its alternative searches run and their new hits join the list.
+                    val extra = ArrayList<TargetSearch.Hit>()
+                    for (q in s.queries) {
+                        val r = try { search(q) } catch (e: CancellationException) { throw e } catch (e: Exception) { continue }
+                        extra += r.hits
+                    }
+                    val known = HashSet<String>()
+                    val merged = (listOfNotNull(picked?.let { p -> current.hits.first { it.track.id == p.id } }) + current.hits + extra)
+                        .filter { known.add(it.track.id) }
+                    aiPick = picked?.id
+                    candidates = current.copy(hits = merged)
+                    if (picked == null && s.queries.isEmpty() && aiNote == null) aiNote = ctx.getString(R.string.search_ai_nothing)
+                } catch (e: CancellationException) { throw e } catch (e: Exception) { onError(e.message ?: "") }
+                busy = false
+            }
+        }) {
+            Icon(Icons.Filled.AutoAwesome, null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(6.dp))
+            Text(stringResource(R.string.search_ask_ai), maxLines = 1)
+        }
         TextButton(enabled = !busy, onClick = {
             val clip = ctx.getSystemService(ClipboardManager::class.java)?.primaryClip
             val text = clip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.coerceToText(ctx)?.toString()?.trim().orEmpty()
@@ -147,13 +182,15 @@ fun MatchSearch(
         extraActions(busy)
         Button(enabled = !busy && query.isNotBlank(), onClick = { runSearch() }) { Text(stringResource(R.string.unmatched_search)) }
     }
+    aiNote?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary) }
     candidates?.let { result ->
         val pick: @Composable (TargetSearch.Hit, Boolean) -> Unit = { h, primary ->
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                TrackLine(h.track, Modifier.weight(1f), tag = when (h.kind) {
-                    TargetSearch.Kind.ALBUM -> stringResource(R.string.search_tag_album)
-                    TargetSearch.Kind.VIDEO -> stringResource(R.string.search_tag_video)
-                    TargetSearch.Kind.SONG -> null
+                TrackLine(h.track, Modifier.weight(1f), tag = when {
+                    h.track.id == aiPick -> stringResource(R.string.search_tag_ai)
+                    h.kind == TargetSearch.Kind.ALBUM -> stringResource(R.string.search_tag_album)
+                    h.kind == TargetSearch.Kind.VIDEO -> stringResource(R.string.search_tag_video)
+                    else -> null
                 })
                 val act = {
                     busy = true
@@ -174,7 +211,7 @@ fun MatchSearch(
         // The few likeliest first, whatever they came from: most fixes are one look and one tap.
         val top = result.hits.take(TOP_HITS)
         Text(stringResource(R.string.search_top), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-        top.forEachIndexed { i, h -> pick(h, i == 0 && h.score >= PRIMARY_SCORE) }
+        top.forEachIndexed { i, h -> pick(h, i == 0 && (h.score >= PRIMARY_SCORE || h.track.id == aiPick)) }
         val rest = result.hits.drop(TOP_HITS)
         // Everything else folded by origin: the album (or the news that it is missing), the other
         // songs, the videos. Open only what you need.

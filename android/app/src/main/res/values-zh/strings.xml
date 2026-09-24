@@ -212,6 +212,9 @@
     <string name="search_suggested">建议</string>
     <string name="search_tag_album">专辑</string>
     <string name="search_tag_video">视频</string>
+    <string name="search_ask_ai">问问 AI</string>
+    <string name="search_tag_ai">AI</string>
+    <string name="search_ai_nothing">AI 对这首歌也没有更好的办法。</string>
     <string name="result_ignored">%1$d 首已忽略</string>
     <string name="tools_pick_service">服务</string>
     <string name="tools_none">请先连接一个服务。</string>

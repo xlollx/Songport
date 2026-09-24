@@ -212,6 +212,9 @@
     <string name="search_suggested">Vorschlag</string>
     <string name="search_tag_album">Album</string>
     <string name="search_tag_video">Video</string>
+    <string name="search_ask_ai">KI fragen</string>
+    <string name="search_tag_ai">KI</string>
+    <string name="search_ai_nothing">Die KI hat für diesen keine bessere Idee.</string>
     <string name="result_ignored">%1$d ignoriert</string>
     <string name="tools_pick_service">Dienst</string>
     <string name="tools_none">Verbinde zuerst einen Dienst.</string>

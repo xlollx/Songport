@@ -212,6 +212,9 @@
     <string name="search_suggested">Propuesta</string>
     <string name="search_tag_album">álbum</string>
     <string name="search_tag_video">video</string>
+    <string name="search_ask_ai">Preguntar a la IA</string>
+    <string name="search_tag_ai">IA</string>
+    <string name="search_ai_nothing">La IA no tiene una idea mejor para esta.</string>
     <string name="result_ignored">%1$d ignoradas</string>
     <string name="tools_pick_service">Servicio</string>
     <string name="tools_none">Primero conecta un servicio.</string>

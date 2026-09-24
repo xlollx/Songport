@@ -212,6 +212,9 @@
     <string name="search_suggested">候補</string>
     <string name="search_tag_album">アルバム</string>
     <string name="search_tag_video">動画</string>
+    <string name="search_ask_ai">AI に聞く</string>
+    <string name="search_tag_ai">AI</string>
+    <string name="search_ai_nothing">この曲について AI に良い案はありません。</string>
     <string name="result_ignored">%1$d 曲を無視</string>
     <string name="tools_pick_service">サービス</string>
     <string name="tools_none">まずサービスを接続してください。</string>
