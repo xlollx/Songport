@@ -59,6 +59,8 @@ data class SyncJob(
     val ignoredSourceIds: List<String> = emptyList(),
     /** Sync gemella nella direzione opposta (bidirezionale). */
     val linkedJobId: String? = null,
+    /** Playlist scritta dall'AI dell'utente: la descrizione data, per riconoscerla e per allungarla. */
+    val aiPrompt: String? = null,
 )
 
 /** Un abbinamento trovato con punteggio basso: giusto probabilmente, ma da far confermare. */

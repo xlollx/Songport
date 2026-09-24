@@ -313,6 +313,12 @@
     <string name="ai_review_title">Proposed playlist</string>
     <string name="ai_review_hint">Remove what you do not want, then confirm: the tracks will be looked up on %1$s and anything not found will be there to review.</string>
     <string name="ai_review_remove">Remove</string>
+    <string name="ai_models_all">Show all models</string>
+    <string name="ai_badge_desc">Written by your AI</string>
+    <string name="ai_extend">Add tracks with AI</string>
+    <string name="ai_extend_title">Extend the playlist</string>
+    <string name="ai_extend_hint">The AI gets the same description and the tracks already in the playlist, and proposes new ones to add.</string>
+    <string name="ai_extend_added">%1$d tracks added: the sync has started.</string>
     <plurals name="ai_review_confirm">
         <item quantity="one">Create with %1$d track</item>
         <item quantity="other">Create with %1$d tracks</item>

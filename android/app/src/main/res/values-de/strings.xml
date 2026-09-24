@@ -313,6 +313,12 @@
     <string name="ai_review_title">Vorgeschlagene Playlist</string>
     <string name="ai_review_hint">Entferne, was du nicht willst, und bestätige dann: Die Titel werden auf %1$s gesucht, und nicht Gefundenes bleibt zur Prüfung.</string>
     <string name="ai_review_remove">Entfernen</string>
+    <string name="ai_models_all">Alle Modelle anzeigen</string>
+    <string name="ai_badge_desc">Von deiner KI geschrieben</string>
+    <string name="ai_extend">Titel mit KI hinzufügen</string>
+    <string name="ai_extend_title">Playlist verlängern</string>
+    <string name="ai_extend_hint">Die KI bekommt dieselbe Beschreibung und die schon enthaltenen Titel und schlägt neue zum Hinzufügen vor.</string>
+    <string name="ai_extend_added">%1$d Titel hinzugefügt: Die Sync läuft.</string>
     <plurals name="ai_review_confirm">
         <item quantity="one">Mit %1$d Titel erstellen</item>
         <item quantity="other">Mit %1$d Titeln erstellen</item>

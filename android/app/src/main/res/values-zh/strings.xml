@@ -311,6 +311,12 @@
     <string name="ai_review_title">建议的歌单</string>
     <string name="ai_review_hint">删掉不想要的，然后确认：这些歌曲会在 %1$s 上查找，找不到的会留待复查。</string>
     <string name="ai_review_remove">删除</string>
+    <string name="ai_models_all">显示全部模型</string>
+    <string name="ai_badge_desc">由你的 AI 生成</string>
+    <string name="ai_extend">用 AI 添加歌曲</string>
+    <string name="ai_extend_title">扩充歌单</string>
+    <string name="ai_extend_hint">AI 会收到同样的描述和歌单中已有的歌曲，并提出新的歌曲供添加。</string>
+    <string name="ai_extend_added">已添加 %1$d 首歌曲：同步已开始。</string>
     <plurals name="ai_review_confirm">
         <item quantity="other">创建，共 %1$d 首歌曲</item>
     </plurals>

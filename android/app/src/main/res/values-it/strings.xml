@@ -313,6 +313,12 @@
     <string name="ai_review_title">Playlist proposta</string>
     <string name="ai_review_hint">Togli quello che non vuoi, poi conferma: i brani verranno cercati su %1$s e quelli non trovati saranno lì da rivedere.</string>
     <string name="ai_review_remove">Togli</string>
+    <string name="ai_models_all">Mostra tutti i modelli</string>
+    <string name="ai_badge_desc">Scritta dalla tua AI</string>
+    <string name="ai_extend">Aggiungi brani con l\'AI</string>
+    <string name="ai_extend_title">Allunga la playlist</string>
+    <string name="ai_extend_hint">L\'AI riceve la stessa descrizione e i brani già in playlist, e ne propone di nuovi da aggiungere.</string>
+    <string name="ai_extend_added">%1$d brani aggiunti: la sync è partita.</string>
     <plurals name="ai_review_confirm">
         <item quantity="one">Crea con %1$d brano</item>
         <item quantity="other">Crea con %1$d brani</item>

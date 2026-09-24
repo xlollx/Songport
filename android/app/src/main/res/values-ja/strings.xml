@@ -311,6 +311,12 @@
     <string name="ai_review_title">提案されたプレイリスト</string>
     <string name="ai_review_hint">不要な曲を削除して確認してください。曲は %1$s で検索され、見つからなかった曲は確認用に残ります。</string>
     <string name="ai_review_remove">削除</string>
+    <string name="ai_models_all">すべてのモデルを表示</string>
+    <string name="ai_badge_desc">あなたの AI が作成</string>
+    <string name="ai_extend">AI で曲を追加</string>
+    <string name="ai_extend_title">プレイリストを増やす</string>
+    <string name="ai_extend_hint">AI に同じ説明とプレイリストにある曲を渡し、追加する新しい曲を提案させます。</string>
+    <string name="ai_extend_added">%1$d 曲を追加しました。同期を開始しました。</string>
     <plurals name="ai_review_confirm">
         <item quantity="other">%1$d 曲で作成</item>
     </plurals>

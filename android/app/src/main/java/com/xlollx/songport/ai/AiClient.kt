@@ -47,6 +47,8 @@ object AiClient {
         /** Brani di riferimento ("simili a"), gia' in forma "Artista - Titolo". */
         val seeds: List<String> = emptyList(),
         val language: String = "",
+        /** Brani gia' nella playlist quando la si allunga: stesso spirito, nessuno di questi. */
+        val existing: List<String> = emptyList(),
     )
 
     private const val STORE_ID = "__ai__"
@@ -116,8 +118,39 @@ object AiClient {
                 .mapNotNull { it["name"].str?.removePrefix("models/") }
             else -> j["data"].arr.mapNotNull { it["id"].str }
         }
-        ids.distinct().sorted()
+        // Anthropic lists newest first; the others come in no useful order.
+        if (c.vendor == Vendor.ANTHROPIC) ids.distinct() else ids.distinct().sorted()
     }
+
+    private val DATED = Regex("""-(\d{4}-\d{2}-\d{2}|\d{4}|\d{2}-\d{2}|\d{3}|preview-\d.*|exp.*)$""")
+    private val NOT_CHAT = listOf(
+        "embedding", "embed", "aqa", "tts", "audio", "image", "imagen", "veo", "vision", "live", "realtime",
+        "transcribe", "whisper", "dall-e", "moderation", "search", "instruct", "davinci", "babbage", "ada", "curie",
+        "codex", "computer-use", "learnlm", "gemma", "robotics", "native", "deep-research",
+    )
+
+    /**
+     * La lista dell'API contiene di tutto: modelli per immagini, audio, embedding, versioni datate
+     * e generazioni ritirate. Qui restano quelli che chattano e sono correnti; l'elenco intero si
+     * apre a parte. Anthropic espone solo i modelli attivi, e' gia' pulito.
+     */
+    fun curated(vendor: Vendor, models: List<String>): List<String> {
+        if (vendor == Vendor.ANTHROPIC || vendor == Vendor.CUSTOM) return models
+        val chat = models.filter { m -> val l = m.lowercase(); NOT_CHAT.none { it in l } && "-exp" !in l && "experimental" !in l }
+        val current = chat.filter { m ->
+            val l = m.lowercase()
+            when (vendor) {
+                Vendor.GEMINI -> l.startsWith("gemini-") && !l.startsWith("gemini-1.")
+                else -> (l.startsWith("gpt-") && !l.startsWith("gpt-3")) || Regex("""^o\d""").containsMatchIn(l)
+            }
+        }
+        // A dated or preview variant is hidden when its plain name is also there.
+        val plain = current.filter { !DATED.containsMatchIn(it) }.toSet()
+        val kept = current.filter { m -> m in plain || DATED.replace(m, "") !in plain }
+        return kept.sortedWith(compareByDescending<String> { versionOf(it) }.thenBy { it })
+    }
+
+    private fun versionOf(m: String): Double = Regex("""(\d+(?:\.\d+)?)""").find(m)?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
 
     private fun bearer(c: Config): Map<String, String> = if (c.apiKey.isBlank()) emptyMap() else mapOf("Authorization" to "Bearer ${c.apiKey}")
 
@@ -137,7 +170,11 @@ object AiClient {
             append("The listener already likes these; pick tracks in the same spirit, do not include them:\n")
             r.seeds.forEach { append("- ").append(it).append('\n') }
         }
-        append("Number of tracks: ").append(r.count)
+        if (r.existing.isNotEmpty()) {
+            append("The playlist already contains these tracks; add new ones that fit with them, and do not repeat any of them:\n")
+            r.existing.forEach { append("- ").append(it).append('\n') }
+        }
+        append("Number of NEW tracks to return: ").append(r.count)
     }
 
     /** La playlist proposta, come brani senza id (li trovera' la ricerca del servizio di destinazione). */

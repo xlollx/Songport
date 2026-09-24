@@ -313,6 +313,12 @@
     <string name="ai_review_title">Playlist propuesta</string>
     <string name="ai_review_hint">Quita lo que no quieras y confirma: las canciones se buscarán en %1$s y las que no se encuentren quedarán por revisar.</string>
     <string name="ai_review_remove">Quitar</string>
+    <string name="ai_models_all">Mostrar todos los modelos</string>
+    <string name="ai_badge_desc">Escrita por tu IA</string>
+    <string name="ai_extend">Añadir canciones con la IA</string>
+    <string name="ai_extend_title">Alargar la playlist</string>
+    <string name="ai_extend_hint">La IA recibe la misma descripción y las canciones ya presentes, y propone otras nuevas para añadir.</string>
+    <string name="ai_extend_added">%1$d canciones añadidas: la sincronización ha empezado.</string>
     <plurals name="ai_review_confirm">
         <item quantity="one">Crear con %1$d canción</item>
         <item quantity="other">Crear con %1$d canciones</item>

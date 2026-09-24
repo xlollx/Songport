@@ -151,6 +151,7 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
                             name = finalName,
                             source = PlaylistRef(provider = LocalFilesProvider.id, playlistId = fileId, playlistName = fileId),
                             target = PlaylistRef(provider = target.id, playlistId = null, playlistName = finalName),
+                            aiPrompt = d.prompt.trim(),
                         )
                         Store.get(app).upsertJob(job)
                         Scheduler.runNow(app, job.id)
@@ -259,8 +260,16 @@ private fun ModelRow(c: AiClient.Config, onChange: () -> Unit, onModel: (String)
                 Text(c.model, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Icon(Icons.Filled.ArrowDropDown, contentDescription = stringResource(R.string.ai_model))
             }
-            DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-                d.models.forEach { m -> DropdownMenuItem(text = { Text(m) }, onClick = { open = false; onModel(m) }) }
+            var all by remember { mutableStateOf(false) }
+            val shown = if (all) d.models else AiClient.curated(c.vendor, d.models)
+            DropdownMenu(expanded = open, onDismissRequest = { open = false; all = false }) {
+                shown.forEach { m -> DropdownMenuItem(text = { Text(m) }, onClick = { open = false; all = false; onModel(m) }) }
+                if (!all && shown.size < d.models.size) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.ai_models_all), color = MaterialTheme.colorScheme.primary) },
+                        onClick = { all = true },
+                    )
+                }
             }
         }
         TextButton(onClick = onChange) { Text(stringResource(R.string.ai_setup_change)) }
@@ -379,5 +388,82 @@ private fun AiReviewDialog(tracks: List<Track>, targetLabel: String, onDismiss: 
             TextButton(enabled = kept.isNotEmpty(), onClick = { onConfirm(kept) }) { Text(pluralStringResource(R.plurals.ai_review_confirm, kept.size, kept.size)) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
+    )
+}
+
+/**
+ * "Aggiungi brani con l'AI" su una sync nata dal generatore: stessa descrizione, i brani gia' nel
+ * file come contesto, N proposte nuove da rivedere e poi aggiungere al file; la sync riparte e le
+ * porta sul servizio.
+ */
+@Composable
+fun AiExtendDialog(job: SyncJob, onClose: () -> Unit) {
+    val ctx = LocalContext.current
+    val app = ctx.applicationContext
+    val d = AiDraft
+    var config by remember { mutableStateOf(AiClient.config(ctx)) }
+    var setupOpen by remember { mutableStateOf(config?.complete != true) }
+    var count by remember { mutableStateOf(10f) }
+    var busy by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+    var proposed by remember { mutableStateOf<List<Track>?>(null) }
+    val fileId = job.source.playlistId
+
+    if (setupOpen) {
+        AiSetupDialog(config, onDismiss = { if (config?.complete == true) setupOpen = false else onClose() }) { config = it; d.models = emptyList(); setupOpen = false }
+        return
+    }
+    val c = config ?: return
+    val target = Providers.byId(job.target.provider)
+    proposed?.let { list ->
+        AiReviewDialog(list, target?.label(ctx) ?: job.target.provider, onDismiss = { proposed = null }) { kept ->
+            proposed = null
+            if (fileId == null) return@AiReviewDialog
+            d.scope.launch {
+                try {
+                    withContext(Dispatchers.IO) { LocalFilesProvider.addTracks(app, fileId, kept) }
+                    Scheduler.runNow(app, job.id)
+                    onClose()
+                } catch (e: Exception) {
+                    error = e.message ?: app.getString(R.string.error_generic)
+                }
+            }
+        }
+        return
+    }
+    AlertDialog(
+        onDismissRequest = onClose,
+        title = { Text(stringResource(R.string.ai_extend_title)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.ai_extend_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(Modifier.height(8.dp))
+                Text(job.aiPrompt.orEmpty(), style = MaterialTheme.typography.bodyMedium)
+                Spacer(Modifier.height(8.dp))
+                Text(stringResource(R.string.ai_count, count.toInt()), style = MaterialTheme.typography.bodyMedium)
+                Slider(value = count, onValueChange = { count = it }, valueRange = 5f..50f, steps = 8)
+                error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+            }
+        },
+        confirmButton = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (busy) { CircularProgressIndicator(Modifier.size(16.dp)); Spacer(Modifier.width(8.dp)) }
+                TextButton(enabled = !busy && fileId != null, onClick = {
+                    busy = true; error = null
+                    d.scope.launch {
+                        val outcome = runCatching {
+                            val existing = if (fileId != null) LocalFilesProvider.tracks(app, fileId).map { it.toString() }.take(200) else emptyList()
+                            val language = java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH)
+                            AiClient.generate(c, AiClient.Prompt(job.aiPrompt.orEmpty(), count.toInt(), emptyList(), language, existing))
+                        }
+                        busy = false
+                        outcome.onFailure { e -> error = e.message ?: app.getString(R.string.error_generic) }
+                        val tracks = outcome.getOrNull() ?: return@launch
+                        if (tracks.isEmpty()) error = app.getString(R.string.ai_empty) else proposed = tracks
+                    }
+                }) { Text(stringResource(R.string.ai_generate)) }
+            }
+        },
+        dismissButton = { TextButton(onClick = onClose) { Text(stringResource(R.string.cancel)) } },
     )
 }

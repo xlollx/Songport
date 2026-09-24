@@ -90,7 +90,7 @@ that is exactly what to report.
 | Restore | Put back tracks removed by a mirror sync | From the log. |
 | YouTube quota | Ring with the units used today | Search 100, write 50 out of 10,000 per day; the app shows what is left and what a sync will cost. |
 | Multiple accounts | Several accounts of the same service | Also for migrating between two accounts. |
-| Tools | Playlist generator (beta) | Describe a playlist; your own AI (OpenAI, Anthropic, Gemini or any OpenAI-compatible server, even local) proposes the tracks, Songport finds them on the chosen service through a normal sync. No AI of Songport's: your key, stored encrypted; only the text you type is sent. |
+| Tools | Playlist generator (beta) | Describe a playlist; your own AI (OpenAI, Anthropic, Gemini or any OpenAI-compatible server, even local) proposes the tracks, Songport finds them on the chosen service through a normal sync. The proposal is reviewed before anything is created, the sync is marked with a spark and can be extended later with more AI picks. No AI of Songport's: your key, stored encrypted; only the text you type is sent. |
 | | Batch transfer | Pick many playlists of one service and send them all to another: one sync each, run one after the other, kept in Syncs. |
 | | Playlist tools | Copy, merge (skipping duplicates), split into parts, sort by artist/title/album, shuffle; always into a new playlist, the originals untouched. |
 | | Full backup of a service | Playlists and likes into local files, with dated versions. |

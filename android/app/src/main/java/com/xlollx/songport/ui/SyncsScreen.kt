@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Sync
@@ -159,6 +160,8 @@ private fun JobCard(
     var confirmDelete by remember { mutableStateOf(false) }
     var liveOpen by remember { mutableStateOf(false) }
     if (liveOpen && isRunning) LiveSheet(job) { liveOpen = false }
+    var extendOpen by remember { mutableStateOf(false) }
+    if (extendOpen) AiExtendDialog(job) { extendOpen = false }
     val report = data.reports.firstOrNull { it.id == job.lastReportId }
     val src = Providers.byId(job.source.provider)
     val dst = Providers.byId(job.target.provider)
@@ -177,7 +180,14 @@ private fun JobCard(
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(job.name.ifBlank { job.source.playlistName }, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        // Written by the user's AI: a small spark before the name, and "add tracks" in the menu.
+                        if (job.aiPrompt != null) {
+                            Icon(Icons.Filled.AutoAwesome, stringResource(R.string.ai_badge_desc), Modifier.size(16.dp), tint = MaterialTheme.colorScheme.tertiary)
+                            Spacer(Modifier.width(4.dp))
+                        }
+                        Text(job.name.ifBlank { job.source.playlistName }, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
                     Text(
                         (src?.label(ctx) ?: job.source.provider) + " · " + srcName +
                             (if (job.linkedJobId != null) "  ↔  " else "  →  ") +
@@ -246,7 +256,8 @@ private fun JobCard(
                     Icon(Icons.Filled.PlayArrow, stringResource(R.string.run_now))
                 }
                 OverflowMenu(
-                    listOf(
+                    listOfNotNull(
+                        if (job.aiPrompt != null) MenuAction(stringResource(R.string.ai_extend), { extendOpen = true }) else null,
                         MenuAction(stringResource(R.string.preview), { onPreview(job) }),
                         MenuAction(stringResource(R.string.edit), { onEdit(job) }),
                         MenuAction(stringResource(R.string.delete), { confirmDelete = true }, destructive = true),
