@@ -67,6 +67,12 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> =
         io(ctx, "amazon.tracks", playlistId) { j -> j.arr.mapNotNull { toTrack(it) } }
 
+    /** On the regional site the account signed in to (music.amazon.it...), where the links then work. */
+    override fun webSearchUrl(ctx: Context, query: String): String {
+        val domain = runCatching { call(ctx, "amazon.status").getString("domain") }.getOrNull()?.takeIf { it.startsWith("music.amazon.") } ?: "music.amazon.com"
+        return "https://$domain/search/" + android.net.Uri.encode(query)
+    }
+
     override suspend fun search(ctx: Context, track: Track): List<Track> {
         val q = (track.artists.take(2) + track.title).joinToString(" ")
         return io(ctx, "amazon.search", q) { j -> j.arr.mapNotNull { toTrack(it) } }

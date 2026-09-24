@@ -1,0 +1,2 @@
+Review of tracks not found: "Open in" searches the track in the destination's app or site, "Paste link" adds the link you copied there. Short share links work too.
+The connector picker no longer points to plugins: the web connectors are built in.

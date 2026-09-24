@@ -223,7 +223,8 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
         // Where to learn about connector plugins: the project documentation (Play build) or the
         // reference plugin's page (direct-download build).
         confirmButton = {
-            TextButton(onClick = {
+            // With the web connectors built in (GitHub/F-Droid) there is no plugin to talk about.
+            if (!BridgePlugin.builtIn) TextButton(onClick = {
                 val url = if (BuildConfig.PLUGIN_LINKS) BridgePlugin.installUrl ?: ctx.getString(R.string.plugins_more_url) else ctx.getString(R.string.plugins_more_url)
                 runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
             }) { Text(stringResource(R.string.plugins_more), style = MaterialTheme.typography.bodySmall) }

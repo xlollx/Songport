@@ -131,6 +131,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                                 onToggle = { openReview = if (openReview == review.source.id) null else review.source.id },
                                 onKeep = { plan = p.copy(uncertain = p.uncertain - review) },
                                 search = { q -> engine.searchOnTarget(job, q, review.source) },
+                                webSearchUrl = dst?.let { d -> { q: String -> d.webSearchUrl(ctx, q) } },
                                 onReplace = { chosen ->
                                     engine.rematchInPlan(job, review, chosen)
                                     plan = p.copy(

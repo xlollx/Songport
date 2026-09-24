@@ -142,6 +142,8 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
         return resolve(ctx, listOfNotNull(j["data"].takeIf { it["id"].str != null })).firstOrNull()
     }
 
+    override fun webSearchUrl(ctx: Context, query: String): String = "https://listen.tidal.com/search?q=" + android.net.Uri.encode(query)
+
     override suspend fun search(ctx: Context, track: Track): List<Track> {
         track.isrcNorm?.let { isrc ->
             val j = api(ctx, "GET", "$API/tracks?countryCode=${cc(ctx)}&filter[isrc]=$isrc")

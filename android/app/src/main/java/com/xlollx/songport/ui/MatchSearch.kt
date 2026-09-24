@@ -1,9 +1,13 @@
 package com.xlollx.songport.ui
 
+import android.net.Uri
+import android.content.Intent
+import android.content.ClipboardManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
@@ -31,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.xlollx.songport.R
@@ -66,6 +73,7 @@ fun TrackLine(t: Track, modifier: Modifier = Modifier, emphasis: Boolean = false
  * Campo di ricerca sulla destinazione con elenco dei candidati e pulsante "Aggiungi"/"Usa questo".
  * Riusato dalla revisione degli abbinamenti (prima e dopo la sync) e dai brani non trovati.
  */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun MatchSearch(
     initialQuery: String,
@@ -75,9 +83,11 @@ fun MatchSearch(
     onPick: suspend (Track) -> Unit,
     onError: (String) -> Unit,
     autoSearch: Boolean = false,
+    webSearchUrl: ((String) -> String?)? = null,
     extraActions: @Composable (busy: Boolean) -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
+    val ctx = LocalContext.current
     var query by remember { mutableStateOf(initialQuery) }
     var candidates by remember { mutableStateOf<TargetSearch?>(null) }
     var busy by remember { mutableStateOf(false) }
@@ -96,16 +106,46 @@ fun MatchSearch(
         supportingText = { Text(stringResource(R.string.unmatched_search_help)) },
         modifier = Modifier.fillMaxWidth(),
     )
+    fun runSearch() {
+        busy = true
+        scope.launch {
+            candidates = try { search(query) } catch (e: CancellationException) { throw e } catch (e: Exception) { onError(e.message ?: ""); TargetSearch(emptyList()) }
+            busy = false
+        }
+    }
+    // Find it by hand: the service's own search opens (in its app when installed), the user copies the
+    // track's link there and comes back to paste it.
+    FlowRow(modifier = Modifier.fillMaxWidth()) {
+        if (webSearchUrl != null) {
+            TextButton(enabled = !busy, onClick = {
+                val q = query.trim().takeIf { it.isNotEmpty() && !it.contains("://") } ?: initialQuery
+                webSearchUrl(q)?.let { url ->
+                    runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+                        .onFailure { onError(it.message ?: "") }
+                }
+            }) {
+                Icon(Icons.AutoMirrored.Filled.OpenInNew, null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(6.dp))
+                Text(stringResource(R.string.search_open_in, targetName), maxLines = 1)
+            }
+        }
+        TextButton(enabled = !busy, onClick = {
+            val clip = ctx.getSystemService(ClipboardManager::class.java)?.primaryClip
+            val text = clip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.coerceToText(ctx)?.toString()?.trim().orEmpty()
+            // Share texts carry words around the link: keep the link.
+            val link = Regex("""https?://\S+""").find(text)?.value
+            if (link == null) onError(ctx.getString(R.string.search_clipboard_empty))
+            else { query = link; runSearch() }
+        }) {
+            Icon(Icons.Filled.ContentPaste, null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(6.dp))
+            Text(stringResource(R.string.search_paste_link), maxLines = 1)
+        }
+    }
     Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         if (busy) { CircularProgressIndicator(Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)) }
         extraActions(busy)
-        Button(enabled = !busy && query.isNotBlank(), onClick = {
-            busy = true
-            scope.launch {
-                candidates = try { search(query) } catch (e: CancellationException) { throw e } catch (e: Exception) { onError(e.message ?: ""); TargetSearch(emptyList()) }
-                busy = false
-            }
-        }) { Text(stringResource(R.string.unmatched_search)) }
+        Button(enabled = !busy && query.isNotBlank(), onClick = { runSearch() }) { Text(stringResource(R.string.unmatched_search)) }
     }
     candidates?.let { result ->
         val pick: @Composable (TargetSearch.Hit, Boolean) -> Unit = { h, primary ->

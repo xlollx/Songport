@@ -212,6 +212,8 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     override suspend fun track(ctx: Context, trackId: String): Track? =
         catalogTrack(api(ctx, "GET", "$API/v1/catalog/${storefront(ctx)}/songs/${Http.enc(trackId)}")["data"].arr.firstOrNull())
 
+    override fun webSearchUrl(ctx: Context, query: String): String = "https://music.apple.com/search?term=" + android.net.Uri.encode(query)
+
     override suspend fun search(ctx: Context, track: Track): List<Track> {
         val sf = storefront(ctx)
         track.isrcNorm?.let { isrc ->

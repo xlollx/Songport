@@ -1,0 +1,2 @@
+Revisione dei brani non trovati: "Apri in" cerca il brano nell'app o nel sito della destinazione, "Incolla link" aggiunge il link copiato lì. Funzionano anche i link brevi di condivisione.
+Il selettore dei connettori non rimanda più ai plugin: i connettori web sono integrati.

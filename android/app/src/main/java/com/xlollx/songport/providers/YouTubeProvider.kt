@@ -176,6 +176,8 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         return Track(id = trackId, title = title, artists = artists, durationMs = Durations.parseIso8601(item["contentDetails"]["duration"].str))
     }
 
+    override fun webSearchUrl(ctx: Context, query: String): String = "https://www.youtube.com/results?search_query=" + android.net.Uri.encode(query)
+
     override suspend fun search(ctx: Context, track: Track): List<Track> {
         val q = (track.artists.take(2) + track.title).joinToString(" ")
         val s = counted(ctx, QuotaMeter.COST_SEARCH) { api(ctx, "GET", "$API/search?part=snippet&type=video&videoCategoryId=10&maxResults=5&q=${Http.enc(q)}") }

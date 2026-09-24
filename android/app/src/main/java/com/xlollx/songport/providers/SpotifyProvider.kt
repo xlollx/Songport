@@ -154,6 +154,8 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         return searchQuery(ctx, listOfNotNull(title, artist).joinToString(" "))
     }
 
+    override fun webSearchUrl(ctx: Context, query: String): String = "https://open.spotify.com/search/" + android.net.Uri.encode(query)
+
     override fun rehydrate(track: Track): Track = track.copy(uri = "spotify:track:${track.id}")
 
     override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist {

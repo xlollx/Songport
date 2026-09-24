@@ -1,0 +1,2 @@
+Nicht gefundene Titel prüfen: „In … öffnen" sucht den Titel in der App oder Website des Ziels, „Link einfügen" übernimmt den dort kopierten Link. Kurze Teilen-Links funktionieren auch.
+Die Connector-Auswahl verweist nicht mehr auf Plugins: die Web-Connectoren sind eingebaut.

@@ -18,6 +18,7 @@ import com.xlollx.songport.providers.MusicProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import com.xlollx.songport.providers.Providers
 import java.util.UUID
 
@@ -60,6 +61,8 @@ internal fun isTransientNetwork(msg: String?): Boolean {
 
 /** Below the match threshold but close enough to be worth proposing in the review. */
 private const val HINT_THRESHOLD = 0.45
+/** Hosts of the short links music apps put in their share text. */
+private val SHORT_LINK_HOSTS = setOf("amzn.to", "amzn.eu", "a.co", "spotify.link", "spoti.fi", "apple.co", "deezer.page.link", "link.deezer.com", "tidal.link")
 
 class SyncEngine(private val ctx: Context) {
     private val store = Store.get(ctx)
@@ -605,8 +608,9 @@ class SyncEngine(private val ctx: Context) {
     suspend fun searchOnTarget(job: SyncJob, query: String, source: Track? = null): TargetSearch {
         val (_, dst) = providers(job)
         fun hit(t: Track, kind: TargetSearch.Kind) = TargetSearch.Hit(t, if (source != null) Matcher.score(source, t) else 0.0, kind)
-        // Il link del brano incollato: si aggiunge quello, letto dal servizio quando possibile.
-        TrackLinks.parse(query)?.let { ref ->
+        // Il link del brano incollato: si aggiunge quello, letto dal servizio quando possibile. I link
+        // brevi delle app (amzn.eu, spotify.link...) si seguono fino all'indirizzo vero.
+        (TrackLinks.parse(query) ?: resolveShortLink(query)?.let { TrackLinks.parse(it) })?.let { ref ->
             if (!TrackLinks.matches(ref.service, dst.serviceId)) throw ProviderException(ctx.getString(R.string.link_other_service, dst.label(ctx)))
             val t = runCatching { dst.track(ctx, ref.trackId) }.getOrNull()
             return TargetSearch(listOf(hit(t ?: dst.rehydrate(Track(id = ref.trackId, title = ctx.getString(R.string.link_track_unknown), album = ref.trackId)), TargetSearch.Kind.SONG)))
@@ -645,6 +649,19 @@ class SyncEngine(private val ctx: Context) {
             add(wide, TargetSearch.Kind.VIDEO)
         }
         return TargetSearch(if (source != null) hits.sortedByDescending { it.score } else hits, album, albumFound)
+    }
+
+    /** Segue i redirect di un link breve condiviso da un'app musicale; null se non e' uno di quelli. */
+    private suspend fun resolveShortLink(text: String): String? {
+        val url = Regex("""https?://\S+""").find(text)?.value ?: return null
+        val host = runCatching { java.net.URI(url).host?.lowercase() }.getOrNull() ?: return null
+        if (host !in SHORT_LINK_HOSTS) return null
+        return withContext(kotlinx.coroutines.Dispatchers.IO) {
+            runCatching {
+                val req = okhttp3.Request.Builder().url(url).header("User-Agent", "Mozilla/5.0 (Linux; Android 14) Songport").build()
+                com.xlollx.songport.net.Http.client.newCall(req).execute().use { it.request.url.toString() }
+            }.getOrNull()
+        }
     }
 
     /** Una riga per titolo e artisti: le edizioni ripetute di uno stesso brano non aiutano a scegliere. */

@@ -1,0 +1,2 @@
+Révision des titres introuvables : « Ouvrir dans » cherche le titre dans l'application ou le site de destination, « Coller le lien » ajoute le lien copié. Les liens de partage courts fonctionnent aussi.
+Le choix des connecteurs ne renvoie plus aux plugins : les connecteurs web sont intégrés.

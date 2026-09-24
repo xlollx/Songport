@@ -57,6 +57,7 @@ object BridgeCore {
                 "amazon.status" -> Bundle().apply {
                     putBoolean("connected", AmazonSession.isConnected(ctx))
                     putString("account", AmazonSession.account(ctx))
+                    putString("domain", AmazonSession.domain(ctx))
                     putInt("version", VERSION)
                 }
                 "amazon.disconnect" -> { AmazonSession.clear(ctx); Bundle() }

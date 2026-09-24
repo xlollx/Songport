@@ -89,6 +89,8 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         out
     }
 
+    override fun webSearchUrl(ctx: Context, query: String): String = "https://music.youtube.com/search?q=" + android.net.Uri.encode(query)
+
     override suspend fun search(ctx: Context, track: Track): List<Track> {
         val q = (track.artists.take(2) + track.title).joinToString(" ")
         return io(ctx, "search", q) { j -> j.arr.mapNotNull { toTrack(it) } }

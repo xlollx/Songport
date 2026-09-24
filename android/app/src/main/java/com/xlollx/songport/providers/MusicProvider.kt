@@ -96,6 +96,13 @@ interface MusicProvider {
     suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>)
 
     /**
+     * La pagina di ricerca del servizio per [query], nel suo sito o nella sua app (i link si aprono
+     * nell'app quando e' installata): dalla revisione l'utente cerca il brano li', ne copia il link e
+     * lo incolla. Null per i servizi senza una ricerca pubblica (server personali, file).
+     */
+    fun webSearchUrl(ctx: Context, query: String): String? = null
+
+    /**
      * Ricerca su un catalogo piu' largo del servizio (per YouTube Music i video di YouTube, che una
      * playlist accetta comunque). Usata solo quando [search] non ha dato nulla di accettabile; vuota
      * per i servizi che non hanno un catalogo del genere.

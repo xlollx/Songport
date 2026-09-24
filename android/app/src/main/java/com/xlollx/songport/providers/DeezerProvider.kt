@@ -153,6 +153,8 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
 
     override suspend fun track(ctx: Context, trackId: String): Track? = toTrack(dz(ctx, "GET", "/track/$trackId", allowNoData = true))
 
+    override fun webSearchUrl(ctx: Context, query: String): String = "https://www.deezer.com/search/" + android.net.Uri.encode(query)
+
     override suspend fun search(ctx: Context, track: Track): List<Track> {
         track.isrcNorm?.let { isrc ->
             val j = dz(ctx, "GET", "/track/isrc:$isrc", allowNoData = true)

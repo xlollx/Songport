@@ -201,6 +201,9 @@
     <string name="unmatched_added">Hinzugefügt: %1$s</string>
     <string name="unmatched_no_results">Keine Ergebnisse.</string>
     <string name="unmatched_search_help">Titel, „Künstler - Titel“ oder der Link des Titels</string>
+    <string name="search_open_in">In %1$s öffnen</string>
+    <string name="search_paste_link">Link einfügen</string>
+    <string name="search_clipboard_empty">In der Zwischenablage ist kein Link. Kopiere den Link des Titels in der App und tippe dann auf Link einfügen.</string>
     <string name="link_other_service">Dieser Link ist kein Titel von %1$s</string>
     <string name="link_track_unknown">Titel aus dem Link</string>
     <string name="search_album_section">Aus dem Album „%1$s“ auf %2$s · %3$d Titel</string>

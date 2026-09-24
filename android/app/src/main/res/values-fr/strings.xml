@@ -201,6 +201,9 @@
     <string name="unmatched_added">Ajouté : %1$s</string>
     <string name="unmatched_no_results">Aucun résultat.</string>
     <string name="unmatched_search_help">Titre, « artiste - titre » ou le lien du morceau</string>
+    <string name="search_open_in">Ouvrir dans %1$s</string>
+    <string name="search_paste_link">Coller le lien</string>
+    <string name="search_clipboard_empty">Le presse-papiers ne contient pas de lien. Copiez le lien du morceau dans l\'application, puis touchez Coller le lien.</string>
     <string name="link_other_service">Ce lien n\'est pas un morceau de %1$s</string>
     <string name="link_track_unknown">Morceau du lien</string>
     <string name="search_album_section">De l\'album « %1$s » sur %2$s · %3$d morceaux</string>
