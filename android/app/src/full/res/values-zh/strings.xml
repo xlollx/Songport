@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GitHub and F-Droid build: the built-in web connectors also keep the service's web session. -->
+<resources>
+    <string name="security_fact_2">Songport 只保存可撤销的访问令牌，以及内置网页连接器所需的服务会话，全部使用 Android Keystore 加密。</string>
+    <string name="onboarding_security">你在各服务自己的页面上登录。Songport 只在这部手机上保存经过加密、可撤销的令牌或网页会话，并且没有自己的服务器。</string>
+</resources>

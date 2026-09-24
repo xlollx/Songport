@@ -88,7 +88,12 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         val scheduled = inputData.getBoolean(KEY_SCHEDULED, false)
         val ctx = applicationContext
         val store = Store.get(ctx)
-        val jobs = if (jobId == ALL) store.data.jobs.filter { it.enabled } else listOfNotNull(store.job(jobId))
+        val batch = inputData.getStringArray(KEY_JOBS)
+        val jobs = when {
+            batch != null -> batch.mapNotNull { store.job(it) }
+            jobId == ALL -> store.data.jobs.filter { it.enabled }
+            else -> listOfNotNull(store.job(jobId))
+        }
         val engine = SyncEngine(ctx)
         // Rete ancora assente al risveglio: non e' un esito della sync, la si rimette in coda.
         var retryLater = false
@@ -181,6 +186,8 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         const val KEY_JOB = "job"
         const val KEY_SCHEDULED = "scheduled"
         const val ALL = "*"
+        /** Several syncs run one after another in a single worker (a batch transfer). */
+        const val KEY_JOBS = "jobs"
     }
 }
 
@@ -225,5 +232,19 @@ object Scheduler {
             .addTag("sync")
             .build()
         WorkManager.getInstance(ctx).enqueueUniqueWork("run-$jobId", ExistingWorkPolicy.KEEP, req)
+    }
+
+    /**
+     * Several syncs in a row, in one worker: a batch transfer of many playlists would otherwise
+     * start them all at once and hit the services' rate limits together.
+     */
+    fun runInSequence(ctx: Context, jobIds: List<String>) {
+        if (jobIds.isEmpty()) return
+        val batchId = "batch-" + java.util.UUID.randomUUID()
+        val req = OneTimeWorkRequestBuilder<SyncWorker>()
+            .setInputData(workDataOf(SyncWorker.KEY_JOB to batchId, SyncWorker.KEY_JOBS to jobIds.toTypedArray(), SyncWorker.KEY_SCHEDULED to false))
+            .addTag("sync")
+            .build()
+        WorkManager.getInstance(ctx).enqueueUniqueWork("run-$batchId", ExistingWorkPolicy.KEEP, req)
     }
 }

@@ -1,9 +1,8 @@
 package com.xlollx.songport.ui
 
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -21,6 +20,7 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -53,8 +53,6 @@ import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.sync.Tools
 import com.xlollx.songport.providers.LocalFilesProvider
-import com.xlollx.songport.sync.CsvCodec
-import com.xlollx.songport.sync.PlaylistFiles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -62,7 +60,7 @@ import kotlinx.coroutines.withContext
 /** Strumenti che altrove stanno dietro un abbonamento: backup completo e pulizia dei duplicati. */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}) {
+fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
@@ -82,6 +80,8 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}) {
             }
         }
         ExportCard(provider, snackbar)
+        MakePlaylistCard(provider, snackbar)
+        TransferCard(onOpen = onTransfer)
         BackupCard(provider, snackbar)
         DedupeCard(provider, snackbar)
     }
@@ -118,10 +118,7 @@ private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
         scope.launch {
             try {
                 val tracks = provider.tracks(ctx, pl.id)
-                val text = when (fmt) {
-                    LocalFilesProvider.Export.CSV -> CsvCodec.encode(tracks)
-                    LocalFilesProvider.Export.M3U -> PlaylistFiles.toM3u(tracks)
-                }
+                val text = fmt.encode(pl.name, tracks)
                 withContext(Dispatchers.IO) {
                     ctx.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { it.write(text) }
                 }
@@ -132,9 +129,7 @@ private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
             busy = false
         }
     }
-    val csvLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(LocalFilesProvider.Export.CSV.mime)) { write(it) }
-    val m3uLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(LocalFilesProvider.Export.M3U.mime)) { write(it) }
-    fun fileName(pl: Playlist, ext: String) = pl.name.replace(Regex("[\\\\/:*?\"<>|]"), "_").ifBlank { "playlist" } + "." + ext
+    val export = rememberPlaylistExporter { uri, _ -> write(uri) }
 
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
@@ -167,15 +162,29 @@ private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 if (busy) { CircularProgressIndicator(Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)) }
                 val pl = selected
-                OutlinedButton(enabled = !busy && pl != null, onClick = {
-                    pendingFormat = LocalFilesProvider.Export.CSV
-                    csvLauncher.launch(fileName(pl!!, "csv"))
-                }) { Text(stringResource(R.string.tools_export_csv)) }
-                Spacer(Modifier.width(8.dp))
-                Button(enabled = !busy && pl != null, onClick = {
-                    pendingFormat = LocalFilesProvider.Export.M3U
-                    m3uLauncher.launch(fileName(pl!!, "m3u8"))
-                }) { Text(stringResource(R.string.tools_export_m3u)) }
+                var formats by remember { mutableStateOf(false) }
+                Box {
+                    Button(enabled = !busy && pl != null, onClick = { formats = true }) { Text(stringResource(R.string.tools_export_save)) }
+                    DropdownMenu(expanded = formats, onDismissRequest = { formats = false }) {
+                        ExportMenuItems { fmt -> formats = false; pendingFormat = fmt; export(fmt, pl!!.name) }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Molte playlist da un servizio a un altro in un colpo: apre la schermata di scelta. */
+@Composable
+private fun TransferCard(onOpen: () -> Unit) {
+    Card(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Text(stringResource(R.string.tools_transfer_title), style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(6.dp))
+            Text(stringResource(R.string.tools_transfer_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(10.dp))
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = onOpen) { Text(stringResource(R.string.tools_transfer_open)) }
             }
         }
     }

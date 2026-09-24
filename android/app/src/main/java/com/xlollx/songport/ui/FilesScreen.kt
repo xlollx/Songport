@@ -89,8 +89,7 @@ fun FilesScreen(onClose: () -> Unit) {
             snackbar.showSnackbar(ctx.getString(R.string.csv_exported))
         }
     }
-    val csvLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(LocalFilesProvider.Export.CSV.mime)) { writeExport(it, LocalFilesProvider.Export.CSV) }
-    val m3uLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(LocalFilesProvider.Export.M3U.mime)) { writeExport(it, LocalFilesProvider.Export.M3U) }
+    val export = rememberPlaylistExporter { uri, format -> writeExport(uri, format) }
 
     val filtered = lists.filter { query.isBlank() || it.name.contains(query.trim(), ignoreCase = true) }
     // Backups group under their service, then by playlist: the newest version is the row, the
@@ -145,7 +144,7 @@ fun FilesScreen(onClose: () -> Unit) {
                         Column {
                             FileRow(
                                 title = latest.title, entry = latest,
-                                onExport = { format -> exporting = latest.id; if (format == LocalFilesProvider.Export.CSV) csvLauncher.launch(latest.name + ".csv") else m3uLauncher.launch(latest.name + ".m3u8") },
+                                onExport = { format -> exporting = latest.id; export(format, latest.name) },
                                 onDelete = { LocalFilesProvider.delete(ctx, latest.id); version++ },
                             )
                             if (versions.size > 1) {
@@ -159,7 +158,7 @@ fun FilesScreen(onClose: () -> Unit) {
                                 if (open) versions.drop(1).forEach { v ->
                                     FileRow(
                                         title = null, entry = v,
-                                        onExport = { format -> exporting = v.id; if (format == LocalFilesProvider.Export.CSV) csvLauncher.launch(v.name + ".csv") else m3uLauncher.launch(v.name + ".m3u8") },
+                                        onExport = { format -> exporting = v.id; export(format, v.name) },
                                         onDelete = { LocalFilesProvider.delete(ctx, v.id); version++ },
                                     )
                                 }
@@ -187,8 +186,7 @@ private fun FileRow(title: String?, entry: LocalFilesProvider.Entry, onExport: (
         Box {
             IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, stringResource(R.string.csv_export)) }
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                DropdownMenuItem(text = { Text(stringResource(R.string.csv_export_csv)) }, onClick = { menu = false; onExport(LocalFilesProvider.Export.CSV) })
-                DropdownMenuItem(text = { Text(stringResource(R.string.csv_export_m3u)) }, onClick = { menu = false; onExport(LocalFilesProvider.Export.M3U) })
+                ExportMenuItems { menu = false; onExport(it) }
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },
                     onClick = { menu = false; onDelete() },

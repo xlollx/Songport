@@ -1,1 +1,1 @@
-Screenshots of the app. The security notes now also mention the web sessions the built-in connectors keep, encrypted like the tokens.
+Screenshots of the app. Spanish, Chinese and Japanese. Tools: transfer many playlists at once, and copy, merge, split, sort or shuffle playlists into a new one. Export also as XSPF, JSPF or plain text. The security notes now also mention the web sessions the built-in connectors keep, encrypted like the tokens.

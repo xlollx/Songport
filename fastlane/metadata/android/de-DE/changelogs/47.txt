@@ -1,1 +1,1 @@
-Screenshots der App. Die Sicherheitshinweise nennen jetzt auch die Web-Sitzungen der eingebauten Connectoren, verschlüsselt wie die Tokens.
+Screenshots der App. Spanisch, Chinesisch und Japanisch. Werkzeuge: viele Playlists auf einmal übertragen, und Playlists in eine neue kopieren, zusammenführen, teilen, sortieren oder mischen. Export auch als XSPF, JSPF oder Text. Die Sicherheitshinweise nennen jetzt auch die Web-Sitzungen der eingebauten Connectoren, verschlüsselt wie die Tokens.

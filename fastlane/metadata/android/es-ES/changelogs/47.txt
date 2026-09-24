@@ -1,0 +1,1 @@
+Capturas de pantalla de la app. Español, chino y japonés. Herramientas: transfiere muchas playlists de una vez, y copia, une, divide, ordena o mezcla playlists en una nueva. Exportación también en XSPF, JSPF o texto. Las notas de seguridad mencionan también las sesiones web que guardan los conectores integrados, cifradas como los tokens.

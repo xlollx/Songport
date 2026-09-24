@@ -75,4 +75,35 @@ object Tools {
         }
         return removed
     }
+
+    data class Created(val playlist: com.xlollx.songport.model.Playlist, val added: Int, val failed: List<String>)
+
+    /**
+     * Crea una playlist nuova sul servizio e ci mette [tracks] nell'ordine dato. Blocchi da 50 come
+     * nella sync; un blocco rifiutato si ritenta brano per brano, cosi' un id non piu' valido non
+     * fa perdere gli altri 49.
+     */
+    suspend fun createWith(
+        ctx: Context, provider: MusicProvider, name: String, description: String, tracks: List<Track>,
+        onProgress: (Progress) -> Unit = {},
+    ): Created {
+        if (!provider.canWrite || !provider.canCreatePlaylists) {
+            throw ProviderException(ctx.getString(com.xlollx.songport.R.string.tools_make_cannot_create, provider.displayName))
+        }
+        val pl = provider.createPlaylist(ctx, name, description)
+        var added = 0
+        val failed = ArrayList<String>()
+        for (chunk in tracks.chunked(50)) {
+            onProgress(Progress(Progress.Step.ADDING, added, tracks.size))
+            try {
+                provider.addTracks(ctx, pl.id, chunk); added += chunk.size
+            } catch (e: Exception) {
+                for (t in chunk) {
+                    try { provider.addTracks(ctx, pl.id, listOf(t)); added++ } catch (e2: Exception) { failed += "$t (${e2.message})" }
+                }
+            }
+        }
+        onProgress(Progress(Progress.Step.ADDING, added, tracks.size))
+        return Created(pl, added, failed)
+    }
 }

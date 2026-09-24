@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Google Play build: plugin-based services are described generically, with no name and no link. -->
+<resources>
+    <string name="provider_note_ytm">通过连接器插件访问 YouTube Music。连接器插件是单独安装的应用，实现了 Songport 的开放连接器接口。Songport 不包含、不下载也不安装插件；只有在你已安装插件时才会使用。</string>
+    <string name="ytm_not_installed_hint">此服务需要一个尚未安装的连接器插件应用。Songport 不包含也不下载插件。</string>
+    <string name="ytm_not_installed">未安装连接器插件。</string>
+    <string name="ytm_install">需要插件</string>
+    <string name="provider_note_amazon">通过连接器插件访问 Amazon Music。连接器插件是单独安装的应用，实现了 Songport 的开放连接器接口。插件支持歌单、搜索、创建、添加和移除。</string>
+    <string name="amazon_not_installed_hint">此服务需要一个尚未安装的连接器插件应用。Songport 不包含也不下载插件。</string>
+    <string name="provider_note_spotify_bridge">通过保存 Spotify 登录状态的连接器插件访问 Spotify；这是使用你自己开发者密钥的官方途径之外的另一种选择，官方途径仍以“Spotify”的形式提供。</string>
+    <string name="provider_note_apple_bridge">通过保存 Apple ID 登录状态的连接器插件访问 Apple Music；这是使用你自己开发者令牌的官方途径之外的另一种选择，官方途径仍以“Apple Music”的形式提供。</string>
+    <string name="bridge_needed_hint">此服务需要一个尚未安装的连接器插件应用。Songport 不包含也不下载插件。</string>
+    <string name="plugins_more">可以通过连接器插件添加更多服务。连接器插件是实现了 Songport 开放连接器接口的独立应用。详情请参阅项目文档。</string>
+</resources>

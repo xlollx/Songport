@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Google Play build: plugin-based services are described generically, with no name and no link. -->
+<resources>
+    <string name="provider_note_ytm">YouTube Music a través de un plugin de conector, una app instalada por separado que implementa la interfaz abierta de conectores de Songport. Songport no incluye, descarga ni instala plugins; solo usa uno si ya lo tienes.</string>
+    <string name="ytm_not_installed_hint">Este servicio necesita una app de plugin de conector que no está instalada. Songport no incluye ni descarga plugins.</string>
+    <string name="ytm_not_installed">El plugin de conector no está instalado.</string>
+    <string name="ytm_install">Requiere un plugin</string>
+    <string name="provider_note_amazon">Amazon Music a través de un plugin de conector, una app instalada por separado que implementa la interfaz abierta de conectores de Songport. El plugin admite playlists, búsqueda, crear, añadir y quitar.</string>
+    <string name="amazon_not_installed_hint">Este servicio necesita una app de plugin de conector que no está instalada. Songport no incluye ni descarga plugins.</string>
+    <string name="provider_note_spotify_bridge">Spotify a través de un plugin de conector que guarda el inicio de sesión de Spotify; una alternativa a la vía oficial con tu propia clave de desarrollador, que sigue disponible como \"Spotify\".</string>
+    <string name="provider_note_apple_bridge">Apple Music a través de un plugin de conector que guarda el inicio de sesión con tu Apple ID; una alternativa a la vía oficial con tu propio token de desarrollador, que sigue disponible como \"Apple Music\".</string>
+    <string name="bridge_needed_hint">Este servicio necesita una app de plugin de conector que no está instalada. Songport no incluye ni descarga plugins.</string>
+    <string name="plugins_more">Se pueden añadir más servicios con plugins de conectores, apps independientes que implementan la interfaz abierta de conectores de Songport. Más detalles en la documentación del proyecto.</string>
+</resources>

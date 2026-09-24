@@ -98,14 +98,24 @@ object LocalFilesProvider : MusicProvider {
     enum class Export(val mime: String, val extension: String) {
         CSV("text/csv", "csv"),
         M3U("audio/x-mpegurl", "m3u8"),
+        JSPF("application/json", "jspf"),
+        XSPF("application/xspf+xml", "xspf"),
+        TXT("text/plain", "txt"),
+        ;
+
+        /** Il testo del file in questo formato; [name] serve ai formati che hanno un titolo. */
+        fun encode(name: String, tracks: List<Track>): String = when (this) {
+            CSV -> CsvCodec.encode(tracks)
+            M3U -> PlaylistFiles.toM3u(tracks)
+            JSPF -> PlaylistFiles.toJspf(name, tracks)
+            XSPF -> PlaylistFiles.toXspf(name, tracks)
+            TXT -> PlaylistFiles.toText(tracks)
+        }
     }
 
     fun exportText(ctx: Context, playlistId: String, format: Export): String {
         val tracks = file(ctx, playlistId).takeIf { it.exists() }?.readText()?.let { CsvCodec.parse(it) } ?: emptyList()
-        return when (format) {
-            Export.CSV -> CsvCodec.encode(tracks)
-            Export.M3U -> PlaylistFiles.toM3u(tracks)
-        }
+        return format.encode(playlistId, tracks)
     }
 
     fun delete(ctx: Context, playlistId: String) { file(ctx, playlistId).delete() }

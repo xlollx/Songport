@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Songport</string>
+
+    <string name="tab_syncs">同步</string>
+    <string name="tab_accounts">账号</string>
+    <string name="tab_log">日志</string>
+    <string name="tab_settings">设置</string>
+
+    <string name="syncs_empty">还没有同步任务。\n\n请先在“账号”中连接至少一个服务（或使用 CSV 文件），然后点按 + 创建第一个同步任务。</string>
+    <string name="sync_all">立即全部同步</string>
+    <string name="run_now">立即运行</string>
+    <string name="edit">编辑</string>
+    <string name="delete">删除</string>
+    <string name="new_sync">新建同步</string>
+    <string name="disabled">已停用</string>
+
+    <string name="schedule_manual">仅手动</string>
+    <string name="schedule_hourly">每小时</string>
+    <string name="schedule_6h">每 6 小时</string>
+    <string name="schedule_daily">每天</string>
+    <string name="schedule_weekly">每周</string>
+
+    <string name="last_run_never">从未运行</string>
+    <string name="last_run_at">上次运行：%1$s</string>
+    <string name="result_added_removed">添加 %1$d 首，移除 %2$d 首</string>
+    <string name="result_unmatched">%1$d 首未找到</string>
+    <string name="result_error">错误：%1$s</string>
+    <string name="result_ok">已是最新</string>
+
+    <string name="running">正在同步…</string>
+    <string name="progress_fetch_source">正在读取来源歌单…</string>
+    <string name="progress_create_target">正在创建目标歌单…</string>
+    <string name="progress_fetch_target">正在读取目标歌单…</string>
+    <string name="progress_matching">正在匹配歌曲 %1$d/%2$d…</string>
+    <string name="progress_waiting">服务正在限制请求频率：%1$d 秒后继续。歌单较大时属正常现象，并非错误。</string>
+    <string name="progress_adding">正在添加 %1$d 首歌曲…</string>
+    <string name="progress_removing">正在移除 %1$d 首歌曲…</string>
+
+    <string name="editor_title_new">新建同步</string>
+    <string name="editor_title_edit">编辑同步</string>
+    <string name="editor_name">名称</string>
+    <string name="editor_source">来源</string>
+    <string name="editor_target">目标</string>
+    <string name="editor_provider">服务</string>
+    <string name="editor_playlist">歌单</string>
+    <string name="editor_choose_playlist">选择歌单</string>
+    <string name="editor_new_playlist">新建歌单</string>
+    <string name="editor_new_playlist_name">新歌单名称</string>
+    <string name="editor_schedule">自动计划</string>
+    <string name="editor_mirror">同步删除</string>
+    <string name="editor_mirror_desc">同时从目标中移除来源里已不存在的歌曲。关闭则只添加。</string>
+    <string name="editor_wifi_only">仅限 Wi‑Fi</string>
+    <string name="editor_enabled">已启用</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="loading">正在加载…</string>
+    <string name="no_connected_providers">请先在“账号”标签页中连接至少一个服务。</string>
+    <string name="liked_songs">喜欢的歌曲</string>
+    <string name="tracks_count">%1$d 首歌曲</string>
+    <string name="editor_error_incomplete">请选择来源歌单和目标。</string>
+
+    <string name="connected_as">已连接为 %1$s</string>
+    <string name="not_connected">未连接</string>
+    <string name="not_configured">需要设置</string>
+    <string name="not_configured_hint">Songport 不自带任何服务密钥。请在该服务的开发者页面免费创建自己的密钥：大约只需两分钟，应用会一步步引导你。</string>
+    <string name="setup_now">设置</string>
+    <string name="connect">连接</string>
+    <string name="disconnect">断开连接</string>
+    <string name="connecting">正在连接…</string>
+    <string name="always_available">始终可用</string>
+
+    <string name="provider_note_spotify">需要 Spotify 账号。支持歌单和“喜欢的歌曲”。</string>
+    <string name="provider_note_ytm">通过网页播放器自身的接口访问 YouTube Music 歌单和点赞，已内置于此版本：使用 Google 账号登录即可，无需 Google Cloud 项目，没有配额限制。这不是 Google 官方 API：登录前请阅读显示的说明。</string>
+    <string name="ytm_not_installed_hint">请从 GitHub 安装配套应用“Songport YTM Bridge”，然后回到这里点按“连接”。更想用官方途径？请使用下方的“YouTube Music (Google API)”卡片。</string>
+    <string name="ytm_not_installed">未安装 Songport YTM Bridge。</string>
+    <string name="ytm_install">获取 Bridge</string>
+    <string name="report_issue">在 GitHub 上报告</string>
+    <string name="provider_note_youtube">官方 YouTube Data API，需要你自己的 Google Cloud 项目。可选：上方普通的“YouTube Music”卡片无需它也能使用。每日配额有限：大型同步可能需要好几天。</string>
+    <string name="provider_note_tidal">TIDAL 歌单（测试版）。</string>
+    <string name="provider_note_deezer">Deezer 歌单和收藏（测试版）。</string>
+
+    <string name="log_empty">尚未运行过任何同步。</string>
+    <string name="log_unmatched_title">目标中未找到的歌曲</string>
+    <string name="log_duration">%1$d 秒</string>
+
+    <string name="settings_notifications">每次同步后通知</string>
+    <string name="settings_notifications_desc">当计划同步添加或移除歌曲，或同步失败时显示通知。</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_language_desc">Songport 跟随系统语言：英语、意大利语、法语、德语、西班牙语、中文、日语。</string>
+    <string name="settings_language_open">更改</string>
+    <string name="settings_language_system">系统语言</string>
+    <string name="settings_advanced">服务密钥</string>
+    <string name="settings_advanced_desc">Songport 不自带密钥：Spotify、YouTube Music、TIDAL、Deezer、Last.fm 和 Apple Music 通过以你的名义免费创建的密钥连接，因此它们的限制和配额只属于你。你可以在这里查看和更改这些密钥。</string>
+    <string name="settings_privacy_options">广告隐私选项</string>
+    <string name="settings_privacy_policy">隐私政策</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_version">版本 %1$s</string>
+    <string name="settings_ads_note">Songport 免费，无订阅。它依靠一个小横幅广告维持；不出售任何数据，除了向你连接的音乐服务发送的请求外，没有任何数据离开你的手机。</string>
+    <string name="settings_csv">文件</string>
+    <string name="csv_import">导入文件</string>
+    <string name="csv_export">导出</string>
+    <string name="csv_playlists_hint">文件歌单保存在应用内。在这里导入文件，然后将其用作同步来源；或者把任意歌单同步到文件，再导出为 CSV 或 M3U。</string>
+    <string name="csv_empty">还没有文件歌单。</string>
+    <string name="csv_imported">已导入 %1$d 首歌曲</string>
+    <string name="csv_exported">文件已导出</string>
+    <string name="log_save_file">另存为文件…</string>
+    <string name="note_file_target">已保存在 Songport 内：可在此处使用“另存为文件”，或前往“设置 → 文件”，获取 CSV 或 M3U 文件。</string>
+
+    <string name="auth_done">已连接到 %1$s</string>
+    <string name="auth_failed">登录失败：%1$s</string>
+    <string name="auth_state_mismatch">安全检查失败（state 不匹配）。请重试。</string>
+    <string name="auth_wait">正在完成登录…</string>
+    <string name="auth_no_pending">没有正在进行的登录。</string>
+
+    <string name="notif_channel_name">同步结果</string>
+    <string name="notif_channel_desc">计划歌单同步的结果。</string>
+    <string name="notif_sync_title">同步：%1$s</string>
+
+    <string name="delete_confirm_title">删除此同步任务？</string>
+    <string name="delete_confirm_text">服务上的歌单不会受到影响。</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="ok">确定</string>
+
+    <string name="error_not_connected">%1$s 未连接</string>
+    <string name="error_source_empty">来源歌单为空：无需操作（为安全起见已跳过移除）。</string>
+    <string name="error_generic">出了点问题</string>
+
+    <string name="provider_note_apple">你资料库中的 Apple Music 歌单。需要订阅和 MusicKit 开发者令牌。Apple 的 API 可以添加歌曲，但无法移除。</string>
+    <string name="provider_note_files">本地文件：导入从任意服务导出的歌单（CSV、M3U、Apple Music/iTunes XML、JSON 或纯文本列表），并同步到任何地方。这是连接没有开放 API 的服务的桥梁：Amazon Music、Qobuz、SoundCloud。</string>
+    <string name="apple_token_missing">还没有 Apple Music 开发者令牌。请在“账号 → Apple Music → 设置”中填写你的令牌。</string>
+    <string name="link_paste">或粘贴公开歌单链接</string>
+    <string name="link_use">使用链接</string>
+    <string name="link_invalid">无法识别该链接。支持：Spotify、Apple Music、YouTube/YouTube Music、Deezer、TIDAL。</string>
+    <string name="link_not_connected">请先连接 %1$s 才能读取此链接。</string>
+    <string name="link_resolving">正在读取歌单…</string>
+    <string name="note_no_removals">%1$s 的 API 不允许从歌单中移除歌曲：已保留 %2$d 首歌曲。</string>
+    <string name="note_removals_deferred">移除已推迟：搜索尚未完成，因此目标中暂未匹配的 %1$d 首歌曲已保留。完整运行一次后会重新检查它们。</string>
+    <string name="note_search_interrupted">已搜索 %2$d 首中的 %1$d 首，随后服务要求更长的暂停（%3$s）。这是服务的限制，不是 Songport 的错误：已找到的结果已应用并记住。几分钟后再次运行同步即可从此处继续。</string>
+    <string name="error_no_removals">%1$s 无法从歌单中移除歌曲</string>
+    <string name="log_notes_title">备注</string>
+    <string name="editor_mirror_unsupported">%1$s 只能添加歌曲：将跳过移除。</string>
+
+    <string name="setup_cta">更改密钥</string>
+    <string name="setup_title">%1$s：你的密钥</string>
+    <string name="setup_using_own">已使用你的密钥配置。</string>
+    <string name="setup_redirect_label">要粘贴到控制台的重定向 URI</string>
+    <string name="setup_copy">复制</string>
+    <string name="setup_copied">已复制</string>
+    <string name="setup_open_step">打开</string>
+    <string name="setup_open_dashboard">打开开发者门户</string>
+    <string name="setup_save_connect">保存并连接</string>
+    <string name="setup_save">保存</string>
+    <string name="setup_clear">移除我的凭据</string>
+    <string name="setup_field_required">请填写所有字段。</string>
+    <string name="setup_field_client_id">Client ID</string>
+    <string name="setup_field_app_id">Application ID</string>
+    <string name="setup_field_secret">Client secret</string>
+    <string name="setup_field_redirect_url">你的 https 重定向 URL</string>
+    <string name="setup_field_apple_token">开发者令牌（JWT）</string>
+    <string name="setup_why_spotify">Spotify 要求以你的名义注册一个应用。注册免费；处于开发模式（Development Mode）的应用最多可供 5 个账号使用，个人使用绰绰有余。</string>
+    <string name="setup_why_youtube">使用 YouTube API 时，Google 要求以你的名义创建一个 Cloud 项目。项目免费，每日配额只属于你。</string>
+    <string name="setup_why_tidal">TIDAL 要求以你的名义注册一个应用。注册免费。</string>
+    <string name="setup_why_deezer">Deezer 需要以你的名义注册一个应用。https 重定向页面由本项目提供。</string>
+    <string name="setup_why_apple">开发者令牌属于你的 Apple Developer 账号，最长六个月后过期。</string>
+    <string name="error_dev_mode_limit">%1$s 每个应用只允许少数几个用户。请设置你自己的凭据：免费，大约只需两分钟。</string>
+    <string name="error_network">手机无法连接到该服务（DNS 解析失败）。请检查网络连接、VPN 或私人 DNS，并确认允许 Songport 在后台使用数据，然后重试。</string>
+    <string name="auth_timeout">浏览器没有响应，已超时</string>
+
+    <string name="tab_tools">工具</string>
+    <string name="preview">预览</string>
+    <string name="preview_title">预览：%1$s</string>
+    <string name="preview_computing">正在计算将发生的变化…</string>
+    <string name="preview_present">%1$d 首已在目标中</string>
+    <string name="preview_add">%1$d 首待添加</string>
+    <string name="preview_remove">%1$d 首待移除</string>
+    <string name="preview_unmatched">%1$d 首未找到</string>
+    <string name="preview_ignored">%1$d 首已忽略</string>
+    <string name="preview_target_new">将创建目标歌单。</string>
+    <string name="preview_nothing">无需操作：歌单已同步。</string>
+    <string name="preview_more">…还有 %1$d 首</string>
+    <string name="unmatched_resolve">处理未找到的歌曲</string>
+    <string name="unmatched_title">未找到：%1$s</string>
+    <string name="unmatched_search_hint">在 %1$s 上搜索</string>
+    <string name="unmatched_search">搜索</string>
+    <string name="unmatched_add">添加</string>
+    <string name="unmatched_ignore">忽略</string>
+    <string name="unmatched_none">全部处理完毕。</string>
+    <string name="files_title">文件歌单</string>
+    <string name="files_summary">%1$d 个歌单 · %2$d 首歌曲</string>
+    <string name="files_manage">管理</string>
+    <string name="files_search">搜索</string>
+    <string name="files_group_other">其他</string>
+    <string name="review_now">%1$d 首待处理 · 立即开始</string>
+    <string name="review_summary">%1$d 首未找到 · %2$d 首待核对</string>
+    <string name="review_tap_hint">点按一下即可接受建议，或打开某首歌曲在 %1$s 上搜索。每次选择都会被记住，用于之后的同步。</string>
+    <string name="review_partial_banner">同步仍在添加已找到的歌曲。你现在就可以处理这些歌曲。</string>
+    <string name="unmatched_added">已添加：%1$s</string>
+    <string name="unmatched_no_results">没有结果。</string>
+    <string name="unmatched_search_help">标题、“艺人 - 标题”或歌曲链接</string>
+    <string name="search_open_in">在 %1$s 中打开</string>
+    <string name="search_paste_link">粘贴链接</string>
+    <string name="search_clipboard_empty">剪贴板中没有链接。请先在应用中复制歌曲链接，再点按“粘贴链接”。</string>
+    <string name="link_other_service">此链接不是 %1$s 的歌曲</string>
+    <string name="link_track_unknown">来自链接的歌曲</string>
+    <string name="search_album_section">来自 %2$s 上的专辑“%1$s” · %3$d 首歌曲</string>
+    <string name="search_album_missing">在 %2$s 上未找到专辑“%1$s”</string>
+    <string name="search_other_results">其他结果</string>
+    <string name="search_videos_section">YouTube 视频 · %1$d</string>
+    <string name="search_top">最可能</string>
+    <string name="search_suggested">建议</string>
+    <string name="search_tag_album">专辑</string>
+    <string name="search_tag_video">视频</string>
+    <string name="result_ignored">%1$d 首已忽略</string>
+    <string name="tools_pick_service">服务</string>
+    <string name="tools_none">请先连接一个服务。</string>
+    <string name="spotify_forbidden">Spotify 拒绝了请求（%1$s）。处于开发模式（Development Mode）的应用无法读取 Spotify 官方制作的歌单（Discover Weekly、Release Radar、编辑精选），并且只服务于应用“User Management”中列出的账号。请选择你或其他用户创建的歌单，或在 developer.spotify.com 上添加该账号。</string>
+    <string name="tools_export_title">导出歌单</string>
+    <string name="tools_export_desc">将此服务的任意歌单保存为手机上的文件（CSV、M3U、XSPF、JSPF 或纯文本），不会更改服务上的任何内容。</string>
+    <string name="tools_export_done">已导出 %1$d 首歌曲</string>
+    <string name="tools_backup_title">完整备份</string>
+    <string name="tools_backup_desc">将所有歌单（以及喜欢的歌曲）保存为“文件”页面中的文件，可随时导出为 CSV 或 M3U。每次运行都会新增一个带日期的版本；每个歌单保留最近 %1$d 个版本，未发生变化的歌单不会重复写入。不会更改服务上的任何内容。</string>
+    <string name="tools_backup_run">立即备份</string>
+    <string name="tools_backup_done">已保存 %1$d 个歌单、%2$d 首歌曲</string>
+    <string name="tools_backup_unchanged">%1$d 个未变化</string>
+    <string name="files_hide_versions">隐藏较早的版本</string>
+    <plurals name="files_versions">
+        <item quantity="other">%d 个较早的版本</item>
+    </plurals>
+    <string name="tools_dedupe_title">移除重复项</string>
+    <string name="tools_dedupe_desc">查找在歌单中出现两次的歌曲（即使 ID 或版本不同），并保留第一份。</string>
+    <string name="tools_dedupe_scan">查找重复项</string>
+    <string name="tools_dedupe_found">%1$d 组重复，%2$d 首歌曲待移除</string>
+    <string name="tools_dedupe_none">没有重复项。</string>
+    <string name="tools_dedupe_remove">移除 %1$d 首歌曲</string>
+    <string name="tools_dedupe_done">已移除 %1$d 首歌曲</string>
+    <string name="tools_progress_backup">正在备份 %1$d/%2$d…</string>
+    <string name="tools_progress_dedupe">正在清理 %1$d/%2$d…</string>
+    <string name="export_format">导出为 %1$s</string>
+    <string name="format_text">文本</string>
+    <string name="tools_export_save">保存为…</string>
+    <string name="tools_make_title">从…新建歌单</string>
+    <string name="tools_make_desc">复制、合并、拆分、排序或打乱歌单。结果始终是此服务上的一个新歌单，原歌单不会被改动。</string>
+    <string name="tools_make_copy">复制</string>
+    <string name="tools_make_merge">合并</string>
+    <string name="tools_make_split">拆分</string>
+    <string name="tools_make_sort">排序</string>
+    <string name="tools_make_shuffle">打乱</string>
+    <string name="tools_make_add_playlist">添加歌单</string>
+    <string name="tools_make_drop_duplicates">跳过重复项</string>
+    <string name="tools_make_split_size">每部分歌曲数</string>
+    <string name="tools_make_sort_artist">按艺人</string>
+    <string name="tools_make_sort_title">按标题</string>
+    <string name="tools_make_sort_album">按专辑</string>
+    <string name="tools_make_sort_reverse">倒序</string>
+    <string name="tools_make_run">创建</string>
+    <string name="tools_make_done">已创建“%1$s”，共 %2$d 首歌曲</string>
+    <string name="tools_make_done_parts">已创建 %1$d 个歌单，共 %2$d 首歌曲</string>
+    <string name="tools_make_failed">%1$d 首歌曲无法添加</string>
+    <string name="tools_make_cannot_create">%1$s 无法在此创建歌单。</string>
+    <string name="tools_make_copy_suffix">%1$s（副本）</string>
+    <string name="tools_make_merge_default">合并的歌单</string>
+    <string name="tools_make_sorted_suffix">%1$s（已排序）</string>
+    <string name="tools_make_shuffled_suffix">%1$s（已打乱）</string>
+    <string name="tools_make_part_name">%1$s · 第 %2$d 部分</string>
+    <string name="tools_progress_make">正在添加 %1$d/%2$d…</string>
+    <string name="tools_transfer_title">批量转移歌单</string>
+    <string name="tools_transfer_desc">选择一个服务上的多个歌单，全部发送到另一个服务：每个歌单一个同步任务，依次创建并运行。它们会保留在“同步”中，方便再次运行或设置计划。</string>
+    <string name="tools_transfer_open">选择歌单</string>
+    <string name="transfer_title">转移歌单</string>
+    <string name="transfer_from">从</string>
+    <string name="transfer_to">到</string>
+    <string name="transfer_select_all">全选</string>
+    <string name="transfer_select_none">清除</string>
+    <string name="transfer_existing">已有同步任务</string>
+    <string name="transfer_same_service">请选择两个不同的服务。</string>
+    <string name="transfer_none">此服务上没有歌单。</string>
+    <plurals name="transfer_run">
+        <item quantity="other">转移 %1$d 个歌单</item>
+    </plurals>
+    <string name="transfer_started">已创建并启动 %1$d 个同步任务：请在“同步”中查看。</string>
+    <string name="settings_battery">计划同步没有运行？</string>
+    <string name="settings_battery_desc">部分手机（小米、华为、OPPO、三星）会停止后台应用。请将 Songport 排除在电池优化之外，以确保按计划运行。</string>
+    <string name="settings_battery_button">打开电池设置</string>
+    <string name="share_received">已收到链接：请选择要同步到哪里。</string>
+    <string name="share_invalid">分享的文本中没有可识别的歌单链接。</string>
+    <string name="read_only">只读</string>
+    <string name="beta">测试版</string>
+    <string name="beta_note">测试版连接器：可以正常使用，但使用经验少于其他连接器。如果出现问题，请报告给我们。</string>
+    <string name="provider_note_subsonic">你自己的音乐服务器：Navidrome、Airsonic、Gonic、LMS、Funkwhale 以及任何支持 Subsonic API 的服务器。无需注册，没有配额。加星标的歌曲视为喜欢的歌曲。</string>
+    <string name="provider_note_jellyfin">你的 Jellyfin 服务器。无需注册，没有配额。收藏视为喜欢的歌曲。</string>
+    <string name="provider_note_plex">你的 Plex Media Server，需使用你的 X-Plex-Token。Plex 无法通过 API 创建空歌单：请先在 Plex 中创建，再在这里选择。</string>
+    <string name="provider_note_lastfm">Last.fm 个人资料中喜爱的歌曲，仅可作为来源。需要免费的 Last.fm API 密钥。</string>
+    <string name="provider_note_listenbrainz">ListenBrainz 用户的歌单和喜爱的歌曲，仅可作为来源。无需密钥。</string>
+    <string name="login_title">登录 %1$s</string>
+    <string name="login_url">服务器地址</string>
+    <string name="login_user">用户名</string>
+    <string name="login_password">密码</string>
+    <string name="login_token">令牌</string>
+    <string name="login_submit">检查并保存</string>
+    <string name="login_checking">正在检查…</string>
+    <string name="login_trust_server">你的凭据会加密保存在这部手机上。Songport 只与你在此输入的服务器通信。</string>
+    <string name="login_hint_subsonic">请输入你的 Navidrome、Airsonic 或其他兼容 Subsonic 的服务器地址（例如 https://music.example.com），以及用户名和密码。密码永远不会以原文发送：每个请求都使用加盐哈希。</string>
+    <string name="login_hint_jellyfin">请输入你的 Jellyfin 服务器地址（例如 https://jellyfin.example.com），以及用户名和密码。</string>
+    <string name="login_hint_plex">请输入你的 Plex Media Server 地址（例如 http://192.168.1.10:32400）和你的 X-Plex-Token。Plex 的支持页面（“Finding an authentication token”）介绍了如何找到该令牌。</string>
+    <string name="login_hint_lastfm">请输入要读取其喜爱歌曲的 Last.fm 用户名。该个人资料必须公开。</string>
+    <string name="login_hint_listenbrainz">请输入要读取其歌单和喜爱歌曲的 ListenBrainz 用户名。</string>
+    <string name="setup_why_lastfm">读取公开个人资料需要免费的 Last.fm API 密钥，可即时获取。</string>
+    <string name="setup_field_api_key">API 密钥</string>
+    <string name="error_read_only">%1$s 为只读：只能作为来源。</string>
+    <string name="error_create_unsupported">%1$s 无法通过应用创建歌单：请在 %1$s 中创建，再在这里选择。</string>
+    <string name="connect_title">正在连接 %1$s</string>
+    <string name="connect_where_oauth">你将在浏览器中登录 %1$s。Songport 永远看不到你的密码。</string>
+    <string name="connect_where_apple">你将在 Apple 自己的窗口中使用 Apple ID 登录。Songport 永远看不到你的密码。</string>
+    <string name="connect_where_server">你的服务器信息会加密保存在这部手机上。Songport 只与你的服务器通信。</string>
+    <string name="connect_token">Songport 只会获得一项有限、可撤销的权限，并加密保存在这部手机上（Android Keystore）。</string>
+    <string name="connect_noserver">Songport 没有服务器：数据只在这部手机和 %1$s 之间传输。</string>
+    <string name="connect_revoke">你可以随时撤销：在这里点按“断开连接”，或在你的 %1$s 账号中操作。</string>
+    <string name="connect_continue">继续</string>
+    <string name="connect_continue_browser">在浏览器中继续</string>
+    <string name="account_encrypted">已在此设备上加密</string>
+    <string name="account_revoke">在 %1$s 上撤销</string>
+    <string name="account_add">添加其他账号</string>
+    <string name="account_remove">移除此账号</string>
+    <string name="account_remove_blocked">请先删除使用此账号的同步任务。</string>
+    <string name="connectors_empty_title">还没有连接器</string>
+    <string name="connectors_empty_body">点按 + 添加服务：Spotify、YouTube Music、TIDAL、文件……同一服务可以添加多个连接器，每个都有自己的名称和账号。</string>
+    <string name="connector_add">添加连接器</string>
+    <string name="connector_pick_title">选择哪个服务？</string>
+    <string name="connector_name_label">连接器名称</string>
+    <string name="connector_rename">重命名</string>
+    <string name="connect_switch_account">浏览器可能已登录另一个 %1$s 账号。请在登录页面选择“不是你？”或切换账号，然后使用此连接器对应的账号继续。</string>
+    <string name="provider_note_amazon">Amazon 没有开放 API：Songport 使用网页播放器的接口，因此当 Amazon 修改接口时可能会失效。支持歌单、搜索、创建、添加和移除。</string>
+    <string name="amazon_not_installed_hint">请从 GitHub 安装或更新配套应用“Songport Bridge”（1.3.1 或更高版本），然后回到这里点按“连接”。</string>
+    <string name="sync_pause">暂停</string>
+    <string name="sync_resume">继续</string>
+    <string name="sync_stop">停止</string>
+    <string name="sync_paused">已暂停</string>
+    <string name="sync_stopped">已由你停止</string>
+    <string name="live_title">同步动态</string>
+    <string name="live_empty">尚未处理任何歌曲。</string>
+    <string name="live_found">已找到：%1$s</string>
+    <string name="live_cached">来自之前的匹配：%1$s</string>
+    <string name="live_not_found">目标中未找到</string>
+    <string name="live_added">已添加到目标</string>
+    <string name="live_add_failed">未添加：%1$s</string>
+    <string name="live_removed">已从目标中移除</string>
+    <string name="provider_note_spotify_bridge">在 Spotify 自己的页面上登录，无需创建开发者应用。使用网页播放器的会话：并非官方途径，违反 Spotify 的条款，可能随时失效。使用你自己密钥的官方途径仍以“Spotify”的形式提供。</string>
+    <string name="provider_note_apple_bridge">使用 Apple ID 登录，无需加入 Apple Developer Program。使用网页播放器的令牌：并非官方途径，违反 Apple 的条款，可能随时失效。使用你自己开发者令牌的官方途径仍以“Apple Music”的形式提供。</string>
+    <string name="bridge_needed_hint">请从 GitHub 安装或更新配套应用“Songport Bridge”（1.2 或更高版本），然后回到这里点按“连接”。</string>
+    <string name="settings_source_code">源代码和文档</string>
+    <string name="plugins_more">可以通过连接器插件添加其他服务：了解工作原理。</string>
+    <string name="security_title">你的登录信息如何受到保护</string>
+    <string name="security_fact_1">密码在各服务自己的页面上输入，绝不会在 Songport 中输入。</string>
+    <string name="security_fact_2">Songport 只保存可撤销的访问令牌，并使用 Android Keystore 加密。</string>
+    <string name="security_fact_3">没有 Songport 服务器，也无需创建账号：除了发往你所连接服务的请求外，没有任何数据离开你的手机。</string>
+    <string name="security_fact_4">断开连接会从手机上删除令牌；每个服务也都允许你在账号页面中撤销它。</string>
+    <string name="security_lock">打开时需要解锁</string>
+    <string name="security_lock_desc">打开 Songport 前需验证指纹、面容或手机 PIN 码。</string>
+    <string name="security_lock_unavailable">这部手机未设置屏幕锁定。</string>
+    <string name="lock_title">Songport 已锁定</string>
+    <string name="lock_subtitle">使用指纹、面容或 PIN 码解锁</string>
+    <string name="lock_unlock">解锁</string>
+    <string name="review_title">待检查：%1$s</string>
+    <string name="review_open">检查</string>
+    <string name="review_section_uncertain">不确定的匹配（%1$d）</string>
+    <string name="review_section_unmatched">未找到（%1$d）</string>
+    <string name="review_keep">看起来没问题</string>
+    <string name="review_change">更改</string>
+    <string name="review_use_this">使用这首</string>
+    <string name="review_score">匹配度 %1$d%%</string>
+    <string name="preview_uncertain">%1$d 首待核对</string>
+    <string name="restore_removed">恢复已移除的 %1$d 首</string>
+    <string name="restored_done">已恢复 %1$d 首歌曲</string>
+    <string name="restored_note">已手动恢复 %1$d 首被移除的歌曲。</string>
+    <string name="quota_used">今日已用 %1$s / %2$s 个 YouTube 配额单位</string>
+    <string name="quota_note">每日限额由 YouTube（Google）设定，而非 Songport。在太平洋时间午夜重置。一次搜索消耗 100 个单位，添加一首歌曲消耗 50 个。</string>
+    <string name="quota_note_shared">每日限额由 YouTube（Google）设定，而非 Songport，并由所有使用内置密钥的用户共享：其他用户的消耗不会计入此处。使用你自己的凭据可获得专属配额。</string>
+    <string name="quota_estimate">此同步大约将使用 %1$s 个单位。</string>
+    <string name="quota_estimate_over">此同步大约需要 %1$s 个单位，但今天只剩 %2$s 个：将在接下来几天内完成。</string>
+    <string name="editor_bidirectional">双向</string>
+    <string name="editor_bidirectional_desc">同时创建反方向的镜像同步（不移除歌曲），让两个歌单都保持完整。</string>
+    <string name="editor_bidirectional_unavailable">需要已有的目标歌单和可写入的来源。</string>
+    <string name="onboarding_title">欢迎使用 Songport</string>
+    <string name="onboarding_intro">让你的歌单在各音乐服务之间保持一致，可手动同步，也可按计划同步。免费，无订阅，无需创建账号。</string>
+    <string name="onboarding_step1_title">1. 连接你的服务</string>
+    <string name="onboarding_step1_desc">Spotify、Apple Music、YouTube Music、TIDAL、Deezer、你自己的服务器，或文件。</string>
+    <string name="onboarding_step2_title">2. 创建同步</string>
+    <string name="onboarding_step2_desc">选择来源歌单和目标。在任何操作发生之前，预览会准确显示将要更改的内容。</string>
+    <string name="onboarding_step3_title">3. 让它自动运行</string>
+    <string name="onboarding_step3_desc">每小时、每天或每周。无法匹配的歌曲会列出来，方便你自行处理。</string>
+    <string name="onboarding_security">你在各服务自己的页面上登录。Songport 只在这部手机上保存经过加密、可撤销的令牌，并且没有自己的服务器。</string>
+    <string name="onboarding_credentials">Songport 不自带服务密钥：对于 Spotify、YouTube Music、TIDAL 和 Deezer，你需要在服务的开发者页面免费创建密钥，应用会在大约两分钟内引导你完成。之后你的数据只在你的手机和你自己的密钥之间流转。</string>
+    <string name="onboarding_start">开始吧</string>
+    <string name="settings_show_onboarding">再次显示介绍</string>
+    <string name="paste_list">粘贴列表</string>
+    <string name="paste_list_hint">每行一首歌曲，格式为“艺人 - 标题”。行首的数字会被忽略。</string>
+    <string name="paste_list_name">歌单名称</string>
+    <string name="paste_list_text">歌曲</string>
+    <string name="import_action">导入</string>
+    <string name="notif_progress_channel">同步进行中</string>
+    <string name="notif_progress_desc">手动同步运行时显示。</string>
+    <plurals name="notif_more_running">
+        <item quantity="other">另有 %d 个同步正在运行</item>
+    </plurals>
+    <string name="diag_share">分享技术详情</string>
+    <string name="widget_description">上次同步和“全部同步”按钮。</string>
+    <string name="widget_last">上次：%1$s · %2$s</string>
+    <string name="shortcut_sync_all_short">全部同步</string>
+    <string name="shortcut_sync_all_long">立即运行所有同步</string>
+    <string name="shortcut_new_short">新建同步</string>
+    <string name="shortcut_new_long">创建新的同步</string>
+    <plurals name="widget_jobs">
+        <item quantity="other">已配置 %d 个同步</item>
+    </plurals>
+    <string-array name="setup_steps_spotify">
+        <item>使用你日常使用的 Spotify 账号登录 developer.spotify.com。Spotify 要求该账号为 Premium 会员；如果要求你接受开发者条款，请接受。</item>
+        <item>点按“Create app”。名称和描述可随意填写（例如“Songport”）。“Website”留空。</item>
+        <item>在“Redirect URIs”中准确粘贴下方显示的地址，然后点按“Add”。没有这一步，登录就无法返回应用。</item>
+        <item>在“Which API/SDKs are you planning to use?”下勾选“Web API”，接受条款并点按“Save”。</item>
+        <item>打开刚创建的应用，点按“Settings”（右上角），将“Client ID”复制到这里。不需要 Client secret。</item>
+        <item>可选：在“User Management”中最多可再添加 5 个 Spotify 账号（姓名和电子邮件），让他们也能使用你的密钥，例如家庭成员。</item>
+    </string-array>
+    <string-array name="setup_steps_youtube">
+        <item>使用你的 Google 账号登录 console.cloud.google.com 并创建一个项目。名称随意，例如“Songport”。等待项目创建完成的通知，然后选中该项目。</item>
+        <item>启用 YouTube Data API v3：链接会在库中打开它的页面，点按“启用”（Enable）。</item>
+        <item>Google Auth Platform →“概览”（Overview），点按“开始”（Get started）：应用名称填“Songport”，支持邮箱填你的电子邮件，受众群体选“外部”（External），联系邮箱填你的电子邮件。接受并点按“创建”（Create）。</item>
+        <item>Google Auth Platform →“受众群体”（Audience）：在“测试用户”（Test users）下点按“添加用户”（Add users），添加你自己的 Gmail 地址，然后保存。没有这一步，Google 会以“访问被阻止”拒绝登录。</item>
+        <item>Google Auth Platform →“客户端”（Clients）→“创建客户端”（Create client）：应用类型选“桌面应用”（Desktop app），名称随意。将 Client ID 和 Client secret 复制到这里。无需注册其他内容：应用会在 127.0.0.1 上接收登录。</item>
+    </string-array>
+    <string-array name="setup_steps_tidal">
+        <item>使用你的 TIDAL 账号登录 developer.tidal.com。</item>
+        <item>点按“Create new app”。名称和描述可随意填写。</item>
+        <item>在“Redirect URIs”中准确粘贴下方显示的地址并保存。</item>
+        <item>将 Client ID 复制到这里。不需要 Client secret。</item>
+    </string-array>
+    <string-array name="setup_steps_deezer">
+        <item>使用你的 Deezer 账号登录 developers.deezer.com，并打开“My Apps”。</item>
+        <item>点按“Create a new Application”。名称和描述可随意填写。</item>
+        <item>Deezer 只接受 https 重定向。下方已填好一个现成的重定向页面：请将该地址同时粘贴到“Application domain”（不含 https://）和“Redirect URL after authentication”中。</item>
+        <item>保存，然后将“Application ID”复制到这里。</item>
+    </string-array>
+    <string-array name="setup_steps_apple">
+        <item>Apple Music 需要付费的 Apple Developer Program 会员资格（每年 99 美元）和 Apple Music 订阅。如果没有，请使用公开歌单链接或文件。</item>
+        <item>在“Certificates, Identifiers &amp; Profiles”的“Identifiers”中，创建一个启用了 MusicKit 的 Media ID。</item>
+        <item>在“Keys”中创建一个启用了“Media Services (MusicKit)”的密钥，并下载 .p8 文件（只能下载一次）。记下旁边显示的 Key ID 以及你的 Team ID（位于账号页面右上角）。</item>
+        <item>使用 .p8 密钥生成 ES256 开发者令牌（JWT）：项目 README 中提供了现成的脚本。将令牌粘贴到这里。</item>
+        <item>令牌最长六个月后过期：当登录失效时，请生成新令牌并重新粘贴。</item>
+    </string-array>
+    <string-array name="setup_steps_lastfm">
+        <item>登录 last.fm 并打开 API 账号创建页面。</item>
+        <item>填写表单：联系邮箱、应用名称和描述可随意填写。“Callback URL”和“Application homepage”可以留空。提交。</item>
+        <item>将“API key”复制到这里。不需要“Shared secret”。</item>
+    </string-array>
+    <!-- Restyling: stati, schermate vuote, intestazione -->
+    <string name="more_actions">更多</string>
+    <string name="pill_ok">已是最新</string>
+    <string name="pill_error">需要处理</string>
+    <string name="pill_never">尚未运行</string>
+    <string name="pill_running">正在同步</string>
+    <string name="connected">已连接</string>
+    <string name="hero_title">你的歌单，随处可听</string>
+    <plurals name="hero_jobs">
+        <item quantity="other">已配置 %d 个同步</item>
+    </plurals>
+    <string name="hero_last">上次同步：%1$s</string>
+    <string name="empty_syncs_title">还没有同步任务</string>
+    <string name="empty_syncs_body">连接一个音乐服务，然后创建你的第一个同步。只需一分钟。</string>
+    <string name="empty_syncs_body_connected">点按“新建同步”：选择来源歌单以及要同步到的位置。</string>
+    <string name="empty_syncs_cta_accounts">连接服务</string>
+    <string name="empty_log_title">尚未运行任何内容</string>
+    <string name="empty_log_body">每次同步都会在这里留下报告：添加、移除或未找到了哪些歌曲。</string>
+    <string name="empty_tools_title">连接服务</string>
+    <string name="empty_tools_body">备份、重复项清理、歌单工具和批量转移适用于你已连接的服务。</string>
+    <string name="settings_section_general">常规</string>
+    <string name="settings_log">同步日志</string>
+    <string name="settings_log_desc">最近几次同步的结果，以及可附在问题报告中的技术详情。</string>
+    <string name="settings_open">打开</string>
+    <string name="accounts_intro">你在各服务的官方页面上登录。Songport 永远看不到你的密码。</string>
+    <string name="show_details">详情</string>
+    <string name="hide_details">隐藏详情</string>
+    <!-- Pubblicità e donazioni -->
+    <string name="ads_why_title">为什么有广告？</string>
+    <string name="ads_why_body">Songport 免费，无订阅，没有锁定的功能。一个小小的横幅广告（绝不全屏）用来支付开发者的咖啡钱，以及维持各服务正常运行所花费的时间。如果它打扰到你，请在 GitHub 上提交 issue。</string>
+    <string name="settings_free_note">Songport 免费，无广告，无订阅。除了发往你所连接音乐服务的请求外，没有任何数据离开手机。</string>
+    <string name="free_why_title">免费，无广告</string>
+    <string name="free_why_body">Songport 没有广告，没有订阅，没有锁定的功能。它依靠自愿捐助维持：如果它为你节省了时间，可以请开发者喝杯咖啡。</string>
+    <string name="support_title">喜欢 Songport 吗？</string>
+    <string name="support_body">如果你愿意，可以在 Ko-fi 上请开发者喝杯咖啡。完全自愿：不会解锁任何内容，应用对所有人都是完整的。</string>
+    <string name="support_button">请我喝杯咖啡</string>
+    <string name="support_sponsors">GitHub Sponsors</string>
+    <string name="support_prompt_title">你刚刚转移了 %1$s 首歌曲</string>
+    <string name="support_prompt_body">通过同步“%1$s”。Songport 免费且无广告，依靠自愿捐助维持：如果它为你节省了时间，可以请开发者喝杯咖啡。</string>
+    <string name="support_prompt_later">以后再说</string>
+</resources>

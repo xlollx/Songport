@@ -378,20 +378,6 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
             .onFailure { snackbar.showSnackbar(it.message ?: ctx.getString(R.string.error_generic)) }
     }
 
-    // Un launcher per formato: CreateDocument fissa il tipo MIME alla costruzione.
-    var exporting by remember { mutableStateOf<String?>(null) }
-    fun writeExport(uri: Uri?, format: LocalFilesProvider.Export) {
-        val id = exporting
-        exporting = null
-        if (uri == null || id == null) return
-        scope.launch {
-            withContext(Dispatchers.IO) {
-                ctx.contentResolver.openOutputStream(uri)?.bufferedWriter()
-                    ?.use { it.write(LocalFilesProvider.exportText(ctx, id, format)) }
-            }
-            snackbar.showSnackbar(ctx.getString(R.string.csv_exported))
-        }
-    }
     var pasteOpen by remember { mutableStateOf(false) }
     if (pasteOpen) PasteListDialog(
         onDismiss = { pasteOpen = false },
@@ -404,12 +390,6 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
             }
         },
     )
-    val csvLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument(LocalFilesProvider.Export.CSV.mime)
-    ) { uri -> writeExport(uri, LocalFilesProvider.Export.CSV) }
-    val m3uLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument(LocalFilesProvider.Export.M3U.mime)
-    ) { uri -> writeExport(uri, LocalFilesProvider.Export.M3U) }
 
     Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
         Column(Modifier.padding(16.dp)) {

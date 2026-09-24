@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Songport</string>
+
+    <string name="tab_syncs">Sincros</string>
+    <string name="tab_accounts">Cuentas</string>
+    <string name="tab_log">Registro</string>
+    <string name="tab_settings">Ajustes</string>
+
+    <string name="syncs_empty">Aún no hay sincronizaciones.\n\nConecta al menos un servicio en Cuentas (o usa archivos CSV) y luego toca + para crear tu primera sincronización.</string>
+    <string name="sync_all">Sincronizar todo ahora</string>
+    <string name="run_now">Ejecutar ahora</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Eliminar</string>
+    <string name="new_sync">Nueva sincronización</string>
+    <string name="disabled">Desactivada</string>
+
+    <string name="schedule_manual">Solo manual</string>
+    <string name="schedule_hourly">Cada hora</string>
+    <string name="schedule_6h">Cada 6 horas</string>
+    <string name="schedule_daily">Cada día</string>
+    <string name="schedule_weekly">Cada semana</string>
+
+    <string name="last_run_never">Nunca ejecutada</string>
+    <string name="last_run_at">Última ejecución: %1$s</string>
+    <string name="result_added_removed">%1$d añadidas, %2$d eliminadas</string>
+    <string name="result_unmatched">%1$d no encontradas</string>
+    <string name="result_error">Error: %1$s</string>
+    <string name="result_ok">Al día</string>
+
+    <string name="running">Sincronizando…</string>
+    <string name="progress_fetch_source">Leyendo la playlist de origen…</string>
+    <string name="progress_create_target">Creando la playlist de destino…</string>
+    <string name="progress_fetch_target">Leyendo la playlist de destino…</string>
+    <string name="progress_matching">Buscando coincidencias %1$d/%2$d…</string>
+    <string name="progress_waiting">El servicio está limitando las solicitudes: se reanuda en %1$d s. Es normal con playlists grandes, no es un error.</string>
+    <string name="progress_adding">Añadiendo %1$d canciones…</string>
+    <string name="progress_removing">Quitando %1$d canciones…</string>
+
+    <string name="editor_title_new">Nueva sincronización</string>
+    <string name="editor_title_edit">Editar sincronización</string>
+    <string name="editor_name">Nombre</string>
+    <string name="editor_source">Origen</string>
+    <string name="editor_target">Destino</string>
+    <string name="editor_provider">Servicio</string>
+    <string name="editor_playlist">Playlist</string>
+    <string name="editor_choose_playlist">Elige una playlist</string>
+    <string name="editor_new_playlist">Crear una playlist nueva</string>
+    <string name="editor_new_playlist_name">Nombre de la playlist nueva</string>
+    <string name="editor_schedule">Programación automática</string>
+    <string name="editor_mirror">Replicar eliminaciones</string>
+    <string name="editor_mirror_desc">Quita también del destino las canciones que ya no están en el origen. Desactivado = solo añadir.</string>
+    <string name="editor_wifi_only">Solo Wi‑Fi</string>
+    <string name="editor_enabled">Activada</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="loading">Cargando…</string>
+    <string name="no_connected_providers">Primero conecta al menos un servicio en la pestaña Cuentas.</string>
+    <string name="liked_songs">Canciones que te gustan</string>
+    <string name="tracks_count">%1$d canciones</string>
+    <string name="editor_error_incomplete">Elige una playlist de origen y un destino.</string>
+
+    <string name="connected_as">Conectado como %1$s</string>
+    <string name="not_connected">No conectado</string>
+    <string name="not_configured">Falta configurar</string>
+    <string name="not_configured_hint">Songport no incluye claves de los servicios. Crea tu propia clave gratuita en la página para desarrolladores del servicio: se tarda unos dos minutos y la app te guía paso a paso.</string>
+    <string name="setup_now">Configurar</string>
+    <string name="connect">Conectar</string>
+    <string name="disconnect">Desconectar</string>
+    <string name="connecting">Conectando…</string>
+    <string name="always_available">Siempre disponible</string>
+
+    <string name="provider_note_spotify">Requiere una cuenta de Spotify. Playlists y canciones que te gustan.</string>
+    <string name="provider_note_ytm">Playlists y «Me gusta» de YouTube Music a través de la propia interfaz del reproductor web, integrada en esta versión: inicia sesión con tu cuenta de Google, sin proyecto de Google Cloud y sin cuota. No es una API oficial de Google: lee el aviso que aparece antes de iniciar sesión.</string>
+    <string name="ytm_not_installed_hint">Instala la app complementaria \"Songport YTM Bridge\" desde GitHub, luego vuelve aquí y pulsa Conectar. ¿Prefieres la vía oficial? Usa la tarjeta \"YouTube Music (Google API)\" de abajo.</string>
+    <string name="ytm_not_installed">Songport YTM Bridge no está instalado.</string>
+    <string name="ytm_install">Descargar el Bridge</string>
+    <string name="report_issue">Informar en GitHub</string>
+    <string name="provider_note_youtube">API oficial YouTube Data con un proyecto de Google Cloud propio. Opcional: la tarjeta \"YouTube Music\" de arriba funciona sin ella. La cuota diaria es limitada: las sincronizaciones grandes pueden tardar varios días.</string>
+    <string name="provider_note_tidal">Playlists de TIDAL (beta).</string>
+    <string name="provider_note_deezer">Playlists y favoritos de Deezer (beta).</string>
+
+    <string name="log_empty">Todavía no se ha ejecutado ninguna sincronización.</string>
+    <string name="log_unmatched_title">Canciones no encontradas en el destino</string>
+    <string name="log_duration">%1$d s</string>
+
+    <string name="settings_notifications">Avisar tras cada sincronización</string>
+    <string name="settings_notifications_desc">Muestra una notificación cuando una sincronización programada añade o quita canciones, o falla.</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_language_desc">Songport sigue el idioma del sistema: inglés, italiano, francés, alemán, español, chino, japonés.</string>
+    <string name="settings_language_open">Cambiar</string>
+    <string name="settings_language_system">Idioma del sistema</string>
+    <string name="settings_advanced">Claves de los servicios</string>
+    <string name="settings_advanced_desc">Songport no trae claves propias: Spotify, YouTube Music, TIDAL, Deezer, Last.fm y Apple Music se conectan con una clave gratuita creada a tu nombre, así que sus límites y cuotas son solo tuyos. Aquí puedes verlas y cambiarlas.</string>
+    <string name="settings_privacy_options">Opciones de privacidad de anuncios</string>
+    <string name="settings_privacy_policy">Política de privacidad</string>
+    <string name="settings_about">Acerca de</string>
+    <string name="settings_version">Versión %1$s</string>
+    <string name="settings_ads_note">Songport es gratis y sin suscripciones. Se mantiene con un único banner publicitario pequeño; no se vende ningún dato y nada sale de tu teléfono salvo las solicitudes a los servicios de música que conectes.</string>
+    <string name="settings_csv">Archivos</string>
+    <string name="csv_import">Importar archivo</string>
+    <string name="csv_export">Exportar</string>
+    <string name="csv_playlists_hint">Las playlists de archivo viven dentro de la app. Importa aquí un archivo y úsalo como origen de una sincronización; o sincroniza cualquier playlist hacia un archivo y expórtala como CSV o M3U.</string>
+    <string name="csv_empty">Todavía no hay playlists de archivo.</string>
+    <string name="csv_imported">%1$d canciones importadas</string>
+    <string name="csv_exported">Archivo exportado</string>
+    <string name="log_save_file">Guardar como archivo…</string>
+    <string name="note_file_target">Guardada dentro de Songport: usa “Guardar como archivo” aquí, o Ajustes → Archivos, para obtener un CSV o M3U.</string>
+
+    <string name="auth_done">Conectado a %1$s</string>
+    <string name="auth_failed">No se pudo iniciar sesión: %1$s</string>
+    <string name="auth_state_mismatch">Falló la comprobación de seguridad (el state no coincide). Vuelve a intentarlo.</string>
+    <string name="auth_wait">Completando el inicio de sesión…</string>
+    <string name="auth_no_pending">No hay ningún inicio de sesión en curso.</string>
+
+    <string name="notif_channel_name">Resultados de sincronización</string>
+    <string name="notif_channel_desc">Resultado de las sincronizaciones programadas de playlists.</string>
+    <string name="notif_sync_title">Sincronización: %1$s</string>
+
+    <string name="delete_confirm_title">¿Eliminar esta sincronización?</string>
+    <string name="delete_confirm_text">Las playlists de los servicios no se tocan.</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+    <string name="ok">OK</string>
+
+    <string name="error_not_connected">%1$s no está conectado</string>
+    <string name="error_source_empty">La playlist de origen está vacía: no hay nada que hacer (eliminaciones omitidas por seguridad).</string>
+    <string name="error_generic">Algo salió mal</string>
+
+    <string name="provider_note_apple">Playlists de tu biblioteca de Apple Music. Necesita una suscripción y un token de desarrollador de MusicKit. La API de Apple permite añadir canciones, pero no quitarlas.</string>
+    <string name="provider_note_files">Archivos locales: importa una playlist exportada desde cualquier servicio (CSV, M3U, XML de Apple Music/iTunes, JSON o una simple lista) y sincronízala donde quieras. Es el puente para los servicios sin API abierta: Amazon Music, Qobuz, SoundCloud.</string>
+    <string name="apple_token_missing">Todavía no hay token de desarrollador de Apple Music. Introduce el tuyo en Cuentas, Apple Music, Configurar.</string>
+    <string name="link_paste">O pega el enlace de una playlist pública</string>
+    <string name="link_use">Usar enlace</string>
+    <string name="link_invalid">Enlace no reconocido. Compatibles: Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL.</string>
+    <string name="link_not_connected">Conecta primero %1$s para leer este enlace.</string>
+    <string name="link_resolving">Leyendo la playlist…</string>
+    <string name="note_no_removals">%1$s no permite quitar canciones de una playlist a través de su API: %2$d canciones se quedaron donde estaban.</string>
+    <string name="note_removals_deferred">Eliminaciones aplazadas: la búsqueda no se completó, así que %1$d canciones del destino que aún no coincidían con nada se dejaron donde estaban. Se revisarán cuando una ejecución termine por completo.</string>
+    <string name="note_search_interrupted">Se buscaron %1$d de %2$d canciones y luego el servicio pidió una pausa más larga (%3$s). Es un límite del servicio, no un error de Songport: lo encontrado ya se aplicó y queda guardado. Vuelve a ejecutar la sincronización en unos minutos para seguir desde ahí.</string>
+    <string name="error_no_removals">%1$s no puede quitar canciones de una playlist</string>
+    <string name="log_notes_title">Notas</string>
+    <string name="editor_mirror_unsupported">%1$s solo puede añadir canciones: las eliminaciones se omitirán.</string>
+
+    <string name="setup_cta">Cambiar la clave</string>
+    <string name="setup_title">%1$s: tu clave</string>
+    <string name="setup_using_own">Configurado con tu clave.</string>
+    <string name="setup_redirect_label">Redirect URI para pegar en el panel</string>
+    <string name="setup_copy">Copiar</string>
+    <string name="setup_copied">Copiado</string>
+    <string name="setup_open_step">Abrir</string>
+    <string name="setup_open_dashboard">Abrir el portal para desarrolladores</string>
+    <string name="setup_save_connect">Guardar y conectar</string>
+    <string name="setup_save">Guardar</string>
+    <string name="setup_clear">Quitar mis credenciales</string>
+    <string name="setup_field_required">Completa todos los campos.</string>
+    <string name="setup_field_client_id">Client ID</string>
+    <string name="setup_field_app_id">Application ID</string>
+    <string name="setup_field_secret">Client secret</string>
+    <string name="setup_field_redirect_url">Tu URL de redirección https</string>
+    <string name="setup_field_apple_token">Token de desarrollador (JWT)</string>
+    <string name="setup_why_spotify">Spotify exige una app registrada a tu nombre. Es gratis; una app en Development Mode admite hasta 5 cuentas, más que suficiente para uso personal.</string>
+    <string name="setup_why_youtube">Google exige un proyecto de Cloud a tu nombre para usar la API de YouTube. Es gratis y la cuota diaria es solo tuya.</string>
+    <string name="setup_why_tidal">TIDAL exige una app registrada a tu nombre. Es gratis.</string>
+    <string name="setup_why_deezer">Deezer necesita una app registrada a tu nombre. La página de redirección https la proporciona el proyecto.</string>
+    <string name="setup_why_apple">El token de desarrollador pertenece a tu cuenta de Apple Developer y caduca como máximo a los seis meses.</string>
+    <string name="error_dev_mode_limit">%1$s solo permite unos pocos usuarios por app. Configura tus propias credenciales: es gratis y se tarda unos dos minutos.</string>
+    <string name="error_network">el teléfono no pudo conectar con el servicio (falló el DNS). Revisa la conexión, cualquier VPN o DNS privado, y que Songport pueda usar datos en segundo plano; luego vuelve a intentarlo.</string>
+    <string name="auth_timeout">sin respuesta del navegador, se agotó el tiempo</string>
+
+    <string name="tab_tools">Herramientas</string>
+    <string name="preview">Vista previa</string>
+    <string name="preview_title">Vista previa: %1$s</string>
+    <string name="preview_computing">Calculando qué cambiaría…</string>
+    <string name="preview_present">%1$d ya en el destino</string>
+    <string name="preview_add">%1$d por añadir</string>
+    <string name="preview_remove">%1$d por quitar</string>
+    <string name="preview_unmatched">%1$d no encontradas</string>
+    <string name="preview_ignored">%1$d ignoradas</string>
+    <string name="preview_target_new">Se creará la playlist de destino.</string>
+    <string name="preview_nothing">Nada que hacer: las playlists están sincronizadas.</string>
+    <string name="preview_more">…y %1$d más</string>
+    <string name="unmatched_resolve">Arreglar no encontradas</string>
+    <string name="unmatched_title">No encontradas: %1$s</string>
+    <string name="unmatched_search_hint">Buscar en %1$s</string>
+    <string name="unmatched_search">Buscar</string>
+    <string name="unmatched_add">Añadir</string>
+    <string name="unmatched_ignore">Ignorar</string>
+    <string name="unmatched_none">Todo resuelto.</string>
+    <string name="files_title">Playlists de archivo</string>
+    <string name="files_summary">%1$d playlists · %2$d canciones</string>
+    <string name="files_manage">Gestionar</string>
+    <string name="files_search">Buscar</string>
+    <string name="files_group_other">Otras</string>
+    <string name="review_now">%1$d por arreglar · Empezar ya</string>
+    <string name="review_summary">%1$d no encontradas · %2$d por revisar</string>
+    <string name="review_tap_hint">Acepta una propuesta con un toque, o abre una canción para buscarla en %1$s. Cada elección se recuerda para las próximas sincronizaciones.</string>
+    <string name="review_partial_banner">La sincronización sigue añadiendo las canciones que encontró. Ya puedes arreglar estas.</string>
+    <string name="unmatched_added">Añadida: %1$s</string>
+    <string name="unmatched_no_results">Sin resultados.</string>
+    <string name="unmatched_search_help">Título, “artista - título” o el enlace de la canción</string>
+    <string name="search_open_in">Abrir en %1$s</string>
+    <string name="search_paste_link">Pegar enlace</string>
+    <string name="search_clipboard_empty">El portapapeles no contiene ningún enlace. Copia el enlace de la canción en la app y luego toca Pegar enlace.</string>
+    <string name="link_other_service">Este enlace no es una canción de %1$s</string>
+    <string name="link_track_unknown">Canción del enlace</string>
+    <string name="search_album_section">Del álbum “%1$s” en %2$s · %3$d canciones</string>
+    <string name="search_album_missing">Álbum “%1$s” no encontrado en %2$s</string>
+    <string name="search_other_results">Otros resultados</string>
+    <string name="search_videos_section">Videos de YouTube · %1$d</string>
+    <string name="search_top">Más probables</string>
+    <string name="search_suggested">Propuesta</string>
+    <string name="search_tag_album">álbum</string>
+    <string name="search_tag_video">video</string>
+    <string name="result_ignored">%1$d ignoradas</string>
+    <string name="tools_pick_service">Servicio</string>
+    <string name="tools_none">Primero conecta un servicio.</string>
+    <string name="spotify_forbidden">Spotify rechazó la solicitud (%1$s). Las apps en Development Mode no pueden leer playlists creadas por el propio Spotify (Discover Weekly, Release Radar, mixes editoriales) y solo admiten las cuentas que figuran en el User Management de la app. Elige una playlist creada por ti o por otro usuario, o añade la cuenta en developer.spotify.com.</string>
+    <string name="tools_export_title">Exportar una playlist</string>
+    <string name="tools_export_desc">Guarda cualquier playlist de este servicio como archivo en tu teléfono (CSV, M3U, XSPF, JSPF o texto sin formato), sin cambiar nada en el servicio.</string>
+    <string name="tools_export_done">%1$d canciones exportadas</string>
+    <string name="tools_backup_title">Copia de seguridad completa</string>
+    <string name="tools_backup_desc">Guarda todas las playlists (y las canciones que te gustan) como archivos en la pantalla Archivos, listos para exportar como CSV o M3U. Cada ejecución añade una versión con fecha; se conservan las últimas %1$d versiones de cada playlist, y una playlist que no ha cambiado no se vuelve a escribir. No se cambia nada en el servicio.</string>
+    <string name="tools_backup_run">Hacer copia ahora</string>
+    <string name="tools_backup_done">%1$d playlists y %2$d canciones guardadas</string>
+    <string name="tools_backup_unchanged">%1$d sin cambios</string>
+    <string name="files_hide_versions">Ocultar versiones anteriores</string>
+    <plurals name="files_versions">
+        <item quantity="one">%d versión anterior</item>
+        <item quantity="other">%d versiones anteriores</item>
+    </plurals>
+    <string name="tools_dedupe_title">Quitar duplicados</string>
+    <string name="tools_dedupe_desc">Encuentra canciones que aparecen dos veces en una playlist, incluso con otro ID o versión, y conserva la primera copia.</string>
+    <string name="tools_dedupe_scan">Buscar duplicados</string>
+    <string name="tools_dedupe_found">%1$d grupos de duplicados, %2$d canciones por quitar</string>
+    <string name="tools_dedupe_none">No hay duplicados.</string>
+    <string name="tools_dedupe_remove">Quitar %1$d canciones</string>
+    <string name="tools_dedupe_done">%1$d canciones quitadas</string>
+    <string name="tools_progress_backup">Copiando %1$d/%2$d…</string>
+    <string name="tools_progress_dedupe">Limpiando %1$d/%2$d…</string>
+    <string name="export_format">Exportar como %1$s</string>
+    <string name="format_text">Texto</string>
+    <string name="tools_export_save">Guardar como…</string>
+    <string name="tools_make_title">Nueva playlist a partir de…</string>
+    <string name="tools_make_desc">Copia, une, divide, ordena o mezcla playlists. El resultado es siempre una playlist nueva en este servicio; las originales no se tocan.</string>
+    <string name="tools_make_copy">Copiar</string>
+    <string name="tools_make_merge">Unir</string>
+    <string name="tools_make_split">Dividir</string>
+    <string name="tools_make_sort">Ordenar</string>
+    <string name="tools_make_shuffle">Mezclar</string>
+    <string name="tools_make_add_playlist">Añadir una playlist</string>
+    <string name="tools_make_drop_duplicates">Omitir duplicados</string>
+    <string name="tools_make_split_size">Canciones por parte</string>
+    <string name="tools_make_sort_artist">Por artista</string>
+    <string name="tools_make_sort_title">Por título</string>
+    <string name="tools_make_sort_album">Por álbum</string>
+    <string name="tools_make_sort_reverse">Orden inverso</string>
+    <string name="tools_make_run">Crear</string>
+    <string name="tools_make_done">“%1$s” creada con %2$d canciones</string>
+    <string name="tools_make_done_parts">%1$d playlists creadas, %2$d canciones</string>
+    <string name="tools_make_failed">%1$d canciones no se pudieron añadir</string>
+    <string name="tools_make_cannot_create">%1$s no puede crear playlists desde aquí.</string>
+    <string name="tools_make_copy_suffix">%1$s (copia)</string>
+    <string name="tools_make_merge_default">Playlist unida</string>
+    <string name="tools_make_sorted_suffix">%1$s (ordenada)</string>
+    <string name="tools_make_shuffled_suffix">%1$s (mezclada)</string>
+    <string name="tools_make_part_name">%1$s · parte %2$d</string>
+    <string name="tools_progress_make">Añadiendo %1$d/%2$d…</string>
+    <string name="tools_transfer_title">Transferir muchas playlists</string>
+    <string name="tools_transfer_desc">Elige varias playlists de un servicio y envíalas todas a otro: una sincronización por playlist, creadas y ejecutadas una tras otra. Se quedan en Sincros, así puedes repetirlas o programarlas.</string>
+    <string name="tools_transfer_open">Elegir playlists</string>
+    <string name="transfer_title">Transferir playlists</string>
+    <string name="transfer_from">De</string>
+    <string name="transfer_to">A</string>
+    <string name="transfer_select_all">Seleccionar todas</string>
+    <string name="transfer_select_none">Ninguna</string>
+    <string name="transfer_existing">ya tiene una sincronización</string>
+    <string name="transfer_same_service">Elige dos servicios distintos.</string>
+    <string name="transfer_none">No hay playlists en este servicio.</string>
+    <plurals name="transfer_run">
+        <item quantity="one">Transferir %1$d playlist</item>
+        <item quantity="other">Transferir %1$d playlists</item>
+    </plurals>
+    <string name="transfer_started">%1$d sincronizaciones creadas e iniciadas: síguelas en Sincros.</string>
+    <string name="settings_battery">¿No se ejecutan las sincronizaciones programadas?</string>
+    <string name="settings_battery_desc">Algunos teléfonos (Xiaomi, Huawei, Oppo, Samsung) detienen las apps en segundo plano. Excluye Songport de la optimización de batería para que se respete la programación.</string>
+    <string name="settings_battery_button">Abrir ajustes de batería</string>
+    <string name="share_received">Enlace recibido: elige adónde sincronizarlo.</string>
+    <string name="share_invalid">El texto compartido no contiene ningún enlace de playlist reconocible.</string>
+    <string name="read_only">solo lectura</string>
+    <string name="beta">beta</string>
+    <string name="beta_note">Conector en beta: funciona, pero se ha usado menos que los demás. Si algo falla, por favor, repórtalo.</string>
+    <string name="provider_note_subsonic">Tu propio servidor de música: Navidrome, Airsonic, Gonic, LMS, Funkwhale y cualquiera que hable la API de Subsonic. Sin registro ni cuota. Las canciones con estrella cuentan como canciones que te gustan.</string>
+    <string name="provider_note_jellyfin">Tu servidor Jellyfin. Sin registro ni cuota. Los favoritos cuentan como canciones que te gustan.</string>
+    <string name="provider_note_plex">Tu Plex Media Server, con tu X-Plex-Token. Plex no permite crear una playlist vacía desde la API: créala en Plex y luego elígela aquí.</string>
+    <string name="provider_note_lastfm">Canciones favoritas de un perfil de Last.fm, solo como origen. Necesita una clave de API gratuita de Last.fm.</string>
+    <string name="provider_note_listenbrainz">Playlists y canciones favoritas de un usuario de ListenBrainz, solo como origen. No necesita clave.</string>
+    <string name="login_title">Iniciar sesión en %1$s</string>
+    <string name="login_url">Dirección del servidor</string>
+    <string name="login_user">Nombre de usuario</string>
+    <string name="login_password">Contraseña</string>
+    <string name="login_token">Token</string>
+    <string name="login_submit">Comprobar y guardar</string>
+    <string name="login_checking">Comprobando…</string>
+    <string name="login_trust_server">Tus credenciales se guardan cifradas en este teléfono. Songport solo se comunica con el servidor que indiques aquí.</string>
+    <string name="login_hint_subsonic">Introduce la dirección de tu servidor Navidrome, Airsonic u otro compatible con Subsonic (por ejemplo https://musica.ejemplo.com), tu nombre de usuario y tu contraseña. La contraseña nunca se envía tal cual: cada solicitud usa un hash con sal.</string>
+    <string name="login_hint_jellyfin">Introduce la dirección de tu servidor Jellyfin (por ejemplo https://jellyfin.ejemplo.com), tu nombre de usuario y tu contraseña.</string>
+    <string name="login_hint_plex">Introduce la dirección de tu Plex Media Server (por ejemplo http://192.168.1.10:32400) y tu X-Plex-Token. Plex explica cómo encontrar el token en sus páginas de ayuda (\"Finding an authentication token\").</string>
+    <string name="login_hint_lastfm">Introduce el nombre de usuario de Last.fm cuyas canciones favoritas quieres leer. El perfil debe ser público.</string>
+    <string name="login_hint_listenbrainz">Introduce el nombre de usuario de ListenBrainz cuyas playlists y canciones favoritas quieres leer.</string>
+    <string name="setup_why_lastfm">Last.fm necesita una clave de API gratuita, que se emite al instante, para leer perfiles públicos.</string>
+    <string name="setup_field_api_key">Clave de API</string>
+    <string name="error_read_only">%1$s es de solo lectura: solo puede ser origen.</string>
+    <string name="error_create_unsupported">%1$s no permite crear playlists desde la app: créala en %1$s y elígela aquí.</string>
+    <string name="connect_title">Conectando %1$s</string>
+    <string name="connect_where_oauth">Iniciarás sesión en %1$s, en tu navegador. Songport nunca ve tu contraseña.</string>
+    <string name="connect_where_apple">Iniciarás sesión con tu Apple ID en la propia ventana de Apple. Songport nunca ve tu contraseña.</string>
+    <string name="connect_where_server">Los datos de tu servidor se guardan cifrados en este teléfono. Songport solo se comunica con tu servidor.</string>
+    <string name="connect_token">Songport solo recibe un permiso limitado y revocable, guardado cifrado en este teléfono (Android Keystore).</string>
+    <string name="connect_noserver">No existe ningún servidor de Songport: los datos viajan solo entre este teléfono y %1$s.</string>
+    <string name="connect_revoke">Puedes revocarlo cuando quieras: aquí con Desconectar, o desde tu cuenta de %1$s.</string>
+    <string name="connect_continue">Continuar</string>
+    <string name="connect_continue_browser">Continuar en el navegador</string>
+    <string name="account_encrypted">Cifrado en este dispositivo</string>
+    <string name="account_revoke">Revocar en %1$s</string>
+    <string name="account_add">Añadir otra cuenta</string>
+    <string name="account_remove">Quitar esta cuenta</string>
+    <string name="account_remove_blocked">Primero elimina las sincronizaciones que usan esta cuenta.</string>
+    <string name="connectors_empty_title">Aún no hay conectores</string>
+    <string name="connectors_empty_body">Toca + para añadir un servicio: Spotify, YouTube Music, TIDAL, archivos… Puedes añadir varios conectores del mismo servicio, cada uno con su nombre y su cuenta.</string>
+    <string name="connector_add">Añadir conector</string>
+    <string name="connector_pick_title">¿Qué servicio?</string>
+    <string name="connector_name_label">Nombre del conector</string>
+    <string name="connector_rename">Renombrar</string>
+    <string name="connect_switch_account">Puede que el navegador ya tenga abierta la sesión de otra cuenta de %1$s. En la página de inicio de sesión elige “¿No eres tú?” o cambia de cuenta, y luego continúa con la cuenta de este conector.</string>
+    <string name="provider_note_amazon">Amazon no tiene una API abierta: Songport usa la interfaz del reproductor web, así que puede dejar de funcionar cuando Amazon la cambie. Admite playlists, búsqueda, crear, añadir y quitar.</string>
+    <string name="amazon_not_installed_hint">Instala o actualiza la app complementaria \"Songport Bridge\" (1.3.1 o posterior) desde GitHub, luego vuelve aquí y toca Conectar.</string>
+    <string name="sync_pause">Pausar</string>
+    <string name="sync_resume">Reanudar</string>
+    <string name="sync_stop">Detener</string>
+    <string name="sync_paused">En pausa</string>
+    <string name="sync_stopped">Detenida por ti</string>
+    <string name="live_title">Actividad de la sincronización</string>
+    <string name="live_empty">Aún no se ha procesado ninguna canción.</string>
+    <string name="live_found">Encontrada: %1$s</string>
+    <string name="live_cached">De una coincidencia anterior: %1$s</string>
+    <string name="live_not_found">No encontrada en el destino</string>
+    <string name="live_added">Añadida al destino</string>
+    <string name="live_add_failed">No añadida: %1$s</string>
+    <string name="live_removed">Quitada del destino</string>
+    <string name="provider_note_spotify_bridge">Inicia sesión en la propia página de Spotify, sin crear ninguna app de desarrollador. Usa la sesión del reproductor web: no es una vía oficial, va contra los términos de Spotify y puede dejar de funcionar. La vía oficial con tu propia clave sigue disponible como \"Spotify\".</string>
+    <string name="provider_note_apple_bridge">Inicia sesión con tu Apple ID, sin necesidad del Apple Developer Program. Usa los tokens del reproductor web: no es una vía oficial, va contra los términos de Apple y puede dejar de funcionar. La vía oficial con tu propio token de desarrollador sigue disponible como \"Apple Music\".</string>
+    <string name="bridge_needed_hint">Instala o actualiza la app complementaria \"Songport Bridge\" (1.2 o posterior) desde GitHub, luego vuelve aquí y toca Conectar.</string>
+    <string name="settings_source_code">Código fuente y documentación</string>
+    <string name="plugins_more">Se pueden añadir otros servicios con plugins de conectores: cómo funciona.</string>
+    <string name="security_title">Cómo se protegen tus inicios de sesión</string>
+    <string name="security_fact_1">Las contraseñas se escriben en las propias páginas de los servicios, nunca en Songport.</string>
+    <string name="security_fact_2">Songport solo guarda tokens de acceso revocables, cifrados con el Android Keystore.</string>
+    <string name="security_fact_3">No hay servidor de Songport ni cuenta que crear: nada sale de tu teléfono salvo las solicitudes a los servicios que conectes.</string>
+    <string name="security_fact_4">Al desconectar se borra el token del teléfono; además, todos los servicios te permiten revocarlo desde la página de tu cuenta.</string>
+    <string name="security_lock">Pedir desbloqueo al abrir</string>
+    <string name="security_lock_desc">Huella, rostro o PIN del teléfono antes de abrir Songport.</string>
+    <string name="security_lock_unavailable">Este teléfono no tiene configurado ningún bloqueo de pantalla.</string>
+    <string name="lock_title">Songport está bloqueado</string>
+    <string name="lock_subtitle">Desbloquea con huella, rostro o PIN</string>
+    <string name="lock_unlock">Desbloquear</string>
+    <string name="review_title">Por revisar: %1$s</string>
+    <string name="review_open">Revisar</string>
+    <string name="review_section_uncertain">Coincidencias dudosas (%1$d)</string>
+    <string name="review_section_unmatched">No encontradas (%1$d)</string>
+    <string name="review_keep">Parece correcta</string>
+    <string name="review_change">Cambiar</string>
+    <string name="review_use_this">Usar esta</string>
+    <string name="review_score">%1$d%% de coincidencia</string>
+    <string name="preview_uncertain">%1$d por revisar</string>
+    <string name="restore_removed">Restaurar %1$d quitadas</string>
+    <string name="restored_done">%1$d canciones restauradas</string>
+    <string name="restored_note">%1$d canciones quitadas se restauraron a mano.</string>
+    <string name="quota_used">%1$s / %2$s unidades de YouTube usadas hoy</string>
+    <string name="quota_note">Límite diario fijado por YouTube (Google), no por Songport. Se reinicia a medianoche, hora del Pacífico. Una búsqueda cuesta 100 unidades; añadir una canción, 50.</string>
+    <string name="quota_note_shared">Límite diario fijado por YouTube (Google), no por Songport, y compartido por todos los que usan la clave integrada: aquí no se cuenta lo que consumen los demás. Con tus propias credenciales tienes una cuota solo para ti.</string>
+    <string name="quota_estimate">Esta sincronización usará unas %1$s unidades.</string>
+    <string name="quota_estimate_over">Esta sincronización necesita unas %1$s unidades, pero hoy solo quedan %2$s: terminará en los próximos días.</string>
+    <string name="editor_bidirectional">Bidireccional</string>
+    <string name="editor_bidirectional_desc">Crea también la sincronización espejo en sentido contrario, sin eliminaciones, para que las dos playlists sigan completas.</string>
+    <string name="editor_bidirectional_unavailable">Disponible con una playlist de destino existente y un origen en el que se pueda escribir.</string>
+    <string name="onboarding_title">Te damos la bienvenida a Songport</string>
+    <string name="onboarding_intro">Mantén tus playlists idénticas en todos tus servicios de música, a mano o de forma programada. Gratis, sin suscripción y sin cuentas que crear.</string>
+    <string name="onboarding_step1_title">1. Conecta tus servicios</string>
+    <string name="onboarding_step1_desc">Spotify, Apple Music, YouTube Music, TIDAL, Deezer, tu propio servidor o un archivo.</string>
+    <string name="onboarding_step2_title">2. Crea una sincronización</string>
+    <string name="onboarding_step2_desc">Elige una playlist de origen y un destino. La vista previa muestra exactamente qué cambiará antes de que pase nada.</string>
+    <string name="onboarding_step3_title">3. Deja que trabaje sola</string>
+    <string name="onboarding_step3_desc">Cada hora, día o semana. Las canciones que no se puedan emparejar aparecen en una lista para que las arregles tú.</string>
+    <string name="onboarding_security">Inicias sesión en la propia página de cada servicio. Songport solo guarda un token cifrado y revocable en este teléfono y no tiene servidor propio.</string>
+    <string name="onboarding_credentials">Songport no trae claves propias de los servicios: para Spotify, YouTube Music, TIDAL y Deezer creas una clave gratuita en la página para desarrolladores del servicio, y la app te guía en unos dos minutos. Así tus datos solo circulan entre tu teléfono y tu propia clave.</string>
+    <string name="onboarding_start">Empecemos</string>
+    <string name="settings_show_onboarding">Ver de nuevo la introducción</string>
+    <string name="paste_list">Pegar una lista</string>
+    <string name="paste_list_hint">Una canción por línea, en formato \"Artista - Título\". Los números al principio de las líneas se ignoran.</string>
+    <string name="paste_list_name">Nombre de la playlist</string>
+    <string name="paste_list_text">Canciones</string>
+    <string name="import_action">Importar</string>
+    <string name="notif_progress_channel">Sincronización en curso</string>
+    <string name="notif_progress_desc">Se muestra mientras se ejecuta una sincronización manual.</string>
+    <plurals name="notif_more_running">
+        <item quantity="one">+%d sincronización más en curso</item>
+        <item quantity="other">+%d sincronizaciones más en curso</item>
+    </plurals>
+    <string name="diag_share">Compartir detalles técnicos</string>
+    <string name="widget_description">Última sincronización y un botón \"Sincronizar todo\".</string>
+    <string name="widget_last">Última: %1$s · %2$s</string>
+    <string name="shortcut_sync_all_short">Sincronizar</string>
+    <string name="shortcut_sync_all_long">Ejecutar ahora todas las sincronizaciones</string>
+    <string name="shortcut_new_short">Nueva sincro</string>
+    <string name="shortcut_new_long">Crear una sincronización nueva</string>
+    <plurals name="widget_jobs">
+        <item quantity="one">%d sincronización configurada</item>
+        <item quantity="other">%d sincronizaciones configuradas</item>
+    </plurals>
+    <string-array name="setup_steps_spotify">
+        <item>Inicia sesión en developer.spotify.com con la cuenta de Spotify que usas a diario. Spotify exige que esa cuenta tenga Premium; si te pide aceptar los términos para desarrolladores, acéptalos.</item>
+        <item>Pulsa \"Create app\". El nombre y la descripción son a tu elección (por ejemplo \"Songport\"). Deja vacío \"Website\".</item>
+        <item>En \"Redirect URIs\" pega exactamente la dirección que aparece abajo y pulsa \"Add\". Sin ella, el inicio de sesión no puede volver a la app.</item>
+        <item>En \"Which API/SDKs are you planning to use?\" marca \"Web API\", acepta los términos y pulsa \"Save\".</item>
+        <item>Abre la app que creaste, pulsa \"Settings\" (arriba a la derecha) y copia aquí el \"Client ID\". No necesitas el Client secret.</item>
+        <item>Opcional: en \"User Management\" puedes añadir hasta 5 cuentas de Spotify más (nombre y correo) que podrán usar tu clave, por ejemplo las de tu familia.</item>
+    </string-array>
+    <string-array name="setup_steps_youtube">
+        <item>Inicia sesión en console.cloud.google.com con tu cuenta de Google y crea un proyecto. Cualquier nombre sirve, por ejemplo \"Songport\". Espera la notificación de que se ha creado y luego selecciónalo.</item>
+        <item>Habilita YouTube Data API v3: el enlace abre su página en la biblioteca; pulsa \"Habilitar\".</item>
+        <item>Google Auth Platform, \"Descripción general\", pulsa \"Comenzar\": nombre de la app \"Songport\", tu correo como dirección de asistencia, público \"Externo\", tu correo como contacto. Acepta y pulsa \"Crear\".</item>
+        <item>Google Auth Platform, \"Público\": en \"Usuarios de prueba\" pulsa \"Agregar usuarios\" y añade tu propia dirección de Gmail; luego guarda. Sin este paso, Google rechaza el inicio de sesión con \"Acceso bloqueado\".</item>
+        <item>Google Auth Platform, \"Clientes\", \"Crear cliente\": tipo de aplicación \"App de escritorio\", cualquier nombre. Copia aquí el ID de cliente y el secreto del cliente. No hay nada más que registrar: la app recibe el inicio de sesión en 127.0.0.1.</item>
+    </string-array>
+    <string-array name="setup_steps_tidal">
+        <item>Inicia sesión en developer.tidal.com con tu cuenta de TIDAL.</item>
+        <item>Pulsa \"Create new app\". El nombre y la descripción son a tu elección.</item>
+        <item>En \"Redirect URIs\" pega exactamente la dirección que aparece abajo y guarda.</item>
+        <item>Copia aquí el Client ID. No hace falta el Client secret.</item>
+    </string-array>
+    <string-array name="setup_steps_deezer">
+        <item>Inicia sesión en developers.deezer.com con tu cuenta de Deezer y abre \"My Apps\".</item>
+        <item>Pulsa \"Create a new Application\". El nombre y la descripción son a tu elección.</item>
+        <item>Deezer solo acepta redirecciones https. Abajo ya tienes una página de redirección lista: pega esa dirección tanto en \"Application domain\" (sin https://) como en \"Redirect URL after authentication\".</item>
+        <item>Guarda y luego copia aquí el \"Application ID\".</item>
+    </string-array>
+    <string-array name="setup_steps_apple">
+        <item>Apple Music requiere una membresía de pago del Apple Developer Program (99 $ al año) y una suscripción a Apple Music. Sin ellas, usa enlaces de playlists públicas o archivos.</item>
+        <item>En \"Certificates, Identifiers &amp; Profiles\", \"Identifiers\", crea un Media ID con MusicKit activado.</item>
+        <item>En \"Keys\" crea una clave con \"Media Services (MusicKit)\" activado y descarga el archivo .p8 (solo se puede descargar una vez). Anota el Key ID que aparece al lado y tu Team ID (arriba a la derecha en la página de la cuenta).</item>
+        <item>Genera el token de desarrollador ES256 (JWT) a partir de la clave .p8: el README del proyecto incluye un script listo para usar. Pega aquí el token.</item>
+        <item>El token caduca como máximo a los seis meses: cuando el inicio de sesión deje de funcionar, genera uno nuevo y vuelve a pegarlo.</item>
+    </string-array>
+    <string-array name="setup_steps_lastfm">
+        <item>Inicia sesión en last.fm y abre la página para crear una cuenta de API.</item>
+        <item>Rellena el formulario: el correo de contacto, el nombre y la descripción de la aplicación son a tu elección. \"Callback URL\" y \"Application homepage\" pueden quedar vacíos. Envíalo.</item>
+        <item>Copia aquí la \"API key\". No hace falta el \"Shared secret\".</item>
+    </string-array>
+    <!-- Restyling: stati, schermate vuote, intestazione -->
+    <string name="more_actions">Más</string>
+    <string name="pill_ok">Al día</string>
+    <string name="pill_error">Requiere atención</string>
+    <string name="pill_never">Sin ejecutar</string>
+    <string name="pill_running">Sincronizando</string>
+    <string name="connected">Conectado</string>
+    <string name="hero_title">Tus playlists, en todas partes</string>
+    <plurals name="hero_jobs">
+        <item quantity="one">%d sincronización configurada</item>
+        <item quantity="other">%d sincronizaciones configuradas</item>
+    </plurals>
+    <string name="hero_last">Última sincronización: %1$s</string>
+    <string name="empty_syncs_title">Aún no hay sincronizaciones</string>
+    <string name="empty_syncs_body">Conecta un servicio de música y luego crea tu primera sincronización. Lleva un minuto.</string>
+    <string name="empty_syncs_body_connected">Toca \"Nueva sincronización\": elige una playlist de origen y adónde debe ir.</string>
+    <string name="empty_syncs_cta_accounts">Conectar un servicio</string>
+    <string name="empty_log_title">Todavía no se ha ejecutado nada</string>
+    <string name="empty_log_body">Cada sincronización deja aquí un informe: qué se añadió, qué se quitó y qué no se encontró.</string>
+    <string name="empty_tools_title">Conecta un servicio</string>
+    <string name="empty_tools_body">La copia de seguridad, la limpieza de duplicados, las herramientas de playlist y las transferencias en bloque funcionan con los servicios que hayas conectado.</string>
+    <string name="settings_section_general">General</string>
+    <string name="settings_log">Registro de sincronizaciones</string>
+    <string name="settings_log_desc">Resultado de las últimas sincronizaciones y los detalles técnicos para adjuntar a un informe.</string>
+    <string name="settings_open">Abrir</string>
+    <string name="accounts_intro">Inicias sesión en la página oficial de cada servicio. Songport nunca ve tu contraseña.</string>
+    <string name="show_details">Detalles</string>
+    <string name="hide_details">Ocultar detalles</string>
+    <!-- Pubblicità e donazioni -->
+    <string name="ads_why_title">¿Por qué hay anuncios?</string>
+    <string name="ads_why_body">Songport es gratis, sin suscripciones ni funciones bloqueadas. Un único banner pequeño, nunca a pantalla completa, paga el café del desarrollador y las horas dedicadas a que todos los servicios sigan funcionando. Si alguna vez te molesta, abre una incidencia en GitHub.</string>
+    <string name="settings_free_note">Songport es gratis, sin anuncios y sin suscripciones. Nada sale del teléfono salvo las solicitudes a los servicios de música que conectes.</string>
+    <string name="free_why_title">Gratis, sin anuncios</string>
+    <string name="free_why_body">Songport no tiene anuncios, suscripciones ni funciones bloqueadas. Vive de aportaciones voluntarias: si te ahorra tiempo, puedes invitar a un café al desarrollador.</string>
+    <string name="support_title">¿Te gusta Songport?</string>
+    <string name="support_body">Si quieres, invita a un café al desarrollador en Ko-fi. Totalmente opcional: no se desbloquea nada y la app sigue completa para todos.</string>
+    <string name="support_button">Invítame a un café</string>
+    <string name="support_sponsors">GitHub Sponsors</string>
+    <string name="support_prompt_title">Acabas de mover %1$s canciones</string>
+    <string name="support_prompt_body">Con la sincronización “%1$s”. Songport es gratis y sin anuncios, y vive de aportaciones voluntarias: si te ha ahorrado tiempo, puedes invitar a un café al desarrollador.</string>
+    <string name="support_prompt_later">Ahora no</string>
+</resources>

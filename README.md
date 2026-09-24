@@ -22,7 +22,7 @@ them through it in about two minutes. Personal servers and files need nothing.
 
 Download: the signed APK of every version is on the
 [Releases](https://github.com/xlollx/Songport/releases/latest) page. UI languages: English, Italian,
-French and German. License: GPL-3.0, see [LICENSE](LICENSE). Security reports: see
+French, German, Spanish, Chinese and Japanese. License: GPL-3.0, see [LICENSE](LICENSE). Security reports: see
 [SECURITY.md](SECURITY.md).
 
 <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="54" alt="Get it on Obtainium"></a>
@@ -90,10 +90,12 @@ that is exactly what to report.
 | Restore | Put back tracks removed by a mirror sync | From the log. |
 | YouTube quota | Ring with the units used today | Search 100, write 50 out of 10,000 per day; the app shows what is left and what a sync will cost. |
 | Multiple accounts | Several accounts of the same service | Also for migrating between two accounts. |
-| Tools | Full backup of a service | Playlists and likes into local files, exportable as CSV/M3U. |
+| Tools | Batch transfer | Pick many playlists of one service and send them all to another: one sync each, run one after the other, kept in Syncs. |
+| | Playlist tools | Copy, merge (skipping duplicates), split into parts, sort by artist/title/album, shuffle; always into a new playlist, the originals untouched. |
+| | Full backup of a service | Playlists and likes into local files, with dated versions. |
 | | Duplicate removal | Same track even with a different id or version; keeps the first copy. |
 | Links | Paste or share a public playlist link | Spotify, Apple Music, YouTube, Deezer, TIDAL. |
-| Files | Import/export | Reads CSV, TSV, M3U/M3U8, Apple Music/iTunes XML, JSON, plain text lists; writes CSV and M3U. |
+| Files | Import/export | Reads CSV, TSV, M3U/M3U8, XSPF, JSPF, Apple Music/iTunes XML, JSON, plain text lists; writes CSV, M3U, XSPF, JSPF and plain text. |
 | Widget and shortcuts | Home widget and long-press on the icon | Last sync, "Sync all", "New sync". |
 | Diagnostics | "Share technical details" in the log | Version, device, services, last runs, error log; no tokens. |
 | Security | Info sheet before every login, encrypted tokens, fingerprint or PIN lock | See [How logins are protected](#how-logins-are-protected). |

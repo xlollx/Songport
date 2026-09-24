@@ -127,4 +127,44 @@ class PlaylistFilesTest {
         val fromM3u = PlaylistFiles.parse("a.m3u", "#EXTM3U\n#EXTINF:369,Daft Punk - Get Lucky\nx.mp3")
         assertEquals(fromText[0].id, fromM3u[0].id)
     }
+
+    @Test fun writesAndReadsXspf() {
+        val tracks = listOf(
+            Track("1", "Get Lucky", listOf("Daft Punk", "Pharrell Williams"), "Random Access Memories", 369000, isrc = "USQX91300108"),
+            Track("2", "Rock & Roll <live>", listOf("Led Zeppelin")),
+        )
+        val xml = PlaylistFiles.toXspf("My <list>", tracks)
+        assertTrue(xml.contains("<title>My &lt;list&gt;</title>"))
+        assertTrue(xml.contains("<identifier>isrc:USQX91300108</identifier>"))
+        assertEquals(PlaylistFiles.Format.XSPF, PlaylistFiles.detect("list.xspf", xml))
+        assertEquals(PlaylistFiles.Format.XSPF, PlaylistFiles.detect("boh", xml))
+        val back = PlaylistFiles.parse("list.xspf", xml)
+        assertEquals(2, back.size)
+        assertEquals("Get Lucky", back[0].title)
+        assertEquals(listOf("Daft Punk", "Pharrell Williams"), back[0].artists)
+        assertEquals("Random Access Memories", back[0].album)
+        assertEquals(369000L, back[0].durationMs)
+        assertEquals("USQX91300108", back[0].isrc)
+        assertEquals("Rock & Roll <live>", back[1].title)
+    }
+
+    @Test fun writesJspfThatReadsBackAsJson() {
+        val tracks = listOf(Track("1", "Get Lucky", listOf("Daft Punk"), "RAM", 369000, isrc = "USQX91300108"))
+        val text = PlaylistFiles.toJspf("Mix", tracks)
+        assertTrue(text.contains("\"creator\": \"Daft Punk\""))
+        assertTrue(text.contains("isrc:USQX91300108"))
+        val back = PlaylistFiles.parse("mix.jspf", text)
+        assertEquals(1, back.size)
+        assertEquals("Get Lucky", back[0].title)
+        assertEquals(listOf("Daft Punk"), back[0].artists)
+        assertEquals("RAM", back[0].album)
+        assertEquals(369000L, back[0].durationMs)
+    }
+
+    @Test fun writesPlainText() {
+        val tracks = listOf(Track("1", "Get Lucky", listOf("Daft Punk")), Track("2", "Untitled"))
+        val text = PlaylistFiles.toText(tracks)
+        assertEquals("Daft Punk - Get Lucky\nUntitled\n", text)
+        assertEquals(2, PlaylistFiles.parse("x.txt", text).size)
+    }
 }

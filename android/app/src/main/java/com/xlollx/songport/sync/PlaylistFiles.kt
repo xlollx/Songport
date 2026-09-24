@@ -6,6 +6,8 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 /**
  * Import/export di playlist come file, in tutti i formati che i servizi musicali (o i loro
@@ -24,7 +26,7 @@ import kotlinx.serialization.json.JsonPrimitive
  */
 object PlaylistFiles {
 
-    enum class Format { CSV, M3U, ITUNES_XML, JSON, TEXT }
+    enum class Format { CSV, M3U, ITUNES_XML, XSPF, JSON, TEXT }
 
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
@@ -39,6 +41,7 @@ object PlaylistFiles {
         val head = text.take(4000).trimStart().removePrefix("﻿")
         return when {
             head.startsWith("#EXTM3U") || name.endsWith(".m3u") || name.endsWith(".m3u8") -> Format.M3U
+            name.endsWith(".xspf") || (head.startsWith("<") && head.contains("xspf.org")) -> Format.XSPF
             head.contains("<plist") || (name.endsWith(".xml") && head.startsWith("<")) -> Format.ITUNES_XML
             head.startsWith("{") || head.startsWith("[") || name.endsWith(".json") -> Format.JSON
             firstLine(text)?.any { it == ',' || it == ';' || it == '\t' } == true -> Format.CSV
@@ -49,6 +52,7 @@ object PlaylistFiles {
     fun parse(fileName: String, text: String): List<Track> = when (detect(fileName, text)) {
         Format.M3U -> parseM3u(text)
         Format.ITUNES_XML -> parseItunesXml(text)
+        Format.XSPF -> parseXspf(text)
         Format.JSON -> parseJson(text)
         Format.CSV -> CsvCodec.parse(text)
         Format.TEXT -> parseText(text)
@@ -99,6 +103,66 @@ object PlaylistFiles {
             append(t.artistLine).append(if (t.artists.isEmpty()) "" else " - ").append(t.title).append("\r\n")
         }
     }
+
+    /** Testo semplice, una riga "Artista - Titolo" per brano: si incolla ovunque, anche in una chat. */
+    fun toText(tracks: List<Track>): String = tracks.joinToString("\n", postfix = "\n") { t ->
+        if (t.artists.isEmpty()) t.title else t.artistLine + " - " + t.title
+    }
+
+    /** JSPF (XSPF in JSON), il formato di ListenBrainz: creator/title/album/duration e l'ISRC fra gli identificatori. */
+    fun toJspf(name: String, tracks: List<Track>): String {
+        val list = tracks.map { t ->
+            buildJsonObject {
+                put("title", t.title)
+                if (t.artists.isNotEmpty()) put("creator", t.artistLine)
+                if (t.album.isNotBlank()) put("album", t.album)
+                if (t.durationMs > 0) put("duration", t.durationMs)
+                t.isrcNorm?.let { put("identifier", JsonArray(listOf(JsonPrimitive("isrc:$it")))) }
+            }
+        }
+        val root = buildJsonObject { put("playlist", buildJsonObject { put("title", name); put("track", JsonArray(list)) }) }
+        return Json { prettyPrint = true }.encodeToString(JsonObject.serializer(), root) + "\n"
+    }
+
+    /** XSPF, la playlist XML aperta che leggono VLC, Strawberry, Clementine e altri. */
+    fun toXspf(name: String, tracks: List<Track>): String = buildString {
+        append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+        append("<playlist version=\"1\" xmlns=\"http://xspf.org/ns/0/\">\n")
+        append("  <title>").append(escapeXml(name)).append("</title>\n  <trackList>\n")
+        for (t in tracks) {
+            append("    <track>")
+            append("<title>").append(escapeXml(t.title)).append("</title>")
+            if (t.artists.isNotEmpty()) append("<creator>").append(escapeXml(t.artistLine)).append("</creator>")
+            if (t.album.isNotBlank()) append("<album>").append(escapeXml(t.album)).append("</album>")
+            if (t.durationMs > 0) append("<duration>").append(t.durationMs).append("</duration>")
+            t.isrcNorm?.let { append("<identifier>isrc:").append(escapeXml(it)).append("</identifier>") }
+            append("</track>\n")
+        }
+        append("  </trackList>\n</playlist>\n")
+    }
+
+    private val XSPF_TRACK = Regex("""<track>([\s\S]*?)</track>""")
+    private fun xspfField(body: String, tag: String): String? =
+        Regex("""<$tag>([\s\S]*?)</$tag>""").find(body)?.groupValues?.get(1)?.let { unescapeXml(it).trim() }?.takeIf { it.isNotEmpty() }
+
+    fun parseXspf(text: String): List<Track> = XSPF_TRACK.findAll(text).mapNotNull { m ->
+        val body = m.groupValues[1]
+        val title = xspfField(body, "title") ?: return@mapNotNull null
+        val isrc = Regex("""<identifier>\s*isrc:([A-Za-z0-9]+)\s*</identifier>""").find(body)?.groupValues?.get(1)
+        CsvCodec.withStableId(
+            Track(
+                id = "",
+                title = title,
+                artists = CsvCodec.splitArtists(xspfField(body, "creator").orEmpty()),
+                album = xspfField(body, "album").orEmpty(),
+                durationMs = xspfField(body, "duration")?.toLongOrNull() ?: 0,
+                isrc = isrc,
+            )
+        )
+    }.toList()
+
+    private fun escapeXml(s: String): String = s
+        .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")
 
     // ---------------------------------------------------------------- iTunes / Apple Music XML
 

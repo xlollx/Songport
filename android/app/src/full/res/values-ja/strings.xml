@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GitHub and F-Droid build: the built-in web connectors also keep the service's web session. -->
+<resources>
+    <string name="security_fact_2">Songport が保存するのは取り消し可能なアクセストークンと、ウェブコネクタの場合はサービスのセッションのみで、すべて Android Keystore で暗号化されます。</string>
+    <string name="onboarding_security">各サービス自身のページでログインします。Songport はこの端末上に暗号化された取り消し可能なトークンまたはウェブセッションのみを保存し、独自のサーバーは持ちません。</string>
+</resources>

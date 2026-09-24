@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Songport</string>
+
+    <string name="tab_syncs">同期</string>
+    <string name="tab_accounts">アカウント</string>
+    <string name="tab_log">ログ</string>
+    <string name="tab_settings">設定</string>
+
+    <string name="syncs_empty">同期はまだありません。\n\n「アカウント」でサービスを1つ以上接続し（CSV ファイルも使えます）、+ をタップして最初の同期を作成してください。</string>
+    <string name="sync_all">今すぐすべて同期</string>
+    <string name="run_now">今すぐ実行</string>
+    <string name="edit">編集</string>
+    <string name="delete">削除</string>
+    <string name="new_sync">新しい同期</string>
+    <string name="disabled">無効</string>
+
+    <string name="schedule_manual">手動のみ</string>
+    <string name="schedule_hourly">1時間ごと</string>
+    <string name="schedule_6h">6時間ごと</string>
+    <string name="schedule_daily">毎日</string>
+    <string name="schedule_weekly">毎週</string>
+
+    <string name="last_run_never">未実行</string>
+    <string name="last_run_at">前回の実行：%1$s</string>
+    <string name="result_added_removed">%1$d 曲追加、%2$d 曲削除</string>
+    <string name="result_unmatched">%1$d 曲が見つかりません</string>
+    <string name="result_error">エラー：%1$s</string>
+    <string name="result_ok">最新の状態</string>
+
+    <string name="running">同期中…</string>
+    <string name="progress_fetch_source">同期元プレイリストを読み込み中…</string>
+    <string name="progress_create_target">同期先プレイリストを作成中…</string>
+    <string name="progress_fetch_target">同期先プレイリストを読み込み中…</string>
+    <string name="progress_matching">曲を照合中 %1$d/%2$d…</string>
+    <string name="progress_waiting">サービスがリクエストを制限しています。%1$d 秒後に再開します。大きなプレイリストではよくあることで、エラーではありません。</string>
+    <string name="progress_adding">%1$d 曲を追加中…</string>
+    <string name="progress_removing">%1$d 曲を削除中…</string>
+
+    <string name="editor_title_new">新しい同期</string>
+    <string name="editor_title_edit">同期を編集</string>
+    <string name="editor_name">名前</string>
+    <string name="editor_source">同期元</string>
+    <string name="editor_target">同期先</string>
+    <string name="editor_provider">サービス</string>
+    <string name="editor_playlist">プレイリスト</string>
+    <string name="editor_choose_playlist">プレイリストを選択</string>
+    <string name="editor_new_playlist">新しいプレイリストを作成</string>
+    <string name="editor_new_playlist_name">新しいプレイリストの名前</string>
+    <string name="editor_schedule">自動スケジュール</string>
+    <string name="editor_mirror">削除も反映</string>
+    <string name="editor_mirror_desc">同期元にない曲を同期先からも削除します。オフの場合は追加のみ行います。</string>
+    <string name="editor_wifi_only">Wi‑Fi 接続時のみ</string>
+    <string name="editor_enabled">有効</string>
+    <string name="save">保存</string>
+    <string name="cancel">キャンセル</string>
+    <string name="loading">読み込み中…</string>
+    <string name="no_connected_providers">まず「アカウント」タブでサービスを1つ以上接続してください。</string>
+    <string name="liked_songs">お気に入りの曲</string>
+    <string name="tracks_count">%1$d 曲</string>
+    <string name="editor_error_incomplete">同期元プレイリストと同期先を選択してください。</string>
+
+    <string name="connected_as">%1$s として接続済み</string>
+    <string name="not_connected">未接続</string>
+    <string name="not_configured">設定が必要</string>
+    <string name="not_configured_hint">Songport にはサービスのキーが含まれていません。サービスの開発者ページで無料のキーを自分で作成してください。所要時間は約2分で、アプリが手順を1つずつ案内します。</string>
+    <string name="setup_now">設定</string>
+    <string name="connect">接続</string>
+    <string name="disconnect">接続解除</string>
+    <string name="connecting">接続中…</string>
+    <string name="always_available">常に利用可能</string>
+
+    <string name="provider_note_spotify">Spotify アカウントが必要です。プレイリストとお気に入りの曲に対応しています。</string>
+    <string name="provider_note_ytm">YouTube Music のプレイリストと高く評価した曲を、このバージョンに組み込まれたウェブプレーヤー自体のインターフェース経由で扱います。Google アカウントでログインするだけで、Google Cloud プロジェクトも割り当て上限も不要です。Google の公式 API ではありません。ログイン前に表示される注意事項をお読みください。</string>
+    <string name="ytm_not_installed_hint">GitHub からコンパニオンアプリ「Songport YTM Bridge」をインストールし、ここに戻って「接続」を押してください。公式の方法を使いたい場合は、下の「YouTube Music (Google API)」カードをご利用ください。</string>
+    <string name="ytm_not_installed">Songport YTM Bridge がインストールされていません。</string>
+    <string name="ytm_install">Bridge を入手</string>
+    <string name="report_issue">GitHub で報告</string>
+    <string name="provider_note_youtube">ご自身の Google Cloud プロジェクトを使う公式の YouTube Data API です。任意：上の通常の「YouTube Music」カードはこれなしで使えます。1日の割り当ては限られているため、大規模な同期には数日かかることがあります。</string>
+    <string name="provider_note_tidal">TIDAL のプレイリスト（ベータ版）。</string>
+    <string name="provider_note_deezer">Deezer のプレイリストとお気に入り（ベータ版）。</string>
+
+    <string name="log_empty">まだ同期は実行されていません。</string>
+    <string name="log_unmatched_title">同期先で見つからなかった曲</string>
+    <string name="log_duration">%1$d 秒</string>
+
+    <string name="settings_notifications">同期のたびに通知</string>
+    <string name="settings_notifications_desc">スケジュールされた同期で曲が追加・削除されたとき、または失敗したときに通知を表示します。</string>
+    <string name="settings_language">言語</string>
+    <string name="settings_language_desc">Songport はシステムの言語に従います：英語、イタリア語、フランス語、ドイツ語、スペイン語、中国語、日本語。</string>
+    <string name="settings_language_open">変更</string>
+    <string name="settings_language_system">システムの言語</string>
+    <string name="settings_advanced">サービスのキー</string>
+    <string name="settings_advanced_desc">Songport 自体はキーを持っていません。Spotify、YouTube Music、TIDAL、Deezer、Last.fm、Apple Music は、あなたの名前で作成した無料のキーで接続するため、制限や割り当てはあなた専用です。ここで確認・変更できます。</string>
+    <string name="settings_privacy_options">広告のプライバシー設定</string>
+    <string name="settings_privacy_policy">プライバシーポリシー</string>
+    <string name="settings_about">アプリについて</string>
+    <string name="settings_version">バージョン %1$s</string>
+    <string name="settings_ads_note">Songport は無料で、サブスクリプションもありません。小さなバナー広告1つで運営されています。データを販売することはなく、接続した音楽サービスへのリクエスト以外、何も端末の外に送信されません。</string>
+    <string name="settings_csv">ファイル</string>
+    <string name="csv_import">ファイルをインポート</string>
+    <string name="csv_export">エクスポート</string>
+    <string name="csv_playlists_hint">ファイルのプレイリストはアプリ内に保存されます。ここでファイルをインポートして同期元として使うか、任意のプレイリストをファイルに同期して CSV または M3U としてエクスポートできます。</string>
+    <string name="csv_empty">ファイルのプレイリストはまだありません。</string>
+    <string name="csv_imported">%1$d 曲をインポートしました</string>
+    <string name="csv_exported">ファイルをエクスポートしました</string>
+    <string name="log_save_file">ファイルとして保存…</string>
+    <string name="note_file_target">Songport 内に保存されています。CSV や M3U が必要な場合は、ここで「ファイルとして保存」を使うか、「設定」→「ファイル」を開いてください。</string>
+
+    <string name="auth_done">%1$s に接続しました</string>
+    <string name="auth_failed">ログインに失敗しました：%1$s</string>
+    <string name="auth_state_mismatch">セキュリティチェックに失敗しました（state の不一致）。もう一度お試しください。</string>
+    <string name="auth_wait">ログインを完了しています…</string>
+    <string name="auth_no_pending">進行中のログインはありません。</string>
+
+    <string name="notif_channel_name">同期結果</string>
+    <string name="notif_channel_desc">スケジュールされたプレイリスト同期の結果。</string>
+    <string name="notif_sync_title">同期：%1$s</string>
+
+    <string name="delete_confirm_title">この同期を削除しますか？</string>
+    <string name="delete_confirm_text">各サービス上のプレイリストは変更されません。</string>
+    <string name="yes">はい</string>
+    <string name="no">いいえ</string>
+    <string name="ok">OK</string>
+
+    <string name="error_not_connected">%1$s は接続されていません</string>
+    <string name="error_source_empty">同期元プレイリストが空のため、何も行いません（安全のため削除はスキップしました）。</string>
+    <string name="error_generic">問題が発生しました</string>
+
+    <string name="provider_note_apple">ライブラリ内の Apple Music プレイリスト。サブスクリプションと MusicKit のデベロッパートークンが必要です。Apple の API では曲の追加はできますが、削除はできません。</string>
+    <string name="provider_note_files">ローカルファイル：任意のサービスからエクスポートしたプレイリスト（CSV、M3U、Apple Music/iTunes XML、JSON、またはテキストのリスト）をインポートし、どこへでも同期できます。オープンな API がないサービス（Amazon Music、Qobuz、SoundCloud）との橋渡しになります。</string>
+    <string name="apple_token_missing">Apple Music のデベロッパートークンがまだありません。「アカウント」→「Apple Music」→「設定」から入力してください。</string>
+    <string name="link_paste">または公開プレイリストのリンクを貼り付け</string>
+    <string name="link_use">リンクを使用</string>
+    <string name="link_invalid">認識できないリンクです。対応サービス：Spotify、Apple Music、YouTube/YouTube Music、Deezer、TIDAL。</string>
+    <string name="link_not_connected">このリンクを読み込むには、先に %1$s を接続してください。</string>
+    <string name="link_resolving">プレイリストを読み込み中…</string>
+    <string name="note_no_removals">%1$s は API によるプレイリストからの曲の削除に対応していないため、%2$d 曲はそのまま残しました。</string>
+    <string name="note_removals_deferred">削除を延期しました：検索が完了しなかったため、同期先でまだどの曲とも一致していない %1$d 曲はそのまま残しました。実行が最後まで完了したときに確認されます。</string>
+    <string name="note_search_interrupted">%2$d 曲中 %1$d 曲を検索したところで、サービスがより長い休止を求めました（%3$s）。これはサービス側の制限で、Songport のエラーではありません。見つかった曲は反映され、記憶されています。数分後にもう一度同期を実行すると、続きから再開します。</string>
+    <string name="error_no_removals">%1$s はプレイリストから曲を削除できません</string>
+    <string name="log_notes_title">メモ</string>
+    <string name="editor_mirror_unsupported">%1$s は曲の追加のみ可能です。削除はスキップされます。</string>
+
+    <string name="setup_cta">キーを変更</string>
+    <string name="setup_title">%1$s：あなたのキー</string>
+    <string name="setup_using_own">あなたのキーで設定済みです。</string>
+    <string name="setup_redirect_label">ダッシュボードに貼り付けるリダイレクト URI</string>
+    <string name="setup_copy">コピー</string>
+    <string name="setup_copied">コピーしました</string>
+    <string name="setup_open_step">開く</string>
+    <string name="setup_open_dashboard">デベロッパーポータルを開く</string>
+    <string name="setup_save_connect">保存して接続</string>
+    <string name="setup_save">保存</string>
+    <string name="setup_clear">自分の認証情報を削除</string>
+    <string name="setup_field_required">すべての項目を入力してください。</string>
+    <string name="setup_field_client_id">Client ID</string>
+    <string name="setup_field_app_id">Application ID</string>
+    <string name="setup_field_secret">Client secret</string>
+    <string name="setup_field_redirect_url">あなたの https リダイレクト URL</string>
+    <string name="setup_field_apple_token">デベロッパートークン（JWT）</string>
+    <string name="setup_why_spotify">Spotify では、あなたの名前で登録したアプリが必要です。無料で、Development Mode のアプリは最大5アカウントまで利用でき、個人利用には十分です。</string>
+    <string name="setup_why_youtube">YouTube API を使うには、あなたの名前の Google Cloud プロジェクトが必要です。無料で、1日の割り当てはあなた専用です。</string>
+    <string name="setup_why_tidal">TIDAL では、あなたの名前で登録したアプリが必要です。無料です。</string>
+    <string name="setup_why_deezer">Deezer では、あなたの名前で登録したアプリが必要です。https のリダイレクトページはプロジェクトが提供しています。</string>
+    <string name="setup_why_apple">デベロッパートークンはあなたの Apple Developer アカウントに属し、最長6か月で期限切れになります。</string>
+    <string name="error_dev_mode_limit">%1$s ではアプリごとにごく少数のユーザーしか利用できません。ご自身の認証情報を設定してください。無料で、約2分で完了します。</string>
+    <string name="error_network">端末からサービスに接続できませんでした（DNS エラー）。接続状況、VPN やプライベート DNS の設定、Songport のバックグラウンドでのデータ使用が許可されているかを確認して、もう一度お試しください。</string>
+    <string name="auth_timeout">ブラウザから応答がなく、時間切れになりました</string>
+
+    <string name="tab_tools">ツール</string>
+    <string name="preview">プレビュー</string>
+    <string name="preview_title">プレビュー：%1$s</string>
+    <string name="preview_computing">変更内容を計算中…</string>
+    <string name="preview_present">%1$d 曲は同期先にあります</string>
+    <string name="preview_add">%1$d 曲を追加</string>
+    <string name="preview_remove">%1$d 曲を削除</string>
+    <string name="preview_unmatched">%1$d 曲が見つかりません</string>
+    <string name="preview_ignored">%1$d 曲を無視</string>
+    <string name="preview_target_new">同期先プレイリストが作成されます。</string>
+    <string name="preview_nothing">何もする必要はありません。プレイリストは同期済みです。</string>
+    <string name="preview_more">…ほか %1$d 曲</string>
+    <string name="unmatched_resolve">見つからない曲を修正</string>
+    <string name="unmatched_title">見つからない曲：%1$s</string>
+    <string name="unmatched_search_hint">%1$s で検索</string>
+    <string name="unmatched_search">検索</string>
+    <string name="unmatched_add">追加</string>
+    <string name="unmatched_ignore">無視</string>
+    <string name="unmatched_none">すべて解決しました。</string>
+    <string name="files_title">ファイルのプレイリスト</string>
+    <string name="files_summary">%1$d 件のプレイリスト · %2$d 曲</string>
+    <string name="files_manage">管理</string>
+    <string name="files_search">検索</string>
+    <string name="files_group_other">その他</string>
+    <string name="review_now">要修正 %1$d 件 · 今すぐ開始</string>
+    <string name="review_summary">見つからない曲 %1$d 件 · 要確認 %2$d 件</string>
+    <string name="review_tap_hint">候補をワンタップで承認するか、曲を開いて %1$s で検索します。選んだ内容はすべて記憶され、次回以降の同期に使われます。</string>
+    <string name="review_partial_banner">同期は見つかった曲をまだ追加しています。これらの曲はもう修正できます。</string>
+    <string name="unmatched_added">追加しました：%1$s</string>
+    <string name="unmatched_no_results">結果がありません。</string>
+    <string name="unmatched_search_help">曲名、「アーティスト - 曲名」、または曲のリンク</string>
+    <string name="search_open_in">%1$s で開く</string>
+    <string name="search_paste_link">リンクを貼り付け</string>
+    <string name="search_clipboard_empty">クリップボードにリンクがありません。アプリで曲のリンクをコピーしてから、「リンクを貼り付け」をタップしてください。</string>
+    <string name="link_other_service">このリンクは %1$s の曲ではありません</string>
+    <string name="link_track_unknown">リンクの曲</string>
+    <string name="search_album_section">%2$s のアルバム「%1$s」より · %3$d 曲</string>
+    <string name="search_album_missing">%2$s でアルバム「%1$s」が見つかりません</string>
+    <string name="search_other_results">その他の結果</string>
+    <string name="search_videos_section">YouTube の動画 · %1$d</string>
+    <string name="search_top">有力候補</string>
+    <string name="search_suggested">候補</string>
+    <string name="search_tag_album">アルバム</string>
+    <string name="search_tag_video">動画</string>
+    <string name="result_ignored">%1$d 曲を無視</string>
+    <string name="tools_pick_service">サービス</string>
+    <string name="tools_none">まずサービスを接続してください。</string>
+    <string name="spotify_forbidden">Spotify がリクエストを拒否しました（%1$s）。Development Mode のアプリは、Spotify 自身が作成したプレイリスト（Discover Weekly、Release Radar、編集部のミックスなど）を読み込めず、アプリの User Management に登録されたアカウントでしか利用できません。あなたや他のユーザーが作成したプレイリストを選ぶか、developer.spotify.com でアカウントを追加してください。</string>
+    <string name="tools_export_title">プレイリストをエクスポート</string>
+    <string name="tools_export_desc">このサービスの任意のプレイリストを、サービス側は何も変えずに、スマートフォン上のファイル（CSV、M3U、XSPF、JSPF、プレーンテキスト）として保存します。</string>
+    <string name="tools_export_done">%1$d 曲をエクスポートしました</string>
+    <string name="tools_backup_title">完全バックアップ</string>
+    <string name="tools_backup_desc">すべてのプレイリスト（とお気に入りの曲）を「ファイル」画面にファイルとして保存し、CSV や M3U としてエクスポートできるようにします。実行するたびに日付付きのバージョンが追加され、各プレイリストの最新 %1$d バージョンが保持されます。変更のないプレイリストは再度書き込まれません。サービス上では何も変更されません。</string>
+    <string name="tools_backup_run">今すぐバックアップ</string>
+    <string name="tools_backup_done">%1$d 件のプレイリスト、%2$d 曲を保存しました</string>
+    <string name="tools_backup_unchanged">%1$d 件は変更なし</string>
+    <string name="files_hide_versions">以前のバージョンを隠す</string>
+    <plurals name="files_versions">
+        <item quantity="other">以前のバージョン %d 件</item>
+    </plurals>
+    <string name="tools_dedupe_title">重複を削除</string>
+    <string name="tools_dedupe_desc">プレイリスト内で重複している曲を、ID やバージョンが違っていても見つけ出し、最初の1曲を残します。</string>
+    <string name="tools_dedupe_scan">重複を検索</string>
+    <string name="tools_dedupe_found">重複グループ %1$d 件、削除する曲 %2$d 曲</string>
+    <string name="tools_dedupe_none">重複はありません。</string>
+    <string name="tools_dedupe_remove">%1$d 曲を削除</string>
+    <string name="tools_dedupe_done">%1$d 曲を削除しました</string>
+    <string name="tools_progress_backup">バックアップ中 %1$d/%2$d…</string>
+    <string name="tools_progress_dedupe">整理中 %1$d/%2$d…</string>
+    <string name="export_format">%1$s としてエクスポート</string>
+    <string name="format_text">テキスト</string>
+    <string name="tools_export_save">形式を選んで保存…</string>
+    <string name="tools_make_title">新しいプレイリストを作成…</string>
+    <string name="tools_make_desc">プレイリストをコピー、結合、分割、並べ替え、シャッフルします。結果は常にこのサービス上の新しいプレイリストになり、元のプレイリストは変更されません。</string>
+    <string name="tools_make_copy">コピー</string>
+    <string name="tools_make_merge">結合</string>
+    <string name="tools_make_split">分割</string>
+    <string name="tools_make_sort">並べ替え</string>
+    <string name="tools_make_shuffle">シャッフル</string>
+    <string name="tools_make_add_playlist">プレイリストを追加</string>
+    <string name="tools_make_drop_duplicates">重複をスキップ</string>
+    <string name="tools_make_split_size">1 パートあたりの曲数</string>
+    <string name="tools_make_sort_artist">アーティスト順</string>
+    <string name="tools_make_sort_title">タイトル順</string>
+    <string name="tools_make_sort_album">アルバム順</string>
+    <string name="tools_make_sort_reverse">逆順</string>
+    <string name="tools_make_run">作成</string>
+    <string name="tools_make_done">「%1$s」を %2$d 曲で作成しました</string>
+    <string name="tools_make_done_parts">%1$d 個のプレイリストを作成しました（%2$d 曲）</string>
+    <string name="tools_make_failed">%1$d 曲を追加できませんでした</string>
+    <string name="tools_make_cannot_create">%1$s ではここからプレイリストを作成できません。</string>
+    <string name="tools_make_copy_suffix">%1$s（コピー）</string>
+    <string name="tools_make_merge_default">結合したプレイリスト</string>
+    <string name="tools_make_sorted_suffix">%1$s（並べ替え）</string>
+    <string name="tools_make_shuffled_suffix">%1$s（シャッフル）</string>
+    <string name="tools_make_part_name">%1$s · パート %2$d</string>
+    <string name="tools_progress_make">追加中 %1$d/%2$d…</string>
+    <string name="tools_transfer_title">複数のプレイリストを転送</string>
+    <string name="tools_transfer_desc">あるサービスの複数のプレイリストを選び、まとめて別のサービスへ送ります。プレイリストごとに同期が作成され、順番に実行されます。同期は「同期」に残るので、再実行やスケジュール設定ができます。</string>
+    <string name="tools_transfer_open">プレイリストを選ぶ</string>
+    <string name="transfer_title">プレイリストを転送</string>
+    <string name="transfer_from">転送元</string>
+    <string name="transfer_to">転送先</string>
+    <string name="transfer_select_all">すべて選択</string>
+    <string name="transfer_select_none">解除</string>
+    <string name="transfer_existing">同期あり</string>
+    <string name="transfer_same_service">異なる 2 つのサービスを選んでください。</string>
+    <string name="transfer_none">このサービスにプレイリストはありません。</string>
+    <plurals name="transfer_run">
+        <item quantity="other">%1$d 個のプレイリストを転送</item>
+    </plurals>
+    <string name="transfer_started">%1$d 個の同期を作成して開始しました。「同期」で確認できます。</string>
+    <string name="settings_battery">スケジュールした同期が実行されない場合</string>
+    <string name="settings_battery_desc">一部の端末（Xiaomi、Huawei、Oppo、Samsung）はバックグラウンドのアプリを停止します。スケジュールどおりに実行されるよう、Songport を電池の最適化の対象から除外してください。</string>
+    <string name="settings_battery_button">電池の設定を開く</string>
+    <string name="share_received">リンクを受け取りました。同期先を選んでください。</string>
+    <string name="share_invalid">共有されたテキストに認識できるプレイリストのリンクがありません。</string>
+    <string name="read_only">読み取り専用</string>
+    <string name="beta">ベータ版</string>
+    <string name="beta_note">ベータ版のコネクタです。動作はしますが、他のコネクタほど使われていません。問題があればご報告ください。</string>
+    <string name="provider_note_subsonic">ご自身の音楽サーバー：Navidrome、Airsonic、Gonic、LMS、Funkwhale など、Subsonic API に対応したサーバー。登録も割り当ても不要です。スターを付けた曲はお気に入りの曲として扱われます。</string>
+    <string name="provider_note_jellyfin">ご自身の Jellyfin サーバー。登録も割り当ても不要です。お気に入りはお気に入りの曲として扱われます。</string>
+    <string name="provider_note_plex">ご自身の Plex Media Server に X-Plex-Token で接続します。Plex では API から空のプレイリストを作成できないため、Plex で作成してからここで選択してください。</string>
+    <string name="provider_note_lastfm">Last.fm プロフィールの Love した曲（同期元専用）。無料の Last.fm API キーが必要です。</string>
+    <string name="provider_note_listenbrainz">ListenBrainz ユーザーのプレイリストと Love した曲（同期元専用）。キーは不要です。</string>
+    <string name="login_title">%1$s にログイン</string>
+    <string name="login_url">サーバーのアドレス</string>
+    <string name="login_user">ユーザー名</string>
+    <string name="login_password">パスワード</string>
+    <string name="login_token">トークン</string>
+    <string name="login_submit">確認して保存</string>
+    <string name="login_checking">確認中…</string>
+    <string name="login_trust_server">認証情報はこの端末上で暗号化して保存されます。Songport はここで入力したサーバーとのみ通信します。</string>
+    <string name="login_hint_subsonic">Navidrome、Airsonic などの Subsonic 互換サーバーのアドレス（例：https://music.example.com）、ユーザー名、パスワードを入力してください。パスワードがそのまま送信されることはなく、各リクエストにはソルト付きハッシュが使われます。</string>
+    <string name="login_hint_jellyfin">Jellyfin サーバーのアドレス（例：https://jellyfin.example.com）、ユーザー名、パスワードを入力してください。</string>
+    <string name="login_hint_plex">Plex Media Server のアドレス（例：http://192.168.1.10:32400）と X-Plex-Token を入力してください。トークンの確認方法は Plex のサポートページ（「Finding an authentication token」）で説明されています。</string>
+    <string name="login_hint_lastfm">Love した曲を読み込む Last.fm のユーザー名を入力してください。プロフィールは公開されている必要があります。</string>
+    <string name="login_hint_listenbrainz">プレイリストと Love した曲を読み込む ListenBrainz のユーザー名を入力してください。</string>
+    <string name="setup_why_lastfm">Last.fm で公開プロフィールを読み込むには、無料の API キー（すぐに発行されます）が必要です。</string>
+    <string name="setup_field_api_key">API キー</string>
+    <string name="error_read_only">%1$s は読み取り専用のため、同期元としてのみ使用できます。</string>
+    <string name="error_create_unsupported">%1$s ではアプリからプレイリストを作成できません。%1$s で作成してから、ここで選択してください。</string>
+    <string name="connect_title">%1$s に接続中</string>
+    <string name="connect_where_oauth">ブラウザで %1$s にログインします。Songport があなたのパスワードを見ることはありません。</string>
+    <string name="connect_where_apple">Apple 自身のウインドウで Apple ID を使ってサインインします。Songport があなたのパスワードを見ることはありません。</string>
+    <string name="connect_where_server">サーバーの情報はこの端末上で暗号化して保存されます。Songport はあなたのサーバーとのみ通信します。</string>
+    <string name="connect_token">Songport が受け取るのは限定的で取り消し可能な権限のみで、この端末上で暗号化して保存されます（Android Keystore）。</string>
+    <string name="connect_noserver">Songport のサーバーは存在しません。データはこの端末と %1$s の間でのみやり取りされます。</string>
+    <string name="connect_revoke">いつでも取り消せます：ここで「接続解除」するか、%1$s のアカウントから行えます。</string>
+    <string name="connect_continue">続行</string>
+    <string name="connect_continue_browser">ブラウザで続行</string>
+    <string name="account_encrypted">この端末上で暗号化</string>
+    <string name="account_revoke">%1$s で取り消す</string>
+    <string name="account_add">別のアカウントを追加</string>
+    <string name="account_remove">このアカウントを削除</string>
+    <string name="account_remove_blocked">先にこのアカウントを使っている同期を削除してください。</string>
+    <string name="connectors_empty_title">コネクタはまだありません</string>
+    <string name="connectors_empty_body">+ をタップしてサービスを追加します：Spotify、YouTube Music、TIDAL、ファイルなど。同じサービスのコネクタを複数追加でき、それぞれに名前とアカウントを設定できます。</string>
+    <string name="connector_add">コネクタを追加</string>
+    <string name="connector_pick_title">どのサービスですか？</string>
+    <string name="connector_name_label">コネクタ名</string>
+    <string name="connector_rename">名前を変更</string>
+    <string name="connect_switch_account">ブラウザがすでに別の %1$s アカウントでログインしている可能性があります。ログインページで「別のアカウント」を選ぶかアカウントを切り替えてから、このコネクタ用のアカウントで続行してください。</string>
+    <string name="provider_note_amazon">Amazon にはオープンな API がありません。Songport はウェブプレーヤーのインターフェースを利用しているため、Amazon がそれを変更すると動作しなくなる可能性があります。プレイリスト、検索、作成、追加、削除に対応しています。</string>
+    <string name="amazon_not_installed_hint">GitHub からコンパニオンアプリ「Songport Bridge」（1.3.1 以降）をインストールまたは更新し、ここに戻って「接続」をタップしてください。</string>
+    <string name="sync_pause">一時停止</string>
+    <string name="sync_resume">再開</string>
+    <string name="sync_stop">停止</string>
+    <string name="sync_paused">一時停止中</string>
+    <string name="sync_stopped">ユーザーが停止しました</string>
+    <string name="live_title">同期の状況</string>
+    <string name="live_empty">処理済みの曲はまだありません。</string>
+    <string name="live_found">見つかりました：%1$s</string>
+    <string name="live_cached">以前の照合結果：%1$s</string>
+    <string name="live_not_found">同期先で見つかりません</string>
+    <string name="live_added">同期先に追加しました</string>
+    <string name="live_add_failed">追加できませんでした：%1$s</string>
+    <string name="live_removed">同期先から削除しました</string>
+    <string name="provider_note_spotify_bridge">Spotify 自身のページでログインするだけで、開発者アプリの作成は不要です。ウェブプレーヤーのセッションを使用します。公式の方法ではなく、Spotify の利用規約に反しており、動作しなくなる可能性があります。自分のキーを使う公式の方法は「Spotify」として引き続き利用できます。</string>
+    <string name="provider_note_apple_bridge">Apple ID でサインインするだけで、Apple Developer Program は不要です。ウェブプレーヤーのトークンを使用します。公式の方法ではなく、Apple の利用規約に反しており、動作しなくなる可能性があります。自分のデベロッパートークンを使う公式の方法は「Apple Music」として引き続き利用できます。</string>
+    <string name="bridge_needed_hint">GitHub からコンパニオンアプリ「Songport Bridge」（1.2 以降）をインストールまたは更新し、ここに戻って「接続」をタップしてください。</string>
+    <string name="settings_source_code">ソースコードとドキュメント</string>
+    <string name="plugins_more">ほかのサービスはコネクタプラグインで追加できます。仕組みはこちら。</string>
+    <string name="security_title">ログイン情報の保護について</string>
+    <string name="security_fact_1">パスワードは各サービス自身のページで入力します。Songport に入力することはありません。</string>
+    <string name="security_fact_2">Songport が保存するのは取り消し可能なアクセストークンのみで、Android Keystore で暗号化されます。</string>
+    <string name="security_fact_3">Songport のサーバーはなく、作成するアカウントもありません。接続したサービスへのリクエスト以外、何も端末の外に送信されません。</string>
+    <string name="security_fact_4">接続を解除すると、端末からトークンが削除されます。どのサービスでも、アカウントページからトークンを取り消すこともできます。</string>
+    <string name="security_lock">起動時にロック解除を要求</string>
+    <string name="security_lock_desc">Songport を開く前に、指紋、顔、または端末の PIN を要求します。</string>
+    <string name="security_lock_unavailable">この端末には画面ロックが設定されていません。</string>
+    <string name="lock_title">Songport はロックされています</string>
+    <string name="lock_subtitle">指紋、顔、または PIN でロックを解除</string>
+    <string name="lock_unlock">ロック解除</string>
+    <string name="review_title">要確認：%1$s</string>
+    <string name="review_open">確認</string>
+    <string name="review_section_uncertain">不確かな一致（%1$d）</string>
+    <string name="review_section_unmatched">見つからない曲（%1$d）</string>
+    <string name="review_keep">これで正しい</string>
+    <string name="review_change">変更</string>
+    <string name="review_use_this">これを使う</string>
+    <string name="review_score">一致度 %1$d%%</string>
+    <string name="preview_uncertain">要確認 %1$d 曲</string>
+    <string name="restore_removed">削除した %1$d 曲を復元</string>
+    <string name="restored_done">%1$d 曲を復元しました</string>
+    <string name="restored_note">削除された %1$d 曲を手動で復元しました。</string>
+    <string name="quota_used">本日の YouTube ユニット使用量：%1$s / %2$s</string>
+    <string name="quota_note">1日の上限は Songport ではなく YouTube（Google）が設定しています。太平洋時間の午前0時にリセットされます。検索1回で100ユニット、曲の追加1回で50ユニットを消費します。</string>
+    <string name="quota_note_shared">1日の上限は Songport ではなく YouTube（Google）が設定しており、組み込みキーを使うすべてのユーザーで共有されます。他のユーザーの消費分はここには含まれません。ご自身の認証情報を使えば、専用の割り当てが得られます。</string>
+    <string name="quota_estimate">この同期では約 %1$s ユニットを使用します。</string>
+    <string name="quota_estimate_over">この同期には約 %1$s ユニットが必要ですが、本日の残りは %2$s ユニットのみです。数日かけて完了します。</string>
+    <string name="editor_bidirectional">双方向</string>
+    <string name="editor_bidirectional_desc">逆方向のミラー同期（削除なし）も作成し、両方のプレイリストにすべての曲がそろうようにします。</string>
+    <string name="editor_bidirectional_unavailable">既存の同期先プレイリストと書き込み可能な同期元がある場合に利用できます。</string>
+    <string name="onboarding_title">Songport へようこそ</string>
+    <string name="onboarding_intro">音楽サービス間でプレイリストを同じ内容に保ちます。手動でも、スケジュールでも。無料で、サブスクリプションもアカウント作成も不要です。</string>
+    <string name="onboarding_step1_title">1. サービスを接続</string>
+    <string name="onboarding_step1_desc">Spotify、Apple Music、YouTube Music、TIDAL、Deezer、ご自身のサーバー、またはファイル。</string>
+    <string name="onboarding_step2_title">2. 同期を作成</string>
+    <string name="onboarding_step2_desc">同期元プレイリストと同期先を選びます。プレビューで、実行前に何が変わるかを正確に確認できます。</string>
+    <string name="onboarding_step3_title">3. あとはおまかせ</string>
+    <string name="onboarding_step3_desc">1時間ごと、毎日、または毎週。照合できなかった曲は一覧表示されるので、自分で修正できます。</string>
+    <string name="onboarding_security">各サービス自身のページでログインします。Songport はこの端末上に暗号化された取り消し可能なトークンのみを保存し、独自のサーバーは持ちません。</string>
+    <string name="onboarding_credentials">Songport 自体はサービスのキーを持っていません。Spotify、YouTube Music、TIDAL、Deezer では、サービスの開発者ページで無料のキーを作成します。アプリが約2分で手順を案内します。その後、データはあなたの端末とあなた自身のキーの間でのみやり取りされます。</string>
+    <string name="onboarding_start">はじめる</string>
+    <string name="settings_show_onboarding">紹介画面をもう一度表示</string>
+    <string name="paste_list">リストを貼り付け</string>
+    <string name="paste_list_hint">1行に1曲ずつ、「アーティスト - 曲名」の形式で入力します。行頭の数字は無視されます。</string>
+    <string name="paste_list_name">プレイリスト名</string>
+    <string name="paste_list_text">曲</string>
+    <string name="import_action">インポート</string>
+    <string name="notif_progress_channel">同期中</string>
+    <string name="notif_progress_desc">手動の同期を実行している間に表示されます。</string>
+    <plurals name="notif_more_running">
+        <item quantity="other">+%d 件の同期を実行中</item>
+    </plurals>
+    <string name="diag_share">技術的な詳細を共有</string>
+    <string name="widget_description">最後の同期と「すべて同期」ボタン。</string>
+    <string name="widget_last">前回：%1$s · %2$s</string>
+    <string name="shortcut_sync_all_short">すべて同期</string>
+    <string name="shortcut_sync_all_long">すべての同期を今すぐ実行</string>
+    <string name="shortcut_new_short">新しい同期</string>
+    <string name="shortcut_new_long">新しい同期を作成</string>
+    <plurals name="widget_jobs">
+        <item quantity="other">%d 件の同期を設定済み</item>
+    </plurals>
+    <string-array name="setup_steps_spotify">
+        <item>普段使っている Spotify アカウントで developer.spotify.com にログインします。Spotify ではそのアカウントが Premium である必要があります。開発者向け規約への同意を求められたら、同意してください。</item>
+        <item>「Create app」を押します。名前と説明は自由です（例：「Songport」）。「Website」は空欄のままにします。</item>
+        <item>「Redirect URIs」に、下に表示されているアドレスをそのまま貼り付けて「Add」を押します。これがないと、ログイン後にアプリへ戻れません。</item>
+        <item>「Which API/SDKs are you planning to use?」で「Web API」にチェックを入れ、規約に同意して「Save」を押します。</item>
+        <item>作成したアプリを開き、「Settings」（右上）を押して「Client ID」をここにコピーします。Client secret は不要です。</item>
+        <item>任意：「User Management」で、あなたのキーを使える Spotify アカウント（名前とメールアドレス）を最大5つまで追加できます。家族などに便利です。</item>
+    </string-array>
+    <string-array name="setup_steps_youtube">
+        <item>Google アカウントで console.cloud.google.com にログインし、プロジェクトを作成します。名前は何でも構いません（例：「Songport」）。作成完了の通知を待ってから、そのプロジェクトを選択します。</item>
+        <item>YouTube Data API v3 を有効にします。リンクからライブラリ内のページが開くので、「有効にする」を押します。</item>
+        <item>Google Auth Platform の「概要」で「開始」を押します。アプリ名は「Songport」、サポートメールにはご自身のメールアドレス、対象は「外部」、連絡先にもご自身のメールアドレスを入力します。同意して「作成」を押します。</item>
+        <item>Google Auth Platform の「対象」で、「テストユーザー」の「ユーザーを追加」を押してご自身の Gmail アドレスを追加し、保存します。この手順を行わないと、Google が「アクセスをブロック」としてログインを拒否します。</item>
+        <item>Google Auth Platform の「クライアント」で「クライアントを作成」を押します。アプリケーションの種類は「デスクトップ アプリ」、名前は自由です。クライアント ID とクライアント シークレットをここにコピーします。ほかに登録するものはありません。アプリは 127.0.0.1 でログインを受け取ります。</item>
+    </string-array>
+    <string-array name="setup_steps_tidal">
+        <item>TIDAL アカウントで developer.tidal.com にログインします。</item>
+        <item>「Create new app」を押します。名前と説明は自由です。</item>
+        <item>「Redirect URIs」に、下に表示されているアドレスをそのまま貼り付けて保存します。</item>
+        <item>Client ID をここにコピーします。Client secret は不要です。</item>
+    </string-array>
+    <string-array name="setup_steps_deezer">
+        <item>Deezer アカウントで developers.deezer.com にログインし、「My Apps」を開きます。</item>
+        <item>「Create a new Application」を押します。名前と説明は自由です。</item>
+        <item>Deezer は https のリダイレクトのみ受け付けます。用意済みのリダイレクトページが下にすでに入力されているので、そのアドレスを「Application domain」（https:// は除く）と「Redirect URL after authentication」の両方に貼り付けます。</item>
+        <item>保存してから、「Application ID」をここにコピーします。</item>
+    </string-array>
+    <string-array name="setup_steps_apple">
+        <item>Apple Music を使うには、有料の Apple Developer Program メンバーシップ（年額 99 ドル）と Apple Music のサブスクリプションが必要です。ない場合は、公開プレイリストのリンクかファイルをご利用ください。</item>
+        <item>「Certificates, Identifiers &amp; Profiles」の「Identifiers」で、MusicKit を有効にした Media ID を作成します。</item>
+        <item>「Keys」で「Media Services (MusicKit)」を有効にしたキーを作成し、.p8 ファイルをダウンロードします（ダウンロードできるのは1回だけです）。横に表示される Key ID と、ご自身の Team ID（アカウントページの右上）を控えておきます。</item>
+        <item>.p8 キーから ES256 デベロッパートークン（JWT）を生成します。プロジェクトの README に既製のスクリプトがあります。トークンをここに貼り付けます。</item>
+        <item>トークンの有効期限は最長6か月です。ログインできなくなったら、新しいトークンを生成して再度貼り付けてください。</item>
+    </string-array>
+    <string-array name="setup_steps_lastfm">
+        <item>last.fm にログインし、API アカウントの作成ページを開きます。</item>
+        <item>フォームに入力します。連絡先メールアドレス、アプリケーション名、説明は自由です。「Callback URL」と「Application homepage」は空欄のままで構いません。送信します。</item>
+        <item>「API key」をここにコピーします。「Shared secret」は不要です。</item>
+    </string-array>
+    <!-- Restyling: stati, schermate vuote, intestazione -->
+    <string name="more_actions">その他</string>
+    <string name="pill_ok">最新の状態</string>
+    <string name="pill_error">要確認</string>
+    <string name="pill_never">未実行</string>
+    <string name="pill_running">同期中</string>
+    <string name="connected">接続済み</string>
+    <string name="hero_title">あなたのプレイリストを、どこでも</string>
+    <plurals name="hero_jobs">
+        <item quantity="other">%d 件の同期を設定済み</item>
+    </plurals>
+    <string name="hero_last">前回の同期：%1$s</string>
+    <string name="empty_syncs_title">同期はまだありません</string>
+    <string name="empty_syncs_body">音楽サービスを接続して、最初の同期を作成しましょう。1分で完了します。</string>
+    <string name="empty_syncs_body_connected">「新しい同期」をタップして、同期元プレイリストと同期先を選んでください。</string>
+    <string name="empty_syncs_cta_accounts">サービスを接続</string>
+    <string name="empty_log_title">まだ何も実行されていません</string>
+    <string name="empty_log_body">同期のたびに、ここにレポートが残ります。追加、削除、見つからなかった曲を確認できます。</string>
+    <string name="empty_tools_title">サービスを接続</string>
+    <string name="empty_tools_body">バックアップ、重複の整理、プレイリストツール、一括転送は、接続済みのサービスで利用できます。</string>
+    <string name="settings_section_general">一般</string>
+    <string name="settings_log">同期ログ</string>
+    <string name="settings_log_desc">最近の同期の結果と、報告に添付する技術的な詳細。</string>
+    <string name="settings_open">開く</string>
+    <string name="accounts_intro">各サービスの公式ページでログインします。Songport があなたのパスワードを見ることはありません。</string>
+    <string name="show_details">詳細</string>
+    <string name="hide_details">詳細を隠す</string>
+    <!-- Pubblicità e donazioni -->
+    <string name="ads_why_title">広告を表示する理由</string>
+    <string name="ads_why_body">Songport は無料で、サブスクリプションも機能制限もありません。全画面広告は一切なく、小さなバナー1つが、開発者のコーヒー代と、すべてのサービスを動かし続けるための作業時間をまかなっています。気になる場合は、GitHub で issue を立ててください。</string>
+    <string name="settings_free_note">Songport は無料で、広告もサブスクリプションもありません。接続した音楽サービスへのリクエスト以外、何も端末の外に送信されません。</string>
+    <string name="free_why_title">無料・広告なし</string>
+    <string name="free_why_body">Songport には広告も、サブスクリプションも、機能制限もありません。任意の支援で運営されています。時間の節約になったなら、開発者にコーヒーをおごっていただけると嬉しいです。</string>
+    <string name="support_title">Songport を気に入っていただけましたか？</string>
+    <string name="support_body">よろしければ、Ko-fi で開発者にコーヒーをおごってください。まったくの任意です。何かが解放されるわけではなく、アプリは誰でもすべての機能を使えます。</string>
+    <string name="support_button">コーヒーをおごる</string>
+    <string name="support_sponsors">GitHub Sponsors</string>
+    <string name="support_prompt_title">%1$s 曲を移しました</string>
+    <string name="support_prompt_body">同期「%1$s」で移動しました。Songport は無料で広告もなく、任意の支援で運営されています。時間の節約になったなら、開発者にコーヒーをおごっていただけると嬉しいです。</string>
+    <string name="support_prompt_later">今はしない</string>
+</resources>

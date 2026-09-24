@@ -1,0 +1,13 @@
+<p>Mantén tus playlists idénticas en todos tus servicios de música, sin tener que rehacerlas a mano. Todo funciona en tu teléfono: sin cuenta, sin servidor, sin anuncios y sin rastreo.</p>
+<ul>
+<li>Elige una playlist de origen y una de destino, o deja que la app la cree</li>
+<li>Sincroniza a mano o de forma programada: cada hora, cada 6 horas, cada día o cada semana</li>
+<li>Solo añadir, o replicar también las eliminaciones</li>
+<li>Las canciones que te gustan como origen</li>
+<li>Revisa las canciones no encontradas: propuestas con un toque, los resultados más probables primero, las canciones del álbum de origen o pega el enlace de la canción</li>
+<li>Importa y exporta archivos de playlist (CSV, M3U, XML de iTunes, JSON) para los servicios sin API</li>
+<li>Copias de seguridad de una cuenta entera en versiones con fecha y eliminación de duplicados</li>
+</ul>
+<p>Funciona con Spotify, Apple Music, YouTube Music, TIDAL, Deezer, servidores Subsonic/Navidrome, Jellyfin y Plex, Last.fm y ListenBrainz como origen, y archivos. Los servicios que necesitan una clave de desarrollador se configuran con una guía dentro de la app; la clave y todos los tokens de acceso se guardan cifrados en el dispositivo.</p>
+<p>YouTube Music, Amazon Music y el inicio de sesión en Spotify y Apple Music sin claves de desarrollador funcionan a través de los propios reproductores web de los servicios, integrados en la app. No son API oficiales: la app muestra un aviso antes del primer inicio de sesión.</p>
+<p>Songport no está afiliada a ninguno de estos servicios; sus nombres se usan solo para indicar la compatibilidad.</p>
