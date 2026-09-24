@@ -19,6 +19,10 @@ TIDAL, Deezer) and local files. All processing happens **on your device**.
 - **Personal server credentials** (Subsonic/Navidrome, Jellyfin, Plex) and Last.fm/ListenBrainz **usernames** entered by the user: stored encrypted on the device only, used only towards the server you specify.
 - **Playlist content** (titles, artists, ISRC) read from the connected services to run syncs, plus a
   local match cache. Stays on the device.
+- **Playlist generator (optional)**: if you connect your own AI account (OpenAI, Anthropic, Google Gemini
+  or a compatible server you choose), the description you type, the optional reference tracks and the
+  number of tracks are sent to that provider, under its own policy; your API key is stored encrypted on
+  the device only. Nothing else (playlists, tokens) is sent. The feature is off until you add a key.
 - **Advertising data** (Google Play version only; the version downloaded from GitHub contains no
   advertising SDK and collects no advertising data): the app shows one banner via Google AdMob. The Google Mobile Ads SDK may collect
   the advertising ID, IP address, device and app information to serve and measure ads, according to the
@@ -56,6 +60,10 @@ YouTube Music, TIDAL, Deezer) e file locali. Tutta l'elaborazione avviene **sul 
 - **Credenziali dei server personali** (Subsonic/Navidrome, Jellyfin, Plex) e **nomi utente** Last.fm/ListenBrainz inseriti dall'utente: salvati cifrati solo sul dispositivo, usati solo verso il server indicato.
 - **Contenuto delle playlist** (titoli, artisti, ISRC) letto dai servizi collegati per eseguire le sync e
   una cache locale degli abbinamenti. Restano sul dispositivo.
+- **Generatore di playlist (facoltativo)**: se colleghi il tuo account AI (OpenAI, Anthropic, Google Gemini
+  o un server compatibile a tua scelta), la descrizione che scrivi, gli eventuali brani di riferimento e il
+  numero di brani vengono inviati a quel fornitore, secondo la sua informativa; la chiave API resta cifrata
+  solo sul dispositivo. Nient'altro (playlist, token) viene inviato. La funzione è spenta finché non aggiungi una chiave.
 - **Dati pubblicitari** (solo nella versione Google Play; la versione scaricata da GitHub non contiene
   alcun SDK pubblicitario e non raccoglie dati pubblicitari): l'app mostra un banner tramite Google AdMob. L'SDK Google Mobile Ads può
   raccogliere l'identificatore pubblicitario, indirizzo IP, informazioni sul dispositivo e sull'app per

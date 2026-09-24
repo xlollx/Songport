@@ -146,6 +146,16 @@ fun SettingsScreen(
             Text(stringResource(if (Ads.enabled) R.string.settings_ads_note else R.string.settings_free_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
+        SectionCard(stringResource(R.string.ai_title)) {
+            // Same dialog as the Tools card: key and model live in the encrypted token store.
+            var aiConfig by remember { mutableStateOf(com.xlollx.songport.ai.AiClient.config(ctx)) }
+            var aiOpen by remember { mutableStateOf(false) }
+            if (aiOpen) AiSetupDialog(aiConfig, onDismiss = { aiOpen = false }) { aiConfig = it; aiOpen = false }
+            SettingRow(aiConfig?.let { "${it.vendor.label} · ${it.model}" } ?: stringResource(R.string.not_configured), stringResource(R.string.settings_ai_desc)) {
+                TextButton(onClick = { aiOpen = true }) { Text(stringResource(if (aiConfig == null) R.string.ai_setup else R.string.ai_setup_change)) }
+            }
+        }
+
         SectionCard(stringResource(R.string.settings_advanced)) {
             Text(stringResource(R.string.settings_advanced_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (advanced) {
