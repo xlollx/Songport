@@ -16,15 +16,18 @@ AutoName: Songport
 
 RepoType: git
 Repo: https://github.com/xlollx/Songport.git
+Binaries: https://github.com/xlollx/Songport/releases/download/v%v/Songport-v%v.apk
 
 Builds:
   - versionName: 1.0.44
     versionCode: 45
-    commit: v1.0.44
+    commit: 88c0f3b869a8c98812f939193291e34b8dd12f79
     subdir: android/app
     gradle:
       - full
     prebuild: sed -i -e '/playImplementation/d' build.gradle
+
+AllowedAPKSigningKeys: 21eadf268c72f85565961a6045bf4be5abaf256d680d1e0d808d93ed22d35032
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$

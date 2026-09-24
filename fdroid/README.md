@@ -31,10 +31,22 @@ in a folder holding `metadata/com.xlollx.songport.yml`.
 
 After inclusion F-Droid picks up new versions by itself from the `vX.Y.Z` tags.
 
-## Signing
+## Signing: reproducible build
 
-F-Droid signs its build with its own key, different from the GitHub one: updating between the GitHub
-and the F-Droid version needs an uninstall first (data is lost). The web connectors are built into the
-`full` flavor, so the F-Droid version does not depend on the separate Bridge app or its certificate
-list. Reproducible builds would let F-Droid ship the GitHub-signed APK instead; that needs the GitHub
-CI build to be bit-for-bit repeatable without the repository variables.
+The recipe has `Binaries` and `AllowedAPKSigningKeys`: F-Droid builds the app from source, compares it
+with the APK published on GitHub Releases and, when they match, distributes the GitHub APK with its
+original signature. Users can then move between the GitHub and the F-Droid version without
+uninstalling. Checked for 1.0.44: F-Droid's build with the GitHub signature copied onto it
+(`apksigcopier copy`) is byte-identical to the GitHub APK.
+
+It stays reproducible as long as:
+
+- the GitHub build gets no build variable that changes the app (`SPOTIFY_CLIENT_ID`,
+  `GOOGLE_CLIENT_ID`, `LASTFM_API_KEY`, `APPLE_DEVELOPER_TOKEN`...): F-Droid builds without them, so
+  any value ends up only in the GitHub APK and the two differ;
+- the release key stays the same. Its certificate SHA-256 is
+  `21eadf268c72f85565961a6045bf4be5abaf256d680d1e0d808d93ed22d35032`. **Keep a backup of the keystore
+  and its passwords** outside GitHub: without them no update can be published on F-Droid or GitHub.
+
+`commit` holds the full commit hash, not the tag, as fdroiddata requires. After inclusion,
+F-Droid's update check picks up new `vX.Y.Z` tags and builds them the same way.
