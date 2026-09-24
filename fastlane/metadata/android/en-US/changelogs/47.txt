@@ -1,0 +1,1 @@
+Screenshots of the app. The security notes now also mention the web sessions the built-in connectors keep, encrypted like the tokens.

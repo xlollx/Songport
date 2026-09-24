@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GitHub and F-Droid build: the built-in web connectors also keep the service's web session. -->
+<resources>
+    <string name="security_fact_2">Songport ne conserve que des jetons d\'accès révocables et, pour les connecteurs web, la session du service, le tout chiffré avec l\'Android Keystore.</string>
+    <string name="onboarding_security">Vous vous connectez sur la page de chaque service. Songport ne conserve qu\'un jeton ou une session web, chiffrés et révocables, sur ce téléphone et n\'a aucun serveur propre.</string>
+</resources>

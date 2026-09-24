@@ -1,0 +1,1 @@
+Captures d'écran de l'application. Les notes de sécurité mentionnent aussi les sessions web conservées par les connecteurs intégrés, chiffrées comme les jetons.

@@ -1,0 +1,1 @@
+Screenshot dell'app. Le note sulla sicurezza citano anche le sessioni web conservate dai connettori integrati, cifrate come i token.
