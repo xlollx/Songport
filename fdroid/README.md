@@ -19,6 +19,14 @@ What F-Droid reads from this repository:
 3. Open a merge request with the "App inclusion" template. The CI of fdroiddata builds the app; the
    reviewers comment there if something needs changing.
 
+The recipe must stay exactly as `fdroid rewritemeta` writes it, or fdroiddata's CI fails: no
+comments, Unix line endings (LF). Pasting it into GitLab's web editor on Windows saves CRLF; upload
+the file with "Replace" instead. The `prebuild` line drops the `playImplementation` dependencies
+(the ads SDK of the Play flavor, never built by F-Droid) so the scanner does not flag them.
+
+Check a change locally with `pip install fdroidserver`, then `fdroid rewritemeta` and `fdroid lint`
+in a folder holding `metadata/com.xlollx.songport.yml`.
+
 After inclusion F-Droid picks up new versions by itself from the `vX.Y.Z` tags.
 
 ## Signing and the Bridge

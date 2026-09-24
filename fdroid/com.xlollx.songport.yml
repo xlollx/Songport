@@ -1,12 +1,7 @@
-# Draft build recipe for F-Droid. It goes to https://gitlab.com/fdroid/fdroiddata as
-# metadata/com.xlollx.songport.yml, through a merge request (see fdroid/README.md).
-# Descriptions, icon, graphics and changelogs are read from fastlane/metadata/android in this repo;
-# donation links from .github/FUNDING.yml.
-
 AntiFeatures:
   NonFreeNet:
-    en-US: Syncs playlists between proprietary music services (Spotify, Apple Music, YouTube Music, TIDAL, Deezer).
-
+    en-US: Syncs playlists between proprietary music services (Spotify, Apple Music,
+      YouTube Music, TIDAL, Deezer).
 Categories:
   - Multimedia
 License: GPL-3.0-only
@@ -28,8 +23,6 @@ Builds:
     subdir: android/app
     gradle:
       - full
-    # The play flavor (not built here) is the only one with the ads SDK: drop its lines so the
-    # scanner does not flag them.
     prebuild: sed -i -e '/playImplementation/d' build.gradle
 
 AutoUpdateMode: Version
