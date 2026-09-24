@@ -9,5 +9,5 @@
 <li>Backups of a whole account as dated versions, duplicate removal</li>
 </ul>
 <p>Works with Spotify, Apple Music, YouTube Music, TIDAL, Deezer, Subsonic/Navidrome, Jellyfin and Plex servers, Last.fm and ListenBrainz as sources, and files. Services that need a developer key are set up with an in-app guide; the key and every access token stay encrypted on the device.</p>
-<p>Optional: the separately installed <a href="https://github.com/xlollx/Songport-YTM-Bridge">Songport Bridge</a> adds YouTube Music and Amazon Music through their web players, without developer keys.</p>
+<p>YouTube Music, Amazon Music and the Spotify and Apple Music sign-in without developer keys work through the services' own web players, built in. They are not official APIs: the app shows a notice before the first sign-in.</p>
 <p>Songport is not affiliated with any of these services; their names are used only to indicate compatibility.</p>

@@ -1,0 +1,2 @@
+YouTube Music, Amazon Music and the Spotify and Apple Music web sign-in are now built in: no second app to install. Sign in again from Accounts.
+No ads and no ads SDK. A one-time coffee card after the first big sync.

@@ -15,3 +15,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Songport"
 include ':app'
+// The web connectors, built into the GitHub/F-Droid build (see bridge/build.gradle).
+include ':bridge'

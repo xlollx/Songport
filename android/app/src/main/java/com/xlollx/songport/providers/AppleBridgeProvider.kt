@@ -19,7 +19,7 @@ import com.xlollx.songport.model.ProviderException
  */
 class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     override val serviceId = SERVICE
-    override val displayName = if (BuildConfig.PLUGIN_LINKS) "Apple Music (Bridge)" else "Apple Music (plugin)"
+    override val displayName = if (BridgePlugin.builtIn) "Apple Music (web)" else "Apple Music (plugin)"
     override val noteRes = R.string.provider_note_apple_bridge
     override val supportsMultipleAccounts = false
     override val pluginBased = true
@@ -56,7 +56,7 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
             installUrl?.let { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
             return
         }
-        ctx.startActivity(Intent(LOGIN_ACTION).setPackage(pkg).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        BridgePlugin.startLogin(ctx, LOGIN_ACTION)
     }
 
     override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
@@ -65,7 +65,7 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     private fun call(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
         if (!BridgePlugin.installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))
         val b = try {
-            ctx.contentResolver.call(BridgePlugin.authority(ctx), method, arg, extras)
+            BridgePlugin.call(ctx, method, arg, extras)
         } catch (e: Exception) {
             throw ProviderException("Songport Bridge: ${e.message ?: e.javaClass.simpleName}")
         } ?: throw ProviderException("Songport Bridge: no answer")

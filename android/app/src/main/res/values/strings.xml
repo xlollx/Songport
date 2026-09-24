@@ -71,7 +71,7 @@
     <string name="always_available">Always available</string>
 
     <string name="provider_note_spotify">Requires a Spotify account. Playlists and Liked Songs.</string>
-    <string name="provider_note_ytm">YouTube Music playlists and likes through the free companion app "Songport YTM Bridge" (installed separately, not from Google Play). No Google Cloud project, no quota. Not an official Google API: read the notice in the Bridge before using it.</string>
+    <string name="provider_note_ytm">YouTube Music playlists and likes through the web player\'s own interface, built into this version: sign in with your Google account, no Google Cloud project, no quota. Not an official Google API: read the notice shown before signing in.</string>
     <string name="ytm_not_installed_hint">Install the companion app "Songport YTM Bridge" from GitHub, then come back here and press Connect. Prefer the official route? Use the "YouTube Music (Google API)" card below.</string>
     <string name="ytm_not_installed">Songport YTM Bridge is not installed.</string>
     <string name="ytm_install">Get the Bridge</string>
@@ -290,7 +290,7 @@
     <string name="connector_name_label">Connector name</string>
     <string name="connector_rename">Rename</string>
     <string name="connect_switch_account">The browser may already be signed in to another %1$s account. On the sign-in page choose “Not you?” or switch account, then continue with the account for this connector.</string>
-    <string name="provider_note_amazon">Via the Songport Bridge companion app. Amazon has no open API: the Bridge uses the web player\'s interface, so it can stop working when Amazon changes it. Playlists, search, create, add and remove are supported.</string>
+    <string name="provider_note_amazon">Amazon has no open API: Songport uses the web player\'s interface, so it can stop working when Amazon changes it. Playlists, search, create, add and remove are supported.</string>
     <string name="amazon_not_installed_hint">Install or update the companion app \"Songport Bridge\" (1.3.1 or newer) from GitHub, then come back here and tap Connect.</string>
     <string name="sync_pause">Pause</string>
     <string name="sync_resume">Resume</string>
@@ -305,11 +305,11 @@
     <string name="live_added">Added to the destination</string>
     <string name="live_add_failed">Not added: %1$s</string>
     <string name="live_removed">Removed from the destination</string>
-    <string name="provider_note_spotify_bridge">Sign in on Spotify\'s own page through the Songport Bridge app, no developer app to create. Uses the web player\'s session: not an official route, against Spotify\'s terms, may stop working. The official route with your own key stays available as \"Spotify\".</string>
-    <string name="provider_note_apple_bridge">Sign in with your Apple ID through the Songport Bridge app, no Apple Developer Program needed. Uses the web player\'s tokens: not an official route, against Apple\'s terms, may stop working. The official route with your own developer token stays available as \"Apple Music\".</string>
+    <string name="provider_note_spotify_bridge">Sign in on Spotify\'s own page, no developer app to create. Uses the web player\'s session: not an official route, against Spotify\'s terms, may stop working. The official route with your own key stays available as \"Spotify\".</string>
+    <string name="provider_note_apple_bridge">Sign in with your Apple ID, no Apple Developer Program needed. Uses the web player\'s tokens: not an official route, against Apple\'s terms, may stop working. The official route with your own developer token stays available as \"Apple Music\".</string>
     <string name="bridge_needed_hint">Install or update the companion app \"Songport Bridge\" (1.2 or newer) from GitHub, then come back here and tap Connect.</string>
     <string name="settings_source_code">Source code and documentation</string>
-    <string name="plugins_more">Songport Bridge, on GitHub, adds YouTube Music, Amazon Music and password-free sign-in for Spotify and Apple Music.</string>
+    <string name="plugins_more">Other services can be added by connector plugins: how it works.</string>
     <string name="plugins_more_url" translatable="false">https://xlollx.github.io/Songport/plugins</string>
     <string name="security_title">How your logins are protected</string>
     <string name="security_fact_1">Passwords are typed on the services\' own pages, never in Songport.</string>

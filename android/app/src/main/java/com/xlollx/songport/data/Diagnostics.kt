@@ -57,7 +57,7 @@ object Diagnostics {
         if (leftovers.isNotEmpty()) sb.appendLine("  leftover sessions: ${leftovers.joinToString { it.id }}")
         // Cosa sta facendo il plugin, se c'e': conteggi e ritmi delle sue chiamate, mai contenuti.
         if (com.xlollx.songport.providers.BridgePlugin.installed(ctx)) {
-            val stats = runCatching { ctx.contentResolver.call(com.xlollx.songport.providers.BridgePlugin.authority(ctx), "stats", null, null)?.getString("stats") }.getOrNull()
+            val stats = runCatching { com.xlollx.songport.providers.BridgePlugin.call(ctx, "stats", null, null)?.getString("stats") }.getOrNull()
             sb.appendLine("  plugin: ${stats ?: "no stats"}")
         }
         sb.appendLine()

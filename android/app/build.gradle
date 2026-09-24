@@ -60,8 +60,8 @@ android {
         applicationId "com.xlollx.songport"
         minSdk 26
         targetSdk 36
-        versionCode 44
-        versionName "1.0.43"
+        versionCode 45
+        versionName "1.0.44"
 
         buildConfigField "String", "SPOTIFY_CLIENT_ID", "\"${spotifyClientId}\""
         buildConfigField "String", "TIDAL_CLIENT_ID", "\"${tidalClientId}\""
@@ -196,6 +196,10 @@ dependencies {
     // Solo la build Play mostra annunci: la build GitHub non include ne' l'SDK ne' il modulo del consenso.
     playImplementation 'com.google.android.gms:play-services-ads:24.4.0'
     playImplementation 'com.google.android.ump:user-messaging-platform:3.2.0'
+
+    // GitHub/F-Droid build: YouTube Music, Amazon Music and the Spotify/Apple web sign-in run inside
+    // the app. The Play build does not include them and uses the separate Bridge app when installed.
+    fullImplementation project(':bridge')
 
     testImplementation 'junit:junit:4.13.2'
 }

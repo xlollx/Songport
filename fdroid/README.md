@@ -1,8 +1,10 @@
 # F-Droid
 
 Songport's GitHub build (`full` flavor) is F-Droid compatible: only free libraries (AndroidX, Kotlin,
-OkHttp, Tink), no ads SDK, no trackers, no prebuilt binaries in the repository, no self-updater. The
-`play` flavor carries the ads SDK and is never built by F-Droid.
+OkHttp, Tink), no ads SDK, no trackers, no prebuilt binaries in the repository, no self-updater. It
+includes the web connectors (`android/bridge`), which use the services' web interfaces rather than
+official APIs: that is what the NonFreeNet anti-feature describes. The `play` flavor carries the ads
+SDK and is never built by F-Droid.
 
 What F-Droid reads from this repository:
 
@@ -29,14 +31,10 @@ in a folder holding `metadata/com.xlollx.songport.yml`.
 
 After inclusion F-Droid picks up new versions by itself from the `vX.Y.Z` tags.
 
-## Signing and the Bridge
+## Signing
 
-F-Droid signs its build with its own key, different from the GitHub one. Two consequences:
-
-- Updating between the GitHub and the F-Droid version needs an uninstall first (data is lost).
-- The Songport Bridge only answers to Songport builds whose certificate it knows. Once F-Droid has
-  published Songport, its signing certificate SHA-256 (shown on the app's F-Droid page) goes into
-  `Allowed.SHA256` in the Bridge, and a Bridge release follows.
-
-Reproducible builds would let F-Droid ship the GitHub-signed APK instead, removing both points; that
-needs the GitHub CI build to be bit-for-bit repeatable without the repository variables.
+F-Droid signs its build with its own key, different from the GitHub one: updating between the GitHub
+and the F-Droid version needs an uninstall first (data is lost). The web connectors are built into the
+`full` flavor, so the F-Droid version does not depend on the separate Bridge app or its certificate
+list. Reproducible builds would let F-Droid ship the GitHub-signed APK instead; that needs the GitHub
+CI build to be bit-for-bit repeatable without the repository variables.

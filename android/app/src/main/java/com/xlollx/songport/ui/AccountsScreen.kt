@@ -331,7 +331,12 @@ private fun ProviderCard(
                     }) else null,
                     MenuAction(stringResource(R.string.connector_rename), onRename),
                     MenuAction(stringResource(R.string.account_remove), onRemove, destructive = true),
-                )
+                ).let { base ->
+                    // Built-in web connectors: Google's block page, the Amazon traffic capture.
+                    com.xlollx.songport.providers.BuiltIn.extraActions(ctx, p.serviceId).map { (label, intent) ->
+                        MenuAction(label, { ctx.startActivity(intent) })
+                    } + base
+                }
                 OverflowMenu(actions)
                 when {
                     connected -> OutlinedButton(onClick = { p.disconnect(ctx); onChanged() }) { Text(stringResource(R.string.disconnect)) }

@@ -1,0 +1,2 @@
+YouTube Music, Amazon Music et la connexion web à Spotify et Apple Music sont désormais intégrés : aucune seconde application à installer. Reconnectez-vous depuis Comptes.
+Aucune publicité ni SDK publicitaire. Une demande de café, une seule fois, après la première grosse sync.

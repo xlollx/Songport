@@ -71,7 +71,7 @@
     <string name="always_available">Toujours disponible</string>
 
     <string name="provider_note_spotify">Nécessite un compte Spotify. Playlists et titres likés.</string>
-    <string name="provider_note_ytm">Playlists et likes YouTube Music via l\'application compagnon gratuite \"Songport YTM Bridge\" (installée séparément, pas depuis Google Play). Aucun projet Google Cloud, aucun quota. Ce n\'est pas une API Google officielle : lisez l\'avertissement dans le Bridge avant de l\'utiliser.</string>
+    <string name="provider_note_ytm">Playlists et titres aimés de YouTube Music via l\'interface du lecteur web, intégrée à cette version : connectez-vous avec votre compte Google, sans projet Google Cloud ni quota. Ce n\'est pas une API officielle de Google : lisez l\'avertissement affiché avant la connexion.</string>
     <string name="ytm_not_installed_hint">Installez l\'application compagnon \"Songport YTM Bridge\" depuis GitHub, puis revenez ici et appuyez sur Connecter. Vous préférez la voie officielle ? Utilisez la carte \"YouTube Music (API Google)\" ci-dessous.</string>
     <string name="ytm_not_installed">Songport YTM Bridge n\'est pas installé.</string>
     <string name="ytm_install">Obtenir le Bridge</string>
@@ -290,7 +290,7 @@
     <string name="connector_name_label">Nom du connecteur</string>
     <string name="connector_rename">Renommer</string>
     <string name="connect_switch_account">Le navigateur est peut-être déjà connecté à un autre compte %1$s. Sur la page de connexion, choisissez « Ce n\'est pas vous ? » ou changez de compte, puis continuez avec le compte de ce connecteur.</string>
-    <string name="provider_note_amazon">Via l\'application compagnon Songport Bridge. Amazon n\'a pas d\'API ouverte : le Bridge utilise l\'interface du lecteur web et peut donc cesser de fonctionner quand Amazon la change. Playlists, recherche, création, ajout et suppression sont pris en charge.</string>
+    <string name="provider_note_amazon">Amazon n\'a pas d\'API ouverte : Songport utilise l\'interface du lecteur web, qui peut cesser de fonctionner quand Amazon la modifie. Playlists, recherche, création, ajout et suppression sont pris en charge.</string>
     <string name="amazon_not_installed_hint">Installez ou mettez à jour l\'application compagnon \"Songport Bridge\" (1.3.1 ou plus récente) depuis GitHub, puis revenez ici et touchez Connecter.</string>
     <string name="sync_pause">Pause</string>
     <string name="sync_resume">Reprendre</string>
@@ -305,11 +305,11 @@
     <string name="live_added">Ajouté à la destination</string>
     <string name="live_add_failed">Non ajouté : %1$s</string>
     <string name="live_removed">Retiré de la destination</string>
-    <string name="provider_note_spotify_bridge">Connectez-vous sur la page de Spotify via l\'application Songport Bridge, sans créer d\'application développeur. Utilise la session du lecteur web : voie non officielle, contraire aux conditions de Spotify, peut cesser de fonctionner. La voie officielle avec votre propre clé reste disponible sous \"Spotify\".</string>
-    <string name="provider_note_apple_bridge">Connectez-vous avec votre identifiant Apple via l\'application Songport Bridge, sans Apple Developer Program. Utilise les jetons du lecteur web : voie non officielle, contraire aux conditions d\'Apple, peut cesser de fonctionner. La voie officielle avec votre propre jeton développeur reste disponible sous \"Apple Music\".</string>
+    <string name="provider_note_spotify_bridge">Connectez-vous sur la page de Spotify, sans créer d\'application développeur. Utilise la session du lecteur web : ce n\'est pas une voie officielle, c\'est contraire aux conditions de Spotify et cela peut cesser de fonctionner. La voie officielle avec votre propre clé reste disponible sous le nom \"Spotify\".</string>
+    <string name="provider_note_apple_bridge">Connectez-vous avec votre identifiant Apple, sans Apple Developer Program. Utilise les jetons du lecteur web : ce n\'est pas une voie officielle, c\'est contraire aux conditions d\'Apple et cela peut cesser de fonctionner. La voie officielle avec votre propre jeton développeur reste disponible sous le nom \"Apple Music\".</string>
     <string name="bridge_needed_hint">Installez ou mettez à jour l\'application compagnon \"Songport Bridge\" (1.2 ou plus récente) depuis GitHub, puis revenez ici et touchez Connecter.</string>
     <string name="settings_source_code">Code source et documentation</string>
-    <string name="plugins_more">Songport Bridge, sur GitHub, ajoute YouTube Music, Amazon Music et la connexion sans clés à Spotify et Apple Music.</string>
+    <string name="plugins_more">D\'autres services peuvent être ajoutés par des plugins de connecteur : comment ça marche.</string>
     <string name="security_title">Comment vos connexions sont protégées</string>
     <string name="security_fact_1">Les mots de passe sont saisis sur les pages des services eux-mêmes, jamais dans Songport.</string>
     <string name="security_fact_2">Songport ne conserve que des jetons d\'accès révocables, chiffrés avec l\'Android Keystore.</string>

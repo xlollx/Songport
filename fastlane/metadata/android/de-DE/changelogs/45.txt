@@ -1,0 +1,2 @@
+YouTube Music, Amazon Music und die Web-Anmeldung bei Spotify und Apple Music sind jetzt eingebaut: keine zweite App nötig. Melde dich unter Konten erneut an.
+Keine Werbung und kein Werbe-SDK. Einmalig eine Kaffee-Karte nach dem ersten großen Sync.

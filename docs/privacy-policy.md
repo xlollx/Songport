@@ -10,6 +10,9 @@ _Last updated / Ultimo aggiornamento: 2026-09-12_
 TIDAL, Deezer) and local files. All processing happens **on your device**.
 
 **Data processed**
+- **Web sessions** of the built-in web connectors (YouTube Music, Amazon Music, Spotify and Apple Music
+  web sign-in; GitHub and F-Droid version only): the cookies set by the service's own sign-in page,
+  stored **only on the device**, encrypted, used only towards that service. Signing out deletes them.
 - **Access tokens** for the connected music services (OAuth), stored **only on the device**, encrypted
   with the Android Keystore, and used solely to read and modify your playlists at your request. They
   are never sent to the developer or third parties. Remove them with "Disconnect" or by uninstalling.
@@ -43,6 +46,9 @@ Questions: contact on the Play Store listing.
 YouTube Music, TIDAL, Deezer) e file locali. Tutta l'elaborazione avviene **sul dispositivo**.
 
 **Dati trattati**
+- **Sessioni web** dei connettori web integrati (YouTube Music, Amazon Music, accesso web a Spotify e
+  Apple Music; solo versione GitHub e F-Droid): i cookie impostati dalla pagina di accesso del servizio,
+  salvati **solo sul dispositivo**, cifrati, usati solo verso quel servizio. Uscendo vengono cancellati.
 - **Token di accesso** ai servizi musicali collegati (OAuth). Sono salvati **solo sul dispositivo**, cifrati
   con l'Android Keystore, e usati esclusivamente per leggere e modificare le playlist dell'utente su sua
   richiesta. Non vengono mai inviati allo sviluppatore né a terzi. Si eliminano con "Scollega" o

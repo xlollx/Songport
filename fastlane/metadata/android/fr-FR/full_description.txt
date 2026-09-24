@@ -9,5 +9,5 @@
 <li>Sauvegardes d'un compte entier en versions datées, suppression des doublons</li>
 </ul>
 <p>Fonctionne avec Spotify, Apple Music, YouTube Music, TIDAL, Deezer, les serveurs Subsonic/Navidrome, Jellyfin et Plex, Last.fm et ListenBrainz comme sources, et des fichiers. Les services qui demandent une clé de développeur se configurent avec un guide intégré ; la clé et chaque jeton d'accès restent chiffrés sur l'appareil.</p>
-<p>Facultatif : <a href="https://github.com/xlollx/Songport-YTM-Bridge">Songport Bridge</a>, installé à part, ajoute YouTube Music et Amazon Music via leurs lecteurs web, sans clé de développeur.</p>
+<p>YouTube Music, Amazon Music et la connexion à Spotify et Apple Music sans clé de développeur passent par les lecteurs web des services, intégrés à l'application. Ce ne sont pas des API officielles : l'application affiche un avertissement avant la première connexion.</p>
 <p>Songport n'est affiliée à aucun de ces services ; leurs noms servent uniquement à indiquer la compatibilité.</p>

@@ -32,9 +32,8 @@ they need other libraries, phones and habits. Everything you meet is meant to wo
 that is exactly what to report.
 
 - **Install**: the signed APK from the [Releases](https://github.com/xlollx/Songport/releases/latest)
-  page (updates install over it), or the Google Play open-testing track once listed there. The Play
-  build uses official APIs only; the GitHub build can also use the
-  [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) for YouTube Music and Amazon Music.
+  page (updates install over it), or F-Droid once listed there. This build includes YouTube Music,
+  Amazon Music and the Spotify/Apple Music web sign-in; no second app is needed.
 - **What helps most**: the connectors marked *beta* in Accounts, a sync of a big playlist (a thousand tracks and more), the review of the tracks
   that were not found (one-tap proposals, the "likeliest" list, pasting a track link), scheduled syncs
   surviving the night, and backups of a whole account.
@@ -98,11 +97,11 @@ that is exactly what to report.
 |---------|--------|-------|----------------------|--------|
 | Spotify | complete | OAuth PKCE in the browser | `SPOTIFY_CLIENT_ID`, redirect `songport://callback` | An app in *Development Mode* accepts 5 users and its owner needs Spotify Premium (February 2026 rules). *Extended Quota Mode* requires a registered company and 250,000 monthly active users. Since July 2026 the quota is counted per developer account, not per client ID. That is why the app walks each user through creating their own client ID: on Spotify this is the normal path. |
 | Apple Music | read and add, beta | MusicKit JS in an in-app WebView | `APPLE_DEVELOPER_TOKEN` (ES256 JWT, Apple Developer Program) | The API cannot remove tracks from a playlist: mirror syncs towards Apple Music only add and say so in the report. The developer token expires after at most 6 months. An Apple Music subscription is required. Library tracks do not expose an ISRC. |
-| YouTube Music | via the optional [Songport YTM Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Google sign-in inside the Bridge | nothing: the Bridge is installed separately, outside Google Play | Uses the web player's internal interface: not an official API, against the YouTube Terms of Service, may break without notice. No quota. The Bridge shows the notice before sign-in. |
+| YouTube Music | built into the GitHub/F-Droid build; in the Play build via the [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Google sign-in on Google's page | nothing: the Bridge is installed separately, outside Google Play | Uses the web player's internal interface: not an official API, against the YouTube Terms of Service, may break without notice. No quota. The Bridge shows the notice before sign-in. |
 | YouTube Music (Google API) | via YouTube Data API v3 | Google OAuth | `GOOGLE_CLIENT_ID` (Android OAuth client: package + SHA-1), YouTube Data API enabled, OAuth verification for the `youtube` scope | 10,000 units per day per project (search 100, insert 50), shared by every user of the same build. With own credentials the quota is the user's. No ISRC. |
-| Spotify (Bridge) | complete, via the [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Spotify sign-in inside the Bridge | nothing | The Bridge captures the web player's short-lived Web API token and hands it to Songport, which then runs the same Spotify code as above. Not an official route, against Spotify's terms, may break without notice. |
-| Apple Music (Bridge) | read and add, via the Songport Bridge | Apple ID sign-in inside the Bridge | nothing | The Bridge reads the web player's developer token and the music user token cookie; Songport then runs the same Apple Music code as above. Not an official route, against Apple's terms, may break without notice. |
-| Amazon Music | complete, via the [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Amazon sign-in inside the Bridge | nothing | Amazon's official Web API is a closed beta for approved partners, so the Bridge uses the web player's interface (library playlists, playlist rows with their entry ids, search, create, add, remove). Not an official API, may break without notice. |
+| Spotify (web) | complete, built in (GitHub/F-Droid) or via the [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Spotify sign-in on Spotify's page | nothing | The Bridge captures the web player's short-lived Web API token and hands it to Songport, which then runs the same Spotify code as above. Not an official route, against Spotify's terms, may break without notice. |
+| Apple Music (web) | read and add, built in (GitHub/F-Droid) or via the Songport Bridge | Apple ID sign-in on Apple's page | nothing | The Bridge reads the web player's developer token and the music user token cookie; Songport then runs the same Apple Music code as above. Not an official route, against Apple's terms, may break without notice. |
+| Amazon Music | complete, built in (GitHub/F-Droid) or via the [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Amazon sign-in on Amazon's page | nothing | Amazon's official Web API is a closed beta for approved partners, so the Bridge uses the web player's interface (library playlists, playlist rows with their entry ids, search, create, add, remove). Not an official API, may break without notice. |
 | TIDAL | beta | OAuth PKCE | `TIDAL_CLIENT_ID` | API v2 (JSON:API) still evolving; endpoints isolated in `TidalProvider.kt`. Beta: limited real-world use. |
 | Deezer | beta | OAuth implicit | `DEEZER_APP_ID` and an https redirect page (`docs/deezer-redirect.html`) | Registration of new apps may be closed. Playlists read from Deezer carry no ISRC. Beta: limited real-world use. |
 | Subsonic / Navidrome (Airsonic, Gonic, LMS, Funkwhale) | complete, beta | server URL, user, password (md5+salt token) | nothing | Starred tracks = likes. |
@@ -133,9 +132,10 @@ developer account to register, a paid program, a daily quota to share. For those
 **open connector interface**: a separate app, a *plugin*, holds the sign-in to a service and answers
 Songport's requests for playlists and tracks.
 
-Songport never includes, downloads or installs a plugin. It discovers one that the user has already
-installed and then offers its services in the account picker, next to the official routes, which stay
-available and unchanged.
+The Google Play build never includes, downloads or installs a plugin. It discovers one that the user
+has already installed and then offers its services in the account picker, next to the official
+routes, which stay available and unchanged. The GitHub and F-Droid build carries the reference
+plugin's connectors inside instead (see below), so it needs no second app.
 
 ### How discovery works
 
@@ -146,11 +146,14 @@ with `ContentResolver.call()`; each provider in `providers/*BridgeProvider.kt` m
 the usual `MusicProvider` interface, so the sync engine treats a plugin service like any other. The
 plugin must verify the caller's package name and signing certificate before answering.
 
-### Songport Bridge
+### Songport Bridge and the built-in web connectors
 
 [**Songport Bridge**](https://github.com/xlollx/Songport-YTM-Bridge) is the reference plugin, by the
 same author, free and open source (GPL-3.0), distributed on GitHub only and never on Google Play.
-It adds:
+Its connectors are also built into Songport's GitHub and F-Droid build, as the `:bridge` library module
+(`android/bridge`, included with `fullImplementation`): the same code runs inside Songport, called
+in-process through `BridgeCore` instead of a ContentProvider (`providers/BuiltIn.kt` in `src/full`,
+an empty twin in `src/play`). The separate Bridge app stays for the Play build. The connectors add:
 
 | Service | What it adds |
 |---------|--------------|
@@ -161,18 +164,19 @@ It adds:
 
 It works by using the same web interfaces the services' own players use. That is against those
 services' terms of use, it can stop working whenever a service changes something, and in the worst
-case a service could restrict the account signed in. The Bridge shows a disclaimer and asks for
-acceptance before the first sign-in. Passwords are typed only on the services' own pages and are never
-seen or stored; the Bridge keeps the session cookies encrypted on the phone and hands Songport only
-data or short-lived tokens.
+case a service could restrict the account signed in. A disclaimer asks for acceptance before the
+first sign-in, in the Bridge and in the built-in connectors alike. Passwords are typed only on the
+services' own pages and are never seen or stored; the session cookies stay encrypted on the phone,
+and the sync engine gets only data or short-lived tokens.
 
 User-facing page: [xlollx.github.io/Songport/plugins](https://xlollx.github.io/Songport/plugins).
 
 ### Two distributions of Songport
 
-The `play` flavor, the one published on Google Play, never names, links to or describes any plugin;
-plugin services appear only when a plugin is already installed, with generic wording. The `full`
-flavor, the APK on GitHub Releases, can point to where a plugin is available. See
+The `play` flavor, the one for Google Play, never names, links to or describes any plugin; plugin
+services appear only when a plugin is already installed, with generic wording, and it contains no
+code that uses unofficial interfaces. The `full` flavor, the APK on GitHub Releases and on F-Droid,
+has the web connectors built in and no ads. See
 [Publishing on Google Play](#publishing-on-google-play).
 
 ## How tracks are matched

@@ -60,7 +60,7 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
             installUrl?.let { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
             return
         }
-        ctx.startActivity(Intent(LOGIN_ACTION).setPackage(pkg).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        BridgePlugin.startLogin(ctx, LOGIN_ACTION)
     }
 
     override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
@@ -150,7 +150,7 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     private fun call(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
         if (!installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))
         val b = try {
-            ctx.contentResolver.call(BridgePlugin.authority(ctx), method, arg, extras)
+            BridgePlugin.call(ctx, method, arg, extras)
         } catch (e: Exception) {
             throw ProviderException("YouTube Music Bridge: ${e.message ?: e.javaClass.simpleName}")
         } ?: throw ProviderException("YouTube Music Bridge: no answer")

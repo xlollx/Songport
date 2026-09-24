@@ -35,5 +35,7 @@ Bridge shows a notice and asks for your acceptance before any sign-in. Your pass
 the services' own pages and are never stored; the Bridge keeps the session cookies, encrypted on the
 phone, and hands Songport only the data or short-lived tokens it needs.
 
-Download: [latest release](https://github.com/xlollx/Songport-YTM-Bridge/releases/latest). Install the
-APK, sign in to the services you want inside the Bridge, then add them in Songport from Accounts → +.
+**The Songport APK from GitHub and the F-Droid version already include these connectors**: add the
+service from Accounts → + and sign in there, the notice comes first. The separate Bridge app is only
+for the Google Play version of Songport:
+[latest release](https://github.com/xlollx/Songport-YTM-Bridge/releases/latest).
