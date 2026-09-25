@@ -74,6 +74,7 @@
     <string name="liked_songs">喜欢的歌曲</string>
     <string name="saved_albums">已保存的专辑</string>
     <string name="followed_artists">关注的艺人</string>
+    <string name="followed_podcasts">播客</string>
     <string name="transfer_unsupported">在 %1$s 上不可用</string>
     <string name="tracks_count">%1$d 首歌曲</string>
     <string name="editor_error_incomplete">请选择来源歌单和目标。</string>
@@ -276,6 +277,9 @@
     <string name="tools_make_sort_artist">按艺人</string>
     <string name="tools_make_sort_title">按标题</string>
     <string name="tools_make_sort_album">按专辑</string>
+    <string name="tools_make_sort_year">按发行年份</string>
+    <string name="tools_make_sort_added">按添加日期</string>
+    <string name="tools_make_sort_duration">按时长</string>
     <string name="tools_make_sort_reverse">倒序</string>
     <string name="tools_make_run">创建</string>
     <string name="tools_make_done">已创建“%1$s”，共 %2$d 首歌曲</string>
@@ -348,6 +352,18 @@
     <string name="tools_manage_title">管理歌单</string>
     <string name="tools_manage_desc">把你在此服务上的歌单集中在一个列表中：在服务允许的情况下重命名或删除，或导出。</string>
     <string name="tools_manage_open">打开列表</string>
+    <string name="tools_scan_title">跨歌单重复</string>
+    <string name="tools_scan_desc">一次读取此服务的所有歌单，显示出现在多个歌单中的歌曲，以及不在任何歌单中的喜欢的歌曲。不会更改任何内容。在 YouTube 上会像完整备份一样消耗配额。</string>
+    <string name="tools_scan_open">查看</string>
+    <string name="scan_title">音乐库 · %1$s</string>
+    <string name="scan_reading">正在读取 %1$s…</string>
+    <string name="scan_summary">已读取 %1$d 个歌单 · %2$d 首歌曲出现在多个歌单 · %3$d 首喜欢的歌曲不在任何歌单</string>
+    <string name="scan_repeats">出现在多个歌单中（%1$d）</string>
+    <string name="scan_orphans">喜欢但不在任何歌单中（%1$d）</string>
+    <string name="scan_save">保存为文件</string>
+    <string name="scan_repeats_file">%1$s - 重复</string>
+    <string name="scan_orphans_file">%1$s - 不在歌单中的喜欢</string>
+    <string name="scan_clean">每首歌曲最多只在一个歌单中，且每首喜欢的歌曲都在某个歌单里。</string>
     <string name="manage_title">歌单 · %1$s</string>
     <string name="manage_rename">重命名</string>
     <string name="manage_rename_title">新名称</string>
@@ -374,6 +390,7 @@
     <string name="settings_battery_button">打开电池设置</string>
     <string name="share_received">已收到链接：请选择要同步到哪里。</string>
     <string name="share_invalid">分享的文本中没有可识别的歌单链接。</string>
+    <string name="setlist_imported">已导入演出曲目单：%1$d 首歌曲。请选择在哪里创建歌单。</string>
     <string name="read_only">只读</string>
     <string name="beta">测试版</string>
     <string name="beta_note">测试版连接器：可以正常使用，但使用经验少于其他连接器。如果出现问题，请报告给我们。</string>
@@ -381,7 +398,7 @@
     <string name="provider_note_jellyfin">你的 Jellyfin 服务器。无需注册，没有配额。收藏视为喜欢的歌曲。</string>
     <string name="provider_note_plex">你的 Plex Media Server，需使用你的 X-Plex-Token。Plex 无法通过 API 创建空歌单：请先在 Plex 中创建，再在这里选择。</string>
     <string name="provider_note_lastfm">Last.fm 个人资料中喜爱的歌曲，仅可作为来源。需要免费的 Last.fm API 密钥。</string>
-    <string name="provider_note_listenbrainz">ListenBrainz 用户的歌单和喜爱的歌曲，仅可作为来源。无需密钥。</string>
+    <string name="provider_note_listenbrainz">ListenBrainz 用户的歌单和喜爱的曲目。提供用户令牌后，也可以写入喜爱的曲目（以喜欢的歌曲为目标）。</string>
     <string name="login_title">登录 %1$s</string>
     <string name="login_url">服务器地址</string>
     <string name="login_user">用户名</string>
@@ -394,7 +411,10 @@
     <string name="login_hint_jellyfin">请输入你的 Jellyfin 服务器地址（例如 https://jellyfin.example.com），以及用户名和密码。</string>
     <string name="login_hint_plex">请输入你的 Plex Media Server 地址（例如 http://192.168.1.10:32400）和你的 X-Plex-Token。Plex 的支持页面（“Finding an authentication token”）介绍了如何找到该令牌。</string>
     <string name="login_hint_lastfm">请输入要读取其喜爱歌曲的 Last.fm 用户名。该个人资料必须公开。</string>
-    <string name="login_hint_listenbrainz">请输入要读取其歌单和喜爱歌曲的 ListenBrainz 用户名。</string>
+    <string name="login_hint_listenbrainz">输入要读取其歌单和喜爱曲目的 ListenBrainz 用户名。添加你的用户令牌（listenbrainz.org → Settings）即可同时写入喜爱的曲目。</string>
+    <string name="login_token">用户令牌（可选）</string>
+    <string name="listenbrainz_token_needed">ListenBrainz 需要你的用户令牌才能写入喜爱的曲目：请在“账号”中添加（listenbrainz.org → Settings）。</string>
+    <string name="listenbrainz_token_invalid">ListenBrainz 不接受此令牌。</string>
     <string name="setup_why_lastfm">读取公开个人资料需要免费的 Last.fm API 密钥，可即时获取。</string>
     <string name="setup_field_api_key">API 密钥</string>
     <string name="error_read_only">%1$s 为只读：只能作为来源。</string>
@@ -484,7 +504,7 @@
     <string name="onboarding_start">开始吧</string>
     <string name="settings_show_onboarding">再次显示介绍</string>
     <string name="paste_list">粘贴列表</string>
-    <string name="paste_list_hint">每行一首歌曲，格式为“艺人 - 标题”。行首的数字会被忽略。</string>
+    <string name="paste_list_hint">每行一首，格式为“艺人 - 标题”，或一个 setlist.fm 链接。行首的编号会被忽略。</string>
     <string name="paste_list_name">歌单名称</string>
     <string name="paste_list_text">歌曲</string>
     <string name="import_action">导入</string>

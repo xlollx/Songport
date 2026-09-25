@@ -21,6 +21,7 @@ import com.xlollx.songport.net.jsonObj
 import com.xlollx.songport.net.long
 import com.xlollx.songport.net.parseJson
 import com.xlollx.songport.net.str
+import com.xlollx.songport.sync.Durations
 import com.xlollx.songport.sync.Matcher
 import kotlinx.serialization.json.JsonElement
 import java.util.Locale
@@ -161,7 +162,7 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
         val url = if (playlistId.startsWith(CATALOG_PREFIX)) "$API/v1/catalog/${storefront(ctx)}/playlists/$playlistId"
         else "$API/v1/me/library/playlists/$playlistId"
         val d = api(ctx, "GET", url)["data"][0]
-        return Playlist(playlistId, d["attributes"]["name"].str ?: playlistId, ownedByMe = !playlistId.startsWith(CATALOG_PREFIX))
+        return Playlist(playlistId, d["attributes"]["name"].str ?: playlistId, ownedByMe = !playlistId.startsWith(CATALOG_PREFIX), description = d["attributes"]["description"]["standard"].str.orEmpty())
     }
 
     /** Brano di libreria: l'id utile per aggiungerlo altrove e' quello di catalogo (playParams.catalogId). */
@@ -176,6 +177,8 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
             album = a["albumName"].str ?: "",
             durationMs = a["durationInMillis"].long ?: 0,
             itemId = libId,
+            year = Durations.year(a["releaseDate"].str),
+            addedAt = Durations.parseInstant(a["dateAdded"].str),
         )
     }
 
@@ -196,6 +199,7 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
             durationMs = a["durationInMillis"].long ?: 0,
             isrc = a["isrc"].str,
             explicit = a["contentRating"].str?.let { it == "explicit" },
+            year = Durations.year(a["releaseDate"].str),
         )
     }
 

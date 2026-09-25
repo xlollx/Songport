@@ -60,7 +60,7 @@ import kotlinx.coroutines.withContext
 /** Strumenti che altrove stanno dietro un abbonamento: backup completo e pulizia dei duplicati. */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}) {
+fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
@@ -87,6 +87,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
         TransferCard(onOpen = onTransfer)
         BackupCard(provider, snackbar)
         DedupeCard(provider, snackbar)
+        ScanCard(provider, onOpen = { onScan(provider) })
     }
 }
 
@@ -172,6 +173,22 @@ private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
                         ExportMenuItems { fmt -> formats = false; pendingFormat = fmt; export(fmt, pl!!.name) }
                     }
                 }
+            }
+        }
+    }
+}
+
+/** Brani in piu' playlist e preferiti fuori da ogni playlist: apre la schermata di lettura. */
+@Composable
+private fun ScanCard(provider: MusicProvider, onOpen: () -> Unit) {
+    Card(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Text(stringResource(R.string.tools_scan_title), style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(6.dp))
+            Text(stringResource(R.string.tools_scan_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(10.dp))
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = onOpen) { Text(stringResource(R.string.tools_scan_open)) }
             }
         }
     }

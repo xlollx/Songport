@@ -74,6 +74,7 @@
     <string name="liked_songs">Canciones que te gustan</string>
     <string name="saved_albums">Álbumes guardados</string>
     <string name="followed_artists">Artistas seguidos</string>
+    <string name="followed_podcasts">Pódcasts</string>
     <string name="transfer_unsupported">no disponible en %1$s</string>
     <string name="tracks_count">%1$d canciones</string>
     <string name="editor_error_incomplete">Elige una playlist de origen y un destino.</string>
@@ -277,6 +278,9 @@
     <string name="tools_make_sort_artist">Por artista</string>
     <string name="tools_make_sort_title">Por título</string>
     <string name="tools_make_sort_album">Por álbum</string>
+    <string name="tools_make_sort_year">Por año de lanzamiento</string>
+    <string name="tools_make_sort_added">Por fecha de adición</string>
+    <string name="tools_make_sort_duration">Por duración</string>
     <string name="tools_make_sort_reverse">Orden inverso</string>
     <string name="tools_make_run">Crear</string>
     <string name="tools_make_done">“%1$s” creada con %2$d canciones</string>
@@ -350,6 +354,18 @@
     <string name="tools_manage_title">Gestionar playlists</string>
     <string name="tools_manage_desc">Tus playlists en este servicio en una sola lista: renómbralas o elimínalas donde el servicio lo permita, o expórtalas.</string>
     <string name="tools_manage_open">Abrir la lista</string>
+    <string name="tools_scan_title">Repetidas entre playlists</string>
+    <string name="tools_scan_desc">Lee una vez todas las playlists de este servicio y muestra las canciones que están en más de una, y las canciones que te gustan que no están en ninguna playlist. No cambia nada. En YouTube consume cuota como una copia de seguridad completa.</string>
+    <string name="tools_scan_open">Ver</string>
+    <string name="scan_title">Biblioteca · %1$s</string>
+    <string name="scan_reading">Leyendo %1$s…</string>
+    <string name="scan_summary">%1$d playlists leídas · %2$d canciones en varias playlists · %3$d favoritas en ninguna</string>
+    <string name="scan_repeats">En más de una playlist (%1$d)</string>
+    <string name="scan_orphans">Favoritas fuera de toda playlist (%1$d)</string>
+    <string name="scan_save">Guardar como archivo</string>
+    <string name="scan_repeats_file">%1$s - repetidas</string>
+    <string name="scan_orphans_file">%1$s - favoritas sin playlist</string>
+    <string name="scan_clean">Cada canción está en una playlist como máximo, y cada favorita está en una playlist.</string>
     <string name="manage_title">Playlists · %1$s</string>
     <string name="manage_rename">Renombrar</string>
     <string name="manage_rename_title">Nuevo nombre</string>
@@ -378,6 +394,7 @@
     <string name="settings_battery_button">Abrir ajustes de batería</string>
     <string name="share_received">Enlace recibido: elige adónde sincronizarlo.</string>
     <string name="share_invalid">El texto compartido no contiene ningún enlace de playlist reconocible.</string>
+    <string name="setlist_imported">Setlist importado: %1$d canciones. Elige dónde crear la playlist.</string>
     <string name="read_only">solo lectura</string>
     <string name="beta">beta</string>
     <string name="beta_note">Conector en beta: funciona, pero se ha usado menos que los demás. Si algo falla, por favor, repórtalo.</string>
@@ -385,7 +402,7 @@
     <string name="provider_note_jellyfin">Tu servidor Jellyfin. Sin registro ni cuota. Los favoritos cuentan como canciones que te gustan.</string>
     <string name="provider_note_plex">Tu Plex Media Server, con tu X-Plex-Token. Plex no permite crear una playlist vacía desde la API: créala en Plex y luego elígela aquí.</string>
     <string name="provider_note_lastfm">Canciones favoritas de un perfil de Last.fm, solo como origen. Necesita una clave de API gratuita de Last.fm.</string>
-    <string name="provider_note_listenbrainz">Playlists y canciones favoritas de un usuario de ListenBrainz, solo como origen. No necesita clave.</string>
+    <string name="provider_note_listenbrainz">Playlists y canciones amadas de un usuario de ListenBrainz. Con tu token de usuario también se pueden escribir las canciones amadas (favoritas como destino).</string>
     <string name="login_title">Iniciar sesión en %1$s</string>
     <string name="login_url">Dirección del servidor</string>
     <string name="login_user">Nombre de usuario</string>
@@ -398,7 +415,10 @@
     <string name="login_hint_jellyfin">Introduce la dirección de tu servidor Jellyfin (por ejemplo https://jellyfin.ejemplo.com), tu nombre de usuario y tu contraseña.</string>
     <string name="login_hint_plex">Introduce la dirección de tu Plex Media Server (por ejemplo http://192.168.1.10:32400) y tu X-Plex-Token. Plex explica cómo encontrar el token en sus páginas de ayuda (\"Finding an authentication token\").</string>
     <string name="login_hint_lastfm">Introduce el nombre de usuario de Last.fm cuyas canciones favoritas quieres leer. El perfil debe ser público.</string>
-    <string name="login_hint_listenbrainz">Introduce el nombre de usuario de ListenBrainz cuyas playlists y canciones favoritas quieres leer.</string>
+    <string name="login_hint_listenbrainz">Escribe el nombre de usuario de ListenBrainz cuyas playlists y canciones amadas quieres leer. Añade tu token de usuario (listenbrainz.org → Settings) para escribir también las canciones amadas.</string>
+    <string name="login_token">Token de usuario (opcional)</string>
+    <string name="listenbrainz_token_needed">ListenBrainz necesita tu token de usuario para escribir las canciones amadas: añádelo en Cuentas (listenbrainz.org → Settings).</string>
+    <string name="listenbrainz_token_invalid">ListenBrainz no aceptó este token.</string>
     <string name="setup_why_lastfm">Last.fm necesita una clave de API gratuita, que se emite al instante, para leer perfiles públicos.</string>
     <string name="setup_field_api_key">Clave de API</string>
     <string name="error_read_only">%1$s es de solo lectura: solo puede ser origen.</string>
@@ -488,7 +508,7 @@
     <string name="onboarding_start">Empecemos</string>
     <string name="settings_show_onboarding">Ver de nuevo la introducción</string>
     <string name="paste_list">Pegar una lista</string>
-    <string name="paste_list_hint">Una canción por línea, en formato \"Artista - Título\". Los números al principio de las líneas se ignoran.</string>
+    <string name="paste_list_hint">Una canción por línea, como \"Artista - Título\", o un enlace de setlist.fm. Los números al inicio de línea se ignoran.</string>
     <string name="paste_list_name">Nombre de la playlist</string>
     <string name="paste_list_text">Canciones</string>
     <string name="import_action">Importar</string>

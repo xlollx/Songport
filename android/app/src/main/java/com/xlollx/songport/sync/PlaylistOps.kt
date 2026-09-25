@@ -12,7 +12,7 @@ import kotlin.random.Random
  */
 object PlaylistOps {
 
-    enum class SortKey { ARTIST, TITLE, ALBUM, REVERSE }
+    enum class SortKey { ARTIST, TITLE, ALBUM, YEAR, ADDED, DURATION, REVERSE }
 
     /** Unisce piu' liste nell'ordine dato; con [dropDuplicates] tiene solo la prima copia di ogni brano. */
     fun merge(lists: List<List<Track>>, dropDuplicates: Boolean): List<Track> {
@@ -37,6 +37,10 @@ object PlaylistOps {
             SortKey.ARTIST -> tracks.sortedWith(byArtist.then(byAlbum).then(byTitle))
             SortKey.TITLE -> tracks.sortedWith(byTitle.then(byArtist))
             SortKey.ALBUM -> tracks.sortedWith(byAlbum.then(byArtist))
+            // Unknown values (0) sink to the end rather than pretending to be the oldest or shortest.
+            SortKey.YEAR -> tracks.sortedWith(compareBy<Track> { it.year == 0 }.thenBy { it.year }.then(byArtist).then(byAlbum))
+            SortKey.ADDED -> tracks.sortedWith(compareBy<Track> { it.addedAt == 0L }.thenBy { it.addedAt })
+            SortKey.DURATION -> tracks.sortedWith(compareBy<Track> { it.durationMs == 0L }.thenBy { it.durationMs })
             SortKey.REVERSE -> tracks.asReversed().toList()
         }
     }

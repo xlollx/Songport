@@ -384,9 +384,18 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
         onImport = { name, text ->
             pasteOpen = false
             scope.launch {
-                val n = withContext(Dispatchers.IO) { LocalFilesProvider.importFile(ctx, "$name.txt", text) }
-                snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n))
-                version++
+                try {
+                    val link = com.xlollx.songport.sync.SetlistImport.linkIn(text)
+                    val n = if (link != null) {
+                        val s = com.xlollx.songport.sync.SetlistImport.fetch(link)
+                        withContext(Dispatchers.IO) { LocalFilesProvider.importTracks(ctx, if (name.isBlank()) s.name else name, s.tracks) }
+                        s.tracks.size
+                    } else withContext(Dispatchers.IO) { LocalFilesProvider.importFile(ctx, "$name.txt", text) }
+                    snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n))
+                    version++
+                } catch (e: Exception) {
+                    snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+                }
             }
         },
     )

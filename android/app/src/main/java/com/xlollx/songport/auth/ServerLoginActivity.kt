@@ -122,7 +122,7 @@ private fun LoginForm(provider: CredentialsProvider, onDone: (String) -> Unit) {
             )
             error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
             Button(
-                enabled = !busy && (!form.needsUrl || url.isNotBlank()) && (!form.needsUser || user.isNotBlank()) && (!form.needsSecret || secret.isNotBlank()),
+                enabled = !busy && (!form.needsUrl || url.isNotBlank()) && (!form.needsUser || user.isNotBlank()) && (!form.needsSecret || form.secretOptional || secret.isNotBlank()),
                 onClick = {
                     busy = true
                     scope.launch {

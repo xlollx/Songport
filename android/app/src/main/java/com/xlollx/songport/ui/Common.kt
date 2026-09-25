@@ -275,5 +275,6 @@ fun playlistDisplayName(playlistId: String?, name: String): String = when (playl
     MusicProvider.LIKED_ID -> stringResource(R.string.liked_songs)
     MusicProvider.ALBUMS_ID -> stringResource(R.string.saved_albums)
     MusicProvider.ARTISTS_ID -> stringResource(R.string.followed_artists)
+    MusicProvider.PODCASTS_ID -> stringResource(R.string.followed_podcasts)
     else -> name
 }

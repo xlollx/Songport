@@ -119,7 +119,7 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
 
     override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
         val p = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlists?part=snippet,contentDetails&id=$playlistId") }["items"][0]
-        return Playlist(playlistId, p["snippet"]["title"].str ?: playlistId, p["contentDetails"]["itemCount"].int ?: -1, ownedByMe = false)
+        return Playlist(playlistId, p["snippet"]["title"].str ?: playlistId, p["contentDetails"]["itemCount"].int ?: -1, ownedByMe = false, description = p["snippet"]["description"].str.orEmpty())
     }
 
     private suspend fun isEmptyPlaylist(ctx: Context, playlistId: String): Boolean {

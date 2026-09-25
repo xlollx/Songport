@@ -25,8 +25,10 @@ object CsvCodec {
     }
 
     fun parse(text: String): List<Track> {
-        val rows = parseRows(text.removePrefix("﻿"))
+        var rows = parseRows(text.removePrefix("﻿"))
         if (rows.isEmpty()) return emptyList()
+        // Shazam's export opens with a one-cell line ("Shazam Library") above the real header.
+        if (rows.size > 1 && rows.first().size == 1 && rows[1].size > 1 && rows[1].map { norm(it) }.any { it in TITLE_KEYS }) rows = rows.drop(1)
         val header = rows.first().map { norm(it) }
         fun col(keys: Set<String>) = header.indexOfFirst { it in keys }.takeIf { it >= 0 }
         val iTitle = col(TITLE_KEYS)

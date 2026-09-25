@@ -172,6 +172,9 @@ fun MakePlaylistCard(provider: MusicProvider, snackbar: SnackbarHostState) {
                         PlaylistOps.SortKey.ARTIST to R.string.tools_make_sort_artist,
                         PlaylistOps.SortKey.TITLE to R.string.tools_make_sort_title,
                         PlaylistOps.SortKey.ALBUM to R.string.tools_make_sort_album,
+                        PlaylistOps.SortKey.YEAR to R.string.tools_make_sort_year,
+                        PlaylistOps.SortKey.ADDED to R.string.tools_make_sort_added,
+                        PlaylistOps.SortKey.DURATION to R.string.tools_make_sort_duration,
                         PlaylistOps.SortKey.REVERSE to R.string.tools_make_sort_reverse,
                     ).forEach { (k, res) -> FilterChip(selected = sortKey == k, onClick = { sortKey = k }, label = { Text(stringResource(res)) }) }
                 }

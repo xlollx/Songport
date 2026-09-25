@@ -139,7 +139,10 @@ class SyncEngine(private val ctx: Context) {
             }
             onProgress(Progress(Progress.Step.CREATE_TARGET))
             val name = job.target.playlistName.ifBlank { job.source.playlistName.ifBlank { job.name } }
-            val created = patient(onProgress) { dst.createPlaylist(ctx, name, MusicProvider.DESCRIPTION) }
+            // The source's own description travels with the playlist, where the source has one to give.
+            val description = if (MusicProvider.isLibrary(srcPlaylistId)) "" else
+                runCatching { src.playlistInfo(ctx, srcPlaylistId).description }.getOrDefault("").trim().take(300)
+            val created = patient(onProgress) { dst.createPlaylist(ctx, name, description.ifBlank { MusicProvider.DESCRIPTION }) }
             targetId = created.id
             targetCreated = true
             store.upsertJob(job.copy(target = job.target.copy(playlistId = created.id, playlistName = created.name)))

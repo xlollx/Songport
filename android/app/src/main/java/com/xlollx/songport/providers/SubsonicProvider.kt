@@ -71,6 +71,8 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
             album = s["album"].str ?: "",
             durationMs = (s["duration"].long ?: 0) * 1000,
             itemId = index?.toString(),
+            year = s["year"].int ?: 0,
+            addedAt = com.xlollx.songport.sync.Durations.parseInstant(s["created"].str),
         )
     }
 

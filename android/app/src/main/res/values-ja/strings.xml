@@ -74,6 +74,7 @@
     <string name="liked_songs">お気に入りの曲</string>
     <string name="saved_albums">保存したアルバム</string>
     <string name="followed_artists">フォロー中のアーティスト</string>
+    <string name="followed_podcasts">ポッドキャスト</string>
     <string name="transfer_unsupported">%1$s では利用できません</string>
     <string name="tracks_count">%1$d 曲</string>
     <string name="editor_error_incomplete">同期元プレイリストと同期先を選択してください。</string>
@@ -276,6 +277,9 @@
     <string name="tools_make_sort_artist">アーティスト順</string>
     <string name="tools_make_sort_title">タイトル順</string>
     <string name="tools_make_sort_album">アルバム順</string>
+    <string name="tools_make_sort_year">リリース年順</string>
+    <string name="tools_make_sort_added">追加日順</string>
+    <string name="tools_make_sort_duration">長さ順</string>
     <string name="tools_make_sort_reverse">逆順</string>
     <string name="tools_make_run">作成</string>
     <string name="tools_make_done">「%1$s」を %2$d 曲で作成しました</string>
@@ -348,6 +352,18 @@
     <string name="tools_manage_title">プレイリストを管理</string>
     <string name="tools_manage_desc">このサービスにあるあなたのプレイリストを一覧で表示します。サービスが許可していれば名前の変更や削除ができ、エクスポートもできます。</string>
     <string name="tools_manage_open">一覧を開く</string>
+    <string name="tools_scan_title">複数のプレイリストにある曲</string>
+    <string name="tools_scan_desc">このサービスのすべてのプレイリストを一度読み込み、複数のプレイリストに入っている曲と、どのプレイリストにも入っていないお気に入りの曲を表示します。何も変更しません。YouTube では完全バックアップと同じくらいクォータを消費します。</string>
+    <string name="tools_scan_open">見る</string>
+    <string name="scan_title">ライブラリ · %1$s</string>
+    <string name="scan_reading">%1$s を読み込み中…</string>
+    <string name="scan_summary">%1$d 件のプレイリストを読み込み · %2$d 曲が複数のプレイリストに · %3$d 曲のお気に入りがどこにもなし</string>
+    <string name="scan_repeats">複数のプレイリストにある曲（%1$d）</string>
+    <string name="scan_orphans">プレイリストに入っていないお気に入り（%1$d）</string>
+    <string name="scan_save">ファイルとして保存</string>
+    <string name="scan_repeats_file">%1$s - 重複</string>
+    <string name="scan_orphans_file">%1$s - プレイリスト外のお気に入り</string>
+    <string name="scan_clean">すべての曲は多くても 1 つのプレイリストにあり、お気に入りはすべてプレイリストに入っています。</string>
     <string name="manage_title">プレイリスト · %1$s</string>
     <string name="manage_rename">名前を変更</string>
     <string name="manage_rename_title">新しい名前</string>
@@ -374,6 +390,7 @@
     <string name="settings_battery_button">電池の設定を開く</string>
     <string name="share_received">リンクを受け取りました。同期先を選んでください。</string>
     <string name="share_invalid">共有されたテキストに認識できるプレイリストのリンクがありません。</string>
+    <string name="setlist_imported">セットリストを読み込みました：%1$d 曲。プレイリストを作成する場所を選んでください。</string>
     <string name="read_only">読み取り専用</string>
     <string name="beta">ベータ版</string>
     <string name="beta_note">ベータ版のコネクタです。動作はしますが、他のコネクタほど使われていません。問題があればご報告ください。</string>
@@ -381,7 +398,7 @@
     <string name="provider_note_jellyfin">ご自身の Jellyfin サーバー。登録も割り当ても不要です。お気に入りはお気に入りの曲として扱われます。</string>
     <string name="provider_note_plex">ご自身の Plex Media Server に X-Plex-Token で接続します。Plex では API から空のプレイリストを作成できないため、Plex で作成してからここで選択してください。</string>
     <string name="provider_note_lastfm">Last.fm プロフィールの Love した曲（同期元専用）。無料の Last.fm API キーが必要です。</string>
-    <string name="provider_note_listenbrainz">ListenBrainz ユーザーのプレイリストと Love した曲（同期元専用）。キーは不要です。</string>
+    <string name="provider_note_listenbrainz">ListenBrainz ユーザーのプレイリストと Love した曲。ユーザートークンがあれば Love した曲の書き込みもできます（お気に入りを転送先に）。</string>
     <string name="login_title">%1$s にログイン</string>
     <string name="login_url">サーバーのアドレス</string>
     <string name="login_user">ユーザー名</string>
@@ -394,7 +411,10 @@
     <string name="login_hint_jellyfin">Jellyfin サーバーのアドレス（例：https://jellyfin.example.com）、ユーザー名、パスワードを入力してください。</string>
     <string name="login_hint_plex">Plex Media Server のアドレス（例：http://192.168.1.10:32400）と X-Plex-Token を入力してください。トークンの確認方法は Plex のサポートページ（「Finding an authentication token」）で説明されています。</string>
     <string name="login_hint_lastfm">Love した曲を読み込む Last.fm のユーザー名を入力してください。プロフィールは公開されている必要があります。</string>
-    <string name="login_hint_listenbrainz">プレイリストと Love した曲を読み込む ListenBrainz のユーザー名を入力してください。</string>
+    <string name="login_hint_listenbrainz">プレイリストと Love した曲を読み取る ListenBrainz のユーザー名を入力してください。ユーザートークン（listenbrainz.org → Settings）を追加すると Love した曲の書き込みもできます。</string>
+    <string name="login_token">ユーザートークン（任意）</string>
+    <string name="listenbrainz_token_needed">Love した曲を書き込むには ListenBrainz のユーザートークンが必要です。「アカウント」で追加してください（listenbrainz.org → Settings）。</string>
+    <string name="listenbrainz_token_invalid">ListenBrainz がこのトークンを受け付けませんでした。</string>
     <string name="setup_why_lastfm">Last.fm で公開プロフィールを読み込むには、無料の API キー（すぐに発行されます）が必要です。</string>
     <string name="setup_field_api_key">API キー</string>
     <string name="error_read_only">%1$s は読み取り専用のため、同期元としてのみ使用できます。</string>
@@ -484,7 +504,7 @@
     <string name="onboarding_start">はじめる</string>
     <string name="settings_show_onboarding">紹介画面をもう一度表示</string>
     <string name="paste_list">リストを貼り付け</string>
-    <string name="paste_list_hint">1行に1曲ずつ、「アーティスト - 曲名」の形式で入力します。行頭の数字は無視されます。</string>
+    <string name="paste_list_hint">1 行に 1 曲、「アーティスト - タイトル」の形式か、setlist.fm のリンク。行頭の番号は無視されます。</string>
     <string name="paste_list_name">プレイリスト名</string>
     <string name="paste_list_text">曲</string>
     <string name="import_action">インポート</string>

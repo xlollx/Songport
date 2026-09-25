@@ -167,4 +167,34 @@ class PlaylistFilesTest {
         assertEquals("Daft Punk - Get Lucky\nUntitled\n", text)
         assertEquals(2, PlaylistFiles.parse("x.txt", text).size)
     }
+
+    @Test fun readsShazamExportAndSetlistPage() {
+        val shazam = "Shazam Library\nIndex,TagTime,Title,Artist,URL,TrackKey\n1,2024-01-02,Get Lucky,Daft Punk,https://x,123\n"
+        val t = PlaylistFiles.parse("shazamlibrary.csv", shazam)
+        assertEquals(1, t.size)
+        assertEquals("Get Lucky", t[0].title)
+        assertEquals(listOf("Daft Punk"), t[0].artists)
+
+        val html = """<html><head><meta property="og:title" content="Daft Punk Setlist at Bercy, Paris, France"></head>
+            <body><a class="songLabel" href="#">One More Time</a><a class="songLabel" href="#">Get Lucky</a>
+            <a class="songLabel">Rock &amp; Roll (Led Zeppelin cover)</a></body></html>"""
+        val s = SetlistImport.parse(html)
+        assertEquals("Daft Punk", s.artist)
+        assertEquals(3, s.tracks.size)
+        assertEquals(listOf("Daft Punk"), s.tracks[0].artists)
+        assertEquals("Rock & Roll", s.tracks[2].title)
+        assertEquals(listOf("Led Zeppelin"), s.tracks[2].artists)
+        assertTrue(s.name.startsWith("Daft Punk"))
+    }
+
+    @Test fun readsOpmlSubscriptions() {
+        val opml = """<?xml version="1.0"?><opml version="2.0"><body>
+            <outline text="News"><outline type="rss" text="The Daily" xmlUrl="https://x/daily.rss"/></outline>
+            <outline type="rss" title="Radiolab &amp; Co" xmlUrl="https://x/radiolab.rss"/>
+            </body></opml>"""
+        assertEquals(PlaylistFiles.Format.OPML, PlaylistFiles.detect("subs.opml", opml))
+        val t = PlaylistFiles.parse("subs.opml", opml)
+        assertEquals(listOf("The Daily", "Radiolab & Co"), t.map { it.title })
+        assertTrue(t.all { it.kind == Track.KIND_PODCAST })
+    }
 }

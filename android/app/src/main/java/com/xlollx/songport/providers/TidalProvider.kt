@@ -119,7 +119,7 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
 
     override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
         val d = api(ctx, "GET", "$API/playlists/$playlistId?countryCode=${cc(ctx)}")["data"]
-        return Playlist(playlistId, d["attributes"]["name"].str ?: playlistId, d["attributes"]["numberOfItems"].int ?: -1, ownedByMe = false)
+        return Playlist(playlistId, d["attributes"]["name"].str ?: playlistId, d["attributes"]["numberOfItems"].int ?: -1, ownedByMe = false, description = d["attributes"]["description"].str.orEmpty())
     }
 
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {

@@ -18,29 +18,26 @@ playlists; versioned backups; CSV, M3U, XSPF, JSPF, iTunes XML, JSON and text in
 shareable report of what was not found or matched loosely; multiple accounts per service; YouTube
 quota meter; own API keys to escape shared quotas.
 
-## Next, in rough order of value
+## Done since (September 2026)
 
-1. **Saved albums and followed artists** as objects to transfer and sync, next to playlists and
-   liked songs. Done for Spotify, Deezer, Subsonic/Navidrome, Jellyfin and Apple Music albums
-   (add only); still to do for YouTube Music (web protocol: liked albums and subscriptions) and
-   TIDAL (user collections).
-2. **Version policy** per sync: prefer studio over live or remix, explicit or clean, same album
-   when available, stricter or looser threshold. Today the rules are fixed; the album tie-break
-   is the first piece.
-3. **Scheduled backup to a folder the user picks** (Storage Access Framework: SD card, Nextcloud,
-   Drive, any DocumentsProvider) with one-tap restore, so the versioned backups also leave the
-   phone.
-4. **Description, cover and visibility** carried to the target playlist where the API allows
-   (Spotify, YouTube, Deezer, Subsonic, Jellyfin), and kept updated by the sync.
-5. **Cross-playlist duplicate finder**: tracks present in more than one playlist, and liked songs
-   that are in no playlist.
-6. **Scrobble and "love" writes** to Last.fm and ListenBrainz, so liked songs sync both ways with
-   them and a playlist can be scrobbled.
-7. **Richer sort keys** where the service exposes them: release date, date added, popularity,
-   duration, BPM (Subsonic, Jellyfin, Plex tags; Deezer; Spotify).
-8. **Setlist.fm and Shazam import**: a concert setlist or a Shazam CSV becomes a playlist.
-9. **YouTube Music hardening**: detect Google's abuse page and say what to do, prefer song
-   results over video results everywhere, keep a throttled queue that resumes the next day.
-10. **Podcast subscriptions via OPML**, where the services allow following shows.
+- Saved albums, followed artists and podcasts as sync objects (Spotify, Deezer, Subsonic/Navidrome,
+  Jellyfin; Apple Music albums, add only). OPML subscription files import as podcasts.
+- Matching rules per sync: strictness, explicit or clean, same album, studio versions only.
+- Backup to a folder of the user's choice, daily or weekly.
+- The source playlist's description travels to the created target.
+- Repeats across playlists and liked songs in no playlist, per service, with export.
+- Sort by release year, date added and duration.
+- setlist.fm links (shared or pasted) and Shazam exports become playlists.
+- ListenBrainz loved tracks writable with the user token.
+- YouTube Music already pauses on Google's abuse page with a doubling wait and a "verify" button;
+  song results are preferred and videos are only a fallback.
+
+## Next
+
+1. Saved albums and followed artists on **YouTube Music** (web protocol) and **TIDAL** (user
+   collections v2).
+2. **Cover art** carried to the target where the API allows (Spotify).
+3. **Last.fm loves** (needs the API secret for the session flow).
+4. A throttled YouTube Music queue that resumes the next day by itself.
 
 Not planned: smart links with analytics, listening statistics dashboards, anything hosted.

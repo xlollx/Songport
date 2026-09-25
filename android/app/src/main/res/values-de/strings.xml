@@ -74,6 +74,7 @@
     <string name="liked_songs">Lieblingssongs</string>
     <string name="saved_albums">Gespeicherte Alben</string>
     <string name="followed_artists">Gefolgte Künstler</string>
+    <string name="followed_podcasts">Podcasts</string>
     <string name="transfer_unsupported">auf %1$s nicht verfügbar</string>
     <string name="tracks_count">%1$d Titel</string>
     <string name="editor_error_incomplete">Wähle eine Quell-Playlist und ein Ziel.</string>
@@ -277,6 +278,9 @@
     <string name="tools_make_sort_artist">Nach Künstler</string>
     <string name="tools_make_sort_title">Nach Titel</string>
     <string name="tools_make_sort_album">Nach Album</string>
+    <string name="tools_make_sort_year">Nach Erscheinungsjahr</string>
+    <string name="tools_make_sort_added">Nach Hinzufügedatum</string>
+    <string name="tools_make_sort_duration">Nach Dauer</string>
     <string name="tools_make_sort_reverse">Umgekehrte Reihenfolge</string>
     <string name="tools_make_run">Erstellen</string>
     <string name="tools_make_done">„%1$s“ mit %2$d Titeln erstellt</string>
@@ -350,6 +354,18 @@
     <string name="tools_manage_title">Playlists verwalten</string>
     <string name="tools_manage_desc">Deine Playlists auf diesem Dienst in einer Liste: umbenennen oder löschen, wo der Dienst es zulässt, oder exportieren.</string>
     <string name="tools_manage_open">Liste öffnen</string>
+    <string name="tools_scan_title">Mehrfach in Playlists</string>
+    <string name="tools_scan_desc">Liest alle Playlists dieses Dienstes einmal und zeigt die Titel, die in mehr als einer stehen, und die Lieblingssongs, die in keiner Playlist sind. Nichts wird geändert. Auf YouTube kostet es Quota wie ein vollständiges Backup.</string>
+    <string name="tools_scan_open">Ansehen</string>
+    <string name="scan_title">Bibliothek · %1$s</string>
+    <string name="scan_reading">Lese %1$s…</string>
+    <string name="scan_summary">%1$d Playlists gelesen · %2$d Titel in mehreren Playlists · %3$d Lieblingssongs in keiner</string>
+    <string name="scan_repeats">In mehr als einer Playlist (%1$d)</string>
+    <string name="scan_orphans">Lieblingssongs in keiner Playlist (%1$d)</string>
+    <string name="scan_save">Als Datei speichern</string>
+    <string name="scan_repeats_file">%1$s - mehrfach</string>
+    <string name="scan_orphans_file">%1$s - Lieblingssongs ohne Playlist</string>
+    <string name="scan_clean">Jeder Titel ist in höchstens einer Playlist, und jeder Lieblingssong ist in einer Playlist.</string>
     <string name="manage_title">Playlists · %1$s</string>
     <string name="manage_rename">Umbenennen</string>
     <string name="manage_rename_title">Neuer Name</string>
@@ -378,6 +394,7 @@
     <string name="settings_battery_button">Akku-Einstellungen öffnen</string>
     <string name="share_received">Link empfangen: Wähle, wohin er synchronisiert werden soll.</string>
     <string name="share_invalid">Der geteilte Text enthält keinen erkennbaren Playlist-Link.</string>
+    <string name="setlist_imported">Setlist importiert: %1$d Titel. Wähle, wo die Playlist entstehen soll.</string>
     <string name="read_only">nur lesen</string>
     <string name="beta">Beta</string>
     <string name="beta_note">Connector in der Beta: Er funktioniert, wurde aber weniger genutzt als die anderen. Wenn etwas nicht stimmt, melde es bitte.</string>
@@ -385,7 +402,7 @@
     <string name="provider_note_jellyfin">Dein Jellyfin-Server. Keine Registrierung, kein Kontingent. Favoriten zählen als Lieblingssongs.</string>
     <string name="provider_note_plex">Dein Plex Media Server mit deinem X-Plex-Token. Plex kann über die API keine leere Playlist erstellen: Erstelle sie in Plex und wähle sie dann hier aus.</string>
     <string name="provider_note_lastfm">Geliebte Titel eines Last.fm-Profils, nur als Quelle. Erfordert einen kostenlosen Last.fm-API-Schlüssel.</string>
-    <string name="provider_note_listenbrainz">Playlists und geliebte Titel eines ListenBrainz-Nutzers, nur als Quelle. Kein Schlüssel nötig.</string>
+    <string name="provider_note_listenbrainz">Playlists und Lieblingstitel eines ListenBrainz-Nutzers. Mit deinem Nutzer-Token lassen sich Lieblingstitel auch schreiben (Lieblingssongs als Ziel).</string>
     <string name="login_title">Bei %1$s anmelden</string>
     <string name="login_url">Serveradresse</string>
     <string name="login_user">Benutzername</string>
@@ -398,7 +415,10 @@
     <string name="login_hint_jellyfin">Gib die Adresse deines Jellyfin-Servers ein (zum Beispiel https://jellyfin.example.com) sowie deinen Benutzernamen und dein Passwort.</string>
     <string name="login_hint_plex">Gib die Adresse deines Plex Media Servers ein (zum Beispiel http://192.168.1.10:32400) und deinen X-Plex-Token. Wie du den Token findest, erklärt Plex in seinen Support-Seiten (\"Finding an authentication token\").</string>
     <string name="login_hint_lastfm">Gib den Last.fm-Benutzernamen ein, dessen geliebte Titel du lesen möchtest. Das Profil muss öffentlich sein.</string>
-    <string name="login_hint_listenbrainz">Gib den ListenBrainz-Benutzernamen ein, dessen Playlists und geliebte Titel du lesen möchtest.</string>
+    <string name="login_hint_listenbrainz">Gib den ListenBrainz-Nutzernamen ein, dessen Playlists und Lieblingstitel gelesen werden sollen. Füge dein Nutzer-Token (listenbrainz.org → Settings) hinzu, um Lieblingstitel auch zu schreiben.</string>
+    <string name="login_token">Nutzer-Token (optional)</string>
+    <string name="listenbrainz_token_needed">ListenBrainz braucht dein Nutzer-Token, um Lieblingstitel zu schreiben: füge es unter Konten hinzu (listenbrainz.org → Settings).</string>
+    <string name="listenbrainz_token_invalid">ListenBrainz hat dieses Token nicht akzeptiert.</string>
     <string name="setup_why_lastfm">Last.fm benötigt einen kostenlosen, sofort ausgestellten API-Schlüssel, um öffentliche Profile zu lesen.</string>
     <string name="setup_field_api_key">API-Schlüssel</string>
     <string name="error_read_only">%1$s ist schreibgeschützt: Es kann nur Quelle sein.</string>
@@ -488,7 +508,7 @@
     <string name="onboarding_start">Los geht\'s</string>
     <string name="settings_show_onboarding">Einführung erneut anzeigen</string>
     <string name="paste_list">Liste einfügen</string>
-    <string name="paste_list_hint">Ein Titel pro Zeile als \"Künstler - Titel\". Zahlen am Zeilenanfang werden ignoriert.</string>
+    <string name="paste_list_hint">Ein Titel pro Zeile als „Künstler - Titel“, oder ein setlist.fm-Link. Nummern am Zeilenanfang werden ignoriert.</string>
     <string name="paste_list_name">Name der Playlist</string>
     <string name="paste_list_text">Titel</string>
     <string name="import_action">Importieren</string>

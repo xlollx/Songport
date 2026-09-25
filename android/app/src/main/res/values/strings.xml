@@ -74,6 +74,7 @@
     <string name="liked_songs">Liked songs</string>
     <string name="saved_albums">Saved albums</string>
     <string name="followed_artists">Followed artists</string>
+    <string name="followed_podcasts">Podcasts</string>
     <string name="transfer_unsupported">not available on %1$s</string>
     <string name="tracks_count">%1$d tracks</string>
     <string name="editor_error_incomplete">Choose a source playlist and a target.</string>
@@ -277,6 +278,9 @@
     <string name="tools_make_sort_artist">By artist</string>
     <string name="tools_make_sort_title">By title</string>
     <string name="tools_make_sort_album">By album</string>
+    <string name="tools_make_sort_year">By release year</string>
+    <string name="tools_make_sort_added">By date added</string>
+    <string name="tools_make_sort_duration">By duration</string>
     <string name="tools_make_sort_reverse">Reverse order</string>
     <string name="tools_make_run">Create</string>
     <string name="tools_make_done">“%1$s” created with %2$d tracks</string>
@@ -350,6 +354,18 @@
     <string name="tools_manage_title">Manage playlists</string>
     <string name="tools_manage_desc">Your playlists on this service in one list: rename or delete them where the service allows it, or export them.</string>
     <string name="tools_manage_open">Open the list</string>
+    <string name="tools_scan_title">Repeats across playlists</string>
+    <string name="tools_scan_desc">Reads every playlist of this service once and shows the tracks that sit in more than one, and the liked songs that are in no playlist. Nothing is changed. On YouTube it costs quota like a full backup.</string>
+    <string name="tools_scan_open">Look</string>
+    <string name="scan_title">Library · %1$s</string>
+    <string name="scan_reading">Reading %1$s…</string>
+    <string name="scan_summary">%1$d playlists read · %2$d tracks in several playlists · %3$d liked songs in none</string>
+    <string name="scan_repeats">In more than one playlist (%1$d)</string>
+    <string name="scan_orphans">Liked, in no playlist (%1$d)</string>
+    <string name="scan_save">Save as file</string>
+    <string name="scan_repeats_file">%1$s - repeats</string>
+    <string name="scan_orphans_file">%1$s - liked without playlist</string>
+    <string name="scan_clean">Every track is in one playlist at most, and every liked song is in a playlist.</string>
     <string name="manage_title">Playlists · %1$s</string>
     <string name="manage_rename">Rename</string>
     <string name="manage_rename_title">New name</string>
@@ -378,6 +394,7 @@
     <string name="settings_battery_button">Open battery settings</string>
     <string name="share_received">Link received: choose where to sync it.</string>
     <string name="share_invalid">The shared text has no recognisable playlist link.</string>
+    <string name="setlist_imported">Setlist imported: %1$d songs. Choose where to create the playlist.</string>
     <string name="read_only">read-only</string>
     <string name="beta">beta</string>
     <string name="beta_note">Connector in beta: it works, but it has seen less use than the others. If something goes wrong, please report it.</string>
@@ -385,7 +402,7 @@
     <string name="provider_note_jellyfin">Your Jellyfin server. No registration, no quota. Favourites count as liked songs.</string>
     <string name="provider_note_plex">Your Plex Media Server, with your X-Plex-Token. Plex cannot create an empty playlist from the API: create it in Plex, then pick it here.</string>
     <string name="provider_note_lastfm">Loved tracks of a Last.fm profile, as a source only. Needs a free Last.fm API key.</string>
-    <string name="provider_note_listenbrainz">Playlists and loved tracks of a ListenBrainz user, as a source only. No key needed.</string>
+    <string name="provider_note_listenbrainz">Playlists and loved tracks of a ListenBrainz user. With your user token, loved tracks can also be written (liked songs as target).</string>
     <string name="login_title">Sign in to %1$s</string>
     <string name="login_url">Server address</string>
     <string name="login_user">Username</string>
@@ -398,7 +415,10 @@
     <string name="login_hint_jellyfin">Enter the address of your Jellyfin server (for example https://jellyfin.example.com), your username and password.</string>
     <string name="login_hint_plex">Enter the address of your Plex Media Server (for example http://192.168.1.10:32400) and your X-Plex-Token. Plex explains how to find the token in its support pages ("Finding an authentication token").</string>
     <string name="login_hint_lastfm">Enter the Last.fm username whose loved tracks you want to read. The profile must be public.</string>
-    <string name="login_hint_listenbrainz">Enter the ListenBrainz username whose playlists and loved tracks you want to read.</string>
+    <string name="login_hint_listenbrainz">Enter the ListenBrainz username whose playlists and loved tracks you want to read. Add your user token (listenbrainz.org → Settings) to also write loved tracks.</string>
+    <string name="login_token">User token (optional)</string>
+    <string name="listenbrainz_token_needed">ListenBrainz needs your user token to write loved tracks: add it in Accounts (listenbrainz.org → Settings).</string>
+    <string name="listenbrainz_token_invalid">ListenBrainz did not accept this token.</string>
     <string name="setup_why_lastfm">Last.fm needs a free API key, issued instantly, to read public profiles.</string>
     <string name="setup_field_api_key">API key</string>
     <string name="error_read_only">%1$s is read-only: it can only be a source.</string>
@@ -489,7 +509,7 @@
     <string name="onboarding_start">Let\'s start</string>
     <string name="settings_show_onboarding">Show the introduction again</string>
     <string name="paste_list">Paste a list</string>
-    <string name="paste_list_hint">One track per line, as "Artist - Title". Numbers at the start of lines are ignored.</string>
+    <string name="paste_list_hint">One track per line, as \"Artist - Title\", or a setlist.fm link. Numbers at the start of lines are ignored.</string>
     <string name="paste_list_name">Playlist name</string>
     <string name="paste_list_text">Tracks</string>
     <string name="import_action">Import</string>

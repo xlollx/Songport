@@ -24,6 +24,9 @@ data class Track(
     val kind: String = "",
     /** Testo esplicito, dove il servizio lo dice; null = non noto. */
     val explicit: Boolean? = null,
+    /** Anno di uscita (0 = non noto) e data di aggiunta alla playlist in epoch ms (0 = non nota): per gli ordinamenti. */
+    val year: Int = 0,
+    val addedAt: Long = 0,
 ) {
     val artistLine: String get() = artists.joinToString(", ")
     val isrcNorm: String? get() = isrc?.trim()?.uppercase()?.takeIf { it.length >= 10 }
@@ -32,6 +35,8 @@ data class Track(
     companion object {
         const val KIND_ALBUM = "album"
         const val KIND_ARTIST = "artist"
+        /** Un podcast seguito (title = nome dello show, artists = editore). */
+        const val KIND_PODCAST = "podcast"
     }
 }
 

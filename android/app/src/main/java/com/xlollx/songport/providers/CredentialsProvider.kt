@@ -15,6 +15,8 @@ data class LoginForm(
     val needsSecret: Boolean,
     val secretLabelRes: Int = R.string.login_password,
     val hintRes: Int,
+    /** The secret field is shown but may stay empty (a token that only some features need). */
+    val secretOptional: Boolean = false,
 )
 
 /**

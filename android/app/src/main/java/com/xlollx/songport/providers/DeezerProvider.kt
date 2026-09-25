@@ -39,6 +39,7 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
     override val supportsLikedTarget = true
     override val supportsAlbums = true
     override val supportsArtists = true
+    override val supportsPodcasts = true
 
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://developers.deezer.com/myapps",
@@ -140,7 +141,7 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
 
     override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
         val j = dz(ctx, "GET", "/playlist/$playlistId")
-        return Playlist(playlistId, j["title"].str ?: playlistId, j["nb_tracks"].int ?: -1, ownedByMe = false)
+        return Playlist(playlistId, j["title"].str ?: playlistId, j["nb_tracks"].int ?: -1, ownedByMe = false, description = j["description"].str.orEmpty())
     }
 
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
@@ -149,6 +150,7 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
             MusicProvider.LIKED_ID -> "$API/user/me/tracks?limit=100"
             MusicProvider.ALBUMS_ID -> "$API/user/me/albums?limit=100"
             MusicProvider.ARTISTS_ID -> "$API/user/me/artists?limit=100"
+            MusicProvider.PODCASTS_ID -> "$API/user/me/podcasts?limit=100"
             else -> "$API/playlist/$playlistId/tracks?limit=100"
         }
         while (url != null) {
@@ -157,7 +159,8 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
                 when (playlistId) {
                     MusicProvider.ALBUMS_ID -> toAlbum(t)
                     MusicProvider.ARTISTS_ID -> toArtist(t)
-                    else -> toTrack(t)
+                    MusicProvider.PODCASTS_ID -> toPodcast(t)
+                    else -> toTrack(t)?.copy(addedAt = (t["time_add"].long ?: 0) * 1000)
                 }?.let { out += it }
             }
             url = j["next"].str
@@ -168,6 +171,11 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
     private fun toAlbum(a: JsonElement?): Track? {
         val id = a["id"].long?.toString() ?: return null
         return Track(id = id, title = a["title"].str ?: "", artists = listOfNotNull(a["artist"]["name"].str), isrc = a["upc"].str, kind = Track.KIND_ALBUM)
+    }
+
+    private fun toPodcast(p: JsonElement?): Track? {
+        val id = p["id"].long?.toString() ?: return null
+        return Track(id = id, title = p["title"].str ?: return null, kind = Track.KIND_PODCAST)
     }
 
     private fun toArtist(a: JsonElement?): Track? {
@@ -199,6 +207,10 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
             Track.KIND_ARTIST -> {
                 val j = dz(ctx, "GET", "/search/artist", mapOf("q" to track.title, "limit" to "5"))
                 return j["data"].arr.mapNotNull { toArtist(it) }
+            }
+            Track.KIND_PODCAST -> {
+                val j = dz(ctx, "GET", "/search/podcast", mapOf("q" to track.title, "limit" to "5"))
+                return j["data"].arr.mapNotNull { toPodcast(it) }
             }
         }
         track.isrcNorm?.let { isrc ->
@@ -246,6 +258,10 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
             tracks.forEach { dz(ctx, "POST", "/user/me/artists", mapOf("artist_id" to it.id)) }
             return
         }
+        if (playlistId == MusicProvider.PODCASTS_ID) {
+            tracks.forEach { dz(ctx, "POST", "/user/me/podcasts", mapOf("podcast_id" to it.id)) }
+            return
+        }
         tracks.chunked(50).forEach { chunk ->
             dz(ctx, "POST", "/playlist/$playlistId/tracks", mapOf("songs" to chunk.joinToString(",") { it.id }))
         }
@@ -262,6 +278,10 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
         }
         if (playlistId == MusicProvider.ARTISTS_ID) {
             tracks.forEach { dz(ctx, "DELETE", "/user/me/artists", mapOf("artist_id" to it.id)) }
+            return
+        }
+        if (playlistId == MusicProvider.PODCASTS_ID) {
+            tracks.forEach { dz(ctx, "DELETE", "/user/me/podcasts", mapOf("podcast_id" to it.id)) }
             return
         }
         tracks.chunked(50).forEach { chunk ->

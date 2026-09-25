@@ -8,6 +8,8 @@ import com.xlollx.songport.model.ProviderException
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.net.Http
 import com.xlollx.songport.net.arr
+import com.xlollx.songport.net.jsonObj
+import com.xlollx.songport.net.bool
 import com.xlollx.songport.net.get
 import com.xlollx.songport.net.int
 import com.xlollx.songport.net.long
@@ -25,21 +27,36 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
     override val brandColor = 0xFFEB743B
     override val noteRes = R.string.provider_note_listenbrainz
     override val beta = true
-    override val canWrite = false
-    override val canRemoveTracks = false
+    /** Writes reach only the loved tracks, and only with the user token; playlists stay read-only. */
+    override val canWrite = true
+    override val canCreatePlaylists = false
     override val supportsLikedSongs = true
-    override val loginForm = LoginForm(needsUrl = false, needsUser = true, needsSecret = false, hintRes = R.string.login_hint_listenbrainz)
+    override val supportsLikedTarget = true
+    override val loginForm = LoginForm(
+        needsUrl = false, needsUser = true, needsSecret = true, secretLabelRes = R.string.login_token,
+        hintRes = R.string.login_hint_listenbrainz, secretOptional = true,
+    )
 
-    private suspend fun api(ctx: Context, path: String): JsonElement {
-        val resp = Http.send("GET", "$API$path", mapOf("Accept" to "application/json"))
+    private suspend fun api(ctx: Context, path: String, method: String = "GET", body: JsonElement? = null, token: String? = null): JsonElement {
+        val headers = HashMap<String, String>()
+        headers["Accept"] = "application/json"
+        token?.let { headers["Authorization"] = "Token $it" }
+        val resp = Http.send(method, "$API$path", headers, body?.let { Http.jsonBody(it.toString()) })
         if (!resp.ok) throw ProviderException("$displayName API ${resp.code}: ${parseJson(resp.body)["error"].str ?: ""}")
         return parseJson(resp.body)
     }
 
+    private fun token(ctx: Context): String? = creds(ctx).extra["token"]?.takeIf { it.isNotBlank() }
+
     override suspend fun login(ctx: Context, url: String, user: String, secret: String) {
         val name = user.trim()
         api(ctx, "/1/user/${Http.enc(name)}/playlists?count=1")
-        save(ctx, Tokens(accessToken = name, userName = name))
+        val token = secret.trim()
+        if (token.isNotEmpty()) {
+            val v = api(ctx, "/1/validate-token", token = token)
+            if (v["valid"].bool != true) throw ProviderException(ctx.getString(R.string.listenbrainz_token_invalid))
+        }
+        save(ctx, Tokens(accessToken = name, userName = name, extra = if (token.isEmpty()) emptyMap() else mapOf("token" to token)))
     }
 
     private fun mbidOf(identifier: String?): String? = identifier?.trimEnd('/')?.substringAfterLast('/')?.takeIf { it.isNotBlank() }
@@ -100,13 +117,40 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
         }
     }
 
-    override suspend fun search(ctx: Context, track: Track): List<Track> = unsupported(ctx)
+    /** MusicBrainz knows the recording: its MBID is what feedback is written against. */
+    override suspend fun search(ctx: Context, track: Track): List<Track> {
+        val artist = track.artists.firstOrNull() ?: return emptyList()
+        val j = api(ctx, "/1/metadata/lookup?artist_name=${Http.enc(artist)}&recording_name=${Http.enc(track.title)}")
+        val mbid = j["recording_mbid"].str ?: return emptyList()
+        return listOf(Track(
+            id = mbid, title = j["recording_name"].str ?: track.title,
+            artists = listOfNotNull(j["artist_credit_name"].str ?: artist), album = j["release_name"].str ?: "",
+        ))
+    }
+
     override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist = unsupported(ctx)
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) = unsupported(ctx)
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) = unsupported(ctx)
+
+    private suspend fun feedback(ctx: Context, tracks: List<Track>, score: Int) {
+        val token = token(ctx) ?: throw ProviderException(ctx.getString(R.string.listenbrainz_token_needed))
+        for (t in tracks) {
+            if (!MBID.matches(t.id)) continue
+            api(ctx, "/1/feedback/recording-feedback", "POST", jsonObj("recording_mbid" to t.id, "score" to score), token)
+        }
+    }
+
+    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+        if (playlistId != MusicProvider.LIKED_ID) unsupported(ctx)
+        feedback(ctx, tracks, 1)
+    }
+
+    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+        if (playlistId != MusicProvider.LIKED_ID) unsupported(ctx)
+        feedback(ctx, tracks, 0)
+    }
 
     companion object {
         const val SERVICE = "listenbrainz"
         private const val API = "https://api.listenbrainz.org"
+        private val MBID = Regex("""[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}""")
     }
 }

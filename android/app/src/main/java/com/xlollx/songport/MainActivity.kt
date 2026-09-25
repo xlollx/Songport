@@ -49,6 +49,7 @@ import com.xlollx.songport.data.Store
 import com.xlollx.songport.model.PlaylistRef
 import com.xlollx.songport.model.SyncJob
 import com.xlollx.songport.providers.MusicProvider
+import com.xlollx.songport.providers.LocalFilesProvider
 import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.providers.YouTubeBridgeProvider
 import com.xlollx.songport.providers.YouTubeProvider
@@ -67,6 +68,7 @@ import com.xlollx.songport.ui.SettingsScreen
 import com.xlollx.songport.ui.SyncEditorScreen
 import com.xlollx.songport.ui.TransferScreen
 import com.xlollx.songport.ui.PlaylistsScreen
+import com.xlollx.songport.ui.LibraryScanScreen
 import com.xlollx.songport.ui.SyncsScreen
 import com.xlollx.songport.ui.ToolsScreen
 import com.xlollx.songport.ui.UnmatchedScreen
@@ -174,6 +176,7 @@ private fun MainScreen(
     var logOpen by remember { mutableStateOf(false) }
     var transferOpen by remember { mutableStateOf(false) }
     var manageProvider by remember { mutableStateOf<MusicProvider?>(null) }
+    var scanProvider by remember { mutableStateOf<MusicProvider?>(null) }
     var previewJob by remember { mutableStateOf<SyncJob?>(null) }
     var addConnector by remember { mutableStateOf(false) }
 
@@ -186,7 +189,19 @@ private fun MainScreen(
         val text = shared ?: return@LaunchedEffect
         sharedText.value = null
         val ref = PlaylistLinks.parse(text)
-        if (ref == null) {
+        val setlist = com.xlollx.songport.sync.SetlistImport.linkIn(text)
+        if (setlist != null) {
+            // A concert setlist becomes a file playlist, the source of a new sync.
+            tab = MainActivity.TAB_SYNCS
+            try {
+                val s = com.xlollx.songport.sync.SetlistImport.fetch(setlist)
+                val id = LocalFilesProvider.importTracks(ctx, s.name, s.tracks)
+                editing = newJob().copy(name = s.name, source = PlaylistRef(provider = LocalFilesProvider.id, playlistId = id, playlistName = id))
+                snackbar.showSnackbar(ctx.getString(R.string.setlist_imported, s.tracks.size))
+            } catch (e: Exception) {
+                snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+            }
+        } else if (ref == null) {
             snackbar.showSnackbar(ctx.getString(R.string.share_invalid))
         } else {
             tab = MainActivity.TAB_SYNCS
@@ -242,6 +257,10 @@ private fun MainScreen(
     }
     manageProvider?.let { p ->
         PlaylistsScreen(p) { manageProvider = null }
+        return
+    }
+    scanProvider?.let { p ->
+        LibraryScanScreen(p) { scanProvider = null }
         return
     }
     if (transferOpen) {
@@ -330,7 +349,7 @@ private fun MainScreen(
                     onReview = { unmatchedReport = it },
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
-                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it })
+                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it })
                 else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
             }
         }

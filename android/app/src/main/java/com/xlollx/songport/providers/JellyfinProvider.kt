@@ -69,6 +69,8 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
             album = i["Album"].str ?: "",
             durationMs = (i["RunTimeTicks"].long ?: 0) / 10_000,
             itemId = i["PlaylistItemId"].str,
+            year = i["ProductionYear"].int ?: 0,
+            addedAt = com.xlollx.songport.sync.Durations.parseInstant(i["DateCreated"].str),
         )
     }
 

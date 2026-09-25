@@ -26,7 +26,7 @@ import kotlinx.serialization.json.put
  */
 object PlaylistFiles {
 
-    enum class Format { CSV, M3U, ITUNES_XML, XSPF, JSON, TEXT }
+    enum class Format { CSV, M3U, ITUNES_XML, XSPF, OPML, JSON, TEXT }
 
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
@@ -42,6 +42,7 @@ object PlaylistFiles {
         return when {
             head.startsWith("#EXTM3U") || name.endsWith(".m3u") || name.endsWith(".m3u8") -> Format.M3U
             name.endsWith(".xspf") || (head.startsWith("<") && head.contains("xspf.org")) -> Format.XSPF
+            name.endsWith(".opml") || (head.startsWith("<") && head.contains("<opml", ignoreCase = true)) -> Format.OPML
             head.contains("<plist") || (name.endsWith(".xml") && head.startsWith("<")) -> Format.ITUNES_XML
             head.startsWith("{") || head.startsWith("[") || name.endsWith(".json") -> Format.JSON
             firstLine(text)?.any { it == ',' || it == ';' || it == '\t' } == true -> Format.CSV
@@ -53,6 +54,7 @@ object PlaylistFiles {
         Format.M3U -> parseM3u(text)
         Format.ITUNES_XML -> parseItunesXml(text)
         Format.XSPF -> parseXspf(text)
+        Format.OPML -> parseOpml(text)
         Format.JSON -> parseJson(text)
         Format.CSV -> CsvCodec.parse(text)
         Format.TEXT -> parseText(text)
@@ -140,6 +142,18 @@ object PlaylistFiles {
         }
         append("  </trackList>\n</playlist>\n")
     }
+
+    private val OPML_OUTLINE = Regex("""<outline\b([^>]*)>""", RegexOption.IGNORE_CASE)
+    private val OPML_ATTR = Regex("""(\w+)\s*=\s*"([^"]*)"""")
+
+    /** OPML delle iscrizioni ai podcast (Pocket Casts, AntennaPod, Apple Podcasts…): un show per outline con feed. */
+    fun parseOpml(text: String): List<Track> = OPML_OUTLINE.findAll(text).mapNotNull { m ->
+        val attrs = OPML_ATTR.findAll(m.groupValues[1]).associate { it.groupValues[1].lowercase() to unescapeXml(it.groupValues[2]) }
+        // Group headers are outlines too; only the ones pointing at a feed are shows.
+        if (attrs["xmlurl"].isNullOrBlank()) return@mapNotNull null
+        val title = (attrs["text"] ?: attrs["title"])?.trim()?.takeIf { it.isNotEmpty() } ?: return@mapNotNull null
+        CsvCodec.withStableId(Track(id = "", title = title, kind = Track.KIND_PODCAST))
+    }.toList()
 
     private val XSPF_TRACK = Regex("""<track>([\s\S]*?)</track>""")
     private fun xspfField(body: String, tag: String): String? =

@@ -47,4 +47,15 @@ class PlaylistOpsTest {
         // Two artists, six tracks each: a spread shuffle alternates them without a single repeat.
         assertTrue(out.zipWithNext().none { (x, y) -> x.artists == y.artists })
     }
+
+    @Test fun sortsByYearAddedAndDurationWithUnknownsLast() {
+        val list = listOf(
+            Track("1", "A", listOf("X"), year = 2010, addedAt = 300, durationMs = 200_000),
+            Track("2", "B", listOf("X"), year = 0, addedAt = 100, durationMs = 0),
+            Track("3", "C", listOf("X"), year = 1999, addedAt = 0, durationMs = 100_000),
+        )
+        assertEquals(listOf("3", "1", "2"), PlaylistOps.sort(list, PlaylistOps.SortKey.YEAR).map { it.id })
+        assertEquals(listOf("2", "1", "3"), PlaylistOps.sort(list, PlaylistOps.SortKey.ADDED).map { it.id })
+        assertEquals(listOf("3", "1", "2"), PlaylistOps.sort(list, PlaylistOps.SortKey.DURATION).map { it.id })
+    }
 }
