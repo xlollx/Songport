@@ -6,7 +6,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.Message
 import android.webkit.CookieManager
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -23,6 +25,15 @@ import kotlin.concurrent.thread
 class WebLoginActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: android.content.Context) { super.attachBaseContext(AppLocale.wrap(newBase)) }
     private lateinit var web: WebView
+    private lateinit var frame: android.widget.FrameLayout
+    private val popups = ArrayList<WebView>()
+
+    private fun closePopup(w: WebView) {
+        popups.remove(w)
+        frame.removeView(w)
+        runCatching { w.destroy() }
+        check()
+    }
     private val handler = Handler(Looper.getMainLooper())
     private var done = false
     private lateinit var service: String
@@ -54,10 +65,15 @@ class WebLoginActivity : ComponentActivity() {
                 if (!check()) android.widget.Toast.makeText(this@WebLoginActivity, R.string.bridge_login_not_signed_in, android.widget.Toast.LENGTH_LONG).show()
             }
         })
-        web = WebView(this).apply {
+        // The page sits in a frame so a sign-in popup (Facebook, Google, Apple ID) can open above it.
+        frame = android.widget.FrameLayout(this).apply {
             layoutParams = android.widget.LinearLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f)
         }
-        root.addView(bar); root.addView(web)
+        web = WebView(this).apply {
+            layoutParams = android.widget.FrameLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT)
+        }
+        frame.addView(web)
+        root.addView(bar); root.addView(frame)
         setContentView(root)
         CookieManager.getInstance().apply { setAcceptCookie(true); setAcceptThirdPartyCookies(web, true) }
         web.settings.apply {
@@ -86,8 +102,41 @@ class WebLoginActivity : ComponentActivity() {
             }
             override fun onPageFinished(view: WebView, url: String) { check() }
         }
+        web.settings.apply { setSupportMultipleWindows(true); javaScriptCanOpenWindowsAutomatically = true }
+        web.webChromeClient = object : WebChromeClient() {
+            // "Continue with Facebook" and the like open a popup, sign in there, and hand the result
+            // back to the page that opened it: a real second view, sharing the cookie jar, keeps that
+            // handshake intact. Without it the sign-in ran in the main page and never came back.
+            override fun onCreateWindow(view: WebView, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message): Boolean {
+                val popup = WebView(this@WebLoginActivity).apply {
+                    layoutParams = android.widget.FrameLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT)
+                    settings.apply {
+                        javaScriptEnabled = true; domStorageEnabled = true
+                        setSupportMultipleWindows(true); javaScriptCanOpenWindowsAutomatically = true
+                        userAgentString = web.settings.userAgentString
+                    }
+                    CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
+                    webViewClient = object : WebViewClient() {
+                        override fun onPageFinished(view: WebView, url: String) { check() }
+                    }
+                    webChromeClient = object : WebChromeClient() {
+                        override fun onCloseWindow(window: WebView) { closePopup(window) }
+                    }
+                }
+                frame.addView(popup)
+                popups += popup
+                (resultMsg.obj as WebView.WebViewTransport).webView = popup
+                resultMsg.sendToTarget()
+                return true
+            }
+        }
         onBackPressedDispatcher.addCallback(this) {
-            if (web.canGoBack()) web.goBack() else { setResult(RESULT_CANCELED); finish() }
+            val top = popups.lastOrNull()
+            when {
+                top != null -> if (top.canGoBack()) top.goBack() else closePopup(top)
+                web.canGoBack() -> web.goBack()
+                else -> { setResult(RESULT_CANCELED); finish() }
+            }
         }
         web.loadUrl(if (service == APPLE) AppleBridge.HOME else SpotifyBridge.LOGIN_URL)
         // Sign-in overlays (Apple ID) do not navigate: poll the cookie jar while the screen is open.
@@ -123,6 +172,7 @@ class WebLoginActivity : ComponentActivity() {
 
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
+        popups.forEach { runCatching { it.destroy() } }
         if (::web.isInitialized) web.destroy()
         super.onDestroy()
     }
