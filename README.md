@@ -84,6 +84,7 @@ that is exactly what to report.
 | | Additions only (default) or mirror removals | Removals are skipped when the source comes back empty. |
 | | Bidirectional | One switch creates the reverse twin sync without removals; the two are deleted together. |
 | | "Liked songs" as source or target | Spotify, Deezer, Subsonic, Jellyfin, Last.fm, ListenBrainz. |
+| | Saved albums and followed artists | Sync or transfer them like a playlist (Spotify, Deezer, Subsonic/Navidrome, Jellyfin; Apple Music albums, add only). Matched by UPC where available, then title and artist; the review works the same. YouTube Music and TIDAL not yet. |
 | Preview | What would change, before doing it | Already present, to add, to remove, not found, uncertain. |
 | Matching | ISRC, then title + artist + duration | Match cache; penalises live, karaoke, cover and sped-up versions when the original is not one. |
 | Review | Uncertain matches to confirm | Below 86% similarity a match is accepted but flagged; confirm or replace it. |

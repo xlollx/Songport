@@ -15,10 +15,22 @@ data class Track(
     val uri: String? = null,
     /** Id dell'elemento dentro la playlist (YouTube playlistItem, TIDAL itemId): serve per rimuovere. */
     val itemId: String? = null,
+    /**
+     * Cosa rappresenta: "" un brano, [KIND_ALBUM] un album salvato (title = titolo dell'album, isrc = UPC),
+     * [KIND_ARTIST] un artista seguito (title = nome). Album e artisti passano dalla stessa pipeline dei
+     * brani: elenco, ricerca, abbinamento, revisione; i connettori guardano il tipo per cercare nel
+     * catalogo giusto.
+     */
+    val kind: String = "",
 ) {
     val artistLine: String get() = artists.joinToString(", ")
     val isrcNorm: String? get() = isrc?.trim()?.uppercase()?.takeIf { it.length >= 10 }
-    override fun toString(): String = if (artists.isEmpty()) title else "$artistLine – $title"
+    override fun toString(): String = if (artists.isEmpty() || kind == KIND_ARTIST) title else "$artistLine – $title"
+
+    companion object {
+        const val KIND_ALBUM = "album"
+        const val KIND_ARTIST = "artist"
+    }
 }
 
 @Serializable

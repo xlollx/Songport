@@ -57,6 +57,9 @@
     <string name="loading">Caricamento…</string>
     <string name="no_connected_providers">Collega prima almeno un servizio nella scheda Account.</string>
     <string name="liked_songs">Brani preferiti</string>
+    <string name="saved_albums">Album salvati</string>
+    <string name="followed_artists">Artisti seguiti</string>
+    <string name="transfer_unsupported">non disponibile su %1$s</string>
     <string name="tracks_count">%1$d brani</string>
     <string name="editor_error_incomplete">Scegli una playlist di origine e una destinazione.</string>
 

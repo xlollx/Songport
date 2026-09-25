@@ -20,10 +20,8 @@ object Tools {
      * esportabili dalla scheda File. Non tocca nulla sul servizio.
      */
     suspend fun backupAll(ctx: Context, provider: MusicProvider, onProgress: (Progress) -> Unit = {}): BackupResult {
-        val lists = provider.playlists(ctx).toMutableList()
-        if (provider.supportsLikedSongs) {
-            lists.add(0, com.xlollx.songport.model.Playlist(MusicProvider.LIKED_ID, ctx.getString(com.xlollx.songport.R.string.liked_songs)))
-        }
+        // Liked songs, saved albums and followed artists come first: they are the library itself.
+        val lists = (provider.libraryEntries(ctx, asTarget = false) + provider.playlists(ctx)).toMutableList()
         var tracks = 0
         var done = 0
         var unchanged = 0

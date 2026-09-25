@@ -21,8 +21,9 @@ quota meter; own API keys to escape shared quotas.
 ## Next, in rough order of value
 
 1. **Saved albums and followed artists** as objects to transfer and sync, next to playlists and
-   liked songs (Spotify, YouTube Music, Deezer, TIDAL, Apple Music, Subsonic starred). Every
-   competitor has it; users moving services ask for it right after playlists.
+   liked songs. Done for Spotify, Deezer, Subsonic/Navidrome, Jellyfin and Apple Music albums
+   (add only); still to do for YouTube Music (web protocol: liked albums and subscriptions) and
+   TIDAL (user collections).
 2. **Version policy** per sync: prefer studio over live or remix, explicit or clean, same album
    when available, stricter or looser threshold. Today the rules are fixed; the album tie-break
    is the first piece.

@@ -49,6 +49,8 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     override val canRemoveTracks = false
     override val canRenamePlaylists: Boolean get() = false
     override val canDeletePlaylists: Boolean get() = false
+    /** Library albums can be listed and added; the API has no "followed artists". */
+    override val supportsAlbums = true
 
 
     override val setupGuide: SetupGuide? = SetupGuide(
@@ -177,6 +179,12 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
         )
     }
 
+    private fun catalogAlbum(d: JsonElement?): Track? {
+        val id = d["id"].str ?: return null
+        val a = d["attributes"]
+        return Track(id = id, title = a["name"].str ?: "", artists = splitArtists(a["artistName"].str), isrc = a["upc"].str, kind = Track.KIND_ALBUM)
+    }
+
     private fun catalogTrack(d: JsonElement?): Track? {
         val cid = d["id"].str ?: return null
         val a = d["attributes"]
@@ -196,6 +204,21 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
             ?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
 
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+        if (playlistId == MusicProvider.ALBUMS_ID) {
+            val out = ArrayList<Track>()
+            var url: String? = "$API/v1/me/library/albums?limit=100"
+            while (url != null) {
+                val j = api(ctx, "GET", url)
+                for (d in j["data"].arr) {
+                    // The catalogue id, when the library album is linked to one, is what other services can match.
+                    val id = d["attributes"]["playParams"]["catalogId"].str ?: d["id"].str ?: continue
+                    val a = d["attributes"]
+                    out += Track(id = id, title = a["name"].str ?: "", artists = splitArtists(a["artistName"].str), kind = Track.KIND_ALBUM)
+                }
+                url = nextUrl(j)
+            }
+            return out
+        }
         val catalog = playlistId.startsWith(CATALOG_PREFIX)
         val out = ArrayList<Track>()
         var url: String? = if (catalog) "$API/v1/catalog/${storefront(ctx)}/playlists/$playlistId/tracks?limit=100"
@@ -218,6 +241,17 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
 
     override suspend fun search(ctx: Context, track: Track): List<Track> {
         val sf = storefront(ctx)
+        if (track.kind == Track.KIND_ALBUM) {
+            track.isrcNorm?.let { upc ->
+                val j = api(ctx, "GET", "$API/v1/catalog/$sf/albums?filter[upc]=$upc")
+                val r = j["data"].arr.mapNotNull { catalogAlbum(it) }
+                if (r.isNotEmpty()) return r
+            }
+            val term = (listOfNotNull(track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }) + Matcher.searchTitle(track.title)).joinToString(" ")
+            val j = api(ctx, "GET", "$API/v1/catalog/$sf/search?types=albums&limit=5&term=${Http.enc(term)}")
+            return j["results"]["albums"]["data"].arr.mapNotNull { catalogAlbum(it) }
+        }
+        if (track.kind == Track.KIND_ARTIST) return emptyList()
         track.isrcNorm?.let { isrc ->
             val j = api(ctx, "GET", "$API/v1/catalog/$sf/songs?filter[isrc]=$isrc&limit=5")
             val r = j["data"].arr.mapNotNull { catalogTrack(it) }
@@ -237,6 +271,10 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     }
 
     override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+        if (playlistId == MusicProvider.ALBUMS_ID) {
+            tracks.chunked(25).forEach { chunk -> api(ctx, "POST", "$API/v1/me/library?ids[albums]=${chunk.joinToString(",") { it.id }}") }
+            return
+        }
         // Solo id di catalogo: un brano trovato nella libreria altrui non e' aggiungibile.
         tracks.chunked(25).forEach { chunk ->
             api(ctx, "POST", "$API/v1/me/library/playlists/$playlistId/tracks",

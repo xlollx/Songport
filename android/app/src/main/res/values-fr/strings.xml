@@ -57,6 +57,9 @@
     <string name="loading">Chargement…</string>
     <string name="no_connected_providers">Connectez d\'abord au moins un service dans l\'onglet Comptes.</string>
     <string name="liked_songs">Titres likés</string>
+    <string name="saved_albums">Albums enregistrés</string>
+    <string name="followed_artists">Artistes suivis</string>
+    <string name="transfer_unsupported">indisponible sur %1$s</string>
     <string name="tracks_count">%1$d titres</string>
     <string name="editor_error_incomplete">Choisissez une playlist source et une cible.</string>
 

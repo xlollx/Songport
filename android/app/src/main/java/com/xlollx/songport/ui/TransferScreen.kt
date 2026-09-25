@@ -92,7 +92,7 @@ fun TransferScreen(onClose: () -> Unit, onDone: () -> Unit) {
         val p = src ?: return@LaunchedEffect
         try {
             val base = p.playlists(ctx)
-            lists = if (p.supportsLikedSongs) listOf(Playlist(MusicProvider.LIKED_ID, ctx.getString(R.string.liked_songs))) + base else base
+            lists = p.libraryEntries(ctx, asTarget = false) + base
         } catch (e: Exception) { error = e.message ?: ctx.getString(R.string.error_generic); lists = emptyList() }
     }
 
@@ -135,22 +135,24 @@ fun TransferScreen(onClose: () -> Unit, onDone: () -> Unit) {
                 all.isEmpty() -> Text(stringResource(R.string.transfer_none), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 else -> {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                        TextButton(onClick = { checked = all.map { it.id }.toSet() }) { Text(stringResource(R.string.transfer_select_all)) }
+                        TextButton(onClick = { checked = all.filter { dst?.supportsLibrary(it.id, asTarget = true) != false }.map { it.id }.toSet() }) { Text(stringResource(R.string.transfer_select_all)) }
                         TextButton(onClick = { checked = emptySet() }) { Text(stringResource(R.string.transfer_select_none)) }
                     }
                     LazyColumn(Modifier.weight(1f)) {
                         items(all, key = { it.id }) { pl ->
                             val on = pl.id in checked
+                            val allowed = dst?.supportsLibrary(pl.id, asTarget = true) != false
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth().clickable { checked = if (on) checked - pl.id else checked + pl.id },
+                                modifier = Modifier.fillMaxWidth().clickable(enabled = allowed) { checked = if (on) checked - pl.id else checked + pl.id },
                             ) {
-                                Checkbox(checked = on, onCheckedChange = { checked = if (it) checked + pl.id else checked - pl.id })
+                                Checkbox(checked = on && allowed, enabled = allowed, onCheckedChange = { checked = if (it) checked + pl.id else checked - pl.id })
                                 Column(Modifier.weight(1f).padding(vertical = 6.dp)) {
                                     Text(pl.name, style = MaterialTheme.typography.bodyMedium)
                                     val detail = listOfNotNull(
                                         if (pl.trackCount >= 0) stringResource(R.string.tracks_count, pl.trackCount) else null,
                                         if (pl.id in existing) stringResource(R.string.transfer_existing) else null,
+                                        if (!allowed) stringResource(R.string.transfer_unsupported, dst?.label(ctx) ?: "") else null,
                                     ).joinToString(" · ")
                                     if (detail.isNotEmpty()) Text(detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
@@ -161,14 +163,15 @@ fun TransferScreen(onClose: () -> Unit, onDone: () -> Unit) {
                         if (busy) { CircularProgressIndicator(Modifier.width(20.dp).height(20.dp)); Spacer(Modifier.width(8.dp)) }
                         Button(enabled = !busy && checked.isNotEmpty() && dst != null && src != null && srcId != dstId, onClick = {
                             busy = true
-                            val chosen = all.filter { it.id in checked }
+                            val chosen = all.filter { it.id in checked && dst?.supportsLibrary(it.id, asTarget = true) != false }
                             scope.launch {
                                 val ids = chosen.map { pl ->
                                     val job = existing[pl.id] ?: SyncJob(
                                         id = UUID.randomUUID().toString(),
                                         name = pl.name,
                                         source = PlaylistRef(provider = srcId, playlistId = pl.id, playlistName = pl.name),
-                                        target = PlaylistRef(provider = dstId, playlistId = null, playlistName = pl.name),
+                                        // Liked songs, albums and artists go to the same library slot on the target.
+                                        target = PlaylistRef(provider = dstId, playlistId = pl.id.takeIf { MusicProvider.isLibrary(it) }, playlistName = pl.name),
                                         schedule = schedule,
                                     ).also { store.upsertJob(it); Scheduler.apply(ctx, it) }
                                     job.id

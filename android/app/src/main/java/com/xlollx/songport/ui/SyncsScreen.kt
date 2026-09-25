@@ -395,15 +395,16 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
     // Liked songs to a service that can like: propose "liked songs" as the target instead of a new playlist.
     LaunchedEffect(srcPlaylist?.id, dstProvider) {
         val dstObj = Providers.byId(dstProvider)
-        if (srcPlaylist?.id == MusicProvider.LIKED_ID && dstObj?.supportsLikedTarget == true && dstPlaylist == null) {
+        val sid = srcPlaylist?.id
+        if (MusicProvider.isLibrary(sid) && dstObj?.supportsLibrary(sid, asTarget = true) == true && dstPlaylist == null) {
             createNew = false
-            dstPlaylist = Playlist(MusicProvider.LIKED_ID, ctx.getString(R.string.liked_songs))
+            dstPlaylist = Playlist(sid!!, srcPlaylist?.name ?: "")
         }
     }
     // Job creato da un link condiviso: l'id c'e', il nome ancora no.
     LaunchedEffect(Unit) {
         val sp = srcPlaylist
-        if (sp != null && sp.name.isBlank() && sp.id != MusicProvider.LIKED_ID) {
+        if (sp != null && sp.name.isBlank() && !MusicProvider.isLibrary(sp.id)) {
             val p = Providers.byId(srcProvider)
             if (p != null) srcPlaylist = runCatching { p.playlistInfo(ctx, sp.id) }.getOrElse { Playlist(sp.id, p.displayName) }
         }
@@ -480,8 +481,8 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
             // Bidirezionale: crea la sync gemella al contrario, senza rimozioni (niente cancellazioni a ping-pong).
             val srcObj = Providers.byId(srcProvider)
             val biAllowed = !createNew && srcObj?.canWrite == true &&
-                (srcPlaylist?.id != MusicProvider.LIKED_ID || srcObj.supportsLikedTarget) &&
-                (dstPlaylist?.id != MusicProvider.LIKED_ID || dstObj?.supportsLikedSongs == true)
+                srcObj.supportsLibrary(srcPlaylist?.id, asTarget = true) &&
+                dstObj?.supportsLibrary(dstPlaylist?.id, asTarget = false) == true
             if (!biAllowed && bidirectional) bidirectional = false
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.weight(1f)) {
@@ -508,7 +509,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                             error = ctx.getString(R.string.editor_error_incomplete)
                             return@Button
                         }
-                        val srcName = if (sp.id == MusicProvider.LIKED_ID) ctx.getString(R.string.liked_songs) else sp.name
+                        val srcName = sp.name
                         val target = if (createNew) PlaylistRef(dstProvider, null, newName.ifBlank { srcName })
                         else PlaylistRef(dstProvider, dp!!.id, dp.name)
                         val main = job.copy(
@@ -541,9 +542,7 @@ private suspend fun loadPlaylists(ctx: android.content.Context, providerId: Stri
     return try {
         val lists = p.playlists(ctx)
         // "Brani preferiti": come origine dove il servizio li espone, come destinazione dove si possono scrivere.
-        val withLiked = if (forTarget) p.supportsLikedTarget else p.supportsLikedSongs
-        val liked = if (withLiked) listOf(Playlist(MusicProvider.LIKED_ID, ctx.getString(R.string.liked_songs))) else emptyList()
-        Loaded.Ok(liked + lists)
+        Loaded.Ok(p.libraryEntries(ctx, asTarget = forTarget) + lists)
     } catch (e: Exception) {
         Loaded.Failed(e.message ?: ctx.getString(R.string.error_generic))
     }

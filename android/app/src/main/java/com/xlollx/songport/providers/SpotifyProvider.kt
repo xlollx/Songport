@@ -35,6 +35,8 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val noteRes = R.string.provider_note_spotify
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
+    override val supportsAlbums = true
+    override val supportsArtists = true
 
     override val setupGuide: SetupGuide? = SetupGuide(
         dashboardUrl = "https://developer.spotify.com/dashboard",
@@ -94,6 +96,8 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     }
 
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+        if (playlistId == MusicProvider.ALBUMS_ID) return savedAlbums(ctx)
+        if (playlistId == MusicProvider.ARTISTS_ID) return followedArtists(ctx)
         val out = ArrayList<Track>()
         var url: String? = if (playlistId == MusicProvider.LIKED_ID) {
             "$API/me/tracks?limit=50"
@@ -133,12 +137,70 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override suspend fun track(ctx: Context, trackId: String): Track? =
         api(ctx, "GET", "$API/tracks/${Http.enc(trackId)}").takeIf { it["id"].str != null }?.let { toTrack(it) }
 
+    // ---- library: saved albums and followed artists, as Track items of their kind
+
+    private suspend fun savedAlbums(ctx: Context): List<Track> {
+        val out = ArrayList<Track>()
+        var url: String? = "$API/me/albums?limit=50"
+        while (url != null) {
+            val j = api(ctx, "GET", url)
+            j["items"].arr.forEach { item -> albumItem(item["album"])?.let { out += it } }
+            url = j["next"].str
+        }
+        return out
+    }
+
+    private suspend fun followedArtists(ctx: Context): List<Track> {
+        val out = ArrayList<Track>()
+        var url: String? = "$API/me/following?type=artist&limit=50"
+        while (url != null) {
+            val j = api(ctx, "GET", url)["artists"]
+            j["items"].arr.forEach { a -> artistItem(a)?.let { out += it } }
+            url = j["next"].str
+        }
+        return out
+    }
+
+    private suspend fun searchAlbums(ctx: Context, q: String): List<Track> {
+        val j = api(ctx, "GET", "$API/search?type=album&limit=5&q=${Http.enc(q)}")
+        return j["albums"]["items"].arr.mapNotNull { albumItem(it) }
+    }
+
+    private fun albumItem(a: JsonElement?): Track? {
+        val id = a["id"].str ?: return null
+        return Track(
+            id = id, title = a["name"].str ?: "", artists = a["artists"].arr.mapNotNull { it["name"].str },
+            isrc = a["external_ids"]["upc"].str, uri = a["uri"].str ?: "spotify:album:$id", kind = Track.KIND_ALBUM,
+        )
+    }
+
+    private fun artistItem(a: JsonElement?): Track? {
+        val id = a["id"].str ?: return null
+        val name = a["name"].str ?: return null
+        return Track(id = id, title = name, artists = listOf(name), uri = a["uri"].str ?: "spotify:artist:$id", kind = Track.KIND_ARTIST)
+    }
+
     private suspend fun searchQuery(ctx: Context, q: String): List<Track> {
         val j = api(ctx, "GET", "$API/search?type=track&limit=5&q=${Http.enc(q)}")
         return j["tracks"]["items"].arr.filter { it["id"].str != null }.map { toTrack(it) }
     }
 
     override suspend fun search(ctx: Context, track: Track): List<Track> {
+        when (track.kind) {
+            Track.KIND_ALBUM -> {
+                track.isrcNorm?.let { upc ->
+                    val r = searchAlbums(ctx, "upc:$upc")
+                    if (r.isNotEmpty()) return r
+                }
+                val artist = track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }
+                val r = searchAlbums(ctx, "album:${Matcher.searchTitle(track.title)}" + (artist?.let { " artist:$it" } ?: ""))
+                return r.ifEmpty { searchAlbums(ctx, listOfNotNull(artist, Matcher.searchTitle(track.title)).joinToString(" ")) }
+            }
+            Track.KIND_ARTIST -> {
+                val j = api(ctx, "GET", "$API/search?type=artist&limit=5&q=${Http.enc(track.title)}")
+                return j["artists"]["items"].arr.mapNotNull { artistItem(it) }
+            }
+        }
         track.isrcNorm?.let { isrc ->
             val r = searchQuery(ctx, "isrc:$isrc")
             if (r.isNotEmpty()) return r
@@ -179,6 +241,14 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
             tracks.map { it.id }.chunked(50).forEach { ids -> api(ctx, "PUT", "$API/me/tracks", jsonObj("ids" to ids)) }
             return
         }
+        if (playlistId == MusicProvider.ALBUMS_ID) {
+            tracks.map { it.id }.chunked(20).forEach { ids -> api(ctx, "PUT", "$API/me/albums", jsonObj("ids" to ids)) }
+            return
+        }
+        if (playlistId == MusicProvider.ARTISTS_ID) {
+            tracks.map { it.id }.chunked(50).forEach { ids -> api(ctx, "PUT", "$API/me/following?type=artist", jsonObj("ids" to ids)) }
+            return
+        }
         tracks.mapNotNull { it.uri }.chunked(100).forEach { chunk ->
             api(ctx, "POST", "$API/playlists/$playlistId/items", jsonObj("uris" to chunk))
         }
@@ -187,6 +257,14 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.map { it.id }.chunked(50).forEach { ids -> api(ctx, "DELETE", "$API/me/tracks", jsonObj("ids" to ids)) }
+            return
+        }
+        if (playlistId == MusicProvider.ALBUMS_ID) {
+            tracks.map { it.id }.chunked(20).forEach { ids -> api(ctx, "DELETE", "$API/me/albums", jsonObj("ids" to ids)) }
+            return
+        }
+        if (playlistId == MusicProvider.ARTISTS_ID) {
+            tracks.map { it.id }.chunked(50).forEach { ids -> api(ctx, "DELETE", "$API/me/following?type=artist", jsonObj("ids" to ids)) }
             return
         }
         tracks.mapNotNull { it.uri }.chunked(100).forEach { chunk ->

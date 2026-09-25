@@ -26,6 +26,8 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
     override val beta = true
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
+    override val supportsAlbums = true
+    override val supportsArtists = true
     override val loginForm = LoginForm(needsUrl = true, needsUser = true, needsSecret = true, hintRes = R.string.login_hint_jellyfin)
 
     private fun authHeader(token: String?) =
@@ -80,18 +82,43 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
     }
 
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
-        val path = if (playlistId == MusicProvider.LIKED_ID) {
-            "/Users/${uid(ctx)}/Items?Filters=IsFavorite&IncludeItemTypes=Audio&Recursive=true&Limit=5000"
-        } else {
-            "/Playlists/$playlistId/Items?UserId=${uid(ctx)}"
+        val path = when (playlistId) {
+            MusicProvider.LIKED_ID -> "/Users/${uid(ctx)}/Items?Filters=IsFavorite&IncludeItemTypes=Audio&Recursive=true&Limit=5000"
+            MusicProvider.ALBUMS_ID -> "/Users/${uid(ctx)}/Items?Filters=IsFavorite&IncludeItemTypes=MusicAlbum&Recursive=true&Limit=5000"
+            MusicProvider.ARTISTS_ID -> "/Users/${uid(ctx)}/Items?Filters=IsFavorite&IncludeItemTypes=MusicArtist&Recursive=true&Limit=5000"
+            else -> "/Playlists/$playlistId/Items?UserId=${uid(ctx)}"
         }
-        return api(ctx, "GET", path)["Items"].arr.mapNotNull { toTrack(it) }
+        val items = api(ctx, "GET", path)["Items"].arr
+        return when (playlistId) {
+            MusicProvider.ALBUMS_ID -> items.mapNotNull { toAlbum(it) }
+            MusicProvider.ARTISTS_ID -> items.mapNotNull { toArtist(it) }
+            else -> items.mapNotNull { toTrack(it) }
+        }
     }
 
     override suspend fun search(ctx: Context, track: Track): List<Track> {
+        when (track.kind) {
+            // Jellyfin's search term matches names: the album title alone finds the album, the artist filters after.
+            Track.KIND_ALBUM -> return api(ctx, "GET", "/Items?UserId=${uid(ctx)}&searchTerm=${Http.enc(Matcher.searchTitle(track.title))}&IncludeItemTypes=MusicAlbum&Recursive=true&Limit=8")["Items"].arr
+                .mapNotNull { toAlbum(it) }
+            Track.KIND_ARTIST -> return api(ctx, "GET", "/Items?UserId=${uid(ctx)}&searchTerm=${Http.enc(track.title)}&IncludeItemTypes=MusicArtist&Recursive=true&Limit=5")["Items"].arr
+                .mapNotNull { toArtist(it) }
+        }
         val q = (listOfNotNull(track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }) + Matcher.searchTitle(track.title)).joinToString(" ")
         return api(ctx, "GET", "/Items?UserId=${uid(ctx)}&searchTerm=${Http.enc(q)}&IncludeItemTypes=Audio&Recursive=true&Limit=5")["Items"].arr
             .mapNotNull { toTrack(it) }
+    }
+
+    private fun toAlbum(i: JsonElement?): Track? {
+        val id = i["Id"].str ?: return null
+        val artists = i["AlbumArtists"].arr.mapNotNull { it["Name"].str }.ifEmpty { listOfNotNull(i["AlbumArtist"].str) }
+        return Track(id = id, title = i["Name"].str ?: "", artists = artists, kind = Track.KIND_ALBUM)
+    }
+
+    private fun toArtist(i: JsonElement?): Track? {
+        val id = i["Id"].str ?: return null
+        val name = i["Name"].str ?: return null
+        return Track(id = id, title = name, artists = listOf(name), kind = Track.KIND_ARTIST)
     }
 
     override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist {
@@ -108,7 +135,8 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
     }
 
     override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
-        if (playlistId == MusicProvider.LIKED_ID) {
+        if (MusicProvider.isLibrary(playlistId)) {
+            // Favourites work the same for songs, albums and artists.
             tracks.forEach { api(ctx, "POST", "/Users/${uid(ctx)}/FavoriteItems/${it.id}") }
             return
         }
@@ -118,7 +146,7 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
     }
 
     override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
-        if (playlistId == MusicProvider.LIKED_ID) {
+        if (MusicProvider.isLibrary(playlistId)) {
             tracks.forEach { api(ctx, "DELETE", "/Users/${uid(ctx)}/FavoriteItems/${it.id}") }
             return
         }

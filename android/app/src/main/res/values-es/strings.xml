@@ -57,6 +57,9 @@
     <string name="loading">Cargando…</string>
     <string name="no_connected_providers">Primero conecta al menos un servicio en la pestaña Cuentas.</string>
     <string name="liked_songs">Canciones que te gustan</string>
+    <string name="saved_albums">Álbumes guardados</string>
+    <string name="followed_artists">Artistas seguidos</string>
+    <string name="transfer_unsupported">no disponible en %1$s</string>
     <string name="tracks_count">%1$d canciones</string>
     <string name="editor_error_incomplete">Elige una playlist de origen y un destino.</string>
 

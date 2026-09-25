@@ -31,6 +31,8 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
     override val beta = true
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
+    override val supportsAlbums = true
+    override val supportsArtists = true
     override val loginForm = LoginForm(needsUrl = true, needsUser = true, needsSecret = true, hintRes = R.string.login_hint_subsonic)
 
     override suspend fun login(ctx: Context, url: String, user: String, secret: String) {
@@ -82,15 +84,39 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> =
         if (playlistId == MusicProvider.LIKED_ID) {
             call(ctx, "getStarred2", emptyList())["starred2"]["song"].arr.mapNotNull { toTrack(it) }
+        } else if (playlistId == MusicProvider.ALBUMS_ID) {
+            call(ctx, "getStarred2", emptyList())["starred2"]["album"].arr.mapNotNull { toAlbum(it) }
+        } else if (playlistId == MusicProvider.ARTISTS_ID) {
+            call(ctx, "getStarred2", emptyList())["starred2"]["artist"].arr.mapNotNull { toArtist(it) }
         } else {
             call(ctx, "getPlaylist", listOf("id" to playlistId))["playlist"]["entry"].arr
                 .mapIndexedNotNull { i, s -> toTrack(s, i) }
         }
 
     override suspend fun search(ctx: Context, track: Track): List<Track> {
+        when (track.kind) {
+            Track.KIND_ALBUM -> {
+                val q = (listOfNotNull(track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }) + Matcher.searchTitle(track.title)).joinToString(" ")
+                val r = call(ctx, "search3", listOf("query" to q, "songCount" to "0", "albumCount" to "5", "artistCount" to "0"))["searchResult3"]["album"].arr.mapNotNull { toAlbum(it) }
+                // Servers index album titles alone too: the artist in the query can hide a match.
+                return r.ifEmpty { call(ctx, "search3", listOf("query" to Matcher.searchTitle(track.title), "songCount" to "0", "albumCount" to "5", "artistCount" to "0"))["searchResult3"]["album"].arr.mapNotNull { toAlbum(it) } }
+            }
+            Track.KIND_ARTIST -> return call(ctx, "search3", listOf("query" to track.title, "songCount" to "0", "albumCount" to "0", "artistCount" to "5"))["searchResult3"]["artist"].arr.mapNotNull { toArtist(it) }
+        }
         val q = (listOfNotNull(track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }) + Matcher.searchTitle(track.title)).joinToString(" ")
         return call(ctx, "search3", listOf("query" to q, "songCount" to "5", "albumCount" to "0", "artistCount" to "0"))["searchResult3"]["song"].arr
             .mapNotNull { toTrack(it) }
+    }
+
+    private fun toAlbum(a: JsonElement?): Track? {
+        val id = a["id"].str ?: return null
+        return Track(id = id, title = a["name"].str ?: a["album"].str ?: "", artists = listOfNotNull(a["artist"].str), kind = Track.KIND_ALBUM)
+    }
+
+    private fun toArtist(a: JsonElement?): Track? {
+        val id = a["id"].str ?: return null
+        val name = a["name"].str ?: return null
+        return Track(id = id, title = name, artists = listOf(name), kind = Track.KIND_ARTIST)
     }
 
     override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist {
@@ -104,6 +130,14 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
     override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.chunked(50).forEach { chunk -> call(ctx, "star", chunk.map { "id" to it.id }) }
+            return
+        }
+        if (playlistId == MusicProvider.ALBUMS_ID) {
+            tracks.chunked(50).forEach { chunk -> call(ctx, "star", chunk.map { "albumId" to it.id }) }
+            return
+        }
+        if (playlistId == MusicProvider.ARTISTS_ID) {
+            tracks.chunked(50).forEach { chunk -> call(ctx, "star", chunk.map { "artistId" to it.id }) }
             return
         }
         tracks.chunked(100).forEach { chunk ->
@@ -122,6 +156,14 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
     override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.chunked(50).forEach { chunk -> call(ctx, "unstar", chunk.map { "id" to it.id }) }
+            return
+        }
+        if (playlistId == MusicProvider.ALBUMS_ID) {
+            tracks.chunked(50).forEach { chunk -> call(ctx, "unstar", chunk.map { "albumId" to it.id }) }
+            return
+        }
+        if (playlistId == MusicProvider.ARTISTS_ID) {
+            tracks.chunked(50).forEach { chunk -> call(ctx, "unstar", chunk.map { "artistId" to it.id }) }
             return
         }
         // Rimozione per posizione: gli indici sono quelli letti da getPlaylist, tutti in una chiamata.

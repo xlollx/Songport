@@ -37,6 +37,8 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
     override val beta = true
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
+    override val supportsAlbums = true
+    override val supportsArtists = true
 
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://developers.deezer.com/myapps",
@@ -142,13 +144,35 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
 
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
         val out = ArrayList<Track>()
-        var url: String? = if (playlistId == MusicProvider.LIKED_ID) "$API/user/me/tracks?limit=100" else "$API/playlist/$playlistId/tracks?limit=100"
+        var url: String? = when (playlistId) {
+            MusicProvider.LIKED_ID -> "$API/user/me/tracks?limit=100"
+            MusicProvider.ALBUMS_ID -> "$API/user/me/albums?limit=100"
+            MusicProvider.ARTISTS_ID -> "$API/user/me/artists?limit=100"
+            else -> "$API/playlist/$playlistId/tracks?limit=100"
+        }
         while (url != null) {
             val j = dz(ctx, "GET", url)
-            j["data"].arr.forEach { t -> toTrack(t)?.let { out += it } }
+            j["data"].arr.forEach { t ->
+                when (playlistId) {
+                    MusicProvider.ALBUMS_ID -> toAlbum(t)
+                    MusicProvider.ARTISTS_ID -> toArtist(t)
+                    else -> toTrack(t)
+                }?.let { out += it }
+            }
             url = j["next"].str
         }
         return out
+    }
+
+    private fun toAlbum(a: JsonElement?): Track? {
+        val id = a["id"].long?.toString() ?: return null
+        return Track(id = id, title = a["title"].str ?: "", artists = listOfNotNull(a["artist"]["name"].str), isrc = a["upc"].str, kind = Track.KIND_ALBUM)
+    }
+
+    private fun toArtist(a: JsonElement?): Track? {
+        val id = a["id"].long?.toString() ?: return null
+        val name = a["name"].str ?: return null
+        return Track(id = id, title = name, artists = listOf(name), kind = Track.KIND_ARTIST)
     }
 
     override suspend fun track(ctx: Context, trackId: String): Track? = toTrack(dz(ctx, "GET", "/track/$trackId", allowNoData = true))
@@ -156,6 +180,26 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
     override fun webSearchUrl(ctx: Context, query: String): String = "https://www.deezer.com/search/" + android.net.Uri.encode(query)
 
     override suspend fun search(ctx: Context, track: Track): List<Track> {
+        when (track.kind) {
+            Track.KIND_ALBUM -> {
+                track.isrcNorm?.let { upc ->
+                    val j = dz(ctx, "GET", "/album/upc:$upc", allowNoData = true)
+                    toAlbum(j)?.let { return listOf(it) }
+                }
+                val artist = track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }
+                var j = dz(ctx, "GET", "/search/album", mapOf("q" to "album:\"${Matcher.searchTitle(track.title)}\"" + (artist?.let { " artist:\"$it\"" } ?: ""), "limit" to "5"))
+                var res = j["data"].arr.mapNotNull { toAlbum(it) }
+                if (res.isEmpty()) {
+                    j = dz(ctx, "GET", "/search/album", mapOf("q" to listOfNotNull(artist, Matcher.searchTitle(track.title)).joinToString(" "), "limit" to "5"))
+                    res = j["data"].arr.mapNotNull { toAlbum(it) }
+                }
+                return res
+            }
+            Track.KIND_ARTIST -> {
+                val j = dz(ctx, "GET", "/search/artist", mapOf("q" to track.title, "limit" to "5"))
+                return j["data"].arr.mapNotNull { toArtist(it) }
+            }
+        }
         track.isrcNorm?.let { isrc ->
             val j = dz(ctx, "GET", "/track/isrc:$isrc", allowNoData = true)
             toTrack(j)?.let { return listOf(it) }
@@ -193,6 +237,14 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
             tracks.forEach { dz(ctx, "POST", "/user/me/tracks", mapOf("track_id" to it.id)) }
             return
         }
+        if (playlistId == MusicProvider.ALBUMS_ID) {
+            tracks.forEach { dz(ctx, "POST", "/user/me/albums", mapOf("album_id" to it.id)) }
+            return
+        }
+        if (playlistId == MusicProvider.ARTISTS_ID) {
+            tracks.forEach { dz(ctx, "POST", "/user/me/artists", mapOf("artist_id" to it.id)) }
+            return
+        }
         tracks.chunked(50).forEach { chunk ->
             dz(ctx, "POST", "/playlist/$playlistId/tracks", mapOf("songs" to chunk.joinToString(",") { it.id }))
         }
@@ -201,6 +253,14 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
     override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.forEach { dz(ctx, "DELETE", "/user/me/tracks", mapOf("track_id" to it.id)) }
+            return
+        }
+        if (playlistId == MusicProvider.ALBUMS_ID) {
+            tracks.forEach { dz(ctx, "DELETE", "/user/me/albums", mapOf("album_id" to it.id)) }
+            return
+        }
+        if (playlistId == MusicProvider.ARTISTS_ID) {
+            tracks.forEach { dz(ctx, "DELETE", "/user/me/artists", mapOf("artist_id" to it.id)) }
             return
         }
         tracks.chunked(50).forEach { chunk ->

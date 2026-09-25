@@ -105,7 +105,7 @@ private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
     LaunchedEffect(provider.id) {
         lists = try {
             val base = provider.playlists(ctx)
-            if (provider.supportsLikedSongs) listOf(Playlist(MusicProvider.LIKED_ID, ctx.getString(R.string.liked_songs))) + base else base
+            provider.libraryEntries(ctx, asTarget = false) + base
         } catch (e: Exception) {
             snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
             emptyList()

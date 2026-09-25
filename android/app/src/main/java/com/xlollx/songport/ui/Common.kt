@@ -271,5 +271,9 @@ fun formatDate(epoch: Long): String =
     DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date(epoch))
 
 @Composable
-fun playlistDisplayName(playlistId: String?, name: String): String =
-    if (playlistId == MusicProvider.LIKED_ID) stringResource(R.string.liked_songs) else name
+fun playlistDisplayName(playlistId: String?, name: String): String = when (playlistId) {
+    MusicProvider.LIKED_ID -> stringResource(R.string.liked_songs)
+    MusicProvider.ALBUMS_ID -> stringResource(R.string.saved_albums)
+    MusicProvider.ARTISTS_ID -> stringResource(R.string.followed_artists)
+    else -> name
+}

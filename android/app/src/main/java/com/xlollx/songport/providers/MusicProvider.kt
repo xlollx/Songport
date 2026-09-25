@@ -24,6 +24,24 @@ interface MusicProvider {
     val supportsLikedSongs: Boolean get() = false
     /** Se si puo' anche scrivere nei "brani preferiti" (sync preferiti -> preferiti). */
     val supportsLikedTarget: Boolean get() = false
+    /** Album salvati (id speciale ALBUMS_ID) e artisti seguiti (ARTISTS_ID), in lettura e scrittura. */
+    val supportsAlbums: Boolean get() = false
+    val supportsArtists: Boolean get() = false
+
+    /** Se questo id speciale (preferiti, album, artisti) e' disponibile qui, come origine o destinazione. */
+    fun supportsLibrary(playlistId: String?, asTarget: Boolean): Boolean = when (playlistId) {
+        LIKED_ID -> if (asTarget) supportsLikedTarget else supportsLikedSongs
+        ALBUMS_ID -> supportsAlbums
+        ARTISTS_ID -> supportsArtists
+        else -> true
+    }
+
+    /** Le voci speciali da mostrare accanto alle playlist. */
+    fun libraryEntries(ctx: Context, asTarget: Boolean): List<Playlist> = listOfNotNull(
+        Playlist(LIKED_ID, ctx.getString(com.xlollx.songport.R.string.liked_songs)).takeIf { supportsLibrary(LIKED_ID, asTarget) },
+        Playlist(ALBUMS_ID, ctx.getString(com.xlollx.songport.R.string.saved_albums)).takeIf { supportsAlbums },
+        Playlist(ARTISTS_ID, ctx.getString(com.xlollx.songport.R.string.followed_artists)).takeIf { supportsArtists },
+    )
     /** False per sorgenti locali (file) che non richiedono login. */
     val requiresAuth: Boolean get() = true
     /**
@@ -140,6 +158,17 @@ interface MusicProvider {
 
     companion object {
         const val LIKED_ID = "__liked__"
+        const val ALBUMS_ID = "__albums__"
+        const val ARTISTS_ID = "__artists__"
+
+        fun isLibrary(playlistId: String?): Boolean = playlistId == LIKED_ID || playlistId == ALBUMS_ID || playlistId == ARTISTS_ID
+
+        /** Il tipo di elemento che un id speciale contiene: album, artista, o null per brani. */
+        fun libraryKind(playlistId: String?): String? = when (playlistId) {
+            ALBUMS_ID -> Track.KIND_ALBUM
+            ARTISTS_ID -> Track.KIND_ARTIST
+            else -> null
+        }
         const val DESCRIPTION = "Synced with Songport"
     }
 }

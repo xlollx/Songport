@@ -57,6 +57,9 @@
     <string name="loading">Wird geladen…</string>
     <string name="no_connected_providers">Verbinde zuerst mindestens einen Dienst im Tab Konten.</string>
     <string name="liked_songs">Lieblingssongs</string>
+    <string name="saved_albums">Gespeicherte Alben</string>
+    <string name="followed_artists">Gefolgte Künstler</string>
+    <string name="transfer_unsupported">auf %1$s nicht verfügbar</string>
     <string name="tracks_count">%1$d Titel</string>
     <string name="editor_error_incomplete">Wähle eine Quell-Playlist und ein Ziel.</string>
 

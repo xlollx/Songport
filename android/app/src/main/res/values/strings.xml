@@ -57,6 +57,9 @@
     <string name="loading">Loading…</string>
     <string name="no_connected_providers">Connect at least one service in the Accounts tab first.</string>
     <string name="liked_songs">Liked songs</string>
+    <string name="saved_albums">Saved albums</string>
+    <string name="followed_artists">Followed artists</string>
+    <string name="transfer_unsupported">not available on %1$s</string>
     <string name="tracks_count">%1$d tracks</string>
     <string name="editor_error_incomplete">Choose a source playlist and a target.</string>
 

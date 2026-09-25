@@ -123,7 +123,10 @@ class SyncEngine(private val ctx: Context) {
         val allSource = patient(onProgress) { src.tracks(ctx, srcPlaylistId) }
         // Ignored in this sync, or declared absent from this destination service by any sync.
         val ignoredIds = job.ignoredSourceIds.toHashSet()
+        // Verso "album salvati" o "artisti seguiti" (anche da un file) si cercano album o artisti, non brani.
+        val kind = MusicProvider.libraryKind(job.target.playlistId)
         val srcTracks = allSource.filter { it.id !in ignoredIds && !store.isIgnored(src.id, it.id, dst.id) }
+            .map { if (kind != null && it.kind.isEmpty()) it.copy(kind = kind) else it }
         val ignored = allSource.size - srcTracks.size
 
         var targetId = job.target.playlistId
@@ -401,7 +404,7 @@ class SyncEngine(private val ctx: Context) {
                 consider(dst.search(ctx, v))?.let { return it }
             }
             // Last resort, where the service has one: a wider catalogue (YouTube videos for YouTube Music).
-            consider(dst.searchWide(ctx, s))?.let { return it }
+            if (s.kind.isEmpty()) consider(dst.searchWide(ctx, s))?.let { return it }
             return null
         } finally {
             // Not found, but something came close: the review offers it as a one-tap proposal.
@@ -482,11 +485,11 @@ class SyncEngine(private val ctx: Context) {
             // Verso una playlist un blocco di 50 e' una chiamata sola. Verso i "brani preferiti" ogni
             // brano e' una chiamata a parte: blocchi piccoli, cosi' l'avanzamento si muove ogni pochi
             // brani invece di restare fermo per minuti.
-            val chunkSize = if (targetId == MusicProvider.LIKED_ID) 10 else 50
+            val chunkSize = if (MusicProvider.isLibrary(targetId)) 10 else 50
             var blockWaits = 0
             // I "brani preferiti" mostrano per primo l'ultimo aggiunto: si aggiunge dall'ultimo al primo,
             // cosi' l'ordine dell'origine (il piu' recente in cima) si ritrova uguale nella destinazione.
-            val additions = if (targetId == MusicProvider.LIKED_ID) plan.toAdd.asReversed() else plan.toAdd
+            val additions = if (MusicProvider.isLibrary(targetId)) plan.toAdd.asReversed() else plan.toAdd
             for (chunk in additions.chunked(chunkSize)) {
                 // Cosa si sta aggiungendo adesso, in scheda e nella vista dal vivo, come per la ricerca.
                 onProgress(Progress(Progress.Step.ADDING, added, plan.toAdd.size, chunk.first().live()))
@@ -625,19 +628,21 @@ class SyncEngine(private val ctx: Context) {
             val t = runCatching { dst.track(ctx, ref.trackId) }.getOrNull()
             return TargetSearch(listOf(hit(t ?: dst.rehydrate(Track(id = ref.trackId, title = ctx.getString(R.string.link_track_unknown), album = ref.trackId)), TargetSearch.Kind.SONG)))
         }
-        val (artists, title) = PlaylistFiles.splitArtistTitle(query)
-        var songs = dst.search(ctx, Track(id = "", title = title, artists = artists))
+        val kind = source?.kind?.ifEmpty { null } ?: MusicProvider.libraryKind(job.target.playlistId).orEmpty()
+        // An artist is searched by name alone: "Artist - Title" splitting would cut a name with a dash.
+        val (artists, title) = if (kind == Track.KIND_ARTIST) emptyList<String>() to query.trim() else PlaylistFiles.splitArtistTitle(query)
+        var songs = dst.search(ctx, Track(id = "", title = title, artists = artists, kind = kind))
         // "Artista - Titolo" senza un candidato convincente: il solo titolo a volte lo trova.
         fun convincing() = source == null || Matcher.bestScored(source, songs) != null
         if (artists.isNotEmpty() && (songs.isEmpty() || !convincing())) {
-            songs = (songs + dst.search(ctx, Track(id = "", title = title))).distinctBy { it.id }
+            songs = (songs + dst.search(ctx, Track(id = "", title = title, kind = kind))).distinctBy { it.id }
         }
         val hits = ArrayList<TargetSearch.Hit>()
         val seen = HashSet<String>()
         fun add(tracks: List<Track>, kind: TargetSearch.Kind) = dedupe(tracks).filter { seen.add(it.id) }.forEach { hits += hit(it, kind) }
         var album: String? = null
         var albumFound: Boolean? = null
-        if (source != null) {
+        if (source != null && kind.isEmpty()) {
             source.album.trim().takeIf { it.isNotEmpty() }?.let { name ->
                 val byAlbum = runCatching { dst.search(ctx, Track(id = "", title = name, artists = source.artists.take(1))) }.getOrDefault(emptyList())
                 // Un servizio che non riporta l'album nei risultati non permette di dire se il disco c'e'.
@@ -654,7 +659,7 @@ class SyncEngine(private val ctx: Context) {
             }
         }
         add(songs, TargetSearch.Kind.SONG)
-        if (source != null && !convincing()) {
+        if (source != null && kind.isEmpty() && !convincing()) {
             val wide = runCatching { dst.searchWide(ctx, source.copy(title = title, artists = artists.ifEmpty { source.artists })) }.getOrDefault(emptyList())
             add(wide, TargetSearch.Kind.VIDEO)
         }
