@@ -362,6 +362,14 @@
         <item quantity="other">%1$d 曲で作成</item>
     </plurals>
     <string name="settings_battery">スケジュールした同期が実行されない場合</string>
+    <string name="backup_folder_title">フォルダーにバックアップ</string>
+    <string name="backup_folder_desc">Songport はすでにアプリ内に日付付きのプレイリストのバックアップを保存しています。フォルダー（SD カード、Nextcloud、Drive、フォルダーを提供する任意のアプリ）を選ぶと、新しいバージョンがそこにもコピーされ、スマートフォンが変わっても残ります。復元するには、「ファイル」でそのフォルダーからファイルをインポートします。</string>
+    <string name="backup_folder_none">フォルダー未選択</string>
+    <string name="backup_folder_hint">フォルダーにまだないファイルだけをコピーします。</string>
+    <string name="backup_folder_pick">フォルダーを選ぶ</string>
+    <string name="backup_folder_now">今すぐコピー</string>
+    <string name="backup_folder_done">%1$d 件のサービスをバックアップ、%2$d 件の新しいファイルをコピーしました</string>
+    <string name="backup_folder_forget">停止</string>
     <string name="settings_battery_desc">一部の端末（Xiaomi、Huawei、Oppo、Samsung）はバックグラウンドのアプリを停止します。スケジュールどおりに実行されるよう、Songport を電池の最適化の対象から除外してください。</string>
     <string name="settings_battery_button">電池の設定を開く</string>
     <string name="share_received">リンクを受け取りました。同期先を選んでください。</string>

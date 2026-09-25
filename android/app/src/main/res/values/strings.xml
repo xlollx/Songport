@@ -366,6 +366,14 @@
         <item quantity="other">Create with %1$d tracks</item>
     </plurals>
     <string name="settings_battery">Scheduled syncs not running?</string>
+    <string name="backup_folder_title">Backup to a folder</string>
+    <string name="backup_folder_desc">Songport already keeps dated backups of your playlists inside the app. Pick a folder (SD card, Nextcloud, Drive, any app that offers one) and the new versions are copied there too, so they survive the phone. To restore, import a file from that folder in Files.</string>
+    <string name="backup_folder_none">No folder chosen</string>
+    <string name="backup_folder_hint">Only files not yet in the folder are copied.</string>
+    <string name="backup_folder_pick">Choose a folder</string>
+    <string name="backup_folder_now">Copy now</string>
+    <string name="backup_folder_done">%1$d services backed up, %2$d new files copied</string>
+    <string name="backup_folder_forget">Stop</string>
     <string name="settings_battery_desc">Some phones (Xiaomi, Huawei, Oppo, Samsung) stop background apps. Exclude Songport from battery optimisation so the schedule is respected.</string>
     <string name="settings_battery_button">Open battery settings</string>
     <string name="share_received">Link received: choose where to sync it.</string>

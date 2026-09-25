@@ -366,6 +366,14 @@
         <item quantity="other">Crea con %1$d brani</item>
     </plurals>
     <string name="settings_battery">Le sync programmate non partono?</string>
+    <string name="backup_folder_title">Backup in una cartella</string>
+    <string name="backup_folder_desc">Songport conserva già dentro l\'app backup datati delle tue playlist. Scegli una cartella (scheda SD, Nextcloud, Drive, qualunque app che ne offra una) e le versioni nuove vengono copiate anche lì, così sopravvivono al telefono. Per ripristinare, importa un file da quella cartella in File.</string>
+    <string name="backup_folder_none">Nessuna cartella scelta</string>
+    <string name="backup_folder_hint">Si copiano solo i file che nella cartella ancora mancano.</string>
+    <string name="backup_folder_pick">Scegli una cartella</string>
+    <string name="backup_folder_now">Copia ora</string>
+    <string name="backup_folder_done">%1$d servizi salvati, %2$d file nuovi copiati</string>
+    <string name="backup_folder_forget">Smetti</string>
     <string name="settings_battery_desc">Alcuni telefoni (Xiaomi, Huawei, Oppo, Samsung) fermano le app in secondo piano. Escludi Songport dal risparmio energetico perché la pianificazione venga rispettata.</string>
     <string name="settings_battery_button">Apri le impostazioni batteria</string>
     <string name="share_received">Link ricevuto: scegli dove sincronizzarlo.</string>

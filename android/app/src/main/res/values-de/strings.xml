@@ -366,6 +366,14 @@
         <item quantity="other">Mit %1$d Titeln erstellen</item>
     </plurals>
     <string name="settings_battery">Geplante Syncs laufen nicht?</string>
+    <string name="backup_folder_title">Backup in einen Ordner</string>
+    <string name="backup_folder_desc">Songport bewahrt in der App bereits datierte Backups deiner Playlists auf. Wähle einen Ordner (SD-Karte, Nextcloud, Drive, jede App, die einen anbietet), und neue Versionen werden auch dorthin kopiert, damit sie das Telefon überdauern. Zum Wiederherstellen importierst du eine Datei aus diesem Ordner unter Dateien.</string>
+    <string name="backup_folder_none">Kein Ordner gewählt</string>
+    <string name="backup_folder_hint">Nur Dateien, die im Ordner noch fehlen, werden kopiert.</string>
+    <string name="backup_folder_pick">Ordner wählen</string>
+    <string name="backup_folder_now">Jetzt kopieren</string>
+    <string name="backup_folder_done">%1$d Dienste gesichert, %2$d neue Dateien kopiert</string>
+    <string name="backup_folder_forget">Beenden</string>
     <string name="settings_battery_desc">Manche Handys (Xiaomi, Huawei, Oppo, Samsung) stoppen Hintergrund-Apps. Nimm Songport von der Akku-Optimierung aus, damit der Zeitplan eingehalten wird.</string>
     <string name="settings_battery_button">Akku-Einstellungen öffnen</string>
     <string name="share_received">Link empfangen: Wähle, wohin er synchronisiert werden soll.</string>

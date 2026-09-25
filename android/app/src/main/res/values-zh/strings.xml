@@ -362,6 +362,14 @@
         <item quantity="other">创建，共 %1$d 首歌曲</item>
     </plurals>
     <string name="settings_battery">计划同步没有运行？</string>
+    <string name="backup_folder_title">备份到文件夹</string>
+    <string name="backup_folder_desc">Songport 已在应用内保存带日期的歌单备份。选择一个文件夹（SD 卡、Nextcloud、Drive 或任何提供文件夹的应用），新版本也会复制到那里，即使换手机也不会丢失。要恢复，请在“文件”中从该文件夹导入。</string>
+    <string name="backup_folder_none">未选择文件夹</string>
+    <string name="backup_folder_hint">只复制文件夹中尚不存在的文件。</string>
+    <string name="backup_folder_pick">选择文件夹</string>
+    <string name="backup_folder_now">立即复制</string>
+    <string name="backup_folder_done">已备份 %1$d 个服务，复制了 %2$d 个新文件</string>
+    <string name="backup_folder_forget">停止</string>
     <string name="settings_battery_desc">部分手机（小米、华为、OPPO、三星）会停止后台应用。请将 Songport 排除在电池优化之外，以确保按计划运行。</string>
     <string name="settings_battery_button">打开电池设置</string>
     <string name="share_received">已收到链接：请选择要同步到哪里。</string>

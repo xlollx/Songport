@@ -38,6 +38,10 @@ data class Settings(
     val appLock: Boolean = false,
     /** Schermata di benvenuto gia' vista. */
     val onboardingDone: Boolean = false,
+    /** Cartella (URI ad albero del selettore di sistema) dove copiare i backup; vuoto = nessuna. */
+    val backupFolder: String = "",
+    /** Ogni quanto copiare i backup nella cartella; MANUAL = solo a richiesta. */
+    val backupSchedule: com.xlollx.songport.model.Schedule = com.xlollx.songport.model.Schedule.MANUAL,
     /** Sync che ha fatto scattare la richiesta di contributo, finche' l'utente non risponde. */
     val supportPromptReport: String? = null,
     /** Richiesta di contributo gia' mostrata e chiusa: non torna piu'. */

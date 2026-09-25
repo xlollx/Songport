@@ -2,6 +2,12 @@ package com.xlollx.songport.ui
 
 import android.app.Activity
 import android.content.Intent
+import com.xlollx.songport.sync.Scheduler
+import com.xlollx.songport.model.Schedule
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.compose.rememberLauncherForActivityResult
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -181,6 +187,48 @@ fun SettingsScreen(
             }
             TextButton(onClick = { advanced = !advanced }) {
                 Text(stringResource(if (advanced) R.string.hide_details else R.string.show_details))
+            }
+        }
+
+        SectionCard(stringResource(R.string.backup_folder_title)) {
+            // Where the dated backups also go, outside the phone: SD card, Nextcloud, Drive, any folder app.
+            val folder = data.settings.backupFolder
+            val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+                if (uri != null) {
+                    runCatching { ctx.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION) }
+                    store.updateSettings { it.copy(backupFolder = uri.toString()) }
+                    Scheduler.applyBackup(ctx)
+                }
+            }
+            Text(stringResource(R.string.backup_folder_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            SettingRow(
+                if (folder.isBlank()) stringResource(R.string.backup_folder_none) else com.xlollx.songport.sync.BackupExport.folderLabel(folder),
+                stringResource(R.string.backup_folder_hint),
+            ) {
+                TextButton(onClick = { pickFolder.launch(null) }) { Text(stringResource(if (folder.isBlank()) R.string.backup_folder_pick else R.string.settings_language_open)) }
+            }
+            if (folder.isNotBlank()) {
+                Text(stringResource(R.string.editor_schedule), style = MaterialTheme.typography.labelLarge)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf(Schedule.MANUAL, Schedule.DAILY, Schedule.WEEKLY).forEach { s ->
+                        FilterChip(selected = data.settings.backupSchedule == s, onClick = { store.updateSettings { it.copy(backupSchedule = s) }; Scheduler.applyBackup(ctx) }, label = { Text(scheduleLabel(s)) })
+                    }
+                }
+                var exporting by remember { mutableStateOf(false) }
+                var exportStep by remember { mutableStateOf("") }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedButton(enabled = !exporting, onClick = {
+                        exporting = true
+                        scope.launch {
+                            val r = com.xlollx.songport.sync.BackupExport.run(ctx) { exportStep = it }
+                            exporting = false
+                            snackbar.showSnackbar(ctx.getString(R.string.backup_folder_done, r.services, r.copied) + (if (r.failed.isNotEmpty()) " · " + r.failed.first() else ""))
+                        }
+                    }) { Text(stringResource(R.string.backup_folder_now)) }
+                    if (exporting) { Spacer(Modifier.width(8.dp)); CircularProgressIndicator(Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text(exportStep, style = MaterialTheme.typography.bodySmall) }
+                    Spacer(Modifier.weight(1f))
+                    TextButton(onClick = { store.updateSettings { it.copy(backupFolder = "", backupSchedule = Schedule.MANUAL) }; Scheduler.applyBackup(ctx) }) { Text(stringResource(R.string.backup_folder_forget), color = MaterialTheme.colorScheme.error) }
+                }
             }
         }
 

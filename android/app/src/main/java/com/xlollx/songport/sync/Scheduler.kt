@@ -191,8 +191,34 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
     }
 }
 
+/** Copia periodica dei backup nella cartella scelta dall'utente (vedi [BackupExport]). */
+class BackupWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
+    override suspend fun doWork(): Result {
+        val ctx = applicationContext
+        val r = BackupExport.run(ctx)
+        // Network gone on every service: not an outcome, WorkManager tries again with its backoff.
+        return if (r.services == 0 && r.failed.isNotEmpty() && r.failed.all { isTransientNetwork(it) }) Result.retry() else Result.success()
+    }
+}
+
 object Scheduler {
     private fun name(jobId: String) = "sync-$jobId"
+    private const val BACKUP_WORK = "backup-export"
+
+    /** Allinea il lavoro periodico di copia dei backup alle impostazioni. */
+    fun applyBackup(ctx: Context) {
+        val s = Store.get(ctx).data.settings
+        val wm = WorkManager.getInstance(ctx)
+        if (s.backupFolder.isBlank() || s.backupSchedule == Schedule.MANUAL) {
+            wm.cancelUniqueWork(BACKUP_WORK)
+            return
+        }
+        val req = PeriodicWorkRequestBuilder<BackupWorker>(s.backupSchedule.minutes, TimeUnit.MINUTES)
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 15, TimeUnit.MINUTES)
+            .build()
+        wm.enqueueUniquePeriodicWork(BACKUP_WORK, ExistingPeriodicWorkPolicy.UPDATE, req)
+    }
 
     /** Allinea il lavoro periodico di WorkManager alla configurazione della sync. */
     fun apply(ctx: Context, job: SyncJob) {
@@ -218,6 +244,7 @@ object Scheduler {
     fun applyAll(ctx: Context) {
         val store = Store.get(ctx)
         store.data.jobs.forEach { apply(ctx, it) }
+        applyBackup(ctx)
     }
 
     /**
