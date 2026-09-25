@@ -20,6 +20,8 @@ class HttpResponse(val code: Int, val body: String, val headers: Headers) {
 
 /** Client HTTP condiviso. Gestisce da solo i 429 (rate limit) con attesa e ripetizione. */
 object Http {
+    /** Longest Retry-After (seconds) honoured silently inside [send]; anything longer is returned as is. */
+    const val MAX_SILENT_WAIT_S = 15L
     val client: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(40, TimeUnit.SECONDS)
@@ -47,8 +49,12 @@ object Http {
             val out = HttpResponse(resp.code, text, resp.headers)
             last = out
             if (out.code == 429 && attempt < maxRateLimitRetries) {
-                val wait = out.header("Retry-After")?.trim()?.toLongOrNull()?.coerceIn(1, 60) ?: (2L * (attempt + 1))
-                delay(wait * 1000)
+                // A short pause is absorbed here. A long one (Spotify can ask for hours) is not: the
+                // caller gets the 429 at once, with Retry-After, and says so instead of showing a
+                // spinner for minutes; the sync engine waits on its own terms, visibly.
+                val asked = out.header("Retry-After")?.trim()?.toLongOrNull()
+                if (asked != null && asked > MAX_SILENT_WAIT_S) return@withContext out
+                delay((asked?.coerceAtLeast(1) ?: (2L * (attempt + 1))) * 1000)
                 continue
             }
             // 502/503/504: quasi sempre un singhiozzo del servizio, un secondo tentativo basta.
