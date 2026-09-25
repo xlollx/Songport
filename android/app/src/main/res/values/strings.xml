@@ -353,6 +353,13 @@
     <string name="ai_extend_title">Extend the playlist</string>
     <string name="ai_extend_hint">The AI gets the same description and the tracks already in the playlist, and proposes new ones to add.</string>
     <string name="ai_extend_added">%1$d tracks added: the sync has started.</string>
+    <string name="error_source_gone">The source playlist “%1$s” no longer exists on %2$s. Edit the sync and pick another.</string>
+    <string name="error_target_gone">The target playlist “%1$s” no longer exists on %2$s. Edit the sync: create it again or pick another.</string>
+    <string name="ai_expand">Extend with AI</string>
+    <string name="ai_expand_hint">Say what to add, or leave it empty to continue in the spirit of the tracks already there. The AI proposes, you review, and only what %1$s actually has is added.</string>
+    <string name="ai_expand_placeholder">e.g. more 90s trip hop, nothing after 2005</string>
+    <string name="ai_expand_done">%1$d tracks added to “%2$s”</string>
+    <string name="ai_expand_missing">%1$d not found on %2$s</string>
     <string name="error_manage_unsupported">%1$s does not allow renaming or deleting playlists from other apps.</string>
     <string name="tools_manage_title">Manage playlists</string>
     <string name="tools_manage_desc">Your playlists on this service in one list: rename or delete them where the service allows it, or export them.</string>

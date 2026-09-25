@@ -353,6 +353,13 @@
     <string name="ai_extend_title">Alargar la playlist</string>
     <string name="ai_extend_hint">La IA recibe la misma descripción y las canciones ya presentes, y propone otras nuevas para añadir.</string>
     <string name="ai_extend_added">%1$d canciones añadidas: la sincronización ha empezado.</string>
+    <string name="error_source_gone">La playlist de origen “%1$s” ya no existe en %2$s. Edita la sincronización y elige otra.</string>
+    <string name="error_target_gone">La playlist de destino “%1$s” ya no existe en %2$s. Edita la sincronización: créala de nuevo o elige otra.</string>
+    <string name="ai_expand">Alargar con la IA</string>
+    <string name="ai_expand_hint">Di qué añadir, o déjalo vacío para seguir el espíritu de las canciones ya presentes. La IA propone, tú revisas, y solo se añade lo que %1$s tiene de verdad.</string>
+    <string name="ai_expand_placeholder">p. ej. más trip hop de los 90, nada posterior a 2005</string>
+    <string name="ai_expand_done">%1$d canciones añadidas a “%2$s”</string>
+    <string name="ai_expand_missing">%1$d no encontradas en %2$s</string>
     <string name="error_manage_unsupported">%1$s no permite renombrar ni eliminar playlists desde otras apps.</string>
     <string name="tools_manage_title">Gestionar playlists</string>
     <string name="tools_manage_desc">Tus playlists en este servicio en una sola lista: renómbralas o elimínalas donde el servicio lo permita, o expórtalas.</string>

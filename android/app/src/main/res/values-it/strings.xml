@@ -353,6 +353,13 @@
     <string name="ai_extend_title">Allunga la playlist</string>
     <string name="ai_extend_hint">L\'AI riceve la stessa descrizione e i brani già in playlist, e ne propone di nuovi da aggiungere.</string>
     <string name="ai_extend_added">%1$d brani aggiunti: la sync è partita.</string>
+    <string name="error_source_gone">La playlist di origine “%1$s” non esiste più su %2$s. Modifica la sync e scegline un\'altra.</string>
+    <string name="error_target_gone">La playlist di destinazione “%1$s” non esiste più su %2$s. Modifica la sync: ricreala o scegline un\'altra.</string>
+    <string name="ai_expand">Allunga con l\'AI</string>
+    <string name="ai_expand_hint">Di\' cosa aggiungere, oppure lascia vuoto per continuare nello spirito dei brani già presenti. L\'AI propone, tu rivedi, e si aggiunge solo quello che %1$s ha davvero.</string>
+    <string name="ai_expand_placeholder">es. altro trip hop anni 90, niente dopo il 2005</string>
+    <string name="ai_expand_done">%1$d brani aggiunti a “%2$s”</string>
+    <string name="ai_expand_missing">%1$d non trovati su %2$s</string>
     <string name="error_manage_unsupported">%1$s non permette di rinominare o eliminare playlist da altre app.</string>
     <string name="tools_manage_title">Gestisci le playlist</string>
     <string name="tools_manage_desc">Le tue playlist su questo servizio in un unico elenco: rinominale o eliminale dove il servizio lo permette, oppure esportale.</string>

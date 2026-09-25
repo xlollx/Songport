@@ -56,7 +56,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.xlollx.songport.R
 import com.xlollx.songport.ai.AiClient
+import com.xlollx.songport.ai.AiMatch
 import com.xlollx.songport.data.Store
+import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.PlaylistRef
 import com.xlollx.songport.model.SyncJob
 import com.xlollx.songport.providers.LocalFilesProvider
@@ -519,5 +521,89 @@ fun AiExtendDialog(job: SyncJob, onClose: () -> Unit) {
             }
         },
         dismissButton = { TextButton(onClick = onClose) { Text(stringResource(R.string.cancel)) } },
+    )
+}
+
+/**
+ * "Allunga con l'AI" su una playlist qualsiasi di un servizio: la descrizione (o, vuota, lo spirito
+ * dei brani gia' presenti) va all'AI insieme ai brani che ci sono; le proposte passano dal riesame,
+ * poi dalla ricerca sul servizio, e solo i brani trovati vengono aggiunti alla playlist stessa.
+ */
+@Composable
+fun AiExpandPlaylistDialog(provider: MusicProvider, playlist: Playlist, onClose: () -> Unit, onDone: (added: Int, missing: Int) -> Unit) {
+    val ctx = LocalContext.current
+    val app = ctx.applicationContext
+    val d = AiDraft
+    var config by remember { mutableStateOf(AiClient.config(ctx)) }
+    var setupOpen by remember { mutableStateOf(config?.complete != true) }
+    var prompt by remember { mutableStateOf("") }
+    var count by remember { mutableStateOf(10f) }
+    var busy by remember { mutableStateOf(false) }
+    var step by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf<String?>(null) }
+    var proposed by remember { mutableStateOf<List<Track>?>(null) }
+
+    if (setupOpen) {
+        AiSetupDialog(config, onDismiss = { if (config?.complete == true) setupOpen = false else onClose() }) { config = it; d.models = emptyList(); setupOpen = false }
+        return
+    }
+    val c = config ?: return
+    proposed?.let { list ->
+        AiReviewDialog(list, provider.label(ctx), onDismiss = { proposed = null }) { kept ->
+            proposed = null
+            busy = true
+            d.scope.launch {
+                try {
+                    val r = AiMatch.match(app, provider, kept) { done, total -> step = "$done/$total" }
+                    if (r.found.isNotEmpty()) provider.addTracks(app, playlist.id, r.found)
+                    busy = false
+                    onDone(r.found.size, r.missing.size)
+                    onClose()
+                } catch (e: Exception) {
+                    busy = false
+                    error = e.message ?: app.getString(R.string.error_generic)
+                }
+            }
+        }
+        return
+    }
+    AlertDialog(
+        onDismissRequest = { if (!busy) onClose() },
+        title = { Text(stringResource(R.string.ai_extend_title)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.ai_expand_hint, provider.label(ctx)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = prompt, onValueChange = { prompt = it }, minLines = 2, maxLines = 4,
+                    label = { Text(stringResource(R.string.ai_prompt)) }, placeholder = { Text(stringResource(R.string.ai_expand_placeholder)) },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(stringResource(R.string.ai_count, count.toInt()), style = MaterialTheme.typography.bodyMedium)
+                Slider(value = count, onValueChange = { count = it }, valueRange = 5f..50f, steps = 8)
+                error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+            }
+        },
+        confirmButton = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (busy) { CircularProgressIndicator(Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text(step, style = MaterialTheme.typography.bodySmall); Spacer(Modifier.width(8.dp)) }
+                TextButton(enabled = !busy, onClick = {
+                    busy = true; error = null; step = ""
+                    d.scope.launch {
+                        val outcome = runCatching {
+                            val existing = provider.tracks(app, playlist.id).map { it.toString() }.take(200)
+                            val language = java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH)
+                            AiClient.generate(c, AiClient.Prompt(prompt, count.toInt(), emptyList(), language, existing))
+                        }
+                        busy = false
+                        outcome.onFailure { e -> error = e.message ?: app.getString(R.string.error_generic) }
+                        val tracks = outcome.getOrNull() ?: return@launch
+                        if (tracks.isEmpty()) error = app.getString(R.string.ai_empty) else proposed = tracks
+                    }
+                }) { Text(stringResource(R.string.ai_generate)) }
+            }
+        },
+        dismissButton = { TextButton(enabled = !busy, onClick = onClose) { Text(stringResource(R.string.cancel)) } },
     )
 }

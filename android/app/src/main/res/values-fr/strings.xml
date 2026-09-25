@@ -353,6 +353,13 @@
     <string name="ai_extend_title">Allonger la playlist</string>
     <string name="ai_extend_hint">L\'IA reçoit la même description et les titres déjà présents, et en propose de nouveaux à ajouter.</string>
     <string name="ai_extend_added">%1$d titres ajoutés : la synchro a démarré.</string>
+    <string name="error_source_gone">La playlist source « %1$s » n\'existe plus sur %2$s. Modifiez la synchro et choisissez-en une autre.</string>
+    <string name="error_target_gone">La playlist de destination « %1$s » n\'existe plus sur %2$s. Modifiez la synchro : recréez-la ou choisissez-en une autre.</string>
+    <string name="ai_expand">Allonger avec l\'IA</string>
+    <string name="ai_expand_hint">Dites quoi ajouter, ou laissez vide pour continuer dans l\'esprit des titres déjà présents. L\'IA propose, vous relisez, et seul ce que %1$s possède vraiment est ajouté.</string>
+    <string name="ai_expand_placeholder">ex. plus de trip hop des années 90, rien après 2005</string>
+    <string name="ai_expand_done">%1$d titres ajoutés à « %2$s »</string>
+    <string name="ai_expand_missing">%1$d introuvables sur %2$s</string>
     <string name="error_manage_unsupported">%1$s ne permet pas de renommer ou de supprimer des playlists depuis d\'autres applications.</string>
     <string name="tools_manage_title">Gérer les playlists</string>
     <string name="tools_manage_desc">Vos playlists sur ce service en une seule liste : renommez-les ou supprimez-les quand le service le permet, ou exportez-les.</string>

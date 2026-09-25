@@ -351,6 +351,13 @@
     <string name="ai_extend_title">プレイリストを増やす</string>
     <string name="ai_extend_hint">AI に同じ説明とプレイリストにある曲を渡し、追加する新しい曲を提案させます。</string>
     <string name="ai_extend_added">%1$d 曲を追加しました。同期を開始しました。</string>
+    <string name="error_source_gone">転送元のプレイリスト「%1$s」は %2$s に存在しません。同期を編集して別のものを選んでください。</string>
+    <string name="error_target_gone">転送先のプレイリスト「%1$s」は %2$s に存在しません。同期を編集して、作り直すか別のものを選んでください。</string>
+    <string name="ai_expand">AI で増やす</string>
+    <string name="ai_expand_hint">追加したいものを書くか、空のままにして既存の曲の雰囲気を引き継ぎます。AI が提案し、あなたが確認して、%1$s に実際にある曲だけが追加されます。</string>
+    <string name="ai_expand_placeholder">例：90 年代のトリップホップをもっと、2005 年以降は不要</string>
+    <string name="ai_expand_done">「%2$s」に %1$d 曲を追加しました</string>
+    <string name="ai_expand_missing">%1$d 曲は %2$s で見つかりませんでした</string>
     <string name="error_manage_unsupported">%1$s では他のアプリからプレイリストの名前変更や削除ができません。</string>
     <string name="tools_manage_title">プレイリストを管理</string>
     <string name="tools_manage_desc">このサービスにあるあなたのプレイリストを一覧で表示します。サービスが許可していれば名前の変更や削除ができ、エクスポートもできます。</string>

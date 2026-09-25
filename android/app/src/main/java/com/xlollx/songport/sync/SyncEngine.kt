@@ -101,6 +101,19 @@ class SyncEngine(private val ctx: Context) {
         return report
     }
 
+    /**
+     * The playlist is still in the user's library. Library slots (liked, albums…) and files always
+     * are; a source that is not listed may be someone else's public playlist, so it passes when the
+     * service still describes it. A target must be the user's own: listed, or gone.
+     */
+    private suspend fun checkStillThere(p: MusicProvider, playlistId: String, name: String, isSource: Boolean) {
+        if (MusicProvider.isLibrary(playlistId) || !p.requiresAuth) return
+        val listed = runCatching { p.playlists(ctx).any { it.id == playlistId } }.getOrDefault(true)
+        if (listed) return
+        if (isSource && runCatching { p.playlistInfo(ctx, playlistId) }.isSuccess) return
+        throw ProviderException(ctx.getString(if (isSource) R.string.error_source_gone else R.string.error_target_gone, name.ifBlank { playlistId }, p.label(ctx)))
+    }
+
     /** Below this many removals a scheduled run proceeds whatever the share of the target they are. */
     private val REMOVAL_CAP_MIN = 10
 
@@ -121,6 +134,10 @@ class SyncEngine(private val ctx: Context) {
         val notes = ArrayList<String>()
 
         onProgress(Progress(Progress.Step.FETCH_SOURCE))
+        // A playlist deleted on the service (or unfollowed on Spotify, whose API keeps answering for
+        // it) must stop the sync with its name, not feed a ghost. One list call per side, per run.
+        checkStillThere(src, srcPlaylistId, job.source.playlistName, isSource = true)
+        job.target.playlistId?.let { checkStillThere(dst, it, job.target.playlistName, isSource = false) }
         val allSource = patient(onProgress) { src.tracks(ctx, srcPlaylistId) }
         // Ignored in this sync, or declared absent from this destination service by any sync.
         val ignoredIds = job.ignoredSourceIds.toHashSet()

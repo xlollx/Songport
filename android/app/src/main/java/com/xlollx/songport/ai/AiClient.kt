@@ -178,7 +178,8 @@ object AiClient {
     """.trimIndent()
 
     private fun user(r: Prompt): String = buildString {
-        append("Playlist request: ").append(r.description.trim()).append('\n')
+        val wish = r.description.trim().ifEmpty { "Continue this playlist in the same spirit as the tracks it already contains (genre, era, mood, energy)." }
+        append("Playlist request: ").append(wish).append('\n')
         if (r.seeds.isNotEmpty()) {
             append("The listener already likes these; pick tracks in the same spirit, do not include them:\n")
             r.seeds.forEach { append("- ").append(it).append('\n') }

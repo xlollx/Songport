@@ -74,6 +74,16 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
     var error by remember { mutableStateOf<String?>(null) }
     var version by remember { mutableIntStateOf(0) }
     var renaming by remember { mutableStateOf<Playlist?>(null) }
+    var expanding by remember { mutableStateOf<Playlist?>(null) }
+    val aiReady = remember { com.xlollx.songport.ai.AiClient.config(ctx)?.complete == true }
+    expanding?.let { pl ->
+        AiExpandPlaylistDialog(provider, pl, onClose = { expanding = null }) { added, missing ->
+            scope.launch {
+                snackbar.showSnackbar(ctx.getString(R.string.ai_expand_done, added, pl.name) + (if (missing > 0) " · " + ctx.getString(R.string.ai_expand_missing, missing, provider.label(ctx)) else ""))
+            }
+            version++
+        }
+    }
     var deleting by remember { mutableStateOf<Playlist?>(null) }
     var busy by remember { mutableStateOf(false) }
     BackHandler { onClose() }
@@ -197,6 +207,7 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
                                 IconButton(enabled = !busy, onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, null) }
                                 DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                                     if (provider.canRenamePlaylists) DropdownMenuItem(text = { Text(stringResource(R.string.manage_rename)) }, onClick = { menu = false; renaming = pl })
+                                    if (aiReady && provider.canWrite) DropdownMenuItem(text = { Text(stringResource(R.string.ai_expand)) }, onClick = { menu = false; expanding = pl })
                                     ExportMenuItems { fmt -> menu = false; exporting = pl; export(fmt, pl.name) }
                                     if (provider.canDeletePlaylists) DropdownMenuItem(
                                         text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },

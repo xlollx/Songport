@@ -29,6 +29,11 @@ quota meter; own API keys to escape shared quotas.
 - Sort by release year, date added and duration.
 - setlist.fm links (shared or pasted) and Shazam exports become playlists.
 - ListenBrainz loved tracks writable with the user token.
+- A source or target playlist deleted on the service (or unfollowed on Spotify) stops the sync with
+  its name instead of feeding a ghost.
+- "Extend with AI" on any playlist in the playlist manager: description or the spirit of what is
+  there, review, then only what the service has is added.
+- Connections log in Settings › Security, and a plain "where does the key go?" in the AI setup.
 - YouTube Music already pauses on Google's abuse page with a doubling wait and a "verify" button;
   song results are preferred and videos are only a fallback.
 
