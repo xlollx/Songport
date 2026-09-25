@@ -462,6 +462,7 @@
     <string name="route_note_web">サービス自身のページでブラウザーと同じようにログインします。Songport はパスワードを一切見ず、セッションだけをこのスマートフォンに暗号化して保存します。作成するものはありません。非公式のインターフェースのため、サイトの変更で動かなくなることがあります。</string>
     <string name="route_note_web_only">サービス自身のページでブラウザーと同じようにログインします。Songport はパスワードを一切見ず、セッションだけをこのスマートフォンに暗号化して保存します。公式 API が存在しないため、サイトの変更で動かなくなることがあります。</string>
     <string name="route_note_api">サービスの開発者ページで約 2 分で作れる、あなた自身の無料 API キー。公式で安定しています。</string>
+    <string name="route_note_spotify_api">developer.spotify.com で 2 分ほどで作れる、自分専用の無料 API キー。公式で安定しています。Spotify は Premium アカウントにしか作成を許可していません（2026 年 2 月からの Spotify の規定）。Premium がないと、そこで「Web API」はグレーのままです。</string>
     <string name="route_note_apple_api">Apple Developer アカウント（有料）の開発者トークン。公式。</string>
     <string name="route_note_youtube_api">あなた自身の Google Cloud キー（無料、数分）。公式ですが 1 日のクォータが小さく、大きな同期には数日かかります。</string>
     <string name="route_note_api_readonly">あなた自身の無料 API キー。読み取り専用：プレイリストと Love した曲の転送元として。</string>
@@ -564,7 +565,7 @@
         <item quantity="other">%d 件の同期を設定済み</item>
     </plurals>
     <string-array name="setup_steps_spotify">
-        <item>普段使っている Spotify アカウントで developer.spotify.com にログインします。Spotify ではそのアカウントが Premium である必要があります。開発者向け規約への同意を求められたら、同意してください。</item>
+        <item>普段使っている Spotify アカウントで developer.spotify.com にログインします。Spotify ではそのアカウントが Premium である必要があります。開発者向け規約への同意を求められたら、同意してください。 そのページで「Web API」がグレーのままなら、アカウントに Premium がありません。Spotify はキーを発行しないので、もう一方の経路を使ってください。</item>
         <item>「Create app」を押します。名前と説明は自由です（例：「Songport」）。「Website」は空欄のままにします。</item>
         <item>「Redirect URIs」に、下に表示されているアドレスをそのまま貼り付けて「Add」を押します。これがないと、ログイン後にアプリへ戻れません。</item>
         <item>「Which API/SDKs are you planning to use?」で「Web API」にチェックを入れ、規約に同意して「Save」を押します。</item>

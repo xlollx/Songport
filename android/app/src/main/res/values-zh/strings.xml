@@ -462,6 +462,7 @@
     <string name="route_note_web">你在服务自己的页面上登录，就像在浏览器里一样：Songport 永远看不到你的密码，只保存会话，并加密存放在这部手机上。无需创建任何东西。非官方接口：网站变更时可能失效。</string>
     <string name="route_note_web_only">你在服务自己的页面上登录，就像在浏览器里一样：Songport 永远看不到你的密码，只保存会话，并加密存放在这部手机上。没有官方 API：网站变更时可能失效。</string>
     <string name="route_note_api">你自己的免费 API 密钥，在服务的开发者页面约两分钟即可创建。官方且稳定。</string>
+    <string name="route_note_spotify_api">你自己的免费 API 密钥，在 developer.spotify.com 上约两分钟即可创建。官方且稳定。Spotify 只允许 Premium 账号创建（2026 年 2 月起的 Spotify 规定）：没有 Premium，那里的“Web API”会一直是灰色。</string>
     <string name="route_note_apple_api">来自 Apple Developer 账号（付费）的开发者令牌。官方。</string>
     <string name="route_note_youtube_api">你自己的 Google Cloud 密钥（免费，几分钟）。官方，但每日配额很小：大型同步需要数天。</string>
     <string name="route_note_api_readonly">你自己的免费 API 密钥。只读：作为歌单和喜爱曲目的来源。</string>
@@ -564,7 +565,7 @@
         <item quantity="other">已配置 %d 个同步</item>
     </plurals>
     <string-array name="setup_steps_spotify">
-        <item>使用你日常使用的 Spotify 账号登录 developer.spotify.com。Spotify 要求该账号为 Premium 会员；如果要求你接受开发者条款，请接受。</item>
+        <item>使用你日常使用的 Spotify 账号登录 developer.spotify.com。Spotify 要求该账号为 Premium 会员；如果要求你接受开发者条款，请接受。 如果该页面上的“Web API”是灰色的，说明账号没有 Premium：Spotify 不会授予密钥，请改用另一条路径。</item>
         <item>点按“Create app”。名称和描述可随意填写（例如“Songport”）。“Website”留空。</item>
         <item>在“Redirect URIs”中准确粘贴下方显示的地址，然后点按“Add”。没有这一步，登录就无法返回应用。</item>
         <item>在“Which API/SDKs are you planning to use?”下勾选“Web API”，接受条款并点按“Save”。</item>

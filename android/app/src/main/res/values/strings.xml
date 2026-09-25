@@ -467,6 +467,7 @@
     <string name="route_note_web">You sign in on the service\'s own page, as you would in a browser: Songport never sees your password, it only keeps the session, encrypted on this phone. Nothing to create. Not an official interface: it can stop working when the site changes.</string>
     <string name="route_note_web_only">You sign in on the service\'s own page, as in a browser: Songport never sees your password, only the session, encrypted on this phone. No official API exists: it can stop working when the site changes.</string>
     <string name="route_note_api">Your own free API key, created on the service\'s developer page in about two minutes. Official and stable.</string>
+    <string name="route_note_spotify_api">Your own free API key, created on developer.spotify.com in about two minutes. Official and stable. Spotify only lets Premium accounts create it (a Spotify rule since February 2026): without Premium, "Web API" stays greyed out there.</string>
     <string name="route_note_apple_api">A developer token from an Apple Developer account (paid). Official.</string>
     <string name="route_note_youtube_api">Your own Google Cloud key (free, a few minutes). Official, but the daily quota is small: big syncs take days.</string>
     <string name="route_note_api_readonly">Your own free API key. Read-only: a source for playlists and loved tracks.</string>
@@ -572,7 +573,7 @@
         <item quantity="other">%d syncs configured</item>
     </plurals>
     <string-array name="setup_steps_spotify">
-        <item>Sign in at developer.spotify.com with the Spotify account you use every day. Spotify requires that account to have Premium; if you are asked to accept the developer terms, accept them.</item>
+        <item>Sign in at developer.spotify.com with the Spotify account you use every day. Spotify requires that account to have Premium; if you are asked to accept the developer terms, accept them. If "Web API" is greyed out on that page, the account has no Premium: Spotify does not allow the key, use the other route instead.</item>
         <item>Press "Create app". Name and description are up to you (for example "Songport"). Leave "Website" empty.</item>
         <item>In "Redirect URIs" paste exactly the address shown below and press "Add". Without it the login cannot come back to the app.</item>
         <item>Under "Which API/SDKs are you planning to use?" tick "Web API", accept the terms and press "Save".</item>

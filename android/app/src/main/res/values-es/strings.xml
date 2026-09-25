@@ -467,6 +467,7 @@
     <string name="route_note_web">Inicias sesión en la página del propio servicio, como en el navegador: Songport nunca ve tu contraseña, solo guarda la sesión, cifrada en este teléfono. Nada que crear. No es una interfaz oficial: puede dejar de funcionar cuando el sitio cambia.</string>
     <string name="route_note_web_only">Inicias sesión en la página del propio servicio, como en el navegador: Songport nunca ve tu contraseña, solo la sesión, cifrada en este teléfono. No existe API oficial: puede dejar de funcionar cuando el sitio cambia.</string>
     <string name="route_note_api">Tu propia clave API gratuita, creada en la página de desarrolladores del servicio en unos dos minutos. Oficial y estable.</string>
+    <string name="route_note_spotify_api">Tu propia clave API gratuita, creada en developer.spotify.com en un par de minutos. Oficial y estable. Spotify solo deja crearla a las cuentas Premium (regla de Spotify desde febrero de 2026): sin Premium, allí «Web API» queda en gris.</string>
     <string name="route_note_apple_api">Un token de desarrollador de una cuenta Apple Developer (de pago). Oficial.</string>
     <string name="route_note_youtube_api">Tu propia clave de Google Cloud (gratuita, pocos minutos). Oficial, pero la cuota diaria es pequeña: las sincronizaciones grandes tardan días.</string>
     <string name="route_note_api_readonly">Tu propia clave API gratuita. Solo lectura: origen para playlists y canciones amadas.</string>
@@ -571,7 +572,7 @@
         <item quantity="other">%d sincronizaciones configuradas</item>
     </plurals>
     <string-array name="setup_steps_spotify">
-        <item>Inicia sesión en developer.spotify.com con la cuenta de Spotify que usas a diario. Spotify exige que esa cuenta tenga Premium; si te pide aceptar los términos para desarrolladores, acéptalos.</item>
+        <item>Inicia sesión en developer.spotify.com con la cuenta de Spotify que usas a diario. Spotify exige que esa cuenta tenga Premium; si te pide aceptar los términos para desarrolladores, acéptalos. Si en esa página «Web API» está en gris, la cuenta no tiene Premium: Spotify no concede la clave, usa la otra vía.</item>
         <item>Pulsa \"Create app\". El nombre y la descripción son a tu elección (por ejemplo \"Songport\"). Deja vacío \"Website\".</item>
         <item>En \"Redirect URIs\" pega exactamente la dirección que aparece abajo y pulsa \"Add\". Sin ella, el inicio de sesión no puede volver a la app.</item>
         <item>En \"Which API/SDKs are you planning to use?\" marca \"Web API\", acepta los términos y pulsa \"Save\".</item>

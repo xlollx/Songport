@@ -467,6 +467,7 @@
     <string name="route_note_web">Du meldest dich auf der Seite des Dienstes selbst an, wie im Browser: Songport sieht dein Passwort nie, es behält nur die Sitzung, verschlüsselt auf diesem Telefon. Nichts anzulegen. Keine offizielle Schnittstelle: kann aufhören zu funktionieren, wenn sich die Website ändert.</string>
     <string name="route_note_web_only">Du meldest dich auf der Seite des Dienstes selbst an, wie im Browser: Songport sieht dein Passwort nie, nur die Sitzung, verschlüsselt auf diesem Telefon. Es gibt keine offizielle API: kann aufhören zu funktionieren, wenn sich die Website ändert.</string>
     <string name="route_note_api">Dein eigener kostenloser API-Schlüssel, in etwa zwei Minuten auf der Entwicklerseite des Dienstes erstellt. Offiziell und stabil.</string>
+    <string name="route_note_spotify_api">Dein eigener kostenloser API-Schlüssel, in etwa zwei Minuten auf developer.spotify.com erstellt. Offiziell und stabil. Spotify lässt ihn nur Premium-Konten erstellen (Spotify-Regel seit Februar 2026): ohne Premium bleibt „Web API“ dort ausgegraut.</string>
     <string name="route_note_apple_api">Ein Entwickler-Token aus einem Apple-Developer-Konto (kostenpflichtig). Offiziell.</string>
     <string name="route_note_youtube_api">Dein eigener Google-Cloud-Schlüssel (kostenlos, wenige Minuten). Offiziell, aber die Tagesquote ist klein: große Syncs dauern Tage.</string>
     <string name="route_note_api_readonly">Dein eigener kostenloser API-Schlüssel. Nur lesend: eine Quelle für Playlists und Lieblingstitel.</string>
@@ -571,7 +572,7 @@
         <item quantity="other">%d Syncs eingerichtet</item>
     </plurals>
     <string-array name="setup_steps_spotify">
-        <item>Melde dich auf developer.spotify.com mit dem Spotify-Konto an, das du täglich nutzt. Spotify verlangt, dass dieses Konto Premium hat; wenn du gebeten wirst, die Entwicklerbedingungen zu akzeptieren, akzeptiere sie.</item>
+        <item>Melde dich auf developer.spotify.com mit dem Spotify-Konto an, das du täglich nutzt. Spotify verlangt, dass dieses Konto Premium hat; wenn du gebeten wirst, die Entwicklerbedingungen zu akzeptieren, akzeptiere sie. Ist „Web API“ auf dieser Seite ausgegraut, hat das Konto kein Premium: Spotify gibt den Schlüssel nicht her, nimm den anderen Weg.</item>
         <item>Tippe auf \"Create app\". Name und Beschreibung sind dir überlassen (zum Beispiel \"Songport\"). Lass \"Website\" leer.</item>
         <item>Füge unter \"Redirect URIs\" genau die unten angezeigte Adresse ein und tippe auf \"Add\". Ohne sie kann die Anmeldung nicht zur App zurückkehren.</item>
         <item>Setze unter \"Which API/SDKs are you planning to use?\" ein Häkchen bei \"Web API\", akzeptiere die Bedingungen und tippe auf \"Save\".</item>
