@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.webkit.WebViewCompat
@@ -25,6 +28,12 @@ import java.util.concurrent.TimeUnit
  * public Web API accepts, so Songport reuses its normal Spotify code; it lasts about an hour and is
  * renewed the same way. Letting the real web player fetch the token keeps this working when Spotify
  * changes the anti-abuse parameters of that endpoint, because the page computes them.
+ *
+ * Three ways to get hold of it, cheapest first: the page's own HTML carries the session as a
+ * `<script id="session">` block, so a plain GET with the cookies is often enough; otherwise the
+ * hidden WebView loads the player, and the token request is seen both at the network level
+ * ([WebViewClient.shouldInterceptRequest], which also covers requests made from workers) and by
+ * a hook on fetch/XMLHttpRequest inside the page.
  */
 object SpotifyBridge {
     val session = WebSession("spotify", listOf("open.spotify.com", "accounts.spotify.com", "www.spotify.com", "spotify.com"))
@@ -60,8 +69,25 @@ object SpotifyBridge {
         }
     }
 
+    private val SESSION_SCRIPT = Regex("""<script[^>]*id="session"[^>]*>(.*?)</script>""", RegexOption.DOT_MATCHES_ALL)
+    private val TOKEN_URL = Regex("""^(?:https?://open\.spotify\.com)?/(?:api/token|get_access_token)(?:[?#]|$)""")
+
+    /** The session block the web player's HTML ships with, fetched with the saved cookies. No WebView. */
+    private fun fromHtml(app: Context): Token? {
+        val cookies = session.cookies(app) ?: return null
+        val req = Request.Builder().url("https://open.spotify.com/")
+            .header("User-Agent", USER_AGENT).header("Cookie", cookies).header("Accept", "text/html").build()
+        val html = http.newCall(req).execute().use { if (it.isSuccessful) it.body?.string() else null } ?: return null
+        val json = SESSION_SCRIPT.find(html)?.groupValues?.get(1) ?: return null
+        val j = runCatching { parseJson(json) as? JsonObject }.getOrNull() ?: return null
+        if (j["isAnonymous"]?.toString() == "true") return null
+        val value = j["accessToken"].str ?: return null
+        return Token(value, j["accessTokenExpirationTimestampMs"].long ?: (System.currentTimeMillis() + 50 * 60_000))
+    }
+
     @SuppressLint("SetJavaScriptEnabled", "AddJavascriptInterface")
     private fun capture(app: Context): Token {
+        runCatching { fromHtml(app) }.getOrNull()?.let { return it }
         val latch = CountDownLatch(1)
         var result: Token? = null
         var error: String? = null
@@ -71,7 +97,7 @@ object SpotifyBridge {
         val sink = object {
             @JavascriptInterface
             fun token(json: String) {
-                val j = parseJson(json) as? JsonObject ?: return
+                val j = runCatching { parseJson(json) as? JsonObject }.getOrNull() ?: return
                 val value = j["accessToken"].str ?: return
                 if (j["isAnonymous"]?.toString() == "true") { error = "the Spotify web session has expired: sign in again"; latch.countDown(); return }
                 val exp = j["accessTokenExpirationTimestampMs"].long ?: (System.currentTimeMillis() + 50 * 60_000)
@@ -80,6 +106,25 @@ object SpotifyBridge {
             }
             @JavascriptInterface
             fun fail(message: String) { if (result == null) error = message }
+        }
+
+        // The token request, wherever it is made from (page, worker): fetched here with the page's own
+        // headers and cookies, answered to the page unchanged, and read on the way.
+        fun intercept(request: WebResourceRequest): WebResourceResponse? {
+            val url = request.url.toString()
+            if (!TOKEN_URL.containsMatchIn(url) || request.method != "GET") return null
+            return try {
+                val b = Request.Builder().url(url)
+                request.requestHeaders.forEach { (k, v) -> if (!k.equals("Cookie", true)) b.header(k, v) }
+                CookieManager.getInstance().getCookie(url)?.let { b.header("Cookie", it) }
+                http.newCall(b.build()).execute().use { resp ->
+                    val body = resp.body?.string() ?: ""
+                    sink.token(body)
+                    val headers = resp.headers.names().filter { !it.equals("content-encoding", true) && !it.equals("content-length", true) }
+                        .associateWith { resp.header(it) ?: "" }
+                    WebResourceResponse(resp.header("content-type")?.substringBefore(';')?.trim() ?: "application/json", "utf-8", resp.code, resp.message.ifBlank { "OK" }, headers, body.byteInputStream())
+                }
+            } catch (e: Exception) { null }
         }
 
         main.post {
@@ -94,8 +139,10 @@ object SpotifyBridge {
                     override fun onPageStarted(view: WebView, url: String?, favicon: android.graphics.Bitmap?) {
                         if (!early) view.evaluateJavascript(HOOK, null)
                     }
+                    override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? =
+                        intercept(request) ?: super.shouldInterceptRequest(view, request)
                     override fun onPageFinished(view: WebView, url: String) {
-                        // Belt and braces: ask the endpoint directly from the page context as well.
+                        // Belt and braces: the session block in the HTML, then the endpoint from the page context.
                         view.evaluateJavascript(FALLBACK, null)
                     }
                 }
@@ -117,7 +164,7 @@ object SpotifyBridge {
     private val HOOK = """
         (function(){
           if (window.__spTok) return; window.__spTok = 1;
-          var isTok = function(u){ return /open\.spotify\.com\/(api\/token|get_access_token)/.test(String(u||'')); };
+          var isTok = function(u){ return /^(https?:\/\/open\.spotify\.com)?\/(api\/token|get_access_token)([?#]|$)/.test(String(u||'')); };
           var of = window.fetch;
           if (of) window.fetch = function(input, init){
             var url = (typeof input === 'string') ? input : (input && input.url) || '';
@@ -137,6 +184,7 @@ object SpotifyBridge {
 
     private val FALLBACK = """
         (function(){
+          try { var s = document.getElementById('session'); if (s && s.textContent) SpBridge.token(s.textContent); } catch(e){}
           var tryUrl = function(u){ return fetch(u, {credentials: 'include'}).then(function(r){ return r.text(); }).then(function(t){ SpBridge.token(t); }); };
           tryUrl('/api/token?reason=init&productType=web-player').catch(function(e){
             tryUrl('/get_access_token?reason=transport&productType=web_player').catch(function(e2){ SpBridge.fail(String(e2)); });
