@@ -40,4 +40,11 @@ quota meter; own API keys to escape shared quotas.
 3. **Last.fm loves** (needs the API secret for the session flow).
 4. A throttled YouTube Music queue that resumes the next day by itself.
 
+## Name
+
+"SongPort" is also a universal music link converter (songport.link), unrelated to this project. The
+app keeps its name on GitHub and F-Droid; if it ever goes to Google Play it will be published as
+**Trackhop** (checked in September 2026: no app, repository or service with that name). The package
+id `com.xlollx.songport` stays whatever the display name is.
+
 Not planned: smart links with analytics, listening statistics dashboards, anything hosted.
