@@ -452,10 +452,10 @@
     <string name="connector_add">Add connector</string>
     <string name="connector_pick_title">Which service?</string>
     <string name="connector_pick_hint">Some services can be reached two ways. Easiest: sign in on the site, nothing to create. Official: the service\'s own API with a free key of yours, more stable.</string>
-    <string name="route_easy">Easiest</string>
-    <string name="route_official">Official</string>
-    <string name="route_note_web">Sign in on the service\'s site, no key to create. Not an official interface: it can stop working when the site changes.</string>
-    <string name="route_note_web_only">Sign in on the site. No official API exists: it can stop working when the site changes.</string>
+    <string name="route_easy">Quick route</string>
+    <string name="route_official">Official route</string>
+    <string name="route_note_web">You sign in on the service\'s own page, as you would in a browser: Songport never sees your password, it only keeps the session, encrypted on this phone. Nothing to create. Not an official interface: it can stop working when the site changes.</string>
+    <string name="route_note_web_only">You sign in on the service\'s own page, as in a browser: Songport never sees your password, only the session, encrypted on this phone. No official API exists: it can stop working when the site changes.</string>
     <string name="route_note_api">Your own free API key, created on the service\'s developer page in about two minutes. Official and stable.</string>
     <string name="route_note_apple_api">A developer token from an Apple Developer account (paid). Official.</string>
     <string name="route_note_youtube_api">Your own Google Cloud key (free, a few minutes). Official, but the daily quota is small: big syncs take days.</string>

@@ -452,10 +452,10 @@
     <string name="connector_add">Connector hinzufügen</string>
     <string name="connector_pick_title">Welcher Dienst?</string>
     <string name="connector_pick_hint">Manche Dienste sind auf zwei Wegen erreichbar. Am einfachsten: Anmeldung auf der Website, nichts anzulegen. Offiziell: die API des Dienstes mit einem eigenen kostenlosen Schlüssel, stabiler.</string>
-    <string name="route_easy">Am einfachsten</string>
-    <string name="route_official">Offiziell</string>
-    <string name="route_note_web">Anmeldung auf der Website des Dienstes, kein Schlüssel nötig. Keine offizielle Schnittstelle: kann aufhören zu funktionieren, wenn sich die Website ändert.</string>
-    <string name="route_note_web_only">Anmeldung auf der Website. Es gibt keine offizielle API: kann aufhören zu funktionieren, wenn sich die Website ändert.</string>
+    <string name="route_easy">Schneller Weg</string>
+    <string name="route_official">Offizieller Weg</string>
+    <string name="route_note_web">Du meldest dich auf der Seite des Dienstes selbst an, wie im Browser: Songport sieht dein Passwort nie, es behält nur die Sitzung, verschlüsselt auf diesem Telefon. Nichts anzulegen. Keine offizielle Schnittstelle: kann aufhören zu funktionieren, wenn sich die Website ändert.</string>
+    <string name="route_note_web_only">Du meldest dich auf der Seite des Dienstes selbst an, wie im Browser: Songport sieht dein Passwort nie, nur die Sitzung, verschlüsselt auf diesem Telefon. Es gibt keine offizielle API: kann aufhören zu funktionieren, wenn sich die Website ändert.</string>
     <string name="route_note_api">Dein eigener kostenloser API-Schlüssel, in etwa zwei Minuten auf der Entwicklerseite des Dienstes erstellt. Offiziell und stabil.</string>
     <string name="route_note_apple_api">Ein Entwickler-Token aus einem Apple-Developer-Konto (kostenpflichtig). Offiziell.</string>
     <string name="route_note_youtube_api">Dein eigener Google-Cloud-Schlüssel (kostenlos, wenige Minuten). Offiziell, aber die Tagesquote ist klein: große Syncs dauern Tage.</string>

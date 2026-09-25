@@ -452,10 +452,10 @@
     <string name="connector_add">Aggiungi connettore</string>
     <string name="connector_pick_title">Quale servizio?</string>
     <string name="connector_pick_hint">Alcuni servizi si raggiungono in due modi. Più semplice: accedi sul sito, niente da creare. Ufficiale: l\'API del servizio con una tua chiave gratuita, più stabile.</string>
-    <string name="route_easy">Più semplice</string>
-    <string name="route_official">Ufficiale</string>
-    <string name="route_note_web">Accedi sul sito del servizio, nessuna chiave da creare. Non è un\'interfaccia ufficiale: può smettere di funzionare quando il sito cambia.</string>
-    <string name="route_note_web_only">Accedi sul sito. Non esiste un\'API ufficiale: può smettere di funzionare quando il sito cambia.</string>
+    <string name="route_easy">Strada rapida</string>
+    <string name="route_official">Strada ufficiale</string>
+    <string name="route_note_web">Accedi sulla pagina del servizio stesso, come nel browser: Songport non vede mai la password, conserva solo la sessione, cifrata su questo telefono. Niente da creare. Non è un\'interfaccia ufficiale: può smettere di funzionare quando il sito cambia.</string>
+    <string name="route_note_web_only">Accedi sulla pagina del servizio stesso, come nel browser: Songport non vede mai la password, solo la sessione, cifrata su questo telefono. Non esiste un\'API ufficiale: può smettere di funzionare quando il sito cambia.</string>
     <string name="route_note_api">Una tua chiave API gratuita, creata sulla pagina sviluppatori del servizio in circa due minuti. Ufficiale e stabile.</string>
     <string name="route_note_apple_api">Un token sviluppatore da un account Apple Developer (a pagamento). Ufficiale.</string>
     <string name="route_note_youtube_api">Una tua chiave Google Cloud (gratuita, pochi minuti). Ufficiale, ma la quota giornaliera è piccola: le sync grandi durano giorni.</string>

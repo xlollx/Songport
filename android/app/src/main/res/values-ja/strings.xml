@@ -448,10 +448,10 @@
     <string name="connector_add">コネクタを追加</string>
     <string name="connector_pick_title">どのサービスですか？</string>
     <string name="connector_pick_hint">一部のサービスには 2 つの接続方法があります。最も簡単：サイトでログインするだけで、何も作る必要はありません。公式：あなたの無料キーでサービスの公式 API を使う方法で、より安定しています。</string>
-    <string name="route_easy">最も簡単</string>
-    <string name="route_official">公式</string>
-    <string name="route_note_web">サービスのサイトでログインするだけで、キーは不要です。非公式のインターフェースのため、サイトの変更で動かなくなることがあります。</string>
-    <string name="route_note_web_only">サイトでログインします。公式 API が存在しないため、サイトの変更で動かなくなることがあります。</string>
+    <string name="route_easy">かんたんな方法</string>
+    <string name="route_official">公式の方法</string>
+    <string name="route_note_web">サービス自身のページでブラウザーと同じようにログインします。Songport はパスワードを一切見ず、セッションだけをこのスマートフォンに暗号化して保存します。作成するものはありません。非公式のインターフェースのため、サイトの変更で動かなくなることがあります。</string>
+    <string name="route_note_web_only">サービス自身のページでブラウザーと同じようにログインします。Songport はパスワードを一切見ず、セッションだけをこのスマートフォンに暗号化して保存します。公式 API が存在しないため、サイトの変更で動かなくなることがあります。</string>
     <string name="route_note_api">サービスの開発者ページで約 2 分で作れる、あなた自身の無料 API キー。公式で安定しています。</string>
     <string name="route_note_apple_api">Apple Developer アカウント（有料）の開発者トークン。公式。</string>
     <string name="route_note_youtube_api">あなた自身の Google Cloud キー（無料、数分）。公式ですが 1 日のクォータが小さく、大きな同期には数日かかります。</string>

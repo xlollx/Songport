@@ -235,7 +235,8 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                                     )
                                     s.route?.let { r ->
                                         if (!grouped) Spacer(Modifier.width(8.dp))
-                                        StatusPill(stringResource(if (r == MusicProvider.Route.EASY) R.string.route_easy else R.string.route_official), if (r == MusicProvider.Route.EASY) Tone.Ok else Tone.Accent)
+                                        // Both routes wear the lock: the quick one signs in on the service's own page too.
+                                        StatusPill(stringResource(if (r == MusicProvider.Route.EASY) R.string.route_easy else R.string.route_official), if (r == MusicProvider.Route.EASY) Tone.Ok else Tone.Accent, Icons.Filled.Lock)
                                     }
                                     if (!s.canWrite) { Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.read_only), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
                                     if (s.beta) { Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.beta), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }

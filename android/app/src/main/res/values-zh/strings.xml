@@ -448,10 +448,10 @@
     <string name="connector_add">添加连接器</string>
     <string name="connector_pick_title">选择哪个服务？</string>
     <string name="connector_pick_hint">有些服务有两种接入方式。最简单：在网站上登录，无需创建任何东西。官方：使用你自己的免费密钥调用服务的官方 API，更稳定。</string>
-    <string name="route_easy">最简单</string>
-    <string name="route_official">官方</string>
-    <string name="route_note_web">在服务的网站上登录，无需创建密钥。非官方接口：网站变更时可能失效。</string>
-    <string name="route_note_web_only">在网站上登录。没有官方 API：网站变更时可能失效。</string>
+    <string name="route_easy">快捷方式</string>
+    <string name="route_official">官方方式</string>
+    <string name="route_note_web">你在服务自己的页面上登录，就像在浏览器里一样：Songport 永远看不到你的密码，只保存会话，并加密存放在这部手机上。无需创建任何东西。非官方接口：网站变更时可能失效。</string>
+    <string name="route_note_web_only">你在服务自己的页面上登录，就像在浏览器里一样：Songport 永远看不到你的密码，只保存会话，并加密存放在这部手机上。没有官方 API：网站变更时可能失效。</string>
     <string name="route_note_api">你自己的免费 API 密钥，在服务的开发者页面约两分钟即可创建。官方且稳定。</string>
     <string name="route_note_apple_api">来自 Apple Developer 账号（付费）的开发者令牌。官方。</string>
     <string name="route_note_youtube_api">你自己的 Google Cloud 密钥（免费，几分钟）。官方，但每日配额很小：大型同步需要数天。</string>
