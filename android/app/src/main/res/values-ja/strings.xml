@@ -243,6 +243,7 @@
     <string name="tools_backup_row_desc">このサービスのすべてのプレイリスト、お気に入り、アルバム、アーティストを日付付きファイルとして保存します。</string>
     <string name="tools_none">まずサービスを接続してください。</string>
     <string name="spotify_forbidden">Spotify がリクエストを拒否しました（%1$s）。Development Mode のアプリは、Spotify 自身が作成したプレイリスト（Discover Weekly、Release Radar、編集部のミックスなど）を読み込めず、アプリの User Management に登録されたアカウントでしか利用できません。あなたや他のユーザーが作成したプレイリストを選ぶか、developer.spotify.com でアカウントを追加してください。</string>
+    <string name="spotify_scope_reconnect">Spotify がリクエストを拒否しました（%1$s）：この権限は接続後に追加されたものです。「アカウント」で Spotify を再接続すると付与されます。</string>
     <string name="tools_export_title">プレイリストをエクスポート</string>
     <string name="tools_export_desc">このサービスの任意のプレイリストを、サービス側は何も変えずに、スマートフォン上のファイル（CSV、M3U、XSPF、JSPF、プレーンテキスト）として保存します。</string>
     <string name="tools_export_done">%1$d 曲をエクスポートしました</string>
@@ -251,6 +252,12 @@
     <string name="tools_backup_run">今すぐバックアップ</string>
     <string name="tools_backup_done">%1$d 件のプレイリスト、%2$d 曲を保存しました</string>
     <string name="tools_backup_unchanged">%1$d 件は変更なし</string>
+    <plurals name="tools_backup_unread">
+        <item quantity="other">%1$d 件のプレイリストを読み取れませんでした</item>
+    </plurals>
+    <string name="tools_backup_unread_title">バックアップされていません</string>
+    <string name="backup_folder_copied">フォルダーに %1$d 件の新しいファイル</string>
+    <string name="backup_folder_copying">フォルダーにコピー中…</string>
     <string name="files_hide_versions">以前のバージョンを隠す</string>
     <plurals name="files_versions">
         <item quantity="other">以前のバージョン %d 件</item>

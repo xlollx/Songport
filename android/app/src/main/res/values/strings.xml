@@ -243,6 +243,7 @@
     <string name="tools_backup_row_desc">Every playlist, liked song, album and artist of this service saved as dated files.</string>
     <string name="tools_none">Connect a service first.</string>
     <string name="spotify_forbidden">Spotify refused the request (%1$s). Apps in Development Mode cannot read playlists made by Spotify itself (Discover Weekly, Release Radar, editorial mixes) and only serve accounts listed in the app\'s User Management. Pick a playlist you or another user created, or add the account on developer.spotify.com.</string>
+    <string name="spotify_scope_reconnect">Spotify refused the request (%1$s): this permission was added after you connected. Reconnect Spotify in Accounts and it will be granted.</string>
     <string name="tools_export_title">Export a playlist</string>
     <string name="tools_export_desc">Save any playlist of this service as a file on your phone (CSV, M3U, XSPF, JSPF or plain text), without changing anything on the service.</string>
     <string name="tools_export_done">%1$d tracks exported</string>
@@ -251,6 +252,13 @@
     <string name="tools_backup_run">Back up now</string>
     <string name="tools_backup_done">%1$d playlists, %2$d tracks saved</string>
     <string name="tools_backup_unchanged">%1$d unchanged</string>
+    <plurals name="tools_backup_unread">
+        <item quantity="one">%1$d playlist not read</item>
+        <item quantity="other">%1$d playlists not read</item>
+    </plurals>
+    <string name="tools_backup_unread_title">Not backed up</string>
+    <string name="backup_folder_copied">%1$d new files in the folder</string>
+    <string name="backup_folder_copying">Copying to the folder…</string>
     <string name="files_hide_versions">Hide earlier versions</string>
     <plurals name="files_versions">
         <item quantity="one">%d earlier version</item>

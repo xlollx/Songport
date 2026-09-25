@@ -13,7 +13,12 @@ import com.xlollx.songport.providers.MusicProvider
  */
 object Tools {
 
-    data class BackupResult(val playlists: Int, val tracks: Int, val failed: List<String>, val unchanged: Int = 0)
+    /** A playlist the backup could not read, and the service's own explanation. */
+    data class Failure(val name: String, val reason: String)
+
+    data class BackupResult(val playlists: Int, val tracks: Int, val failures: List<Failure>, val unchanged: Int = 0) {
+        val failed: List<String> get() = failures.map { "${it.name} (${it.reason})" }
+    }
 
     /**
      * Salva tutte le playlist (e i preferiti, se il servizio li espone) come file CSV locali,
@@ -25,7 +30,7 @@ object Tools {
         var tracks = 0
         var done = 0
         var unchanged = 0
-        val failed = ArrayList<String>()
+        val failed = ArrayList<Failure>()
         val inUse = LocalFilesProvider.protectedIds(ctx)
         val now = System.currentTimeMillis()
         for (pl in lists) {
@@ -37,7 +42,7 @@ object Tools {
                 if (LocalFilesProvider.writeBackup(ctx, provider.displayName, pl.name, items, inUse, now) == LocalFilesProvider.BackupOutcome.UNCHANGED) unchanged++
                 tracks += items.size
             } catch (e: Exception) {
-                failed += "${pl.name} (${e.message})"
+                failed += Failure(pl.name, e.message ?: e.javaClass.simpleName)
             }
             done++
         }

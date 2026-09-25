@@ -56,7 +56,8 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val authorizeEndpoint = "https://accounts.spotify.com/authorize"
     override val tokenEndpoint = "https://accounts.spotify.com/api/token"
     override val scopes =
-        "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-library-read"
+        "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public " +
+            "user-library-read user-library-modify user-follow-read user-follow-modify"
     // Forces the consent page, which names the signed-in account and offers "Not you?" to switch.
     override val switchAccountParams = mapOf("show_dialog" to "true")
 
@@ -72,8 +73,12 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
 
     // Da novembre 2024 le app in Development Mode non possono leggere le playlist create da Spotify
     // (Discover Weekly, Release Radar, mix editoriali): la risposta e' un 403 senza spiegazioni.
-    override fun friendlyApiError(ctx: Context, resp: HttpResponse): String? =
-        if (resp.code == 403) ctx.getString(R.string.spotify_forbidden, errorMessage(resp).ifBlank { "403" }) else null
+    override fun friendlyApiError(ctx: Context, resp: HttpResponse): String? {
+        if (resp.code != 403) return null
+        val msg = errorMessage(resp).ifBlank { "403" }
+        // A token granted before a scope was added lacks it: only a new sign-in can widen it.
+        return ctx.getString(if (msg.contains("scope", ignoreCase = true)) R.string.spotify_scope_reconnect else R.string.spotify_forbidden, msg)
+    }
 
     override suspend fun playlists(ctx: Context): List<Playlist> {
         val me = tokens(ctx).userId

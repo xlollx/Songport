@@ -243,6 +243,7 @@
     <string name="tools_backup_row_desc">Toutes les playlists, titres aimés, albums et artistes de ce service enregistrés en fichiers datés.</string>
     <string name="tools_none">Connectez d\'abord un service.</string>
     <string name="spotify_forbidden">Spotify a refusé la requête (%1$s). Les applications en mode Développement ne peuvent pas lire les playlists créées par Spotify lui-même (Discover Weekly, Radar des sorties, mix éditoriaux) et n\'acceptent que les comptes listés dans la User Management de l\'application. Choisissez une playlist créée par vous ou par un autre utilisateur, ou ajoutez le compte sur developer.spotify.com.</string>
+    <string name="spotify_scope_reconnect">Spotify a refusé la requête (%1$s) : cette permission a été ajoutée après votre connexion. Reconnectez Spotify dans Comptes et elle sera accordée.</string>
     <string name="tools_export_title">Exporter une playlist</string>
     <string name="tools_export_desc">Enregistrez n\'importe quelle playlist de ce service dans un fichier sur votre téléphone (CSV, M3U, XSPF, JSPF ou texte brut), sans rien changer sur le service.</string>
     <string name="tools_export_done">%1$d titres exportés</string>
@@ -251,6 +252,13 @@
     <string name="tools_backup_run">Sauvegarder maintenant</string>
     <string name="tools_backup_done">%1$d playlists, %2$d titres enregistrés</string>
     <string name="tools_backup_unchanged">%1$d inchangées</string>
+    <plurals name="tools_backup_unread">
+        <item quantity="one">%1$d playlist non lue</item>
+        <item quantity="other">%1$d playlists non lues</item>
+    </plurals>
+    <string name="tools_backup_unread_title">Non sauvegardées</string>
+    <string name="backup_folder_copied">%1$d nouveaux fichiers dans le dossier</string>
+    <string name="backup_folder_copying">Copie dans le dossier…</string>
     <string name="files_hide_versions">Masquer les versions précédentes</string>
     <plurals name="files_versions">
         <item quantity="one">%d version précédente</item>

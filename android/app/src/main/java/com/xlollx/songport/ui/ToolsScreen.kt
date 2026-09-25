@@ -48,7 +48,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.text.font.FontWeight
+import com.xlollx.songport.sync.BackupExport
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -274,6 +280,28 @@ private fun BackupCard(provider: MusicProvider, snackbar: SnackbarHostState) {
     val scope = rememberCoroutineScope()
     var busy by remember { mutableStateOf(false) }
     var progress by remember { mutableStateOf<Progress?>(null) }
+    var copying by remember { mutableStateOf(false) }
+    var details by remember { mutableStateOf<List<Tools.Failure>?>(null) }
+    details?.let { list ->
+        AlertDialog(
+            onDismissRequest = { details = null },
+            title = { Text(stringResource(R.string.tools_backup_unread_title)) },
+            text = {
+                Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    // The playlists that share a reason are listed once above it: a service's
+                    // explanation is long, and it is the same for every playlist it refused.
+                    list.groupBy { it.reason }.forEach { (reason, items) ->
+                        Column {
+                            Text(items.joinToString(", ") { it.name }, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                            Text(reason, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
+            },
+            confirmButton = { TextButton(onClick = { details = null }) { Text(stringResource(R.string.ok)) } },
+        )
+    }
+    val folderSet = remember { com.xlollx.songport.data.Store.get(ctx).data.settings.backupFolder.isNotBlank() }
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Text(stringResource(R.string.tools_backup_title), style = MaterialTheme.typography.titleMedium)
@@ -283,16 +311,30 @@ private fun BackupCard(provider: MusicProvider, snackbar: SnackbarHostState) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 if (busy) {
                     CircularProgressIndicator(Modifier.size(18.dp)); Spacer(Modifier.width(8.dp))
-                    progress?.let { Text(stringResource(R.string.tools_progress_backup, it.done, it.total), style = MaterialTheme.typography.bodySmall); Spacer(Modifier.width(8.dp)) }
+                    if (copying) Text(stringResource(R.string.backup_folder_copying), style = MaterialTheme.typography.bodySmall)
+                    else progress?.let { Text(stringResource(R.string.tools_progress_backup, it.done, it.total), style = MaterialTheme.typography.bodySmall) }
+                    Spacer(Modifier.width(8.dp))
                 }
                 Button(enabled = !busy, onClick = {
                     busy = true
                     scope.launch {
                         try {
                             val r = Tools.backupAll(ctx, provider) { progress = it }
-                            snackbar.showSnackbar(ctx.getString(R.string.tools_backup_done, r.playlists, r.tracks) +
-                                (if (r.unchanged > 0) " · " + ctx.getString(R.string.tools_backup_unchanged, r.unchanged) else "") +
-                                (if (r.failed.isNotEmpty()) " · " + r.failed.joinToString(", ") else ""))
+                            // The folder chosen in Settings gets the new files right away, as "Copy now" would.
+                            val copyNote = if (!folderSet) null else {
+                                copying = true
+                                try { ctx.getString(R.string.backup_folder_copied, BackupExport.copyNow(ctx)) } catch (e: Exception) { e.message }
+                            }
+                            copying = false
+                            val parts = listOfNotNull(
+                                ctx.getString(R.string.tools_backup_done, r.playlists, r.tracks),
+                                if (r.unchanged > 0) ctx.getString(R.string.tools_backup_unchanged, r.unchanged) else null,
+                                copyNote,
+                                if (r.failures.isNotEmpty()) ctx.resources.getQuantityString(R.plurals.tools_backup_unread, r.failures.size, r.failures.size) else null,
+                            )
+                            busy = false
+                            if (r.failures.isEmpty()) snackbar.showSnackbar(parts.joinToString(" · "))
+                            else if (snackbar.showSnackbar(parts.joinToString(" · "), actionLabel = ctx.getString(R.string.show_details), duration = SnackbarDuration.Long) == SnackbarResult.ActionPerformed) details = r.failures
                         } catch (e: Exception) {
                             snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
                         }

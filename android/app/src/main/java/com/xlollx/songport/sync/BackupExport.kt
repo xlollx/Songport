@@ -39,6 +39,28 @@ object BackupExport {
         ctx.contentResolver.query(docUri, arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID), null, null, null)?.use { it.moveToFirst() } == true
     }.getOrDefault(false)
 
+    /**
+     * Solo la copia: i file locali nuovi vanno nella cartella scelta, se ce n'e' una. Lo usa il backup
+     * di un singolo servizio in Strumenti, che aggiorna i file da se'. @return quanti ne ha copiati.
+     * @throws ProviderException se la cartella non e' piu' raggiungibile.
+     */
+    suspend fun copyNow(ctx: Context): Int {
+        val folder = Store.get(ctx).data.settings.backupFolder.takeIf { it.isNotBlank() } ?: return 0
+        if (!folderReachable(ctx, Uri.parse(folder))) {
+            val msg = ctx.getString(com.xlollx.songport.R.string.backup_folder_missing)
+            Diagnostics.log(ctx, "backup", "folder not reachable: $folder")
+            remember(ctx, msg)
+            throw com.xlollx.songport.model.ProviderException(msg)
+        }
+        return try {
+            copyNew(ctx, Uri.parse(folder)).also { remember(ctx, null) }
+        } catch (e: Exception) {
+            Diagnostics.log(ctx, "backup", "folder copy failed: ${e.message}")
+            remember(ctx, e.message ?: e.javaClass.simpleName)
+            throw e
+        }
+    }
+
     /** Aggiorna i backup locali di ogni servizio collegato, poi copia nella cartella i file nuovi. */
     suspend fun run(ctx: Context, onProgress: (String) -> Unit = {}): Result {
         val folder = Store.get(ctx).data.settings.backupFolder.takeIf { it.isNotBlank() }
@@ -55,7 +77,8 @@ object BackupExport {
             onProgress(p.label(ctx))
             try {
                 val r = Tools.backupAll(ctx, p)
-                failed += r.failed.map { "${p.displayName}: $it" }
+                // The screen has one line: how many the service would not hand over, not each reason.
+                if (r.failures.isNotEmpty()) failed += p.displayName + ": " + ctx.resources.getQuantityString(com.xlollx.songport.R.plurals.tools_backup_unread, r.failures.size, r.failures.size)
                 services++
             } catch (e: Exception) {
                 failed += "${p.displayName}: ${e.message}"

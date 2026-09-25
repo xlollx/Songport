@@ -243,6 +243,7 @@
     <string name="tools_backup_row_desc">Todas las playlists, favoritas, álbumes y artistas de este servicio guardados como archivos fechados.</string>
     <string name="tools_none">Primero conecta un servicio.</string>
     <string name="spotify_forbidden">Spotify rechazó la solicitud (%1$s). Las apps en Development Mode no pueden leer playlists creadas por el propio Spotify (Discover Weekly, Release Radar, mixes editoriales) y solo admiten las cuentas que figuran en el User Management de la app. Elige una playlist creada por ti o por otro usuario, o añade la cuenta en developer.spotify.com.</string>
+    <string name="spotify_scope_reconnect">Spotify rechazó la solicitud (%1$s): este permiso se añadió después de que te conectaras. Vuelve a conectar Spotify en Cuentas y se concederá.</string>
     <string name="tools_export_title">Exportar una playlist</string>
     <string name="tools_export_desc">Guarda cualquier playlist de este servicio como archivo en tu teléfono (CSV, M3U, XSPF, JSPF o texto sin formato), sin cambiar nada en el servicio.</string>
     <string name="tools_export_done">%1$d canciones exportadas</string>
@@ -251,6 +252,13 @@
     <string name="tools_backup_run">Hacer copia ahora</string>
     <string name="tools_backup_done">%1$d playlists y %2$d canciones guardadas</string>
     <string name="tools_backup_unchanged">%1$d sin cambios</string>
+    <plurals name="tools_backup_unread">
+        <item quantity="one">%1$d lista no leída</item>
+        <item quantity="other">%1$d listas no leídas</item>
+    </plurals>
+    <string name="tools_backup_unread_title">Sin copia</string>
+    <string name="backup_folder_copied">%1$d archivos nuevos en la carpeta</string>
+    <string name="backup_folder_copying">Copiando a la carpeta…</string>
     <string name="files_hide_versions">Ocultar versiones anteriores</string>
     <plurals name="files_versions">
         <item quantity="one">%d versión anterior</item>

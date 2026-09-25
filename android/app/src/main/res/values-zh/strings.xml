@@ -243,6 +243,7 @@
     <string name="tools_backup_row_desc">此服务的所有歌单、喜欢的歌曲、专辑和艺人保存为带日期的文件。</string>
     <string name="tools_none">请先连接一个服务。</string>
     <string name="spotify_forbidden">Spotify 拒绝了请求（%1$s）。处于开发模式（Development Mode）的应用无法读取 Spotify 官方制作的歌单（Discover Weekly、Release Radar、编辑精选），并且只服务于应用“User Management”中列出的账号。请选择你或其他用户创建的歌单，或在 developer.spotify.com 上添加该账号。</string>
+    <string name="spotify_scope_reconnect">Spotify 拒绝了请求（%1$s）：此权限是在你连接之后新增的。在“账号”中重新连接 Spotify 即可授予。</string>
     <string name="tools_export_title">导出歌单</string>
     <string name="tools_export_desc">将此服务的任意歌单保存为手机上的文件（CSV、M3U、XSPF、JSPF 或纯文本），不会更改服务上的任何内容。</string>
     <string name="tools_export_done">已导出 %1$d 首歌曲</string>
@@ -251,6 +252,12 @@
     <string name="tools_backup_run">立即备份</string>
     <string name="tools_backup_done">已保存 %1$d 个歌单、%2$d 首歌曲</string>
     <string name="tools_backup_unchanged">%1$d 个未变化</string>
+    <plurals name="tools_backup_unread">
+        <item quantity="other">%1$d 个歌单未读取</item>
+    </plurals>
+    <string name="tools_backup_unread_title">未备份</string>
+    <string name="backup_folder_copied">文件夹中新增 %1$d 个文件</string>
+    <string name="backup_folder_copying">正在复制到文件夹…</string>
     <string name="files_hide_versions">隐藏较早的版本</string>
     <plurals name="files_versions">
         <item quantity="other">%d 个较早的版本</item>
