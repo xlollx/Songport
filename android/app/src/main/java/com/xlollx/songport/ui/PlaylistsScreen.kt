@@ -90,7 +90,7 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
 
     LaunchedEffect(version) {
         lists = null; error = null
-        lists = try { provider.playlists(ctx).filter { it.ownedByMe } } catch (e: Exception) { error = e.message ?: ctx.getString(R.string.error_generic); emptyList() }
+        lists = try { provider.playlists(ctx).filter { it.ownedByMe } } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { error = e.message ?: ctx.getString(R.string.error_generic); emptyList() }
     }
     fun fail(e: Exception) { scope.launch { snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic)) } }
 
@@ -105,7 +105,7 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
                 val tracks = provider.tracks(ctx, pl.id)
                 withContext(Dispatchers.IO) { ctx.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { it.write(fmt.encode(pl.name, tracks)) } }
                 snackbar.showSnackbar(ctx.getString(R.string.tools_export_done, tracks.size))
-            } catch (e: Exception) { fail(e) }
+            } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { fail(e) }
         }
     }
 
@@ -134,7 +134,7 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
                                 }
                             snackbar.showSnackbar(ctx.getString(R.string.manage_renamed))
                             version++
-                        } catch (e: Exception) { fail(e) }
+                        } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { fail(e) }
                         busy = false
                     }
                 }) { Text(stringResource(R.string.save)) }
@@ -160,7 +160,7 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
                 TextButton(onClick = {
                     deleting = null; busy = true
                     scope.launch {
-                        try { provider.deletePlaylist(ctx, pl.id); snackbar.showSnackbar(ctx.getString(R.string.manage_deleted)); version++ } catch (e: Exception) { fail(e) }
+                        try { provider.deletePlaylist(ctx, pl.id); snackbar.showSnackbar(ctx.getString(R.string.manage_deleted)); version++ } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { fail(e) }
                         busy = false
                     }
                 }) { Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.error) }

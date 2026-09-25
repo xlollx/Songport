@@ -573,7 +573,7 @@ private suspend fun loadPlaylists(ctx: android.content.Context, providerId: Stri
         val lists = p.playlists(ctx)
         // "Brani preferiti": come origine dove il servizio li espone, come destinazione dove si possono scrivere.
         Loaded.Ok(p.libraryEntries(ctx, asTarget = forTarget) + lists)
-    } catch (e: Exception) {
+    } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
         Loaded.Failed(e.message ?: ctx.getString(R.string.error_generic))
     }
 }

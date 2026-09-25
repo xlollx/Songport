@@ -82,7 +82,7 @@ fun MakePlaylistCard(provider: MusicProvider, snackbar: SnackbarHostState) {
         lists = try {
             val base = provider.playlists(ctx)
             if (provider.supportsLikedSongs) listOf(Playlist(MusicProvider.LIKED_ID, ctx.getString(R.string.liked_songs))) + base else base
-        } catch (e: Exception) { emptyList() }
+        } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { emptyList() }
     }
 
     // Nome proposto: cambia con l'operazione e la playlist finche' l'utente non lo tocca.
@@ -219,8 +219,8 @@ fun MakePlaylistCard(provider: MusicProvider, snackbar: SnackbarHostState) {
                             else ctx.getString(R.string.tools_make_done_parts, parts.size, added)
                             snackbar.showSnackbar(done + (if (failed > 0) " · " + ctx.getString(R.string.tools_make_failed, failed) else ""))
                             lists = null
-                            lists = try { provider.playlists(ctx) } catch (e: Exception) { emptyList() }
-                        } catch (e: Exception) {
+                            lists = try { provider.playlists(ctx) } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { emptyList() }
+                        } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                             snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
                         }
                         busy = false

@@ -93,7 +93,7 @@ fun TransferScreen(onClose: () -> Unit, onDone: () -> Unit) {
         try {
             val base = p.playlists(ctx)
             lists = p.libraryEntries(ctx, asTarget = false) + base
-        } catch (e: Exception) { error = e.message ?: ctx.getString(R.string.error_generic); lists = emptyList() }
+        } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { error = e.message ?: ctx.getString(R.string.error_generic); lists = emptyList() }
     }
 
     // Sync gia' esistenti da questa origine verso la destinazione scelta, per playlist.

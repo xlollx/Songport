@@ -72,7 +72,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
 
     LaunchedEffect(job.id) {
         try { plan = engine.plan(job, { progress = it }, createTarget = false) }
-        catch (e: Exception) { error = e.message ?: ctx.getString(R.string.error_generic) }
+        catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { error = e.message ?: ctx.getString(R.string.error_generic) }
     }
 
     val dst = Providers.byId(job.target.provider)

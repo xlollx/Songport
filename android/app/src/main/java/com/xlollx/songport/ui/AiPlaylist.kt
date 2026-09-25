@@ -165,7 +165,7 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
                         onSyncStarted()
                         snackbar.showSnackbar(app.getString(R.string.ai_done_sync, kept.size, target.label(app)))
                     }
-                } catch (e: Exception) {
+                } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                     d.error = e.message ?: app.getString(R.string.error_generic)
                 }
             }
@@ -377,7 +377,7 @@ fun AiSetupDialog(initial: AiClient.Config?, onDismiss: () -> Unit, onSaved: (Ai
                                 try {
                                     models = AiClient.models(current())
                                     if (models.isEmpty()) error = ctx.getString(R.string.ai_models_none) else modelsOpen = true
-                                } catch (e: Exception) { error = e.message ?: ctx.getString(R.string.error_generic) }
+                                } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { error = e.message ?: ctx.getString(R.string.error_generic) }
                                 loading = false
                             }
                         }) { Text(stringResource(R.string.ai_models_load)) }
@@ -480,7 +480,7 @@ fun AiExtendDialog(job: SyncJob, onClose: () -> Unit) {
                     withContext(Dispatchers.IO) { LocalFilesProvider.addTracks(app, fileId, kept) }
                     Scheduler.runNow(app, job.id)
                     onClose()
-                } catch (e: Exception) {
+                } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                     error = e.message ?: app.getString(R.string.error_generic)
                 }
             }
@@ -559,7 +559,7 @@ fun AiExpandPlaylistDialog(provider: MusicProvider, playlist: Playlist, onClose:
                     busy = false
                     onDone(r.found.size, r.missing.size)
                     onClose()
-                } catch (e: Exception) {
+                } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                     busy = false
                     error = e.message ?: app.getString(R.string.error_generic)
                 }

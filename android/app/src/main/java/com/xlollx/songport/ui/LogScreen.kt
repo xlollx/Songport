@@ -131,7 +131,7 @@ private fun ReportRow(r: SyncReport, job: SyncJob?, snackbar: SnackbarHostState,
                 val text = LocalFilesProvider.exportText(ctx, fileTarget, LocalFilesProvider.Export.CSV)
                 withContext(Dispatchers.IO) { ctx.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { it.write(text) } }
                 snackbar.showSnackbar(ctx.getString(R.string.csv_exported))
-            } catch (e: Exception) {
+            } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                 snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
             }
         }
@@ -190,7 +190,7 @@ private fun ReportRow(r: SyncReport, job: SyncJob?, snackbar: SnackbarHostState,
                                     try {
                                         SyncEngine(ctx).restoreRemoved(job, r)
                                         snackbar.showSnackbar(ctx.getString(R.string.restored_done, r.removedTracks.size))
-                                    } catch (e: Exception) {
+                                    } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                                         snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
                                     }
                                     restoring = false

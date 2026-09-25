@@ -203,7 +203,7 @@ private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
         lists = try {
             val base = provider.playlists(ctx)
             provider.libraryEntries(ctx, asTarget = false) + base
-        } catch (e: Exception) {
+        } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
             snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
             emptyList()
         }
@@ -223,7 +223,7 @@ private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
                     ctx.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { it.write(text) }
                 }
                 snackbar.showSnackbar(ctx.getString(R.string.tools_export_done, tracks.size))
-            } catch (e: Exception) {
+            } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                 snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
             }
             busy = false
@@ -323,7 +323,7 @@ private fun BackupCard(provider: MusicProvider, snackbar: SnackbarHostState) {
                             // The folder chosen in Settings gets the new files right away, as "Copy now" would.
                             val copyNote = if (!folderSet) null else {
                                 copying = true
-                                try { ctx.getString(R.string.backup_folder_copied, BackupExport.copyNow(ctx)) } catch (e: Exception) { e.message }
+                                try { ctx.getString(R.string.backup_folder_copied, BackupExport.copyNow(ctx)) } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { e.message }
                             }
                             copying = false
                             val parts = listOfNotNull(
@@ -335,7 +335,7 @@ private fun BackupCard(provider: MusicProvider, snackbar: SnackbarHostState) {
                             busy = false
                             if (r.failures.isEmpty()) snackbar.showSnackbar(parts.joinToString(" · "))
                             else if (snackbar.showSnackbar(parts.joinToString(" · "), actionLabel = ctx.getString(R.string.show_details), duration = SnackbarDuration.Long) == SnackbarResult.ActionPerformed) details = r.failures
-                        } catch (e: Exception) {
+                        } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                             snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
                         }
                         busy = false
@@ -359,7 +359,7 @@ private fun DedupeCard(provider: MusicProvider, snackbar: SnackbarHostState) {
     var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(provider.id) {
-        lists = try { provider.playlists(ctx).filter { it.ownedByMe } } catch (e: Exception) { emptyList() }
+        lists = try { provider.playlists(ctx).filter { it.ownedByMe } } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { emptyList() }
     }
 
     Card(Modifier.fillMaxWidth()) {
@@ -415,7 +415,7 @@ private fun DedupeCard(provider: MusicProvider, snackbar: SnackbarHostState) {
                 OutlinedButton(enabled = !busy && pl != null, onClick = {
                     busy = true
                     scope.launch {
-                        groups = try { Tools.findDuplicates(ctx, provider, pl!!.id) } catch (e: Exception) {
+                        groups = try { Tools.findDuplicates(ctx, provider, pl!!.id) } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                             snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic)); null
                         }
                         busy = false
@@ -431,7 +431,7 @@ private fun DedupeCard(provider: MusicProvider, snackbar: SnackbarHostState) {
                                 val n = Tools.removeDuplicates(ctx, provider, pl!!.id) { progress = it }
                                 snackbar.showSnackbar(ctx.getString(R.string.tools_dedupe_done, n))
                                 groups = null
-                            } catch (e: Exception) {
+                            } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                                 snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
                             }
                             busy = false
