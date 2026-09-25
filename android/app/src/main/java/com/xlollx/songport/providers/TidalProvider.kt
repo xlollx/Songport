@@ -11,6 +11,7 @@ import com.xlollx.songport.model.Track
 import com.xlollx.songport.net.Http
 import com.xlollx.songport.net.HttpResponse
 import com.xlollx.songport.net.arr
+import com.xlollx.songport.net.bool
 import com.xlollx.songport.net.get
 import com.xlollx.songport.net.int
 import com.xlollx.songport.net.jsonArr
@@ -97,6 +98,7 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
             durationMs = Durations.parseIso8601(a["duration"].str),
             isrc = a["isrc"].str,
             itemId = itemId,
+            explicit = a["explicit"].bool,
         )
     }
 

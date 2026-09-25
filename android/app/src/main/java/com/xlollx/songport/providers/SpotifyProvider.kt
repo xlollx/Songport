@@ -131,6 +131,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
             durationMs = t["duration_ms"].long ?: 0,
             isrc = t["external_ids"]["isrc"].str,
             uri = t["uri"].str ?: "spotify:track:$tid",
+            explicit = t["explicit"].bool,
         )
     }
 

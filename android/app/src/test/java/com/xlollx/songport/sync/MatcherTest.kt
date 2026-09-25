@@ -1,5 +1,6 @@
 package com.xlollx.songport.sync
 
+import com.xlollx.songport.model.MatchPolicy
 import com.xlollx.songport.model.Track
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -121,5 +122,21 @@ class VersionPenaltyTest {
         assertEquals("a", Matcher.best(src, listOf(single, album))?.id)
         // A different album alone never pushes a clear match below the acceptance threshold.
         assertTrue(Matcher.score(src, single) >= Matcher.REVIEW_THRESHOLD)
+    }
+
+    @Test fun policyPrefersExplicitAndExcludesLiveWhenAsked() {
+        val src = Track("s", "Get Lucky", listOf("Daft Punk"), durationMs = 369000)
+        val clean = Track("c", "Get Lucky", listOf("Daft Punk"), durationMs = 369000, explicit = false)
+        val explicit = Track("e", "Get Lucky", listOf("Daft Punk"), durationMs = 369000, explicit = true)
+        val live = Track("l", "Get Lucky (Live)", listOf("Daft Punk"), durationMs = 369000)
+        assertEquals("e", Matcher.best(src, listOf(clean, explicit), policy = MatchPolicy(explicit = 1))?.id)
+        assertEquals("c", Matcher.best(src, listOf(clean, explicit), policy = MatchPolicy(explicit = -1))?.id)
+        // Without a preference the two are equal; the first stays first.
+        assertEquals("c", Matcher.best(src, listOf(clean, explicit))?.id)
+        // A live version alone still passes normally, and never with "studio only".
+        assertTrue(Matcher.score(src, live) < Matcher.score(src, clean))
+        assertNull(Matcher.best(src, listOf(live), policy = MatchPolicy(studioOnly = true)))
+        assertTrue(MatchPolicy(strictness = 1).acceptThreshold > MatchPolicy().acceptThreshold)
+        assertTrue(MatchPolicy(strictness = -1).reviewThreshold < MatchPolicy().reviewThreshold)
     }
 }

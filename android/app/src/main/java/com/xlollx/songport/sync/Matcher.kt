@@ -1,5 +1,6 @@
 package com.xlollx.songport.sync
 
+import com.xlollx.songport.model.MatchPolicy
 import com.xlollx.songport.model.Track
 import java.text.Normalizer
 import kotlin.math.abs
@@ -150,16 +151,35 @@ object Matcher {
 
     fun norm(t: Track) = Norm(t, normalizeTitle(t.title), t.artists.map { normalizeArtist(it) }.filter { it.isNotEmpty() }, t.isrcNorm)
 
-    fun score(src: Track, cand: Track): Double = scoreN(norm(src), norm(cand))
+    fun score(src: Track, cand: Track, policy: MatchPolicy = MatchPolicy()): Double = scoreN(norm(src), norm(cand), policy)
 
-    fun scoreN(s: Norm, c: Norm): Double {
-        if (s.isrc != null && c.isrc != null && s.isrc == c.isrc) return 1.0
+    fun scoreN(s: Norm, c: Norm, policy: MatchPolicy = MatchPolicy()): Double {
+        if (s.isrc != null && c.isrc != null && s.isrc == c.isrc) return 1.0 * policyFactor(s.track, c.track, policy)
         val title = similarity(s.title, c.title)
         val artist = artistScoreN(s.artists, c.artists)
         val artistKnown = s.artists.isNotEmpty() && c.artists.isNotEmpty()
         val base = if (artistKnown) 0.6 * title + 0.4 * artist else 0.85 * title + 0.15 * artist
         return base * durationFactor(s.track.durationMs, c.track.durationMs) * versionFactor(s.track.title, c.track.title) *
-            albumFactor(s.track.album, c.track.album)
+            albumFactor(s.track.album, c.track.album, policy) * policyFactor(s.track, c.track, policy)
+    }
+
+    /**
+     * Le preferenze della sync sopra le regole di base. Una preferenza (esplicito/pulito) e' un
+     * fattore leggero: fa vincere il candidato giusto fra due, non scarta l'unico che c'e'. "Solo
+     * studio" invece esclude: un live al posto dello studio non passa nemmeno da solo.
+     */
+    fun policyFactor(src: Track, cand: Track, policy: MatchPolicy): Double {
+        var f = 1.0
+        if (policy.explicit != 0 && cand.explicit != null) {
+            val wantExplicit = policy.explicit > 0
+            if (cand.explicit != wantExplicit) f *= 0.9
+        }
+        if (policy.studioOnly) {
+            val neutral = setOf("remaster", "mono", "stereo")
+            val extra = (versionMarkers(cand.title) - neutral) - (versionMarkers(src.title) - neutral)
+            if (extra.isNotEmpty()) f *= 0.3
+        }
+        return f
     }
 
     /**
@@ -168,24 +188,24 @@ object Matcher {
      * degli altri strumenti perche' passa in silenzio. Un piccolo fattore fa preferire il candidato
      * dello stesso album quando ce n'e' uno, e manda al riesame gli abbinamenti gia' al limite.
      */
-    fun albumFactor(srcAlbum: String, candAlbum: String): Double {
+    fun albumFactor(srcAlbum: String, candAlbum: String, policy: MatchPolicy = MatchPolicy()): Double {
         if (srcAlbum.isBlank() || candAlbum.isBlank()) return 1.0
         val a = normalizeTitle(srcAlbum)
         val b = normalizeTitle(candAlbum)
         if (a.isEmpty() || b.isEmpty() || a == b || a.contains(b) || b.contains(a)) return 1.0
-        return 0.97
+        return if (policy.sameAlbum) 0.8 else 0.97
     }
 
-    fun best(src: Track, candidates: List<Track>, threshold: Double = DEFAULT_THRESHOLD): Track? =
-        bestScored(src, candidates, threshold)?.track
+    fun best(src: Track, candidates: List<Track>, threshold: Double = DEFAULT_THRESHOLD, policy: MatchPolicy = MatchPolicy()): Track? =
+        bestScored(src, candidates, threshold, policy)?.track
 
     data class Scored(val track: Track, val score: Double)
 
     /** Come best(), ma con il punteggio: sotto REVIEW_THRESHOLD l'abbinamento va mostrato per conferma. */
-    fun bestScored(src: Track, candidates: List<Track>, threshold: Double = DEFAULT_THRESHOLD): Scored? {
+    fun bestScored(src: Track, candidates: List<Track>, threshold: Double = DEFAULT_THRESHOLD, policy: MatchPolicy = MatchPolicy()): Scored? {
         if (candidates.isEmpty()) return null
         val s = norm(src)
-        val best = candidates.map { Scored(it, scoreN(s, norm(it))) }.maxByOrNull { it.score } ?: return null
+        val best = candidates.map { Scored(it, scoreN(s, norm(it), policy)) }.maxByOrNull { it.score } ?: return null
         return best.takeIf { it.score >= threshold }
     }
 
@@ -205,15 +225,16 @@ object Matcher {
             }
         }
 
-        fun best(src: Track, threshold: Double = EXISTING_THRESHOLD): Track? {
+        fun best(src: Track, threshold: Double = EXISTING_THRESHOLD, policy: MatchPolicy = MatchPolicy()): Track? {
             val s = norm(src)
+            // An identical ISRC already in the target is the same recording, whatever the policy says.
             s.isrc?.let { isrc -> byIsrc[isrc]?.let { return items[it].track } }
             val candIdx = LinkedHashSet<Int>()
             s.title.split(' ').filter { it.isNotEmpty() }.forEach { tok -> byToken[tok]?.let { candIdx.addAll(it) } }
             var bestScore = 0.0
             var best: Track? = null
             for (i in candIdx) {
-                val sc = scoreN(s, items[i])
+                val sc = scoreN(s, items[i], policy)
                 if (sc > bestScore) { bestScore = sc; best = items[i].track }
             }
             return if (bestScore >= threshold) best else null

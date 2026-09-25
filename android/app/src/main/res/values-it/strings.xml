@@ -50,6 +50,21 @@
     <string name="editor_schedule">Esecuzione automatica</string>
     <string name="editor_mirror">Rispecchia le rimozioni</string>
     <string name="editor_mirror_desc">Rimuovi dalla destinazione anche i brani non più presenti nell\'origine. Spento = aggiunge soltanto.</string>
+    <string name="policy_title">Regole di abbinamento</string>
+    <string name="policy_desc">Come si sceglie un brano tra i candidati. Le impostazioni predefinite vanno bene per quasi tutte le sync.</string>
+    <string name="policy_strictness">Severità</string>
+    <string name="policy_loose">Permissiva</string>
+    <string name="policy_normal">Normale</string>
+    <string name="policy_strict">Severa</string>
+    <string name="policy_strictness_desc">Severa accetta meno abbinamenti automatici e ne manda di più al riesame; permissiva il contrario.</string>
+    <string name="policy_explicit">Versioni esplicite</string>
+    <string name="policy_explicit_any">Indifferente</string>
+    <string name="policy_explicit_yes">Preferisci esplicite</string>
+    <string name="policy_explicit_clean">Preferisci pulite</string>
+    <string name="policy_same_album">Stesso album</string>
+    <string name="policy_same_album_desc">Un candidato di un altro album (singolo, raccolta, riedizione) perde molto più terreno.</string>
+    <string name="policy_studio">Solo versioni in studio</string>
+    <string name="policy_studio_desc">Mai una versione live, remix, acustica o karaoke al posto di una che non lo è.</string>
     <string name="editor_wifi_only">Solo Wi‑Fi</string>
     <string name="editor_enabled">Attiva</string>
     <string name="save">Salva</string>

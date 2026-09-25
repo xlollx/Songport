@@ -50,6 +50,21 @@
     <string name="editor_schedule">Programación automática</string>
     <string name="editor_mirror">Replicar eliminaciones</string>
     <string name="editor_mirror_desc">Quita también del destino las canciones que ya no están en el origen. Desactivado = solo añadir.</string>
+    <string name="policy_title">Reglas de coincidencia</string>
+    <string name="policy_desc">Cómo se elige una canción entre los candidatos. Los valores predeterminados sirven para casi todas las sincronizaciones.</string>
+    <string name="policy_strictness">Rigor</string>
+    <string name="policy_loose">Permisivo</string>
+    <string name="policy_normal">Normal</string>
+    <string name="policy_strict">Estricto</string>
+    <string name="policy_strictness_desc">Estricto acepta menos coincidencias automáticas y envía más a revisión; permisivo, lo contrario.</string>
+    <string name="policy_explicit">Versiones explícitas</string>
+    <string name="policy_explicit_any">Indiferente</string>
+    <string name="policy_explicit_yes">Preferir explícitas</string>
+    <string name="policy_explicit_clean">Preferir limpias</string>
+    <string name="policy_same_album">Mismo álbum</string>
+    <string name="policy_same_album_desc">Un candidato de otro álbum (sencillo, recopilatorio, reedición) pierde mucho más terreno.</string>
+    <string name="policy_studio">Solo versiones de estudio</string>
+    <string name="policy_studio_desc">Nunca una versión en vivo, remix, acústica o karaoke en lugar de una que no lo es.</string>
     <string name="editor_wifi_only">Solo Wi‑Fi</string>
     <string name="editor_enabled">Activada</string>
     <string name="save">Guardar</string>

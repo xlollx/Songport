@@ -134,6 +134,7 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
             album = t["album"]["title"].str ?: "",
             durationMs = (t["duration"].long ?: 0) * 1000,
             isrc = t["isrc"].str,
+            explicit = t["explicit_lyrics"].bool,
         )
     }
 

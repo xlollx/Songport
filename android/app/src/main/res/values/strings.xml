@@ -50,6 +50,21 @@
     <string name="editor_schedule">Automatic schedule</string>
     <string name="editor_mirror">Mirror removals</string>
     <string name="editor_mirror_desc">Also remove from the target the tracks no longer in the source. Off = only add.</string>
+    <string name="policy_title">Matching rules</string>
+    <string name="policy_desc">How a track is chosen among the candidates. The defaults suit most syncs.</string>
+    <string name="policy_strictness">Strictness</string>
+    <string name="policy_loose">Loose</string>
+    <string name="policy_normal">Normal</string>
+    <string name="policy_strict">Strict</string>
+    <string name="policy_strictness_desc">Strict accepts fewer automatic matches and sends more to review; loose the opposite.</string>
+    <string name="policy_explicit">Explicit versions</string>
+    <string name="policy_explicit_any">Either</string>
+    <string name="policy_explicit_yes">Prefer explicit</string>
+    <string name="policy_explicit_clean">Prefer clean</string>
+    <string name="policy_same_album">Same album</string>
+    <string name="policy_same_album_desc">A candidate from another album (single, compilation, reissue) loses much more ground.</string>
+    <string name="policy_studio">Studio versions only</string>
+    <string name="policy_studio_desc">Never a live, remix, acoustic or karaoke version in place of one that is not.</string>
     <string name="editor_wifi_only">Wi‑Fi only</string>
     <string name="editor_enabled">Enabled</string>
     <string name="save">Save</string>

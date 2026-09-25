@@ -50,6 +50,21 @@
     <string name="editor_schedule">Planification automatique</string>
     <string name="editor_mirror">Refléter les retraits</string>
     <string name="editor_mirror_desc">Retire aussi de la cible les titres qui ne sont plus dans la source. Désactivé = ajout uniquement.</string>
+    <string name="policy_title">Règles d\'appariement</string>
+    <string name="policy_desc">Comment un titre est choisi parmi les candidats. Les valeurs par défaut conviennent à la plupart des synchros.</string>
+    <string name="policy_strictness">Sévérité</string>
+    <string name="policy_loose">Souple</string>
+    <string name="policy_normal">Normale</string>
+    <string name="policy_strict">Stricte</string>
+    <string name="policy_strictness_desc">Stricte accepte moins d\'appariements automatiques et en envoie plus en relecture ; souple, l\'inverse.</string>
+    <string name="policy_explicit">Versions explicites</string>
+    <string name="policy_explicit_any">Indifférent</string>
+    <string name="policy_explicit_yes">Préférer explicites</string>
+    <string name="policy_explicit_clean">Préférer censurées</string>
+    <string name="policy_same_album">Même album</string>
+    <string name="policy_same_album_desc">Un candidat d\'un autre album (single, compilation, réédition) perd beaucoup plus de terrain.</string>
+    <string name="policy_studio">Versions studio uniquement</string>
+    <string name="policy_studio_desc">Jamais une version live, remix, acoustique ou karaoké à la place d\'une qui ne l\'est pas.</string>
     <string name="editor_wifi_only">Wi‑Fi uniquement</string>
     <string name="editor_enabled">Activée</string>
     <string name="save">Enregistrer</string>

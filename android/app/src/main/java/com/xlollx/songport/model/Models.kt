@@ -22,6 +22,8 @@ data class Track(
      * catalogo giusto.
      */
     val kind: String = "",
+    /** Testo esplicito, dove il servizio lo dice; null = non noto. */
+    val explicit: Boolean? = null,
 ) {
     val artistLine: String get() = artists.joinToString(", ")
     val isrcNorm: String? get() = isrc?.trim()?.uppercase()?.takeIf { it.length >= 10 }
@@ -73,7 +75,29 @@ data class SyncJob(
     val linkedJobId: String? = null,
     /** Playlist scritta dall'AI dell'utente: la descrizione data, per riconoscerla e per allungarla. */
     val aiPrompt: String? = null,
+    val policy: MatchPolicy = MatchPolicy(),
 )
+
+/**
+ * Come una sync sceglie fra i candidati. Le regole di base (ISRC, titolo, artista, durata, versioni)
+ * valgono sempre; queste le stringono o le allargano per chi sa cosa vuole: chi ha una playlist di
+ * versioni esplicite, chi non vuole mai un live al posto dello studio, chi preferisce meno "da
+ * rivedere" e piu' abbinamenti automatici.
+ */
+@Serializable
+data class MatchPolicy(
+    /** -1 permissiva, 0 normale, 1 severa: sposta le soglie di accettazione e di riesame. */
+    val strictness: Int = 0,
+    /** -1 preferisci pulite, 0 indifferente, 1 preferisci esplicite (dove il servizio lo indica). */
+    val explicit: Int = 0,
+    /** Un album diverso pesa molto invece che poco. */
+    val sameAlbum: Boolean = false,
+    /** Mai una versione live/remix/acustica/karaoke al posto di una che non lo e'. */
+    val studioOnly: Boolean = false,
+) {
+    val acceptThreshold: Double get() = 0.70 + 0.08 * strictness
+    val reviewThreshold: Double get() = 0.86 + 0.05 * strictness
+}
 
 /** Un abbinamento trovato con punteggio basso: giusto probabilmente, ma da far confermare. */
 @Serializable

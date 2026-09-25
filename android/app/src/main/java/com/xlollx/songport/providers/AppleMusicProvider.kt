@@ -195,6 +195,7 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
             album = a["albumName"].str ?: "",
             durationMs = a["durationInMillis"].long ?: 0,
             isrc = a["isrc"].str,
+            explicit = a["contentRating"].str?.let { it == "explicit" },
         )
     }
 

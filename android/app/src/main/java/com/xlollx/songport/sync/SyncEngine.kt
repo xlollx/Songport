@@ -5,6 +5,7 @@ import com.xlollx.songport.R
 import com.xlollx.songport.data.Diagnostics
 import com.xlollx.songport.data.Store
 import kotlinx.coroutines.sync.withPermit
+import com.xlollx.songport.model.MatchPolicy
 import com.xlollx.songport.model.MatchReview
 import com.xlollx.songport.model.Progress
 import com.xlollx.songport.model.ProviderException
@@ -160,7 +161,7 @@ class SyncEngine(private val ctx: Context) {
         // 1) brani gia' presenti nella destinazione
         for (s in srcTracks) {
             val key = Store.cacheKey(src.id, s.id, dst.id)
-            val found = store.cachedMatch(src.id, s.id, dst.id)?.let { dstById[it] } ?: index.best(s)
+            val found = store.cachedMatch(src.id, s.id, dst.id)?.let { dstById[it] } ?: index.best(s, policy = job.policy)
             if (found != null) {
                 matchedDstIds += found.id
                 newCache[key] = found.id
@@ -172,7 +173,7 @@ class SyncEngine(private val ctx: Context) {
         val unmatched = ArrayList<Track>()
         val uncertain = ArrayList<MatchReview>()
         var searched = 0
-        val interrupted = searchMissing(src, dst, toSearch, onProgress) { s, found, score ->
+        val interrupted = searchMissing(src, dst, toSearch, job.policy, onProgress) { s, found, score ->
             searched++
             SyncState.item(
                 job.id,
@@ -190,7 +191,7 @@ class SyncEngine(private val ctx: Context) {
                 if (found.id !in matchedDstIds) toAdd[found.id] = found
                 matchedDstIds += found.id
                 newCache[Store.cacheKey(src.id, s.id, dst.id)] = found.id
-                if (score != null && score < Matcher.REVIEW_THRESHOLD) uncertain += MatchReview(s, found, score)
+                if (score != null && score < job.policy.reviewThreshold) uncertain += MatchReview(s, found, score)
                 // Salvataggio progressivo: un errore a meta' strada non butta via le ricerche fatte.
                 if (newCache.size % 100 == 0) store.putMatches(newCache)
             } else unmatched += s
@@ -245,11 +246,11 @@ class SyncEngine(private val ctx: Context) {
         val unmatched = ArrayList<Track>()
         val uncertain = ArrayList<MatchReview>()
         val newCache = HashMap<String, String>()
-        searchMissing(src, dst, srcTracks, onProgress) { s, found, score ->
+        searchMissing(src, dst, srcTracks, job.policy, onProgress) { s, found, score ->
             if (found != null) {
                 toAdd[found.id] = found
                 newCache[Store.cacheKey(src.id, s.id, dst.id)] = found.id
-                if (score != null && score < Matcher.REVIEW_THRESHOLD) uncertain += MatchReview(s, found, score)
+                if (score != null && score < job.policy.reviewThreshold) uncertain += MatchReview(s, found, score)
             } else unmatched += s
         }
         store.putMatches(newCache)
@@ -274,7 +275,7 @@ class SyncEngine(private val ctx: Context) {
     }
 
     private suspend fun searchMissing(
-        src: MusicProvider, dst: MusicProvider, toSearch: List<Track>,
+        src: MusicProvider, dst: MusicProvider, toSearch: List<Track>, policy: MatchPolicy,
         onProgress: (Progress) -> Unit, onResult: (Track, Track?, Double?) -> Unit,
     ): String? {
         val parallel = dst.searchParallelism.coerceIn(1, 8)
@@ -310,7 +311,7 @@ class SyncEngine(private val ctx: Context) {
                             // Slot condivisi fra le sync in corso verso lo stesso servizio: due sync insieme
                             // non raddoppiano la pressione, se la dividono.
                             val slots = searchSlots.getOrPut(dst.id) { kotlinx.coroutines.sync.Semaphore(parallel) }
-                            slots.withPermit { runCatching { searchScored(dst, s) }.map { it?.track to it?.score } }
+                            slots.withPermit { runCatching { searchScored(dst, s, policy) }.map { it?.track to it?.score } }
                         }
                     }
                 }.awaitAll()
@@ -382,11 +383,11 @@ class SyncEngine(private val ctx: Context) {
      * primo artista, poi con il solo titolo: alcuni cataloghi rispondono meglio a query corte, e i
      * candidati sono comunque valutati contro l'artista originale, quindi un omonimo non passa.
      */
-    private suspend fun searchScored(dst: MusicProvider, s: Track): Matcher.Scored? {
+    private suspend fun searchScored(dst: MusicProvider, s: Track, policy: MatchPolicy): Matcher.Scored? {
         var runnerUp: Matcher.Scored? = null
         fun consider(found: List<Track>): Matcher.Scored? {
-            val best = Matcher.bestScored(s, found, 0.0) ?: return null
-            if (best.score >= Matcher.DEFAULT_THRESHOLD) return best
+            val best = Matcher.bestScored(s, found, 0.0, policy) ?: return null
+            if (best.score >= policy.acceptThreshold) return best
             if (best.score > (runnerUp?.score ?: 0.0)) runnerUp = best
             return null
         }
@@ -620,7 +621,7 @@ class SyncEngine(private val ctx: Context) {
      */
     suspend fun searchOnTarget(job: SyncJob, query: String, source: Track? = null): TargetSearch {
         val (_, dst) = providers(job)
-        fun hit(t: Track, kind: TargetSearch.Kind) = TargetSearch.Hit(t, if (source != null) Matcher.score(source, t) else 0.0, kind)
+        fun hit(t: Track, kind: TargetSearch.Kind) = TargetSearch.Hit(t, if (source != null) Matcher.score(source, t, job.policy) else 0.0, kind)
         // Il link del brano incollato: si aggiunge quello, letto dal servizio quando possibile. I link
         // brevi delle app (amzn.eu, spotify.link...) si seguono fino all'indirizzo vero.
         (TrackLinks.parse(query) ?: resolveShortLink(query)?.let { TrackLinks.parse(it) })?.let { ref ->
@@ -633,7 +634,7 @@ class SyncEngine(private val ctx: Context) {
         val (artists, title) = if (kind == Track.KIND_ARTIST) emptyList<String>() to query.trim() else PlaylistFiles.splitArtistTitle(query)
         var songs = dst.search(ctx, Track(id = "", title = title, artists = artists, kind = kind))
         // "Artista - Titolo" senza un candidato convincente: il solo titolo a volte lo trova.
-        fun convincing() = source == null || Matcher.bestScored(source, songs) != null
+        fun convincing() = source == null || Matcher.bestScored(source, songs, policy = job.policy) != null
         if (artists.isNotEmpty() && (songs.isEmpty() || !convincing())) {
             songs = (songs + dst.search(ctx, Track(id = "", title = title, kind = kind))).distinctBy { it.id }
         }

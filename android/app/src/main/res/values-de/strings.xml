@@ -50,6 +50,21 @@
     <string name="editor_schedule">Automatischer Zeitplan</string>
     <string name="editor_mirror">Entfernungen spiegeln</string>
     <string name="editor_mirror_desc">Titel, die nicht mehr in der Quelle sind, auch aus dem Ziel entfernen. Aus = nur hinzufügen.</string>
+    <string name="policy_title">Zuordnungsregeln</string>
+    <string name="policy_desc">Wie ein Titel unter den Kandidaten gewählt wird. Die Voreinstellungen passen für die meisten Syncs.</string>
+    <string name="policy_strictness">Strenge</string>
+    <string name="policy_loose">Locker</string>
+    <string name="policy_normal">Normal</string>
+    <string name="policy_strict">Streng</string>
+    <string name="policy_strictness_desc">Streng akzeptiert weniger automatische Zuordnungen und schickt mehr zur Prüfung; locker das Gegenteil.</string>
+    <string name="policy_explicit">Explizite Versionen</string>
+    <string name="policy_explicit_any">Egal</string>
+    <string name="policy_explicit_yes">Explizit bevorzugen</string>
+    <string name="policy_explicit_clean">Clean bevorzugen</string>
+    <string name="policy_same_album">Gleiches Album</string>
+    <string name="policy_same_album_desc">Ein Kandidat von einem anderen Album (Single, Sampler, Neuauflage) verliert deutlich mehr.</string>
+    <string name="policy_studio">Nur Studioversionen</string>
+    <string name="policy_studio_desc">Niemals eine Live-, Remix-, Akustik- oder Karaoke-Version anstelle einer, die es nicht ist.</string>
     <string name="editor_wifi_only">Nur über WLAN</string>
     <string name="editor_enabled">Aktiviert</string>
     <string name="save">Speichern</string>

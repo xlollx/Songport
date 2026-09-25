@@ -33,6 +33,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -379,6 +381,8 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
     var wifiOnly by remember { mutableStateOf(job.wifiOnly) }
     var enabled by remember { mutableStateOf(job.enabled) }
     var bidirectional by remember { mutableStateOf(job.linkedJobId != null) }
+    var policy by remember { mutableStateOf(job.policy) }
+    var matchingOpen by remember { mutableStateOf(job.policy != com.xlollx.songport.model.MatchPolicy()) }
     var error by remember { mutableStateOf<String?>(null) }
 
     var srcLists by remember { mutableStateOf<Loaded>(Loaded.Loading) }
@@ -497,6 +501,32 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
             SwitchRow(stringResource(R.string.editor_wifi_only), null, wifiOnly) { wifiOnly = it }
             SwitchRow(stringResource(R.string.editor_enabled), null, enabled) { enabled = it }
 
+            // How candidates are chosen: folded, because the defaults suit most syncs.
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { matchingOpen = !matchingOpen }) {
+                Column(Modifier.weight(1f)) {
+                    Text(stringResource(R.string.policy_title), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.policy_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Icon(if (matchingOpen) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            if (matchingOpen) {
+                Text(stringResource(R.string.policy_strictness), style = MaterialTheme.typography.labelLarge)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf(-1 to R.string.policy_loose, 0 to R.string.policy_normal, 1 to R.string.policy_strict).forEach { (v, res) ->
+                        FilterChip(selected = policy.strictness == v, onClick = { policy = policy.copy(strictness = v) }, label = { Text(stringResource(res)) })
+                    }
+                }
+                Text(stringResource(R.string.policy_strictness_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.policy_explicit), style = MaterialTheme.typography.labelLarge)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf(0 to R.string.policy_explicit_any, 1 to R.string.policy_explicit_yes, -1 to R.string.policy_explicit_clean).forEach { (v, res) ->
+                        FilterChip(selected = policy.explicit == v, onClick = { policy = policy.copy(explicit = v) }, label = { Text(stringResource(res)) })
+                    }
+                }
+                SwitchRow(stringResource(R.string.policy_same_album), stringResource(R.string.policy_same_album_desc), policy.sameAlbum) { policy = policy.copy(sameAlbum = it) }
+                SwitchRow(stringResource(R.string.policy_studio), stringResource(R.string.policy_studio_desc), policy.studioOnly) { policy = policy.copy(studioOnly = it) }
+            }
+
             error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.cancel)) }
@@ -516,14 +546,14 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                             name = name.ifBlank { srcName },
                             source = PlaylistRef(srcProvider, sp.id, srcName),
                             target = target,
-                            schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled,
+                            schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
                         )
                         val reverse = if (bidirectional && !createNew && dp != null) SyncJob(
                             id = job.linkedJobId ?: UUID.randomUUID().toString(),
                             name = "${main.name} ↔",
                             source = target,
                             target = PlaylistRef(srcProvider, sp.id, srcName),
-                            schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled,
+                            schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
                             linkedJobId = job.id,
                         ) else null
                         onSave(main.copy(linkedJobId = reverse?.id), reverse)
