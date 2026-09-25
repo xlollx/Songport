@@ -52,6 +52,9 @@ object SpotifyBridge {
 
     fun signedIn(cookies: String?): Boolean = WebSession.cookieValue(cookies, "sp_dc") != null
 
+    /** The bearer was refused (401): the next [token] captures a fresh one. */
+    fun invalidateToken() { cached = null; SpotifyWebClient.dropPage() }
+
     /** A valid access token, from cache or freshly captured. Blocking; never call on the main thread. */
     @Synchronized
     fun token(ctx: Context): Token {
@@ -64,30 +67,18 @@ object SpotifyBridge {
         return t
     }
 
-    /** Fetches display name and id once, for the status screen and for playlist creation. */
-    fun accountInfo(ctx: Context): Pair<String?, String?> {
-        val t = token(ctx)
-        val req = Request.Builder().url("https://api.spotify.com/v1/me").header("Authorization", "Bearer ${t.value}").build()
-        http.newCall(req).execute().use { resp ->
-            val j = parseJson(resp.body?.string() ?: "") as? JsonObject ?: return null to null
-            return j["id"].str to (j["display_name"].str ?: j["id"].str)
-        }
-    }
+    /** Username and display name, from the account page (the Web API refuses this token since December 2025). */
+    fun accountInfo(ctx: Context): Pair<String?, String?> = SpotifyWebClient(ctx.applicationContext).profile()
 
     private val SESSION_SCRIPT = Regex("""<script[^>]*id="session"[^>]*>(.*?)</script>""", RegexOption.DOT_MATCHES_ALL)
     private val TOKEN_URL = Regex("""^(?:https?://open\.spotify\.com)?/(?:api/token|get_access_token)(?:[?#]|$)""")
 
     /** The session block the web player's HTML ships with, fetched with the saved cookies. No WebView. */
     private fun fromHtml(app: Context): Token? {
-        val cookies = session.cookies(app) ?: return null
-        val req = Request.Builder().url("https://open.spotify.com/")
-            .header("User-Agent", USER_AGENT).header("Cookie", cookies).header("Accept", "text/html").build()
-        val html = http.newCall(req).execute().use { if (it.isSuccessful) it.body?.string() else null } ?: return null
-        val json = SESSION_SCRIPT.find(html)?.groupValues?.get(1) ?: return null
-        val j = runCatching { parseJson(json) as? JsonObject }.getOrNull() ?: return null
-        if (j["isAnonymous"]?.toString() == "true") return null
-        val value = j["accessToken"].str ?: return null
-        return Token(value, j["accessTokenExpirationTimestampMs"].long ?: (System.currentTimeMillis() + 50 * 60_000))
+        val p = SpotifyWebClient(app).page()
+        if (p.isAnonymous) return null
+        val value = p.accessToken ?: return null
+        return Token(value, p.expiresAt)
     }
 
     @SuppressLint("SetJavaScriptEnabled", "AddJavascriptInterface")
@@ -111,12 +102,31 @@ object SpotifyBridge {
             }
             @JavascriptInterface
             fun fail(message: String) { if (result == null) error = message }
+            /** A request the player made to its GraphQL gateway: its query hash and client token are kept. */
+            @JavascriptInterface
+            fun seen(json: String) {
+                val j = runCatching { parseJson(json) as? JsonObject }.getOrNull() ?: return
+                val client = SpotifyWebClient(app)
+                val op = j["op"].str; val hash = j["hash"].str
+                if (op != null && hash != null) client.rememberHash(op, hash)
+                j["clientToken"].str?.takeIf { it.isNotBlank() }?.let { client.rememberClientToken(it, System.currentTimeMillis() + 13L * 24 * 3600_000) }
+                j["appVersion"].str?.takeIf { it.isNotBlank() }?.let { session.put(app, "appVersion", it) }
+            }
         }
 
         // The token request, wherever it is made from (page, worker): fetched here with the page's own
         // headers and cookies, answered to the page unchanged, and read on the way.
         fun intercept(request: WebResourceRequest): WebResourceResponse? {
             val url = request.url.toString()
+            // The player's own GraphQL calls carry the client token and version: kept for our calls.
+            if (url.contains("api-partner.spotify.com/pathfinder")) {
+                val h = request.requestHeaders
+                val ct = h.entries.firstOrNull { it.key.equals("client-token", true) }?.value
+                val ver = h.entries.firstOrNull { it.key.equals("spotify-app-version", true) }?.value
+                if (!ct.isNullOrBlank()) SpotifyWebClient(app).rememberClientToken(ct, System.currentTimeMillis() + 13L * 24 * 3600_000)
+                if (!ver.isNullOrBlank()) session.put(app, "appVersion", ver)
+                return null
+            }
             if (!TOKEN_URL.containsMatchIn(url) || request.method != "GET") return null
             return try {
                 val b = Request.Builder().url(url)
@@ -170,18 +180,32 @@ object SpotifyBridge {
         (function(){
           if (window.__spTok) return; window.__spTok = 1;
           var isTok = function(u){ return /^(https?:\/\/open\.spotify\.com)?\/(api\/token|get_access_token)([?#]|$)/.test(String(u||'')); };
+          var isGql = function(u){ return /api-partner\.spotify\.com\/pathfinder/.test(String(u||'')); };
+          var hdr = function(h, name){ try { if (!h) return ''; if (typeof h.get === 'function') return h.get(name) || ''; for (var k in h) { if (String(k).toLowerCase() === name) return h[k]; } } catch(e){} return ''; };
+          var report = function(url, headers, body){
+            try {
+              var op = '', hash = '';
+              var m = /operationName=([A-Za-z0-9_]+)/.exec(url); if (m) op = m[1];
+              var h = /sha256Hash(?:%22|")?(?:%3A|:)(?:%22|")?([0-9a-f]{64})/.exec(url); if (h) hash = h[1];
+              if (body && typeof body === 'string') { try { var b = JSON.parse(body); op = b.operationName || op; hash = (b.extensions && b.extensions.persistedQuery && b.extensions.persistedQuery.sha256Hash) || hash; } catch(e){} }
+              SpBridge.seen(JSON.stringify({op: op, hash: hash, clientToken: hdr(headers, 'client-token'), appVersion: hdr(headers, 'spotify-app-version')}));
+            } catch(e){}
+          };
           var of = window.fetch;
           if (of) window.fetch = function(input, init){
             var url = (typeof input === 'string') ? input : (input && input.url) || '';
+            if (isGql(url)) report(url, (init && init.headers) || (input && input.headers), init && init.body);
             var p = of.apply(this, arguments);
             if (isTok(url)) p.then(function(r){ try { r.clone().text().then(function(t){ SpBridge.token(t); }); } catch(e){} });
             return p;
           };
-          var oo = XMLHttpRequest.prototype.open, os = XMLHttpRequest.prototype.send;
-          XMLHttpRequest.prototype.open = function(m, u){ this.__u = u; return oo.apply(this, arguments); };
+          var oo = XMLHttpRequest.prototype.open, os = XMLHttpRequest.prototype.send, oh = XMLHttpRequest.prototype.setRequestHeader;
+          XMLHttpRequest.prototype.open = function(m, u){ this.__u = u; this.__h = {}; return oo.apply(this, arguments); };
+          XMLHttpRequest.prototype.setRequestHeader = function(k, v){ try { if (this.__h) this.__h[String(k).toLowerCase()] = v; } catch(e){} return oh.apply(this, arguments); };
           XMLHttpRequest.prototype.send = function(b){
             var x = this;
             if (isTok(x.__u)) x.addEventListener('loadend', function(){ try { SpBridge.token(String(x.responseText || '')); } catch(e){} });
+            if (isGql(x.__u)) report(String(x.__u), x.__h, b);
             return os.apply(this, arguments);
           };
         })();

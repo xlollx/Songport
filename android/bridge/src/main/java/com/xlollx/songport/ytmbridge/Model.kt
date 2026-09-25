@@ -4,7 +4,12 @@ import kotlinx.serialization.Serializable
 
 /** What crosses the process boundary to Songport. Field names are the contract: do not rename. */
 @Serializable
-data class PlaylistDto(val id: String, val name: String, val count: Int = -1)
+data class PlaylistDto(
+    val id: String, val name: String, val count: Int = -1,
+    /** False for a playlist followed from someone else: readable, not writable. */
+    val owned: Boolean = true,
+    val description: String = "",
+)
 
 @Serializable
 data class TrackDto(
@@ -15,6 +20,13 @@ data class TrackDto(
     val durationMs: Long = 0,
     /** Id of the entry inside the playlist: needed to remove it. */
     val setVideoId: String? = null,
+    /** Native uri (Spotify), when the id alone is not what the service wants back. */
+    val uri: String? = null,
+    val explicit: Boolean? = null,
+    val addedAt: Long? = null,
+    /** "album" or "artist" for library objects; null for a track. */
+    val kind: String? = null,
+    val year: Int? = null,
 )
 
 @Serializable

@@ -97,6 +97,45 @@ object BridgeCore {
                     putInt("version", VERSION)
                 }
                 "spotify.disconnect" -> { SpotifyBridge.session.clear(ctx); Bundle() }
+                "spotify.playlists" -> ok(json.encodeToString(SpotifyWebClient(ctx).libraryPlaylists()))
+                "spotify.playlistInfo" -> ok(json.encodeToString(SpotifyWebClient(ctx).playlistInfo(arg ?: return err("missing playlist id"))))
+                "spotify.tracks" -> {
+                    val id = arg ?: return err("missing playlist id")
+                    val offset = extras?.getInt("offset") ?: 0
+                    val all = cachedSpotifyTracks(ctx, id)
+                    val page = all.drop(offset).take(PAGE)
+                    Bundle().apply {
+                        putString("json", json.encodeToString(page))
+                        putInt("total", all.size)
+                        if (offset + PAGE < all.size) putInt("next", offset + PAGE)
+                    }
+                }
+                "spotify.search" -> ok(json.encodeToString(SpotifyWebClient(ctx).search(arg ?: "", extras?.getString("kind"))))
+                "spotify.track" -> ok(json.encodeToString(SpotifyWebClient(ctx).track(arg ?: return err("missing track id"))))
+                "spotify.create" -> ok(json.encodeToString(SpotifyWebClient(ctx).createPlaylist(extras?.getString("name") ?: "Playlist", extras?.getString("description") ?: "")))
+                "spotify.add" -> {
+                    val id = arg ?: return err("missing playlist id")
+                    val uris = extras?.getStringArray("uris")?.toList() ?: emptyList()
+                    val c = SpotifyWebClient(ctx)
+                    when (id) {
+                        "__liked__", "__albums__", "__artists__" -> c.addToLibrary(uris)
+                        else -> c.addToPlaylist(id, uris)
+                    }
+                    invalidateSpotify(id)
+                    Bundle()
+                }
+                "spotify.remove" -> {
+                    val id = arg ?: return err("missing playlist id")
+                    val c = SpotifyWebClient(ctx)
+                    when (id) {
+                        "__liked__", "__albums__", "__artists__" -> c.removeFromLibrary(extras?.getStringArray("uris")?.toList() ?: emptyList())
+                        else -> c.removeFromPlaylist(id, json.decodeFromString<List<RemoveItem>>(extras?.getString("json") ?: "[]"))
+                    }
+                    invalidateSpotify(id)
+                    Bundle()
+                }
+                "spotify.rename" -> { SpotifyWebClient(ctx).renamePlaylist(arg ?: return err("missing playlist id"), extras?.getString("name") ?: ""); Bundle() }
+                "spotify.delete" -> { SpotifyWebClient(ctx).deletePlaylist(arg ?: return err("missing playlist id")); invalidateSpotify(arg); Bundle() }
                 "spotify.token" -> {
                     val t = SpotifyBridge.token(ctx)
                     if (SpotifyBridge.session.get(ctx, "userId") == null) runCatching {
@@ -147,6 +186,26 @@ object BridgeCore {
 
     @Synchronized
     private fun invalidate(id: String) { if (lastTracks?.first == id) lastTracks = null }
+
+    private var lastSpotify: Triple<String, Long, List<TrackDto>>? = null
+
+    @Synchronized
+    private fun cachedSpotifyTracks(ctx: Context, id: String): List<TrackDto> {
+        val now = System.currentTimeMillis()
+        lastSpotify?.let { (pid, at, list) -> if (pid == id && now - at < 120_000) return list }
+        val c = SpotifyWebClient(ctx)
+        val list = when (id) {
+            "__liked__" -> c.likedTracks()
+            "__albums__" -> c.libraryItems("album")
+            "__artists__" -> c.libraryItems("artist")
+            else -> c.playlistTracks(id)
+        }
+        lastSpotify = Triple(id, now, list)
+        return list
+    }
+
+    @Synchronized
+    private fun invalidateSpotify(id: String) { if (lastSpotify?.first == id) lastSpotify = null }
 
     private fun ok(jsonText: String) = Bundle().apply { putString("json", jsonText) }
     private fun err(message: String) = Bundle().apply { putString("error", message) }

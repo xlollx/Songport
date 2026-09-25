@@ -676,7 +676,13 @@ private fun LinkImportField(onResolved: (String, Playlist) -> Unit) {
                 enabled = !busy && text.isNotBlank(),
                 onClick = {
                     val ref = PlaylistLinks.parse(text)
-                    val provider = ref?.let { Providers.byId(it.providerId) }
+                    // A Spotify link opens with whichever Spotify route is connected, web or official.
+                    val provider = ref?.let { r ->
+                        val named = Providers.byId(r.providerId)
+                        named?.takeIf { it.canRead(ctx, r.playlistId) }
+                            ?: Providers.connectors().firstOrNull { it.familyName == named?.familyName && it.canRead(ctx, r.playlistId) }
+                            ?: named
+                    }
                     if (ref == null || provider == null) {
                         error = ctx.getString(R.string.link_invalid)
                     } else if (!provider.canRead(ctx, ref.playlistId)) {

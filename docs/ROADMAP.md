@@ -34,6 +34,8 @@ quota meter; own API keys to escape shared quotas.
 - "Extend with AI" on any playlist in the playlist manager: description or the spirit of what is
   there, review, then only what the service has is added.
 - Connections log in Settings › Security, and a plain "where does the key go?" in the AI setup.
+- Spotify without Premium: the web route now talks to the player's own backend (GraphQL gateway,
+  playlist store), since Spotify refuses first-party tokens on the public Web API (December 2025).
 - YouTube Music already pauses on Google's abuse page with a doubling wait and a "verify" button;
   song results are preferred and videos are only a fallback.
 
