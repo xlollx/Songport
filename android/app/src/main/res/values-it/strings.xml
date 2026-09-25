@@ -538,6 +538,7 @@
     <string name="editor_bidirectional">Bidirezionale</string>
     <string name="editor_bidirectional_desc">Crea anche la sync gemella nella direzione opposta, senza rimozioni, così entrambe le playlist restano complete.</string>
     <string name="editor_bidirectional_unavailable">Disponibile con una playlist di destinazione esistente e un\'origine scrivibile.</string>
+    <string name="editor_bidirectional_not_owned">Non con un link pubblico o una playlist di altri come origine: si può leggere, non scrivere.</string>
     <string name="onboarding_title">Benvenuto in Songport</string>
     <string name="onboarding_intro">Tieni le tue playlist uguali su tutti i servizi musicali, a mano o su pianificazione. Gratis, senza abbonamento, senza account da creare.</string>
     <string name="onboarding_step1_title">1. Collega i tuoi servizi</string>

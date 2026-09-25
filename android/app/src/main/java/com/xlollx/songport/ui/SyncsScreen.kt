@@ -484,7 +484,9 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
             }
             // Bidirezionale: crea la sync gemella al contrario, senza rimozioni (niente cancellazioni a ping-pong).
             val srcObj = Providers.byId(srcProvider)
-            val biAllowed = !createNew && srcObj?.canWrite == true &&
+            // A public link or someone else's playlist can be read, not written: nothing to send back to.
+            val srcOwned = srcPlaylist?.ownedByMe == true && srcObj?.isConnected(ctx) == true
+            val biAllowed = !createNew && srcObj?.canWrite == true && srcOwned &&
                 srcObj.supportsLibrary(srcPlaylist?.id, asTarget = true) &&
                 dstObj?.supportsLibrary(dstPlaylist?.id, asTarget = false) == true
             if (!biAllowed && bidirectional) bidirectional = false
@@ -492,7 +494,13 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                 Column(Modifier.weight(1f)) {
                     Text(stringResource(R.string.editor_bidirectional))
                     Text(
-                        stringResource(if (biAllowed) R.string.editor_bidirectional_desc else R.string.editor_bidirectional_unavailable),
+                        stringResource(
+                            when {
+                                biAllowed -> R.string.editor_bidirectional_desc
+                                srcPlaylist != null && !srcOwned -> R.string.editor_bidirectional_not_owned
+                                else -> R.string.editor_bidirectional_unavailable
+                            },
+                        ),
                         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
@@ -678,7 +686,7 @@ private fun LinkImportField(onResolved: (String, Playlist) -> Unit) {
                         busy = true
                         scope.launch {
                             val info = runCatching { provider.playlistInfo(ctx, ref.playlistId) }
-                                .getOrElse { Playlist(ref.playlistId, provider.displayName) }
+                                .getOrElse { Playlist(ref.playlistId, provider.displayName, ownedByMe = false) }
                             busy = false
                             text = ""
                             onResolved(provider.id, info)

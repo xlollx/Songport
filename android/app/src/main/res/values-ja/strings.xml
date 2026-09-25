@@ -533,6 +533,7 @@
     <string name="editor_bidirectional">双方向</string>
     <string name="editor_bidirectional_desc">逆方向のミラー同期（削除なし）も作成し、両方のプレイリストにすべての曲がそろうようにします。</string>
     <string name="editor_bidirectional_unavailable">既存の同期先プレイリストと書き込み可能な同期元がある場合に利用できます。</string>
+    <string name="editor_bidirectional_not_owned">公開リンクや他人のプレイリストを元にする場合は使えません。読み取りはできても書き込みはできません。</string>
     <string name="onboarding_title">Songport へようこそ</string>
     <string name="onboarding_intro">音楽サービス間でプレイリストを同じ内容に保ちます。手動でも、スケジュールでも。無料で、サブスクリプションもアカウント作成も不要です。</string>
     <string name="onboarding_step1_title">1. サービスを接続</string>

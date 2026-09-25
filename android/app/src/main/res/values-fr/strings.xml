@@ -538,6 +538,7 @@
     <string name="editor_bidirectional">Bidirectionnelle</string>
     <string name="editor_bidirectional_desc">Crée aussi la sync miroir dans l\'autre sens, sans retraits, pour que les deux playlists restent complètes.</string>
     <string name="editor_bidirectional_unavailable">Disponible avec une playlist cible existante et une source modifiable.</string>
+    <string name="editor_bidirectional_not_owned">Pas avec un lien public ou la playlist de quelqu\'un d\'autre comme source : on peut la lire, pas y écrire.</string>
     <string name="onboarding_title">Bienvenue dans Songport</string>
     <string name="onboarding_intro">Gardez vos playlists identiques d\'un service musical à l\'autre, à la main ou selon un planning. Gratuit, sans abonnement, sans compte à créer.</string>
     <string name="onboarding_step1_title">1. Connectez vos services</string>

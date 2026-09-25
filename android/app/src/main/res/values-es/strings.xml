@@ -538,6 +538,7 @@
     <string name="editor_bidirectional">Bidireccional</string>
     <string name="editor_bidirectional_desc">Crea también la sincronización espejo en sentido contrario, sin eliminaciones, para que las dos playlists sigan completas.</string>
     <string name="editor_bidirectional_unavailable">Disponible con una playlist de destino existente y un origen en el que se pueda escribir.</string>
+    <string name="editor_bidirectional_not_owned">No con un enlace público o una lista de otra persona como origen: se puede leer, no escribir.</string>
     <string name="onboarding_title">Te damos la bienvenida a Songport</string>
     <string name="onboarding_intro">Mantén tus playlists idénticas en todos tus servicios de música, a mano o de forma programada. Gratis, sin suscripción y sin cuentas que crear.</string>
     <string name="onboarding_step1_title">1. Conecta tus servicios</string>

@@ -538,6 +538,7 @@
     <string name="editor_bidirectional">Beidseitig</string>
     <string name="editor_bidirectional_desc">Erstellt zusätzlich den gespiegelten Sync in die Gegenrichtung, ohne Entfernungen, damit beide Playlists vollständig bleiben.</string>
     <string name="editor_bidirectional_unavailable">Verfügbar mit einer bestehenden Ziel-Playlist und einer beschreibbaren Quelle.</string>
+    <string name="editor_bidirectional_not_owned">Nicht mit einem öffentlichen Link oder einer fremden Playlist als Quelle: sie lässt sich lesen, nicht beschreiben.</string>
     <string name="onboarding_title">Willkommen bei Songport</string>
     <string name="onboarding_intro">Halte deine Playlists über alle Musikdienste hinweg identisch, von Hand oder nach Zeitplan. Kostenlos, kein Abo, kein Konto anzulegen.</string>
     <string name="onboarding_step1_title">1. Verbinde deine Dienste</string>

@@ -533,6 +533,7 @@
     <string name="editor_bidirectional">双向</string>
     <string name="editor_bidirectional_desc">同时创建反方向的镜像同步（不移除歌曲），让两个歌单都保持完整。</string>
     <string name="editor_bidirectional_unavailable">需要已有的目标歌单和可写入的来源。</string>
+    <string name="editor_bidirectional_not_owned">来源是公开链接或他人的歌单时不可用：只能读取，不能写入。</string>
     <string name="onboarding_title">欢迎使用 Songport</string>
     <string name="onboarding_intro">让你的歌单在各音乐服务之间保持一致，可手动同步，也可按计划同步。免费，无订阅，无需创建账号。</string>
     <string name="onboarding_step1_title">1. 连接你的服务</string>

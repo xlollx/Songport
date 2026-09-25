@@ -539,6 +539,7 @@
     <string name="editor_bidirectional">Two-way</string>
     <string name="editor_bidirectional_desc">Also creates the mirror sync in the opposite direction, without removals, so both playlists stay complete.</string>
     <string name="editor_bidirectional_unavailable">Available with an existing target playlist and a writable source.</string>
+    <string name="editor_bidirectional_not_owned">Not with a public link or someone else\'s playlist as source: it can be read, not written.</string>
     <string name="onboarding_title">Welcome to Songport</string>
     <string name="onboarding_intro">Keep your playlists identical across music services, by hand or on a schedule. Free, no subscription, no account to create.</string>
     <string name="onboarding_step1_title">1. Connect your services</string>
