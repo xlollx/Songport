@@ -158,7 +158,22 @@ object Matcher {
         val artist = artistScoreN(s.artists, c.artists)
         val artistKnown = s.artists.isNotEmpty() && c.artists.isNotEmpty()
         val base = if (artistKnown) 0.6 * title + 0.4 * artist else 0.85 * title + 0.15 * artist
-        return base * durationFactor(s.track.durationMs, c.track.durationMs) * versionFactor(s.track.title, c.track.title)
+        return base * durationFactor(s.track.durationMs, c.track.durationMs) * versionFactor(s.track.title, c.track.title) *
+            albumFactor(s.track.album, c.track.album)
+    }
+
+    /**
+     * Stesso titolo e artista ma album diverso (singolo contro album, riedizione, compilation): quasi
+     * sempre e' la stessa registrazione, ma non sempre, ed e' il cambio piu' lamentato dagli utenti
+     * degli altri strumenti perche' passa in silenzio. Un piccolo fattore fa preferire il candidato
+     * dello stesso album quando ce n'e' uno, e manda al riesame gli abbinamenti gia' al limite.
+     */
+    fun albumFactor(srcAlbum: String, candAlbum: String): Double {
+        if (srcAlbum.isBlank() || candAlbum.isBlank()) return 1.0
+        val a = normalizeTitle(srcAlbum)
+        val b = normalizeTitle(candAlbum)
+        if (a.isEmpty() || b.isEmpty() || a == b || a.contains(b) || b.contains(a)) return 1.0
+        return 0.97
     }
 
     fun best(src: Track, candidates: List<Track>, threshold: Double = DEFAULT_THRESHOLD): Track? =

@@ -69,6 +69,7 @@ that is exactly what to report.
 - [Contributing](#contributing)
 - [License, copyright and trademark](#license-copyright-and-trademark)
 - [Known limits](#known-limits)
+- [Roadmap](docs/ROADMAP.md)
 
 ---
 

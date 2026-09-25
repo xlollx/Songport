@@ -1,5 +1,6 @@
 package com.xlollx.songport.ui
 
+import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -87,6 +89,28 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
             TopAppBar(
                 title = { Text(stringResource(R.string.review_title, report?.jobName ?: "")) },
                 navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
+                actions = {
+                    // The list as text, to keep or send: what was not found and what was matched loosely.
+                    if (report != null && (report.unmatchedTracks.isNotEmpty() || report.reviewTracks.isNotEmpty())) {
+                        IconButton(onClick = {
+                            val text = buildString {
+                                append(ctx.getString(R.string.review_title, report.jobName)).append('\n')
+                                append(ctx.getString(R.string.review_summary, report.unmatchedTracks.size, report.reviewTracks.size)).append("\n\n")
+                                if (report.unmatchedTracks.isNotEmpty()) {
+                                    append(ctx.getString(R.string.review_section_unmatched, report.unmatchedTracks.size)).append('\n')
+                                    report.unmatchedTracks.forEach { t -> append("- ").append(t.toString()); if (t.album.isNotBlank()) append(" · ").append(t.album); append('\n') }
+                                    append('\n')
+                                }
+                                if (report.reviewTracks.isNotEmpty()) {
+                                    append(ctx.getString(R.string.review_section_uncertain, report.reviewTracks.size)).append('\n')
+                                    report.reviewTracks.forEach { r -> append("- ").append(r.source.toString()).append(" → ").append(r.chosen.toString()).append(" (").append((r.score * 100).toInt()).append("%)\n") }
+                                }
+                            }
+                            val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text).putExtra(Intent.EXTRA_SUBJECT, ctx.getString(R.string.review_title, report.jobName))
+                            runCatching { ctx.startActivity(Intent.createChooser(send, null)) }
+                        }) { Icon(Icons.Filled.Share, stringResource(R.string.review_share)) }
+                    }
+                },
             )
         },
     ) { padding ->

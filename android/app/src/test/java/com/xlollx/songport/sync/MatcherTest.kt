@@ -110,4 +110,16 @@ class VersionPenaltyTest {
         val studio = t("Hotel California", "Eagles")
         assertTrue(Matcher.score(src, live) > Matcher.score(src, studio))
     }
+
+    @Test fun sameAlbumWinsTheTieAndOtherAlbumsCostLittle() {
+        val src = Track("s", "Get Lucky", listOf("Daft Punk"), "Random Access Memories", 369000)
+        val album = Track("a", "Get Lucky", listOf("Daft Punk"), "Random Access Memories (Deluxe)", 369000)
+        val single = Track("b", "Get Lucky", listOf("Daft Punk"), "Get Lucky", 369000)
+        assertEquals(1.0, Matcher.albumFactor(src.album, album.album), 0.0)
+        assertEquals(0.97, Matcher.albumFactor(src.album, single.album), 0.0)
+        assertEquals(1.0, Matcher.albumFactor("", single.album), 0.0)
+        assertEquals("a", Matcher.best(src, listOf(single, album))?.id)
+        // A different album alone never pushes a clear match below the acceptance threshold.
+        assertTrue(Matcher.score(src, single) >= Matcher.REVIEW_THRESHOLD)
+    }
 }

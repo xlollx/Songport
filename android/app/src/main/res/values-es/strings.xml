@@ -137,6 +137,8 @@
     <string name="link_resolving">Leyendo la playlist…</string>
     <string name="note_no_removals">%1$s no permite quitar canciones de una playlist a través de su API: %2$d canciones se quedaron donde estaban.</string>
     <string name="note_removals_deferred">Eliminaciones aplazadas: la búsqueda no se completó, así que %1$d canciones del destino que aún no coincidían con nada se dejaron donde estaban. Se revisarán cuando una ejecución termine por completo.</string>
+    <string name="note_removals_capped">Eliminaciones retenidas: esta ejecución quitaría %1$d de las %2$d canciones del destino, más de lo que una sincronización programada quita por sí sola. Mira la vista previa o ejecuta la sincronización a mano para confirmar.</string>
+    <string name="review_share">Compartir la lista</string>
     <string name="note_search_interrupted">Se buscaron %1$d de %2$d canciones y luego el servicio pidió una pausa más larga (%3$s). Es un límite del servicio, no un error de Songport: lo encontrado ya se aplicó y queda guardado. Vuelve a ejecutar la sincronización en unos minutos para seguir desde ahí.</string>
     <string name="error_no_removals">%1$s no puede quitar canciones de una playlist</string>
     <string name="log_notes_title">Notas</string>

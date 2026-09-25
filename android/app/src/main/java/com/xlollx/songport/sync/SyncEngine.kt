@@ -69,11 +69,11 @@ class SyncEngine(private val ctx: Context) {
     /** Best candidate under the threshold per source track searched in this run: the review's proposals. */
     private val hints = java.util.concurrent.ConcurrentHashMap<String, Track>()
 
-    suspend fun run(job: SyncJob, onProgress: (Progress) -> Unit = {}): SyncReport {
+    suspend fun run(job: SyncJob, onProgress: (Progress) -> Unit = {}, unattended: Boolean = false): SyncReport {
         val started = System.currentTimeMillis()
         val reportId = UUID.randomUUID().toString()
         val report = try {
-            val plan = plan(job, onProgress)
+            val plan = plan(job, onProgress, unattended = unattended)
             // La ricerca e' finita: i brani non trovati e gli abbinamenti incerti si possono gia'
             // sistemare mentre l'aggiunta procede. Un report provvisorio li rende raggiungibili.
             if (plan.unmatched.isNotEmpty() || plan.uncertain.isNotEmpty()) {
@@ -100,6 +100,9 @@ class SyncEngine(private val ctx: Context) {
         return report
     }
 
+    /** Below this many removals a scheduled run proceeds whatever the share of the target they are. */
+    private val REMOVAL_CAP_MIN = 10
+
     private fun providers(job: SyncJob): Pair<MusicProvider, MusicProvider> {
         val src = Providers.byId(job.source.provider) ?: throw ProviderException("Unknown service: ${job.source.provider}")
         val dst = Providers.byId(job.target.provider) ?: throw ProviderException("Unknown service: ${job.target.provider}")
@@ -107,7 +110,7 @@ class SyncEngine(private val ctx: Context) {
     }
 
     /** Calcola cosa farebbe la sync senza modificare nulla (a parte creare la destinazione se manca). */
-    suspend fun plan(job: SyncJob, onProgress: (Progress) -> Unit = {}, createTarget: Boolean = true): SyncPlan {
+    suspend fun plan(job: SyncJob, onProgress: (Progress) -> Unit = {}, createTarget: Boolean = true, unattended: Boolean = false): SyncPlan {
         val (src, dst) = providers(job)
         val srcPlaylistId = job.source.playlistId ?: throw ProviderException("No source playlist selected")
         // L'origine puo' essere una playlist pubblica leggibile senza login (catalogo Apple Music).
@@ -204,6 +207,10 @@ class SyncEngine(private val ctx: Context) {
                 !dst.canRemoveTracks -> if (extra.isNotEmpty()) notes += ctx.getString(R.string.note_no_removals, dst.displayName, extra.size)
                 // Origine vuota: quasi certamente un errore, non svuotiamo la destinazione.
                 srcTracks.isEmpty() -> notes += ctx.getString(R.string.error_source_empty)
+                // Una sync programmata che toglierebbe un quarto della destinazione (una playlist
+                // svuotata per sbaglio, un account cambiato): si aspetta che l'utente lo veda.
+                unattended && extra.size > REMOVAL_CAP_MIN && extra.size * 4 > dstTracks.size ->
+                    notes += ctx.getString(R.string.note_removals_capped, extra.size, dstTracks.size)
                 else -> toRemove = extra
             }
         }
@@ -477,7 +484,10 @@ class SyncEngine(private val ctx: Context) {
             // brani invece di restare fermo per minuti.
             val chunkSize = if (targetId == MusicProvider.LIKED_ID) 10 else 50
             var blockWaits = 0
-            for (chunk in plan.toAdd.chunked(chunkSize)) {
+            // I "brani preferiti" mostrano per primo l'ultimo aggiunto: si aggiunge dall'ultimo al primo,
+            // cosi' l'ordine dell'origine (il piu' recente in cima) si ritrova uguale nella destinazione.
+            val additions = if (targetId == MusicProvider.LIKED_ID) plan.toAdd.asReversed() else plan.toAdd
+            for (chunk in additions.chunked(chunkSize)) {
                 // Cosa si sta aggiungendo adesso, in scheda e nella vista dal vivo, come per la ricerca.
                 onProgress(Progress(Progress.Step.ADDING, added, plan.toAdd.size, chunk.first().live()))
                 while (true) {

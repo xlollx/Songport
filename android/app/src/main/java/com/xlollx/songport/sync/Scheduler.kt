@@ -106,7 +106,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
             Diagnostics.log(ctx, "sync", "start ${job.name} (${if (scheduled) "scheduled" else "manual"})")
             try {
                 val report = try {
-                    engine.run(job) { p ->
+                    engine.run(job, unattended = scheduled) { p ->
                         SyncState.progress(job.id, p)
                         if (!scheduled) updateProgress(job, p)
                         // Pausa o stop chiesti dall'utente: qui, fra un passo e l'altro. L'attesa imposta
