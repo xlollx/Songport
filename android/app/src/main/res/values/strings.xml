@@ -245,6 +245,8 @@
     <string name="spotify_forbidden">Spotify refused the request (%1$s). Apps in Development Mode cannot read playlists made by Spotify itself (Discover Weekly, Release Radar, editorial mixes) and only serve accounts listed in the app\'s User Management. Pick a playlist you or another user created, or add the account on developer.spotify.com.</string>
     <string name="spotify_scope_reconnect">Spotify refused the request (%1$s): this permission was added after you connected. Reconnect Spotify in Accounts and it will be granted.</string>
     <string name="spotify_premium_required">Spotify refused the request: the account that created the key has no active Premium, and since February 2026 Spotify switches a developer app off without it (after a subscription change it can take a few hours). Use the "Spotify (web)" route instead, or a key created by a Premium account that lists you among its users.</string>
+    <string name="spotify_rate_limited">Spotify is asking to slow down: too many requests in a short time. Try again in %1$s.</string>
+    <string name="in_a_few_minutes">a few minutes</string>
     <string name="tools_export_title">Export a playlist</string>
     <string name="tools_export_desc">Save any playlist of this service as a file on your phone (CSV, M3U, XSPF, JSPF or plain text), without changing anything on the service.</string>
     <string name="tools_export_done">%1$d tracks exported</string>

@@ -45,6 +45,9 @@ object SpotifyBridge {
     class Token(val value: String, val expiresAt: Long)
 
     @Volatile private var cached: Token? = null
+    /** The last failed capture and its reason: within [FAIL_COOLDOWN_MS] the same answer is given without loading the player again. */
+    @Volatile private var lastFailure: Pair<Long, String>? = null
+    private const val FAIL_COOLDOWN_MS = 20_000L
     private val http = OkHttpClient.Builder().connectTimeout(20, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).withHook().build()
 
     fun signedIn(cookies: String?): Boolean = WebSession.cookieValue(cookies, "sp_dc") != null
@@ -54,7 +57,9 @@ object SpotifyBridge {
     fun token(ctx: Context): Token {
         if (!session.isConnected(ctx)) throw BridgeException("not connected")
         cached?.takeIf { it.expiresAt - 90_000 > System.currentTimeMillis() }?.let { return it }
-        val t = capture(ctx.applicationContext)
+        lastFailure?.let { (at, why) -> if (System.currentTimeMillis() - at < FAIL_COOLDOWN_MS) throw BridgeException(why) }
+        val t = try { capture(ctx.applicationContext) } catch (e: BridgeException) { lastFailure = System.currentTimeMillis() to (e.message ?: "no token"); throw e }
+        lastFailure = null
         cached = t
         return t
     }

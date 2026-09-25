@@ -75,6 +75,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     // Da novembre 2024 le app in Development Mode non possono leggere le playlist create da Spotify
     // (Discover Weekly, Release Radar, mix editoriali): la risposta e' un 403 senza spiegazioni.
     override fun friendlyApiError(ctx: Context, resp: HttpResponse): String? {
+        if (resp.code == 429) return rateLimited(ctx, resp)
         if (resp.code != 403) return null
         val msg = errorMessage(resp).ifBlank { "403" }
         return when {
@@ -84,6 +85,22 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
             msg.contains("scope", ignoreCase = true) -> ctx.getString(R.string.spotify_scope_reconnect, msg)
             else -> ctx.getString(R.string.spotify_forbidden, msg)
         }
+    }
+
+    /**
+     * 429 after the shared client's retries: Spotify wants a pause, and says how long in Retry-After
+     * (seconds, sometimes hours). The tail "(429, retry in N s)" is what the sync engine reads to wait
+     * exactly that long instead of giving up.
+     */
+    protected fun rateLimited(ctx: Context, resp: HttpResponse): String {
+        val secs = resp.header("Retry-After")?.trim()?.toLongOrNull()
+        val human = when {
+            secs == null -> ctx.getString(R.string.in_a_few_minutes)
+            secs < 90 -> "$secs s"
+            secs < 5400 -> "${(secs + 59) / 60} min"
+            else -> "${(secs + 3599) / 3600} h"
+        }
+        return ctx.getString(R.string.spotify_rate_limited, human) + (secs?.let { " (429, retry in $it s)" } ?: " (429)")
     }
 
     override suspend fun playlists(ctx: Context): List<Playlist> {

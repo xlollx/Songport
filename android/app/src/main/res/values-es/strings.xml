@@ -245,6 +245,8 @@
     <string name="spotify_forbidden">Spotify rechazó la solicitud (%1$s). Las apps en Development Mode no pueden leer playlists creadas por el propio Spotify (Discover Weekly, Release Radar, mixes editoriales) y solo admiten las cuentas que figuran en el User Management de la app. Elige una playlist creada por ti o por otro usuario, o añade la cuenta en developer.spotify.com.</string>
     <string name="spotify_scope_reconnect">Spotify rechazó la solicitud (%1$s): este permiso se añadió después de que te conectaras. Vuelve a conectar Spotify en Cuentas y se concederá.</string>
     <string name="spotify_premium_required">Spotify rechazó la solicitud: la cuenta que creó la clave no tiene Premium activo, y desde febrero de 2026 Spotify apaga la app de desarrollador sin Premium (tras un cambio de suscripción puede tardar unas horas). Usa la vía «Spotify (web)», o una clave creada por una cuenta Premium que te incluya entre sus usuarios.</string>
+    <string name="spotify_rate_limited">Spotify pide ir más despacio: demasiadas solicitudes en poco tiempo. Vuelve a intentarlo en %1$s.</string>
+    <string name="in_a_few_minutes">unos minutos</string>
     <string name="tools_export_title">Exportar una playlist</string>
     <string name="tools_export_desc">Guarda cualquier playlist de este servicio como archivo en tu teléfono (CSV, M3U, XSPF, JSPF o texto sin formato), sin cambiar nada en el servicio.</string>
     <string name="tools_export_done">%1$d canciones exportadas</string>

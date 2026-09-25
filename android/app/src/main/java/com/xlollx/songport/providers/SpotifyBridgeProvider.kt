@@ -64,8 +64,10 @@ class SpotifyBridgeProvider(slot: String = "") : SpotifyProvider(slot) {
         )
     }
 
-    // The 403 explanation of the official route (developer mode, own key) does not apply here.
-    override fun friendlyApiError(ctx: Context, resp: HttpResponse): String? = null
+    // The 403 explanation of the official route (developer mode, own key) does not apply here; a
+    // rate limit is the same on both routes.
+    override fun friendlyApiError(ctx: Context, resp: HttpResponse): String? =
+        if (resp.code == 429) rateLimited(ctx, resp) else null
 
     private fun call(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
         if (!BridgePlugin.installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))

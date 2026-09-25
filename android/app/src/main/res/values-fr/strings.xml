@@ -245,6 +245,8 @@
     <string name="spotify_forbidden">Spotify a refusé la requête (%1$s). Les applications en mode Développement ne peuvent pas lire les playlists créées par Spotify lui-même (Discover Weekly, Radar des sorties, mix éditoriaux) et n\'acceptent que les comptes listés dans la User Management de l\'application. Choisissez une playlist créée par vous ou par un autre utilisateur, ou ajoutez le compte sur developer.spotify.com.</string>
     <string name="spotify_scope_reconnect">Spotify a refusé la requête (%1$s) : cette permission a été ajoutée après votre connexion. Reconnectez Spotify dans Comptes et elle sera accordée.</string>
     <string name="spotify_premium_required">Spotify a refusé la requête : le compte qui a créé la clé n\'a pas de Premium actif, et depuis février 2026 Spotify désactive l\'app développeur sans Premium (après un changement d\'abonnement, cela peut prendre quelques heures). Utilisez la voie « Spotify (web) », ou une clé créée par un compte Premium qui vous compte parmi ses utilisateurs.</string>
+    <string name="spotify_rate_limited">Spotify demande de ralentir : trop de requêtes en peu de temps. Réessayez dans %1$s.</string>
+    <string name="in_a_few_minutes">quelques minutes</string>
     <string name="tools_export_title">Exporter une playlist</string>
     <string name="tools_export_desc">Enregistrez n\'importe quelle playlist de ce service dans un fichier sur votre téléphone (CSV, M3U, XSPF, JSPF ou texte brut), sans rien changer sur le service.</string>
     <string name="tools_export_done">%1$d titres exportés</string>
