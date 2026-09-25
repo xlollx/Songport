@@ -291,8 +291,9 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     }
 
     /** L'API Apple Music non espone la rimozione di brani da una playlist (vedi canRemoveTracks). */
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) =
+    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         throw ProviderException(ctx.getString(R.string.error_no_removals, displayName))
+    }
 
     companion object {
         const val SERVICE = "apple"
