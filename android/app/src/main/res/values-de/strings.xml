@@ -244,6 +244,7 @@
     <string name="tools_none">Verbinde zuerst einen Dienst.</string>
     <string name="spotify_forbidden">Spotify hat die Anfrage abgelehnt (%1$s). Apps im Development Mode können keine von Spotify selbst erstellten Playlists lesen (Discover Weekly, Release Radar, redaktionelle Mixe) und bedienen nur Konten, die im User Management der App eingetragen sind. Wähle eine Playlist, die du oder ein anderer Nutzer erstellt hat, oder füge das Konto auf developer.spotify.com hinzu.</string>
     <string name="spotify_scope_reconnect">Spotify hat die Anfrage abgelehnt (%1$s): Diese Berechtigung kam nach deiner Anmeldung hinzu. Verbinde Spotify unter Konten neu, dann wird sie erteilt.</string>
+    <string name="spotify_premium_required">Spotify hat die Anfrage abgelehnt: Das Konto, das den Schlüssel erstellt hat, hat kein aktives Premium, und seit Februar 2026 schaltet Spotify eine Entwickler-App ohne Premium ab (nach einem Abo-Wechsel kann es einige Stunden dauern). Nimm den Weg „Spotify (Web)“ oder einen Schlüssel, den ein Premium-Konto erstellt hat und das dich unter seinen Nutzern führt.</string>
     <string name="tools_export_title">Playlist exportieren</string>
     <string name="tools_export_desc">Speichert eine beliebige Playlist dieses Dienstes als Datei auf dem Telefon (CSV, M3U, XSPF, JSPF oder einfacher Text), ohne etwas am Dienst zu ändern.</string>
     <string name="tools_export_done">%1$d Titel exportiert</string>

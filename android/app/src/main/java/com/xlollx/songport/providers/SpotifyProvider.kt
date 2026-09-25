@@ -68,16 +68,22 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         return t.copy(userId = uid, userName = me["display_name"].str ?: uid)
     }
 
+    // Spotify answers some refusals in plain text ("Active premium subscription required..."): not JSON.
     override fun errorMessage(resp: HttpResponse): String =
-        parseJson(resp.body)["error"]["message"].str ?: super.errorMessage(resp)
+        runCatching { parseJson(resp.body)["error"]["message"].str }.getOrNull() ?: super.errorMessage(resp).trim()
 
     // Da novembre 2024 le app in Development Mode non possono leggere le playlist create da Spotify
     // (Discover Weekly, Release Radar, mix editoriali): la risposta e' un 403 senza spiegazioni.
     override fun friendlyApiError(ctx: Context, resp: HttpResponse): String? {
         if (resp.code != 403) return null
         val msg = errorMessage(resp).ifBlank { "403" }
-        // A token granted before a scope was added lacks it: only a new sign-in can widen it.
-        return ctx.getString(if (msg.contains("scope", ignoreCase = true)) R.string.spotify_scope_reconnect else R.string.spotify_forbidden, msg)
+        return when {
+            // The key's owner has no Premium: since February 2026 Spotify switches the app off for that.
+            msg.contains("premium", ignoreCase = true) -> ctx.getString(R.string.spotify_premium_required)
+            // A token granted before a scope was added lacks it: only a new sign-in can widen it.
+            msg.contains("scope", ignoreCase = true) -> ctx.getString(R.string.spotify_scope_reconnect, msg)
+            else -> ctx.getString(R.string.spotify_forbidden, msg)
+        }
     }
 
     override suspend fun playlists(ctx: Context): List<Playlist> {

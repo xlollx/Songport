@@ -97,7 +97,8 @@ abstract class OAuthProvider : MusicProvider {
         )
         val store = TokenStore(ctx)
         store.set(id, t)
-        t = enrichAccount(ctx, t)
+        // A token the service then refuses (Spotify without Premium) must not show as "connected".
+        try { t = enrichAccount(ctx, t) } catch (e: Exception) { store.clear(id); throw e }
         store.set(id, t)
     }
 

@@ -244,6 +244,7 @@
     <string name="tools_none">请先连接一个服务。</string>
     <string name="spotify_forbidden">Spotify 拒绝了请求（%1$s）。处于开发模式（Development Mode）的应用无法读取 Spotify 官方制作的歌单（Discover Weekly、Release Radar、编辑精选），并且只服务于应用“User Management”中列出的账号。请选择你或其他用户创建的歌单，或在 developer.spotify.com 上添加该账号。</string>
     <string name="spotify_scope_reconnect">Spotify 拒绝了请求（%1$s）：此权限是在你连接之后新增的。在“账号”中重新连接 Spotify 即可授予。</string>
+    <string name="spotify_premium_required">Spotify 拒绝了请求：创建密钥的账号没有有效的 Premium，而自 2026 年 2 月起，没有 Premium 时 Spotify 会关闭开发者应用（订阅状态变更后可能需要几个小时）。请改用“Spotify（网页）”路径，或使用由 Premium 账号创建、并把你列为其用户的密钥。</string>
     <string name="tools_export_title">导出歌单</string>
     <string name="tools_export_desc">将此服务的任意歌单保存为手机上的文件（CSV、M3U、XSPF、JSPF 或纯文本），不会更改服务上的任何内容。</string>
     <string name="tools_export_done">已导出 %1$d 首歌曲</string>
