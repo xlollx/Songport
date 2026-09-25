@@ -238,6 +238,9 @@
     <string name="search_ai_nothing">La IA no tiene una idea mejor para esta.</string>
     <string name="result_ignored">%1$d ignoradas</string>
     <string name="tools_pick_service">Servicio</string>
+    <string name="files_row_desc">Listas importadas y playlists que una sincronización escribió en “Archivo”: importar, pegar, exportar.</string>
+    <string name="ai_row_desc">Describe una playlist; tu IA la escribe, Songport encuentra las canciones.</string>
+    <string name="tools_backup_row_desc">Todas las playlists, favoritas, álbumes y artistas de este servicio guardados como archivos fechados.</string>
     <string name="tools_none">Primero conecta un servicio.</string>
     <string name="spotify_forbidden">Spotify rechazó la solicitud (%1$s). Las apps en Development Mode no pueden leer playlists creadas por el propio Spotify (Discover Weekly, Release Radar, mixes editoriales) y solo admiten las cuentas que figuran en el User Management de la app. Elige una playlist creada por ti o por otro usuario, o añade la cuenta en developer.spotify.com.</string>
     <string name="tools_export_title">Exportar una playlist</string>

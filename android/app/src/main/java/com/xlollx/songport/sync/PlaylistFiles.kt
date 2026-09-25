@@ -45,7 +45,9 @@ object PlaylistFiles {
             name.endsWith(".opml") || (head.startsWith("<") && head.contains("<opml", ignoreCase = true)) -> Format.OPML
             head.contains("<plist") || (name.endsWith(".xml") && head.startsWith("<")) -> Format.ITUNES_XML
             head.startsWith("{") || head.startsWith("[") || name.endsWith(".json") -> Format.JSON
-            firstLine(text)?.any { it == ',' || it == ';' || it == '\t' } == true -> Format.CSV
+            // Shazam's export opens with a title line above the header: look at the first few lines.
+            name.endsWith(".csv") || name.endsWith(".tsv") ||
+                text.lineSequence().filter { it.isNotBlank() }.take(3).any { l -> l.any { it == ',' || it == ';' || it == '\t' } } -> Format.CSV
             else -> Format.TEXT
         }
     }

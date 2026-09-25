@@ -124,72 +124,6 @@ fun SettingsScreen(
             )
         }
 
-        SectionCard(stringResource(R.string.security_title)) {
-            listOf(R.string.security_fact_1, R.string.security_fact_2, R.string.security_fact_3, R.string.security_fact_4).forEach {
-                Row(verticalAlignment = Alignment.Top) {
-                    Icon(Icons.Filled.Lock, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp).padding(top = 2.dp))
-                    Spacer(Modifier.width(10.dp))
-                    Text(stringResource(it), style = MaterialTheme.typography.bodyMedium)
-                }
-            }
-        }
-
-        SectionCard(stringResource(R.string.support_title)) {
-            Text(stringResource(R.string.support_body), style = MaterialTheme.typography.bodyMedium)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (BuildConfig.KOFI_URL.isNotBlank()) {
-                    FilledTonalButton(onClick = { openSupport(ctx) }) {
-                        Icon(Icons.Filled.Favorite, null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.support_button))
-                    }
-                }
-                // Per chi ha un account GitHub: anche un contributo mensile.
-                if (BuildConfig.SPONSORS_URL.isNotBlank()) {
-                    OutlinedButton(onClick = { openSponsors(ctx) }) { Text(stringResource(R.string.support_sponsors)) }
-                }
-            }
-            Text(stringResource(if (Ads.enabled) R.string.settings_ads_note else R.string.settings_free_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-
-        SectionCard(stringResource(R.string.ai_title)) {
-            // Same dialog as the Tools card: key and model live in the encrypted token store.
-            var aiConfig by remember { mutableStateOf(com.xlollx.songport.ai.AiClient.config(ctx)) }
-            var aiOpen by remember { mutableStateOf(false) }
-            if (aiOpen) AiSetupDialog(aiConfig, onDismiss = { aiOpen = false }) { aiConfig = it; aiOpen = false }
-            SettingRow(aiConfig?.let { "${it.vendor.label} · ${it.model}" } ?: stringResource(R.string.not_configured), stringResource(R.string.settings_ai_desc)) {
-                TextButton(onClick = { aiOpen = true }) { Text(stringResource(if (aiConfig == null) R.string.ai_setup else R.string.ai_setup_change)) }
-            }
-        }
-
-        SectionCard(stringResource(R.string.settings_advanced)) {
-            Text(stringResource(R.string.settings_advanced_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (advanced) {
-                Providers.all().filter { it.setupGuide != null && it.slot.isEmpty() }.forEach { p ->
-                    val configured = remember(p.id, data.settings) { p.isConfigured(ctx) }
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                        ProviderBadge(p, 28.dp)
-                        Spacer(Modifier.width(10.dp))
-                        Column(Modifier.weight(1f)) {
-                            Text(p.displayName, style = MaterialTheme.typography.bodyLarge)
-                            Text(
-                                stringResource(if (configured) R.string.setup_using_own else R.string.not_configured),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = if (configured) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        Spacer(Modifier.width(8.dp))
-                        OutlinedButton(onClick = { onSetup(p) }) {
-                            Text(stringResource(if (configured) R.string.edit else R.string.setup_now))
-                        }
-                    }
-                }
-            }
-            TextButton(onClick = { advanced = !advanced }) {
-                Text(stringResource(if (advanced) R.string.hide_details else R.string.show_details))
-            }
-        }
-
         SectionCard(stringResource(R.string.backup_folder_title)) {
             // Where the dated backups also go, outside the phone: SD card, Nextcloud, Drive, any folder app.
             val folder = data.settings.backupFolder
@@ -230,6 +164,72 @@ fun SettingsScreen(
                     TextButton(onClick = { store.updateSettings { it.copy(backupFolder = "", backupSchedule = Schedule.MANUAL) }; Scheduler.applyBackup(ctx) }) { Text(stringResource(R.string.backup_folder_forget), color = MaterialTheme.colorScheme.error) }
                 }
             }
+        }
+
+        SectionCard(stringResource(R.string.ai_title)) {
+            // Same dialog as the Tools card: key and model live in the encrypted token store.
+            var aiConfig by remember { mutableStateOf(com.xlollx.songport.ai.AiClient.config(ctx)) }
+            var aiOpen by remember { mutableStateOf(false) }
+            if (aiOpen) AiSetupDialog(aiConfig, onDismiss = { aiOpen = false }) { aiConfig = it; aiOpen = false }
+            SettingRow(aiConfig?.let { "${it.vendor.label} · ${it.model}" } ?: stringResource(R.string.not_configured), stringResource(R.string.settings_ai_desc)) {
+                TextButton(onClick = { aiOpen = true }) { Text(stringResource(if (aiConfig == null) R.string.ai_setup else R.string.ai_setup_change)) }
+            }
+        }
+
+        SectionCard(stringResource(R.string.settings_advanced)) {
+            Text(stringResource(R.string.settings_advanced_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (advanced) {
+                Providers.all().filter { it.setupGuide != null && it.slot.isEmpty() }.forEach { p ->
+                    val configured = remember(p.id, data.settings) { p.isConfigured(ctx) }
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        ProviderBadge(p, 28.dp)
+                        Spacer(Modifier.width(10.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(p.displayName, style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                stringResource(if (configured) R.string.setup_using_own else R.string.not_configured),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (configured) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedButton(onClick = { onSetup(p) }) {
+                            Text(stringResource(if (configured) R.string.edit else R.string.setup_now))
+                        }
+                    }
+                }
+            }
+            TextButton(onClick = { advanced = !advanced }) {
+                Text(stringResource(if (advanced) R.string.hide_details else R.string.show_details))
+            }
+        }
+
+        SectionCard(stringResource(R.string.security_title)) {
+            listOf(R.string.security_fact_1, R.string.security_fact_2, R.string.security_fact_3, R.string.security_fact_4).forEach {
+                Row(verticalAlignment = Alignment.Top) {
+                    Icon(Icons.Filled.Lock, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp).padding(top = 2.dp))
+                    Spacer(Modifier.width(10.dp))
+                    Text(stringResource(it), style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+        }
+
+        SectionCard(stringResource(R.string.support_title)) {
+            Text(stringResource(R.string.support_body), style = MaterialTheme.typography.bodyMedium)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (BuildConfig.KOFI_URL.isNotBlank()) {
+                    FilledTonalButton(onClick = { openSupport(ctx) }) {
+                        Icon(Icons.Filled.Favorite, null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.support_button))
+                    }
+                }
+                // Per chi ha un account GitHub: anche un contributo mensile.
+                if (BuildConfig.SPONSORS_URL.isNotBlank()) {
+                    OutlinedButton(onClick = { openSponsors(ctx) }) { Text(stringResource(R.string.support_sponsors)) }
+                }
+            }
+            Text(stringResource(if (Ads.enabled) R.string.settings_ads_note else R.string.settings_free_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
         SectionCard(stringResource(R.string.settings_battery)) {

@@ -238,6 +238,9 @@
     <string name="search_ai_nothing">AI 对这首歌也没有更好的办法。</string>
     <string name="result_ignored">%1$d 首已忽略</string>
     <string name="tools_pick_service">服务</string>
+    <string name="files_row_desc">导入的列表和同步写入“文件”的歌单：导入、粘贴、导出。</string>
+    <string name="ai_row_desc">描述一个歌单；由你的 AI 来写，Songport 找到歌曲。</string>
+    <string name="tools_backup_row_desc">此服务的所有歌单、喜欢的歌曲、专辑和艺人保存为带日期的文件。</string>
     <string name="tools_none">请先连接一个服务。</string>
     <string name="spotify_forbidden">Spotify 拒绝了请求（%1$s）。处于开发模式（Development Mode）的应用无法读取 Spotify 官方制作的歌单（Discover Weekly、Release Radar、编辑精选），并且只服务于应用“User Management”中列出的账号。请选择你或其他用户创建的歌单，或在 developer.spotify.com 上添加该账号。</string>
     <string name="tools_export_title">导出歌单</string>

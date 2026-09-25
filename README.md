@@ -86,7 +86,8 @@ that is exactly what to report.
 | | "Liked songs" as source or target | Spotify, Deezer, Subsonic, Jellyfin, Last.fm, ListenBrainz. |
 | | Saved albums, followed artists, podcasts | Sync or transfer them like a playlist (Spotify, Deezer, Subsonic/Navidrome, Jellyfin; Apple Music albums, add only). Matched by UPC where available, then title and artist; the review works the same. YouTube Music and TIDAL not yet. |
 | Preview | What would change, before doing it | Already present, to add, to remove, not found, uncertain. |
-| Matching | ISRC, then title + artist + duration | Match cache; penalises live, karaoke, cover and sped-up versions when the original is not one. |
+| Matching | Rules per sync | Strictness, explicit or clean preference, same album, studio versions only. |
+| | ISRC, then title + artist + duration | Match cache; penalises live, karaoke, cover and sped-up versions when the original is not one. |
 | Review | Uncertain matches to confirm | Below 86% similarity a match is accepted but flagged; confirm or replace it. |
 | Not found | Manual fix | Free search on the target, pick the result, or "ignore". |
 | Restore | Put back tracks removed by a mirror sync | From the log. |

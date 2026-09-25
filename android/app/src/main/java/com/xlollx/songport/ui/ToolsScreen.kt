@@ -16,7 +16,25 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,22 +75,75 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** Strumenti che altrove stanno dietro un abbonamento: backup completo e pulizia dei duplicati. */
-@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+/** Which tool is open in its own page; null = the list. */
+private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVector, val titleRes: Int, val descRes: Int, val needsService: Boolean) {
+    FILES(Icons.Filled.Folder, R.string.files_title, R.string.files_row_desc, false),
+    AI(Icons.Filled.AutoAwesome, R.string.ai_title, R.string.ai_row_desc, false),
+    MANAGE(Icons.Filled.Edit, R.string.tools_manage_title, R.string.tools_manage_desc, true),
+    EXPORT(Icons.Filled.Download, R.string.tools_export_title, R.string.tools_export_desc, true),
+    MAKE(Icons.Filled.PlaylistAdd, R.string.tools_make_title, R.string.tools_make_desc, true),
+    TRANSFER(Icons.Filled.SwapHoriz, R.string.tools_transfer_title, R.string.tools_transfer_desc, true),
+    BACKUP(Icons.Filled.Backup, R.string.tools_backup_title, R.string.tools_backup_row_desc, true),
+    DEDUPE(Icons.Filled.CleaningServices, R.string.tools_dedupe_title, R.string.tools_dedupe_desc, true),
+    SCAN(Icons.Filled.ContentCopy, R.string.tools_scan_title, R.string.tools_scan_desc, true),
+}
+
+/**
+ * Strumenti: un elenco di voci, ognuna con la sua pagina. Con dieci strumenti le schede una sotto
+ * l'altra erano diventate una parete di testo; qui si legge il titolo e si apre solo cio' che serve.
+ */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
     val provider = connected.firstOrNull { it.id == selectedId } ?: connected.firstOrNull()
+    var open by remember { mutableStateOf<Tool?>(null) }
 
-    Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        // Playlist files (imported, or produced by a sync into "File") live here, not under Accounts.
-        FilesCard(snackbar, onManage = onManageFiles)
-        // Works with no service connected too: the list can land in Files.
-        AiPlaylistCard(snackbar, onSyncStarted)
+    val current = open
+    if (current != null) {
+        // The tool's own page: its card, full width, with a snackbar of its own (the tab's is behind us).
+        val local = remember { SnackbarHostState() }
+        BackHandler { open = null }
+        Scaffold(
+            snackbarHost = { SnackbarHost(local) },
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(current.titleRes)) },
+                    navigationIcon = { IconButton(onClick = { open = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
+                )
+            },
+        ) { padding ->
+            Column(Modifier.padding(padding).padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (current.needsService && provider != null && connected.size > 1) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        connected.forEach { p ->
+                            FilterChip(selected = p.id == provider.id, onClick = { selectedId = p.id }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
+                        }
+                    }
+                }
+                when (current) {
+                    Tool.FILES -> FilesCard(local, onManage = onManageFiles)
+                    Tool.AI -> AiPlaylistCard(local, onSyncStarted)
+                    Tool.EXPORT -> provider?.let { ExportCard(it, local) }
+                    Tool.MAKE -> provider?.let { MakePlaylistCard(it, local) }
+                    Tool.BACKUP -> provider?.let { BackupCard(it, local) }
+                    Tool.DEDUPE -> provider?.let { DedupeCard(it, local) }
+                    else -> {}
+                }
+            }
+        }
+        return
+    }
+
+    Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        ToolRow(Tool.FILES) { open = Tool.FILES }
+        ToolRow(Tool.AI, beta = true) { open = Tool.AI }
+        Spacer(Modifier.height(8.dp))
         if (provider == null) {
-            EmptyState(Icons.Filled.Build, stringResource(R.string.empty_tools_title), stringResource(R.string.empty_tools_body))
+            Text(stringResource(R.string.empty_tools_title), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.empty_tools_body), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             return@Column
         }
         Text(stringResource(R.string.tools_pick_service), style = MaterialTheme.typography.titleMedium)
@@ -81,13 +152,32 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
                 FilterChip(selected = p.id == provider.id, onClick = { selectedId = p.id }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
             }
         }
-        ManageCard(provider, onOpen = { onManage(provider) })
-        ExportCard(provider, snackbar)
-        MakePlaylistCard(provider, snackbar)
-        TransferCard(onOpen = onTransfer)
-        BackupCard(provider, snackbar)
-        DedupeCard(provider, snackbar)
-        ScanCard(provider, onOpen = { onScan(provider) })
+        ToolRow(Tool.MANAGE) { onManage(provider) }
+        ToolRow(Tool.EXPORT) { open = Tool.EXPORT }
+        ToolRow(Tool.MAKE) { open = Tool.MAKE }
+        ToolRow(Tool.TRANSFER) { onTransfer() }
+        ToolRow(Tool.BACKUP) { open = Tool.BACKUP }
+        ToolRow(Tool.DEDUPE) { open = Tool.DEDUPE }
+        ToolRow(Tool.SCAN) { onScan(provider) }
+    }
+}
+
+/** One tool in the list: icon, name, a line or two of what it does, a chevron. */
+@Composable
+private fun ToolRow(tool: Tool, beta: Boolean = false, onClick: () -> Unit) {
+    Card(Modifier.fillMaxWidth().clickable(onClick = onClick), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+        Row(Modifier.padding(horizontal = 14.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(tool.icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(tool.titleRes), style = MaterialTheme.typography.titleSmall)
+                    if (beta) { Spacer(Modifier.width(8.dp)); StatusPill(stringResource(R.string.beta), Tone.Neutral) }
+                }
+                Text(stringResource(tool.descRes), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            }
+            Icon(Icons.Filled.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }
 
@@ -173,58 +263,6 @@ private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
                         ExportMenuItems { fmt -> formats = false; pendingFormat = fmt; export(fmt, pl!!.name) }
                     }
                 }
-            }
-        }
-    }
-}
-
-/** Brani in piu' playlist e preferiti fuori da ogni playlist: apre la schermata di lettura. */
-@Composable
-private fun ScanCard(provider: MusicProvider, onOpen: () -> Unit) {
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.tools_scan_title), style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(6.dp))
-            Text(stringResource(R.string.tools_scan_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(Modifier.height(10.dp))
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                Button(onClick = onOpen) { Text(stringResource(R.string.tools_scan_open)) }
-            }
-        }
-    }
-}
-
-/** Le playlist del servizio in un elenco, per rinominarle, eliminarle o esportarle. */
-@Composable
-private fun ManageCard(provider: MusicProvider, onOpen: () -> Unit) {
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.tools_manage_title), style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(6.dp))
-            Text(stringResource(R.string.tools_manage_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (!provider.canRenamePlaylists && !provider.canDeletePlaylists) {
-                Spacer(Modifier.height(6.dp))
-                Text(stringResource(R.string.error_manage_unsupported, provider.displayName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            Spacer(Modifier.height(10.dp))
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                Button(onClick = onOpen) { Text(stringResource(R.string.tools_manage_open)) }
-            }
-        }
-    }
-}
-
-/** Molte playlist da un servizio a un altro in un colpo: apre la schermata di scelta. */
-@Composable
-private fun TransferCard(onOpen: () -> Unit) {
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.tools_transfer_title), style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(6.dp))
-            Text(stringResource(R.string.tools_transfer_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(Modifier.height(10.dp))
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                Button(onClick = onOpen) { Text(stringResource(R.string.tools_transfer_open)) }
             }
         }
     }

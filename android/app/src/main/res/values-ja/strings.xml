@@ -238,6 +238,9 @@
     <string name="search_ai_nothing">この曲について AI に良い案はありません。</string>
     <string name="result_ignored">%1$d 曲を無視</string>
     <string name="tools_pick_service">サービス</string>
+    <string name="files_row_desc">インポートしたリストと、同期が「ファイル」に書き出したプレイリスト：インポート、貼り付け、エクスポート。</string>
+    <string name="ai_row_desc">プレイリストを説明すると、あなたの AI が作り、Songport が曲を探します。</string>
+    <string name="tools_backup_row_desc">このサービスのすべてのプレイリスト、お気に入り、アルバム、アーティストを日付付きファイルとして保存します。</string>
     <string name="tools_none">まずサービスを接続してください。</string>
     <string name="spotify_forbidden">Spotify がリクエストを拒否しました（%1$s）。Development Mode のアプリは、Spotify 自身が作成したプレイリスト（Discover Weekly、Release Radar、編集部のミックスなど）を読み込めず、アプリの User Management に登録されたアカウントでしか利用できません。あなたや他のユーザーが作成したプレイリストを選ぶか、developer.spotify.com でアカウントを追加してください。</string>
     <string name="tools_export_title">プレイリストをエクスポート</string>

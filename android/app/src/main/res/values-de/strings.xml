@@ -238,6 +238,9 @@
     <string name="search_ai_nothing">Die KI hat für diesen keine bessere Idee.</string>
     <string name="result_ignored">%1$d ignoriert</string>
     <string name="tools_pick_service">Dienst</string>
+    <string name="files_row_desc">Importierte Listen und Playlists, die eine Sync nach „Datei“ geschrieben hat: importieren, einfügen, exportieren.</string>
+    <string name="ai_row_desc">Beschreibe eine Playlist; deine KI schreibt sie, Songport findet die Titel.</string>
+    <string name="tools_backup_row_desc">Alle Playlists, Lieblingssongs, Alben und Künstler dieses Dienstes als datierte Dateien gesichert.</string>
     <string name="tools_none">Verbinde zuerst einen Dienst.</string>
     <string name="spotify_forbidden">Spotify hat die Anfrage abgelehnt (%1$s). Apps im Development Mode können keine von Spotify selbst erstellten Playlists lesen (Discover Weekly, Release Radar, redaktionelle Mixe) und bedienen nur Konten, die im User Management der App eingetragen sind. Wähle eine Playlist, die du oder ein anderer Nutzer erstellt hat, oder füge das Konto auf developer.spotify.com hinzu.</string>
     <string name="tools_export_title">Playlist exportieren</string>

@@ -92,7 +92,8 @@ object CsvCodec {
      * dalla prima riga: il TAB serve per gli export "Esporta playlist" di Apple Music/iTunes.
      */
     fun parseRows(text: String): List<List<String>> {
-        val firstLine = text.lineSequence().firstOrNull { it.isNotBlank() } ?: return emptyList()
+        // The separator is read off the first lines that have one (a lone title line may come first).
+        val firstLine = text.lineSequence().filter { it.isNotBlank() }.take(3).joinToString("\n").ifEmpty { return emptyList() }
         val sep = listOf(',', ';', '\t')
             .map { c -> c to firstLine.count { it == c } }
             .filter { it.second > 0 }
