@@ -24,6 +24,7 @@ import kotlinx.serialization.json.JsonElement
 class PlexProvider(override val slot: String = "") : CredentialsProvider() {
     override val serviceId = SERVICE
     override val displayName = "Plex"
+    override val routeNoteRes: Int? get() = R.string.route_note_server
     override val brandColor = 0xFFE5A00D
     override val noteRes = R.string.provider_note_plex
     override val beta = true

@@ -24,6 +24,9 @@ import kotlinx.coroutines.withContext
 class SpotifyBridgeProvider(slot: String = "") : SpotifyProvider(slot) {
     override val serviceId = SERVICE
     override val displayName = if (BridgePlugin.builtIn) "Spotify (web)" else "Spotify (plugin)"
+    override val route: MusicProvider.Route? get() = MusicProvider.Route.EASY
+    override val routeNoteRes: Int? get() = R.string.route_note_web
+    override val familyName: String get() = "Spotify"
     override val noteRes = R.string.provider_note_spotify_bridge
     override val supportsMultipleAccounts = false
     override val pluginBased = true

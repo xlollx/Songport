@@ -201,21 +201,48 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
             // Plugin-based services are offered only when a plugin is installed, unless this build
             // may point to where to get one.
             val services = Providers.services().filter { !it.pluginBased || BuildConfig.PLUGIN_LINKS || it.isConfigured(ctx) }
+            // A service reachable two ways (its official API with a key of yours, or its web player with a
+            // plain sign-in) is one entry with two routes, each saying what it asks and what it is.
+            val families = services.groupBy { it.familyName }
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                services.forEach { s ->
-                    val taken = !s.supportsMultipleAccounts && connectors.any { Providers.byId(it)?.serviceId == s.serviceId }
-                    Row(
-                        Modifier.fillMaxWidth().clickable(enabled = !taken) { onPick(s) }.padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        ProviderBadge(s, 32.dp)
-                        Spacer(Modifier.width(12.dp))
-                        Text(
-                            s.displayName + (if (!s.canWrite) " · " + stringResource(R.string.read_only) else "") +
-                                (if (s.beta) " · " + stringResource(R.string.beta) else ""),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = if (taken) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
-                        )
+                if (families.values.any { it.size > 1 }) {
+                    Text(stringResource(R.string.connector_pick_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(Modifier.height(6.dp))
+                }
+                families.forEach { (family, members) ->
+                    val grouped = members.size > 1
+                    if (grouped) {
+                        Row(Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                            ProviderBadge(members.first(), 32.dp)
+                            Spacer(Modifier.width(12.dp))
+                            Text(family, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                    // The easiest route first, so a first-timer's eye lands on it.
+                    members.sortedBy { if (it.route == MusicProvider.Route.EASY) 0 else 1 }.forEach { s ->
+                        val taken = !s.supportsMultipleAccounts && connectors.any { Providers.byId(it)?.serviceId == s.serviceId }
+                        Row(
+                            Modifier.fillMaxWidth().clickable(enabled = !taken) { onPick(s) }.padding(start = if (grouped) 44.dp else 0.dp, top = 8.dp, bottom = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            if (!grouped) { ProviderBadge(s, 32.dp); Spacer(Modifier.width(12.dp)) }
+                            Column(Modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    if (!grouped) Text(
+                                        s.displayName,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = if (taken) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                                    )
+                                    s.route?.let { r ->
+                                        if (!grouped) Spacer(Modifier.width(8.dp))
+                                        StatusPill(stringResource(if (r == MusicProvider.Route.EASY) R.string.route_easy else R.string.route_official), if (r == MusicProvider.Route.EASY) Tone.Ok else Tone.Accent)
+                                    }
+                                    if (!s.canWrite) { Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.read_only), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                                    if (s.beta) { Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.beta), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                                }
+                                s.routeNoteRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                            }
+                        }
                     }
                 }
             }

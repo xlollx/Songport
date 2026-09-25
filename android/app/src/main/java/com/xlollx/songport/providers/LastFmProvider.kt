@@ -23,6 +23,8 @@ import kotlinx.serialization.json.JsonElement
 class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
     override val serviceId = SERVICE
     override val displayName = "Last.fm"
+    override val route: MusicProvider.Route? get() = MusicProvider.Route.OFFICIAL
+    override val routeNoteRes: Int? get() = R.string.route_note_api_readonly
     override val brandColor = 0xFFD51007
     override val noteRes = R.string.provider_note_lastfm
     override val beta = true

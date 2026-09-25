@@ -451,6 +451,16 @@
     <string name="connectors_empty_body">Toca + para añadir un servicio: Spotify, YouTube Music, TIDAL, archivos… Puedes añadir varios conectores del mismo servicio, cada uno con su nombre y su cuenta.</string>
     <string name="connector_add">Añadir conector</string>
     <string name="connector_pick_title">¿Qué servicio?</string>
+    <string name="connector_pick_hint">Algunos servicios se alcanzan de dos formas. Más fácil: inicia sesión en el sitio, nada que crear. Oficial: la API del servicio con una clave gratuita tuya, más estable.</string>
+    <string name="route_easy">Más fácil</string>
+    <string name="route_official">Oficial</string>
+    <string name="route_note_web">Inicia sesión en el sitio del servicio, sin clave que crear. No es una interfaz oficial: puede dejar de funcionar cuando el sitio cambia.</string>
+    <string name="route_note_web_only">Inicia sesión en el sitio. No existe API oficial: puede dejar de funcionar cuando el sitio cambia.</string>
+    <string name="route_note_api">Tu propia clave API gratuita, creada en la página de desarrolladores del servicio en unos dos minutos. Oficial y estable.</string>
+    <string name="route_note_apple_api">Un token de desarrollador de una cuenta Apple Developer (de pago). Oficial.</string>
+    <string name="route_note_youtube_api">Tu propia clave de Google Cloud (gratuita, pocos minutos). Oficial, pero la cuota diaria es pequeña: las sincronizaciones grandes tardan días.</string>
+    <string name="route_note_api_readonly">Tu propia clave API gratuita. Solo lectura: origen para playlists y canciones amadas.</string>
+    <string name="route_note_server">Tu propio servidor: dirección, usuario y contraseña.</string>
     <string name="connector_name_label">Nombre del conector</string>
     <string name="connector_rename">Renombrar</string>
     <string name="connect_switch_account">Puede que el navegador ya tenga abierta la sesión de otra cuenta de %1$s. En la página de inicio de sesión elige “¿No eres tú?” o cambia de cuenta, y luego continúa con la cuenta de este conector.</string>

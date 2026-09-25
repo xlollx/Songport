@@ -451,6 +451,16 @@
     <string name="connectors_empty_body">Touchez + pour ajouter un service : Spotify, YouTube Music, TIDAL, fichiers… Vous pouvez ajouter plusieurs connecteurs du même service, chacun avec son nom et son compte.</string>
     <string name="connector_add">Ajouter un connecteur</string>
     <string name="connector_pick_title">Quel service ?</string>
+    <string name="connector_pick_hint">Certains services sont accessibles de deux façons. Le plus simple : connexion sur le site, rien à créer. Officiel : l\'API du service avec une clé gratuite à vous, plus stable.</string>
+    <string name="route_easy">Le plus simple</string>
+    <string name="route_official">Officiel</string>
+    <string name="route_note_web">Connexion sur le site du service, aucune clé à créer. Interface non officielle : elle peut cesser de fonctionner quand le site change.</string>
+    <string name="route_note_web_only">Connexion sur le site. Aucune API officielle n\'existe : cela peut cesser de fonctionner quand le site change.</string>
+    <string name="route_note_api">Votre propre clé API gratuite, créée sur la page développeurs du service en deux minutes environ. Officiel et stable.</string>
+    <string name="route_note_apple_api">Un jeton développeur d\'un compte Apple Developer (payant). Officiel.</string>
+    <string name="route_note_youtube_api">Votre propre clé Google Cloud (gratuite, quelques minutes). Officiel, mais le quota quotidien est petit : les grosses synchros prennent des jours.</string>
+    <string name="route_note_api_readonly">Votre propre clé API gratuite. Lecture seule : une source pour les playlists et les titres aimés.</string>
+    <string name="route_note_server">Votre propre serveur : adresse, utilisateur et mot de passe.</string>
     <string name="connector_name_label">Nom du connecteur</string>
     <string name="connector_rename">Renommer</string>
     <string name="connect_switch_account">Le navigateur est peut-être déjà connecté à un autre compte %1$s. Sur la page de connexion, choisissez « Ce n\'est pas vous ? » ou changez de compte, puis continuez avec le compte de ce connecteur.</string>

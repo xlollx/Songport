@@ -451,6 +451,16 @@
     <string name="connectors_empty_body">Tippe auf +, um einen Dienst hinzuzufügen: Spotify, YouTube Music, TIDAL, Dateien … Du kannst mehrere Connectors desselben Dienstes anlegen, jeder mit eigenem Namen und Konto.</string>
     <string name="connector_add">Connector hinzufügen</string>
     <string name="connector_pick_title">Welcher Dienst?</string>
+    <string name="connector_pick_hint">Manche Dienste sind auf zwei Wegen erreichbar. Am einfachsten: Anmeldung auf der Website, nichts anzulegen. Offiziell: die API des Dienstes mit einem eigenen kostenlosen Schlüssel, stabiler.</string>
+    <string name="route_easy">Am einfachsten</string>
+    <string name="route_official">Offiziell</string>
+    <string name="route_note_web">Anmeldung auf der Website des Dienstes, kein Schlüssel nötig. Keine offizielle Schnittstelle: kann aufhören zu funktionieren, wenn sich die Website ändert.</string>
+    <string name="route_note_web_only">Anmeldung auf der Website. Es gibt keine offizielle API: kann aufhören zu funktionieren, wenn sich die Website ändert.</string>
+    <string name="route_note_api">Dein eigener kostenloser API-Schlüssel, in etwa zwei Minuten auf der Entwicklerseite des Dienstes erstellt. Offiziell und stabil.</string>
+    <string name="route_note_apple_api">Ein Entwickler-Token aus einem Apple-Developer-Konto (kostenpflichtig). Offiziell.</string>
+    <string name="route_note_youtube_api">Dein eigener Google-Cloud-Schlüssel (kostenlos, wenige Minuten). Offiziell, aber die Tagesquote ist klein: große Syncs dauern Tage.</string>
+    <string name="route_note_api_readonly">Dein eigener kostenloser API-Schlüssel. Nur lesend: eine Quelle für Playlists und Lieblingstitel.</string>
+    <string name="route_note_server">Dein eigener Server: Adresse, Benutzer und Passwort.</string>
     <string name="connector_name_label">Name des Connectors</string>
     <string name="connector_rename">Umbenennen</string>
     <string name="connect_switch_account">Der Browser ist vielleicht schon mit einem anderen %1$s-Konto angemeldet. Wähle auf der Anmeldeseite „Nicht du?“ oder wechsle das Konto und fahre dann mit dem Konto dieses Connectors fort.</string>

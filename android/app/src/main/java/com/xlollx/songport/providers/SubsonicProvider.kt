@@ -26,6 +26,7 @@ import java.security.SecureRandom
 class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
     override val serviceId = SERVICE
     override val displayName = "Subsonic / Navidrome"
+    override val routeNoteRes: Int? get() = R.string.route_note_server
     override val brandColor = 0xFF2E7D32
     override val noteRes = R.string.provider_note_subsonic
     override val beta = true

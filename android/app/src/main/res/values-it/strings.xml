@@ -451,6 +451,16 @@
     <string name="connectors_empty_body">Tocca + per aggiungere un servizio: Spotify, YouTube Music, TIDAL, file… Puoi aggiungere più connettori dello stesso servizio, ognuno con il suo nome e il suo account.</string>
     <string name="connector_add">Aggiungi connettore</string>
     <string name="connector_pick_title">Quale servizio?</string>
+    <string name="connector_pick_hint">Alcuni servizi si raggiungono in due modi. Più semplice: accedi sul sito, niente da creare. Ufficiale: l\'API del servizio con una tua chiave gratuita, più stabile.</string>
+    <string name="route_easy">Più semplice</string>
+    <string name="route_official">Ufficiale</string>
+    <string name="route_note_web">Accedi sul sito del servizio, nessuna chiave da creare. Non è un\'interfaccia ufficiale: può smettere di funzionare quando il sito cambia.</string>
+    <string name="route_note_web_only">Accedi sul sito. Non esiste un\'API ufficiale: può smettere di funzionare quando il sito cambia.</string>
+    <string name="route_note_api">Una tua chiave API gratuita, creata sulla pagina sviluppatori del servizio in circa due minuti. Ufficiale e stabile.</string>
+    <string name="route_note_apple_api">Un token sviluppatore da un account Apple Developer (a pagamento). Ufficiale.</string>
+    <string name="route_note_youtube_api">Una tua chiave Google Cloud (gratuita, pochi minuti). Ufficiale, ma la quota giornaliera è piccola: le sync grandi durano giorni.</string>
+    <string name="route_note_api_readonly">Una tua chiave API gratuita. Solo lettura: origine per playlist e brani amati.</string>
+    <string name="route_note_server">Il tuo server: indirizzo, utente e password.</string>
     <string name="connector_name_label">Nome del connettore</string>
     <string name="connector_rename">Rinomina</string>
     <string name="connect_switch_account">Il browser potrebbe essere già collegato a un altro account %1$s. Nella pagina di accesso scegli “Non sei tu?” o cambia account, poi continua con l\'account di questo connettore.</string>

@@ -447,6 +447,16 @@
     <string name="connectors_empty_body">点按 + 添加服务：Spotify、YouTube Music、TIDAL、文件……同一服务可以添加多个连接器，每个都有自己的名称和账号。</string>
     <string name="connector_add">添加连接器</string>
     <string name="connector_pick_title">选择哪个服务？</string>
+    <string name="connector_pick_hint">有些服务有两种接入方式。最简单：在网站上登录，无需创建任何东西。官方：使用你自己的免费密钥调用服务的官方 API，更稳定。</string>
+    <string name="route_easy">最简单</string>
+    <string name="route_official">官方</string>
+    <string name="route_note_web">在服务的网站上登录，无需创建密钥。非官方接口：网站变更时可能失效。</string>
+    <string name="route_note_web_only">在网站上登录。没有官方 API：网站变更时可能失效。</string>
+    <string name="route_note_api">你自己的免费 API 密钥，在服务的开发者页面约两分钟即可创建。官方且稳定。</string>
+    <string name="route_note_apple_api">来自 Apple Developer 账号（付费）的开发者令牌。官方。</string>
+    <string name="route_note_youtube_api">你自己的 Google Cloud 密钥（免费，几分钟）。官方，但每日配额很小：大型同步需要数天。</string>
+    <string name="route_note_api_readonly">你自己的免费 API 密钥。只读：作为歌单和喜爱曲目的来源。</string>
+    <string name="route_note_server">你自己的服务器：地址、用户名和密码。</string>
     <string name="connector_name_label">连接器名称</string>
     <string name="connector_rename">重命名</string>
     <string name="connect_switch_account">浏览器可能已登录另一个 %1$s 账号。请在登录页面选择“不是你？”或切换账号，然后使用此连接器对应的账号继续。</string>

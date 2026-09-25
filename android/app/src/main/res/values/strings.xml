@@ -451,6 +451,16 @@
     <string name="connectors_empty_body">Tap + to add a service: Spotify, YouTube Music, TIDAL, files… You can add several connectors of the same service, each with its own name and account.</string>
     <string name="connector_add">Add connector</string>
     <string name="connector_pick_title">Which service?</string>
+    <string name="connector_pick_hint">Some services can be reached two ways. Easiest: sign in on the site, nothing to create. Official: the service\'s own API with a free key of yours, more stable.</string>
+    <string name="route_easy">Easiest</string>
+    <string name="route_official">Official</string>
+    <string name="route_note_web">Sign in on the service\'s site, no key to create. Not an official interface: it can stop working when the site changes.</string>
+    <string name="route_note_web_only">Sign in on the site. No official API exists: it can stop working when the site changes.</string>
+    <string name="route_note_api">Your own free API key, created on the service\'s developer page in about two minutes. Official and stable.</string>
+    <string name="route_note_apple_api">A developer token from an Apple Developer account (paid). Official.</string>
+    <string name="route_note_youtube_api">Your own Google Cloud key (free, a few minutes). Official, but the daily quota is small: big syncs take days.</string>
+    <string name="route_note_api_readonly">Your own free API key. Read-only: a source for playlists and loved tracks.</string>
+    <string name="route_note_server">Your own server: address, user and password.</string>
     <string name="connector_name_label">Connector name</string>
     <string name="connector_rename">Rename</string>
     <string name="connect_switch_account">The browser may already be signed in to another %1$s account. On the sign-in page choose “Not you?” or switch account, then continue with the account for this connector.</string>

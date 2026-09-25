@@ -21,6 +21,7 @@ import kotlinx.serialization.json.JsonElement
 class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
     override val serviceId = SERVICE
     override val displayName = "Jellyfin"
+    override val routeNoteRes: Int? get() = R.string.route_note_server
     override val brandColor = 0xFF00A4DC
     override val noteRes = R.string.provider_note_jellyfin
     override val beta = true

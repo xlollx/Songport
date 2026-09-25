@@ -55,6 +55,19 @@ interface MusicProvider {
      */
     val beta: Boolean get() = false
 
+    /**
+     * Quale strada verso il servizio e' questa, quando ce n'e' piu' d'una: la piu' semplice (accesso
+     * sul sito, nessuna chiave, interfaccia non ufficiale) o quella ufficiale (API con chiave propria).
+     * Null = c'e' una strada sola e non serve dirlo.
+     */
+    val route: Route? get() = null
+    /** Una riga che spiega la strada, mostrata nella scelta del servizio. */
+    val routeNoteRes: Int? get() = null
+    /** Le varianti dello stesso servizio (API e web) si raggruppano sotto questo nome. */
+    val familyName: String get() = displayName
+
+    enum class Route { EASY, OFFICIAL }
+
     /** False per le sorgenti in sola lettura (Last.fm, ListenBrainz): mai come destinazione. */
     val canWrite: Boolean get() = true
     /** False dove la playlist va creata nell'app del servizio (Plex). */
