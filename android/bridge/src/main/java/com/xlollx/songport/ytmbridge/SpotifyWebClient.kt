@@ -352,8 +352,8 @@ class SpotifyWebClient(private val ctx: Context) {
                 val d = it["itemV2"]["data"] ?: it["item"]["data"]
                 trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str)?.let { t -> out += t; parsed++ }
             }
-            if (parsed == 0 && (items.isNotEmpty() || (offset == 0 && content == null))) unexpected("fetchPlaylist", j, items)
             val total = content["totalCount"].long?.toInt() ?: 0
+            if (parsed == 0 && offset == 0 && (items.isNotEmpty() || content == null || total != 0)) unexpected("fetchPlaylist", j, items, content)
             offset += 100
             if (items.isEmpty() || offset >= total) break
         }
@@ -372,8 +372,9 @@ class SpotifyWebClient(private val ctx: Context) {
                 val d = it["track"]["data"] ?: it["item"]["data"]
                 trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str)?.let { t -> out += t; parsed++ }
             }
-            if (parsed == 0 && (items.isNotEmpty() || (offset == 0 && lib == null))) unexpected("fetchLibraryTracks", j, items)
             val total = lib["totalCount"].long?.toInt() ?: 0
+            // Zero liked songs is a legitimate answer only when Spotify says the total is zero.
+            if (parsed == 0 && offset == 0 && (items.isNotEmpty() || lib == null || total != 0 || lib["totalCount"] == null)) unexpected("fetchLibraryTracks", j, items, lib)
             offset += 100
             if (items.isEmpty() || offset >= total) break
         }
@@ -487,10 +488,17 @@ class SpotifyWebClient(private val ctx: Context) {
     }
 
     /** The shape of an answer nothing could be read from: the keys, so the parser can be fixed from a screenshot. */
-    private fun unexpected(operation: String, j: JsonElement, items: List<JsonElement>): Nothing {
+    private fun unexpected(operation: String, j: JsonElement, items: List<JsonElement>, container: JsonElement? = null): Nothing {
         val first = items.firstOrNull()
-        val what = if (first != null) "item keys ${(first as? JsonObject)?.keys?.joinToString(",")}, typename ${first.findFirst("__typename").str}"
-        else "data keys ${(j["data"] as? JsonObject)?.keys?.joinToString(",")}"
+        fun keys(e: JsonElement?) = (e as? JsonObject)?.keys?.joinToString(",") ?: e?.javaClass?.simpleName ?: "null"
+        val what = buildString {
+            append("data keys ").append(keys(j["data"]))
+            if (container != null) append("; list keys ").append(keys(container))
+            if (first != null) {
+                append("; item keys ").append(keys(first)).append(", typename ").append(first.findFirst("__typename").str)
+                append(", item ").append(first.toString().take(300))
+            }
+        }
         throw BridgeException("Spotify $operation: nothing readable in the answer ($what)")
     }
 
