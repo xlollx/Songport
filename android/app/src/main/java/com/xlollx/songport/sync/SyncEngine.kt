@@ -69,7 +69,7 @@ class SyncEngine(private val ctx: Context) {
     /** Best candidate under the threshold per source track searched in this run: the review's proposals. */
     private val hints = java.util.concurrent.ConcurrentHashMap<String, Track>()
 
-    suspend fun run(job: SyncJob, onProgress: (Progress) -> Unit = {}, unattended: Boolean = false): SyncReport {
+    suspend fun run(job: SyncJob, unattended: Boolean = false, onProgress: (Progress) -> Unit = {}): SyncReport {
         val started = System.currentTimeMillis()
         val reportId = UUID.randomUUID().toString()
         val report = try {
