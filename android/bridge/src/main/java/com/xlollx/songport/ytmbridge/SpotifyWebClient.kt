@@ -42,7 +42,11 @@ class SpotifyWebClient(private val ctx: Context) {
         val accessToken: String? get() = sessionJson["accessToken"].str
         val isAnonymous: Boolean get() = sessionJson["isAnonymous"]?.toString() == "true"
         val expiresAt: Long get() = sessionJson["accessTokenExpirationTimestampMs"].long ?: (System.currentTimeMillis() + 50 * 60_000)
-        val clientId: String? get() = sessionJson["clientId"].str
+        /** The web player's client id: in the session block, or anywhere in the page, or the one it has had for years. */
+        val clientId: String get() = sessionJson["clientId"].str
+            ?: serverConfig["clientId"].str
+            ?: Regex(""""clientId"\s*:\s*"([0-9a-f]{32})"""").find(html)?.groupValues?.get(1)
+            ?: WEB_PLAYER_CLIENT_ID
         val clientVersion: String? get() = serverConfig["clientVersion"].str
             ?: Regex("""\b1\.\d+\.\d+\.\d+\.g[0-9a-f]{6,}\b""").find(html)?.value
         /** The main bundle of the player: it lists the other chunks. */
@@ -73,14 +77,20 @@ class SpotifyWebClient(private val ctx: Context) {
 
     // ---- client token: names the application; two weeks, granted to the player's id and version
 
-    private fun clientToken(): String {
+    /** Null when Spotify would not grant one: the call goes without, and the answer says whether it was needed. */
+    private fun clientToken(): String? {
         session.get(ctx, "clientToken")?.let { t ->
             val exp = session.get(ctx, "clientTokenExp")?.toLongOrNull() ?: 0
             if (exp > System.currentTimeMillis()) return t
         }
+        if (System.currentTimeMillis() - clientTokenFailedAt < 60_000) return null
+        return try { grantClientToken() } catch (e: Exception) { clientTokenFailedAt = System.currentTimeMillis(); lastClientTokenError = e.message; null }
+    }
+
+    private fun grantClientToken(): String {
         val p = page()
-        val clientId = p.clientId ?: throw BridgeException("the player page has no client id")
-        val version = p.clientVersion ?: session.get(ctx, "appVersion") ?: throw BridgeException("the player page has no client version")
+        val clientId = p.clientId
+        val version = p.clientVersion ?: session.get(ctx, "appVersion") ?: DEFAULT_APP_VERSION
         val deviceId = WebSession.cookieValue(cookies(), "sp_t") ?: session.get(ctx, "deviceId") ?: java.util.UUID.randomUUID().toString().replace("-", "").also { session.put(ctx, "deviceId", it) }
         val body = jsonObj(
             "client_data" to jsonObj(
@@ -111,7 +121,7 @@ class SpotifyWebClient(private val ctx: Context) {
         session.put(ctx, "clientTokenExp", expiresAt.toString())
     }
 
-    private fun appVersion(): String = page().clientVersion ?: session.get(ctx, "appVersion") ?: "1.2.70.0"
+    private fun appVersion(): String = page().clientVersion ?: session.get(ctx, "appVersion") ?: DEFAULT_APP_VERSION
 
     // ---- persisted query hashes, harvested from the player's bundles
 
@@ -192,8 +202,9 @@ class SpotifyWebClient(private val ctx: Context) {
 
     private fun headers(b: Request.Builder): Request.Builder {
         val bearer = SpotifyBridge.token(ctx).value
+        val ct = clientToken()
         return b.header("Authorization", "Bearer $bearer")
-            .header("client-token", clientToken())
+            .apply { if (ct != null) header("client-token", ct) }
             .header("spotify-app-version", appVersion())
             .header("app-platform", "WebPlayer")
             .header("Accept", "application/json").header("Accept-Language", "en")
@@ -218,7 +229,7 @@ class SpotifyWebClient(private val ctx: Context) {
             return gql(operation, variables, retry = false)
         }
         if (code == 429) throw BridgeException("Spotify asks to slow down (429, retry in $wait s)")
-        if (code !in 200..299 && errors.isEmpty()) throw BridgeException("Spotify $operation: HTTP $code ${text.take(200)}")
+        if (code !in 200..299 && errors.isEmpty()) throw BridgeException("Spotify $operation: HTTP $code ${text.take(200)}" + (lastClientTokenError?.let { " (no client token: $it)" } ?: ""))
         if (errors.isNotEmpty()) throw BridgeException("Spotify $operation: ${errors.joinToString("; ").take(300)}")
         val typename = j["data"].let { d -> (d as? JsonObject)?.values?.firstOrNull()?.get("__typename").str }
         if (typename != null && (typename.endsWith("Error") || typename.contains("Failure") || typename.contains("NotFound"))) {
@@ -512,6 +523,11 @@ class SpotifyWebClient(private val ctx: Context) {
 
     companion object {
         const val PATHFINDER = "https://api-partner.spotify.com/pathfinder/v1/query"
+        /** open.spotify.com's own client id, unchanged for years; the page is read first all the same. */
+        const val WEB_PLAYER_CLIENT_ID = "d8a5ed958d274c2e8ee717e6a4b0971d"
+        const val DEFAULT_APP_VERSION = "1.2.70.0"
+        @Volatile private var clientTokenFailedAt = 0L
+        @Volatile private var lastClientTokenError: String? = null
         const val SPCLIENT = "https://spclient.wg.spotify.com"
         private val JSON = "application/json".toMediaType()
         val SESSION_SCRIPT = Regex("""<script[^>]*id="session"[^>]*>(.*?)</script>""", RegexOption.DOT_MATCHES_ALL)
