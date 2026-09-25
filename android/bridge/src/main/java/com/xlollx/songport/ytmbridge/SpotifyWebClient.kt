@@ -378,7 +378,7 @@ class SpotifyWebClient(private val ctx: Context) {
             var parsed = 0
             for (it in items) {
                 val d = it["itemV2"]["data"] ?: it["item"]["data"]
-                trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str)?.let { t -> out += t; parsed++ }
+                trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str, it["itemV2"]["_uri"].str ?: it["item"]["_uri"].str)?.let { t -> out += t; parsed++ }
             }
             val total = content["totalCount"].long?.toInt() ?: 0
             if (parsed == 0 && offset == 0 && (items.isNotEmpty() || content == null || total != 0)) unexpected("fetchPlaylist", j, items, content)
@@ -398,7 +398,7 @@ class SpotifyWebClient(private val ctx: Context) {
             var parsed = 0
             for (it in items) {
                 val d = it["track"]["data"] ?: it["item"]["data"]
-                trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str)?.let { t -> out += t; parsed++ }
+                trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str, it["track"]["_uri"].str ?: it["item"]["_uri"].str)?.let { t -> out += t; parsed++ }
             }
             val total = lib["totalCount"].long?.toInt() ?: 0
             // Zero liked songs is a legitimate answer only when Spotify says the total is zero.
@@ -416,7 +416,7 @@ class SpotifyWebClient(private val ctx: Context) {
                 gql("searchTracks", jsonObj("searchTerm" to query, "offset" to 0, "limit" to 10, "numberOfTopResults" to 5, "includeAudiobooks" to false, "includePreReleases" to false))
             }.getOrNull()
             val items = r["data"]["searchV2"]["tracksV2"]["items"].arr
-            if (items.isNotEmpty()) return items.mapNotNull { trackDto(it["item"]["data"] ?: it["data"], null, null) }
+            if (items.isNotEmpty()) return items.mapNotNull { trackDto(it["item"]["data"] ?: it["data"], null, null, it["item"]["_uri"].str) }
         }
         val j = gql("searchDesktop", jsonObj(
             "searchTerm" to query, "offset" to 0, "limit" to 10, "numberOfTopResults" to 5,
@@ -427,7 +427,7 @@ class SpotifyWebClient(private val ctx: Context) {
         return when (kind) {
             "album" -> s["albumsV2"]["items"].arr.mapNotNull { albumDto(it["data"] ?: it["item"]["data"], null) }
             "artist" -> s["artists"]["items"].arr.mapNotNull { artistDto(it["data"] ?: it["item"]["data"], null) }
-            else -> s["tracksV2"]["items"].arr.mapNotNull { trackDto(it["item"]["data"] ?: it["data"], null, null) }
+            else -> s["tracksV2"]["items"].arr.mapNotNull { trackDto(it["item"]["data"] ?: it["data"], null, null, it["item"]["_uri"].str) }
         }
     }
 
@@ -539,12 +539,14 @@ class SpotifyWebClient(private val ctx: Context) {
 
     // ---- shapes
 
-    private fun trackDto(d: JsonElement?, uid: String?, addedAt: String?): TrackDto? {
-        val uri = d["uri"].str ?: return null
+    /** [outerUri]: the library and playlist rows carry the uri beside `data` (`_uri`), not always inside it. */
+    private fun trackDto(d: JsonElement?, uid: String?, addedAt: String?, outerUri: String? = null): TrackDto? {
+        val uri = d["uri"].str ?: outerUri ?: return null
         if (!uri.startsWith("spotify:track:")) return null
         val name = d["name"].str ?: return null
         val artists = d["artists"]["items"].arr.mapNotNull { it["profile"]["name"].str }
             .ifEmpty { d["artistsV2"]["items"].arr.mapNotNull { it["profile"]["name"].str } }
+            .ifEmpty { d["albumOfTrack"]["artists"]["items"].arr.mapNotNull { it["profile"]["name"].str } }
         val duration = d["trackDuration"]["totalMilliseconds"].long ?: d["duration"]["totalMilliseconds"].long ?: 0
         val rating = d["contentRating"]["label"].str
         return TrackDto(
