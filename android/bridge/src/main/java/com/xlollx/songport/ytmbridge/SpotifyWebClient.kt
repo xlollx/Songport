@@ -126,9 +126,29 @@ class SpotifyWebClient(private val ctx: Context) {
     // ---- persisted query hashes, harvested from the player's bundles
 
     private val NEEDED = listOf(
-        "libraryV3", "fetchPlaylist", "fetchLibraryTracks", "searchDesktop", "getTrack",
+        "libraryV3", "fetchPlaylist", "fetchLibraryTracks", "searchTracks", "searchDesktop", "getTrack", "profileAttributes",
         "addToPlaylist", "removeFromPlaylist", "addToLibrary", "removeFromLibrary",
     )
+
+    /**
+     * A public registry that re-reads the player's bundle every four hours and keeps the hashes of
+     * the main queries, verified (spotify-gql-registry on GitHub). Read at most every six hours; its
+     * entries win over what this client read from the bundle itself, since a bundle can carry more
+     * than one literal for a name and the registry's are the ones the player uses today.
+     */
+    private fun registry(): Map<String, String> {
+        val at = session.get(ctx, "registryAt")?.toLongOrNull() ?: 0
+        val cached = session.get(ctx, "registry")?.let { runCatching { parseJson(it) as? JsonObject }.getOrNull() }
+        if (cached != null && System.currentTimeMillis() - at < 6 * 3600_000) return cached.entries.associate { (k, v) -> k to (v.str ?: "") }
+        val text = runCatching {
+            http.newCall(Request.Builder().url(REGISTRY_URL).header("User-Agent", SpotifyBridge.USER_AGENT).build()).execute().use { r -> if (r.isSuccessful) r.body?.string() else null }
+        }.getOrNull() ?: return cached?.entries?.associate { (k, v) -> k to (v.str ?: "") } ?: emptyMap()
+        val ops = runCatching { parseJson(text)["operations"] as? JsonObject }.getOrNull() ?: return emptyMap()
+        val out = ops.entries.mapNotNull { (name, v) -> v["hash"].str?.takeIf { it.length == 64 }?.let { name to it } }.toMap()
+        session.put(ctx, "registry", JsonObject(out.mapValues { JsonPrimitive(it.value) }).toString())
+        session.put(ctx, "registryAt", System.currentTimeMillis().toString())
+        return out
+    }
 
     private fun hashes(): MutableMap<String, String> {
         val raw = session.get(ctx, "hashes") ?: return HashMap()
@@ -167,8 +187,12 @@ class SpotifyWebClient(private val ctx: Context) {
      * the main bundle: joined by id they give `<name>.<hash>.js` under the same CDN folder.
      */
     private fun harvest(map: MutableMap<String, String>, packUrl: String?) {
-        val pack = packUrl ?: throw BridgeException("Spotify: the player page has no bundle to read the queries from")
-        fun scan(text: String) { HASH.findAll(text).forEach { m -> map[m.groupValues[1]] = m.groupValues[3] } }
+        // Bundle literals fill what the registry does not cover (the mutations); the first literal
+        // for a name is kept, as the registry's own reader does.
+        val known = registry()
+        fun scan(text: String) { HASH.findAll(text).forEach { m -> if (m.groupValues[1] !in known) map.putIfAbsent(m.groupValues[1], m.groupValues[3]) } }
+        map.putAll(known)
+        val pack = packUrl ?: run { if (NEEDED.all { it in map }) { saveHashes(map, null); return }; throw BridgeException("Spotify: the player page has no bundle to read the queries from") }
         fun fetch(url: String): String = http.newCall(Request.Builder().url(url).header("User-Agent", SpotifyBridge.USER_AGENT).build())
             .execute().use { r -> if (r.isSuccessful) r.body?.string() ?: "" else "" }
         val main = fetch(pack)
@@ -268,8 +292,12 @@ class SpotifyWebClient(private val ctx: Context) {
         val req = Request.Builder().url("https://www.spotify.com/api/account-settings/v1/profile")
             .header("Cookie", cookies()).header("User-Agent", SpotifyBridge.USER_AGENT).header("Accept", "application/json").build()
         val j = http.newCall(req).execute().use { r -> if (r.isSuccessful) parseJson(r.body?.string() ?: "") else JsonNull }
-        val username = j["profile"]["username"].str
-        val name = j["profile"]["name"].str ?: j["profile"]["displayName"].str ?: username
+        var username = j["profile"]["username"].str
+        var name = j["profile"]["name"].str ?: j["profile"]["displayName"].str ?: username
+        if (username == null) runCatching {
+            val p = gql("profileAttributes", jsonObj())["data"]["me"]["profile"]
+            username = p["username"].str; name = p["name"].str ?: username
+        }
         if (username != null) session.put(ctx, "userId", username)
         return username to name
     }
@@ -383,6 +411,13 @@ class SpotifyWebClient(private val ctx: Context) {
 
     /** Catalogue search, the player's: tracks, or albums or artists for [kind]. */
     fun search(query: String, kind: String?): List<TrackDto> {
+        if (kind == null) {
+            val r = runCatching {
+                gql("searchTracks", jsonObj("searchTerm" to query, "offset" to 0, "limit" to 10, "numberOfTopResults" to 5, "includeAudiobooks" to false, "includePreReleases" to false))
+            }.getOrNull()
+            val items = r["data"]["searchV2"]["tracksV2"]["items"].arr
+            if (items.isNotEmpty()) return items.mapNotNull { trackDto(it["item"]["data"] ?: it["data"], null, null) }
+        }
         val j = gql("searchDesktop", jsonObj(
             "searchTerm" to query, "offset" to 0, "limit" to 10, "numberOfTopResults" to 5,
             "includeAudiobooks" to false, "includeArtistHasConcertsField" to false, "includePreReleases" to false,
@@ -554,7 +589,8 @@ class SpotifyWebClient(private val ctx: Context) {
         val SESSION_SCRIPT = Regex("""<script[^>]*id="session"[^>]*>(.*?)</script>""", RegexOption.DOT_MATCHES_ALL)
         val SERVER_CONFIG = Regex("""<script[^>]*id="appServerConfig"[^>]*>(.*?)</script>""", RegexOption.DOT_MATCHES_ALL)
         /** `"fetchPlaylist","query","<sha256>"`: how the player's bundles name their persisted queries. */
-        val HASH = Regex(""""([A-Za-z][A-Za-z0-9_]*)","(query|mutation)","([0-9a-f]{64})"""")
+        val HASH = Regex(""""([A-Za-z][A-Za-z0-9_]*)"\s*,\s*"(query|mutation)"\s*,\s*"([0-9a-f]{64})"""")
+        const val REGISTRY_URL = "https://raw.githubusercontent.com/Jigen-Ohtsusuki/spotify-gql-registry/main/hashes.json"
         val CHUNK_MAP = Regex("""\{\d+:"[^"]+"(?:,\d+:"[^"]+")*\}""")
         private val PAIR = Regex("""(\d+):"([^"]+)"""")
         @Volatile private var cachedPage: Pair<Long, Page>? = null
