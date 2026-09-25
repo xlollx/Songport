@@ -70,8 +70,6 @@ class SpotifyWebClient(private val ctx: Context) {
         cachedPage = System.currentTimeMillis() to p
         return p
     }
-    /** Drops the cached page: its bearer was refused, the next call fetches a fresh one. */
-    fun dropPage() { cachedPage = null }
 
     // ---- client token: names the application; two weeks, granted to the player's id and version
 
@@ -523,5 +521,7 @@ class SpotifyWebClient(private val ctx: Context) {
         val CHUNK_MAP = Regex("""\{\d+:"[^"]+"(?:,\d+:"[^"]+")*\}""")
         private val PAIR = Regex("""(\d+):"([^"]+)"""")
         @Volatile private var cachedPage: Pair<Long, Page>? = null
+        /** Drops the cached page: its bearer was refused, the next call fetches a fresh one. */
+        fun dropPage() { cachedPage = null }
     }
 }
