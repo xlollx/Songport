@@ -35,6 +35,8 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
     override val brandColor = 0xFF111111
     override val noteRes = R.string.provider_note_tidal
     override val beta = true
+    override val supportsAlbums = true
+    override val supportsArtists = true
 
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://developer.tidal.com/dashboard",
@@ -124,7 +126,54 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
         return Playlist(playlistId, d["attributes"]["name"].str ?: playlistId, d["attributes"]["numberOfItems"].int ?: -1, ownedByMe = false, description = d["attributes"]["description"].str.orEmpty())
     }
 
+    // ---- collection: saved albums and followed artists (userCollections, the same JSON:API shapes)
+
+    private fun albumFrom(res: JsonElement?, names: Map<String, String>): Track? {
+        val id = res["id"].str ?: return null
+        val a = res["attributes"]
+        return Track(
+            id = id, title = a["title"].str ?: "", artists = res["relationships"]["artists"]["data"].arr.mapNotNull { names[it["id"].str] },
+            isrc = a["barcodeId"].str, explicit = a["explicit"].bool, year = Durations.year(a["releaseDate"].str), kind = Track.KIND_ALBUM,
+        )
+    }
+
+    private fun artistFrom(res: JsonElement?): Track? {
+        val id = res["id"].str ?: return null
+        val name = res["attributes"]["name"].str ?: return null
+        return Track(id = id, title = name, artists = listOf(name), kind = Track.KIND_ARTIST)
+    }
+
+    private suspend fun albumsOf(ctx: Context, resources: List<JsonElement>): List<Track> {
+        val names = artistNames(ctx, resources.flatMap { r -> r["relationships"]["artists"]["data"].arr.mapNotNull { it["id"].str } })
+        return resources.mapNotNull { albumFrom(it, names) }
+    }
+
+    private suspend fun collection(ctx: Context, kind: String): List<Track> {
+        val t = tokens(ctx)
+        val order = ArrayList<String>()
+        val included = LinkedHashMap<String, JsonElement>()
+        var url: String? = "$API/userCollections/${Http.enc(t.userId)}/relationships/$kind?countryCode=${cc(ctx)}&include=$kind"
+        while (url != null) {
+            val j = api(ctx, "GET", url)
+            for (d in j["data"].arr) if (d["type"].str == kind) order += d["id"].str ?: continue
+            for (inc in j["included"].arr) if (inc["type"].str == kind) included[inc["id"].str ?: continue] = inc
+            url = nextUrl(j)
+        }
+        val resources = order.mapNotNull { included[it] }
+        return if (kind == "albums") albumsOf(ctx, resources) else resources.mapNotNull { artistFrom(it) }
+    }
+
+    private suspend fun editCollection(ctx: Context, kind: String, method: String, ids: List<String>) {
+        val t = tokens(ctx)
+        ids.chunked(20).forEach { chunk ->
+            api(ctx, method, "$API/userCollections/${Http.enc(t.userId)}/relationships/$kind?countryCode=${cc(ctx)}",
+                jsonObj("data" to jsonArr(chunk.map { mapOf("type" to kind, "id" to it) })))
+        }
+    }
+
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+        if (playlistId == MusicProvider.ALBUMS_ID) return collection(ctx, "albums")
+        if (playlistId == MusicProvider.ARTISTS_ID) return collection(ctx, "artists")
         val order = ArrayList<Pair<String, String?>>() // (trackId, itemId) nell'ordine della playlist
         val included = LinkedHashMap<String, JsonElement>()
         var url: String? = "$API/playlists/$playlistId/relationships/items?countryCode=${cc(ctx)}&include=items"
@@ -149,6 +198,23 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
     override fun webSearchUrl(ctx: Context, query: String): String = "https://listen.tidal.com/search?q=" + android.net.Uri.encode(query)
 
     override suspend fun search(ctx: Context, track: Track): List<Track> {
+        if (track.kind == Track.KIND_ALBUM) {
+            track.isrcNorm?.let { upc ->
+                val j = api(ctx, "GET", "$API/albums?countryCode=${cc(ctx)}&filter[barcodeId]=$upc")
+                val r = albumsOf(ctx, j["data"].arr)
+                if (r.isNotEmpty()) return r
+            }
+            val q = (listOfNotNull(track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }) + Matcher.searchTitle(track.title)).joinToString(" ")
+            val j = api(ctx, "GET", "$API/searchResults/${Http.enc(q)}/relationships/albums?countryCode=${cc(ctx)}&include=albums")
+            val ids = j["data"].arr.mapNotNull { it["id"].str }.take(5).toSet()
+            return albumsOf(ctx, j["included"].arr.filter { it["type"].str == "albums" && it["id"].str in ids })
+        }
+        if (track.kind == Track.KIND_ARTIST) {
+            val j = api(ctx, "GET", "$API/searchResults/${Http.enc(track.title)}/relationships/artists?countryCode=${cc(ctx)}&include=artists")
+            val ids = j["data"].arr.mapNotNull { it["id"].str }.take(5).toSet()
+            return j["included"].arr.filter { it["type"].str == "artists" && it["id"].str in ids }.mapNotNull { artistFrom(it) }
+        }
+        if (track.kind == Track.KIND_PODCAST) return emptyList()
         track.isrcNorm?.let { isrc ->
             val j = api(ctx, "GET", "$API/tracks?countryCode=${cc(ctx)}&filter[isrc]=$isrc")
             val r = resolve(ctx, j["data"].arr)
@@ -171,6 +237,8 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
     }
 
     override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+        if (playlistId == MusicProvider.ALBUMS_ID) return editCollection(ctx, "albums", "POST", tracks.map { it.id })
+        if (playlistId == MusicProvider.ARTISTS_ID) return editCollection(ctx, "artists", "POST", tracks.map { it.id })
         tracks.chunked(20).forEach { chunk ->
             api(ctx, "POST", "$API/playlists/$playlistId/relationships/items?countryCode=${cc(ctx)}",
                 jsonObj("data" to jsonArr(chunk.map { mapOf("type" to "tracks", "id" to it.id) })))
@@ -187,6 +255,8 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
     }
 
     override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+        if (playlistId == MusicProvider.ALBUMS_ID) return editCollection(ctx, "albums", "DELETE", tracks.map { it.id })
+        if (playlistId == MusicProvider.ARTISTS_ID) return editCollection(ctx, "artists", "DELETE", tracks.map { it.id })
         tracks.filter { it.itemId != null }.chunked(20).forEach { chunk ->
             api(ctx, "DELETE", "$API/playlists/$playlistId/relationships/items",
                 jsonObj("data" to jsonArr(chunk.map { mapOf("type" to "tracks", "id" to it.id, "meta" to mapOf("itemId" to it.itemId)) })))

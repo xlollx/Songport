@@ -15,6 +15,9 @@ object BridgeCore {
     /** Reported as "version" by the status calls: the built-in connectors have every feature. */
     const val VERSION = 1000
     const val PAGE = 400
+    /** Songport's ids for the library objects, the same on every connector. */
+    const val ALBUMS = "__albums__"
+    const val ARTISTS = "__artists__"
 
     fun call(ctx: Context, method: String, arg: String?, extras: Bundle?): Bundle {
         return try {
@@ -39,20 +42,33 @@ object BridgeCore {
                         if (offset + PAGE < all.size) putInt("next", offset + PAGE)
                     }
                 }
-                "search" -> ok(json.encodeToString(client.search(arg ?: "", extras?.getBoolean("videos") == true)))
+                "search" -> {
+                    val kind = extras?.getString("kind")
+                    ok(json.encodeToString(if (kind == "album" || kind == "artist") client.searchKind(arg ?: "", kind) else client.search(arg ?: "", extras?.getBoolean("videos") == true)))
+                }
                 "stats" -> Bundle().apply { putString("stats", YtmClient.Stats.summary()) }
                 "create" -> ok(json.encodeToString(client.createPlaylist(extras?.getString("name") ?: "Playlist", extras?.getString("description") ?: "")))
                 "add" -> {
-                    client.addTracks(arg ?: return err("missing playlist id"), extras?.getStringArray("ids")?.toList() ?: emptyList())
-                    invalidate(arg)
+                    val id = arg ?: return err("missing playlist id")
+                    val ids = extras?.getStringArray("ids")?.toList() ?: emptyList()
+                    when (id) {
+                        ALBUMS -> client.rateAlbums(ids, extras?.getStringArray("uris")?.toList() ?: emptyList(), like = true)
+                        ARTISTS -> client.subscribeArtists(ids, on = true)
+                        else -> client.addTracks(id, ids)
+                    }
+                    invalidate(id)
                     Bundle()
                 }
                 "rename" -> { client.renamePlaylist(arg ?: return err("missing playlist id"), extras?.getString("name") ?: ""); Bundle() }
                 "delete" -> { client.deletePlaylist(arg ?: return err("missing playlist id")); invalidate(arg); Bundle() }
                 "remove" -> {
-                    val items = json.decodeFromString<List<RemoveItem>>(extras?.getString("json") ?: "[]")
-                    client.removeTracks(arg ?: return err("missing playlist id"), items)
-                    invalidate(arg)
+                    val id = arg ?: return err("missing playlist id")
+                    when (id) {
+                        ALBUMS -> client.rateAlbums(extras?.getStringArray("ids")?.toList() ?: emptyList(), extras?.getStringArray("uris")?.toList() ?: emptyList(), like = false)
+                        ARTISTS -> client.subscribeArtists(extras?.getStringArray("ids")?.toList() ?: emptyList(), on = false)
+                        else -> client.removeTracks(id, json.decodeFromString<List<RemoveItem>>(extras?.getString("json") ?: "[]"))
+                    }
+                    invalidate(id)
                     Bundle()
                 }
                 // ---- Amazon Music (experimental): only what the protocol mapping covers so far.
@@ -179,7 +195,7 @@ object BridgeCore {
     private fun cachedTracks(client: YtmClient, id: String): List<TrackDto> {
         val now = System.currentTimeMillis()
         lastTracks?.let { (pid, at, list) -> if (pid == id && now - at < 120_000) return list }
-        val list = client.tracks(id)
+        val list = when (id) { ALBUMS -> client.libraryAlbums(); ARTISTS -> client.librarySubscriptions(); else -> client.tracks(id) }
         lastTracks = Triple(id, now, list)
         return list
     }

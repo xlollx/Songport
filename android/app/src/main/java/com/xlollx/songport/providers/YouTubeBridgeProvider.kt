@@ -39,6 +39,9 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     override val noteRes = R.string.provider_note_ytm
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
+    /** Saved albums and subscribed artists: the built-in connectors know them, an old plugin may not. */
+    override val supportsAlbums: Boolean get() = BridgePlugin.builtIn
+    override val supportsArtists: Boolean get() = BridgePlugin.builtIn
     override val supportsMultipleAccounts = false
     override val authDomain = "accounts.google.com"
     override val revokeUrl = "https://myaccount.google.com/device-activity"
@@ -97,8 +100,9 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     override fun webSearchUrl(ctx: Context, query: String): String = "https://music.youtube.com/search?q=" + android.net.Uri.encode(query)
 
     override suspend fun search(ctx: Context, track: Track): List<Track> {
-        val q = (track.artists.take(2) + track.title).joinToString(" ")
-        return io(ctx, "search", q) { j -> j.arr.mapNotNull { toTrack(it) } }
+        val kind = when (track.kind) { Track.KIND_ALBUM -> "album"; Track.KIND_ARTIST -> "artist"; Track.KIND_PODCAST -> return emptyList(); else -> null }
+        val q = if (kind == "artist") track.title else (track.artists.take(2) + track.title).joinToString(" ")
+        return io(ctx, "search", q, Bundle().apply { kind?.let { putString("kind", it) } }) { j -> j.arr.mapNotNull { toTrack(it) } }
     }
 
     /** YouTube videos, for a song the music catalogue does not have (an old Bridge ignores the flag and repeats the songs). */
@@ -133,12 +137,25 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return
         withContext(Dispatchers.IO) {
-            call(ctx, "add", playlistId, Bundle().apply { putStringArray("ids", tracks.map { it.id }.toTypedArray()) })
+            call(ctx, "add", playlistId, Bundle().apply {
+                putStringArray("ids", tracks.map { it.id }.toTypedArray())
+                // Albums are liked through their playlist id, which the row carried as uri when it had one.
+                if (playlistId == MusicProvider.ALBUMS_ID) putStringArray("uris", tracks.map { it.uri ?: "" }.toTypedArray())
+            })
         }
     }
 
     override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return
+        if (playlistId == MusicProvider.ALBUMS_ID || playlistId == MusicProvider.ARTISTS_ID) {
+            withContext(Dispatchers.IO) {
+                call(ctx, "remove", playlistId, Bundle().apply {
+                    putStringArray("ids", tracks.map { it.id }.toTypedArray())
+                    putStringArray("uris", tracks.map { it.uri ?: "" }.toTypedArray())
+                })
+            }
+            return
+        }
         val items = tracks.joinToString(",", "[", "]") { t ->
             """{"videoId":${quote(t.id)}${t.itemId?.let { ",\"setVideoId\":${quote(it)}" } ?: ""}}"""
         }
@@ -156,6 +173,9 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
             album = j["album"].str ?: "",
             durationMs = j["durationMs"].long ?: 0,
             itemId = j["setVideoId"].str,
+            uri = j["uri"].str,
+            kind = when (j["kind"].str) { "album" -> Track.KIND_ALBUM; "artist" -> Track.KIND_ARTIST; else -> "" },
+            year = j["year"].long?.toInt() ?: 0,
         )
     }
 

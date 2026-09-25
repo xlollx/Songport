@@ -50,7 +50,7 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     override val brandColor = 0xFFFA243C
     override val noteRes = R.string.provider_note_apple
     override val beta = true
-    override val canRemoveTracks = false
+    override val canRemoveTracks: Boolean get() = false
     override val canRenamePlaylists: Boolean get() = false
     override val canDeletePlaylists: Boolean get() = false
     /** Library albums can be listed and added; the API has no "followed artists". */

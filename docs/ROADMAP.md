@@ -36,16 +36,17 @@ quota meter; own API keys to escape shared quotas.
 - Connections log in Settings › Security, and a plain "where does the key go?" in the AI setup.
 - Spotify without Premium: the web route now talks to the player's own backend (GraphQL gateway,
   playlist store), since Spotify refuses first-party tokens on the public Web API (December 2025).
+- Saved albums and subscribed artists on YouTube Music (the library tabs, as ytmusicapi reads
+  them) and on TIDAL (user collections v2). Apple Music (web) removes tracks, renames and deletes
+  playlists through the web player's backend, which the public API refuses.
 - YouTube Music already pauses on Google's abuse page with a doubling wait and a "verify" button;
   song results are preferred and videos are only a fallback.
 
 ## Next
 
-1. Saved albums and followed artists on **YouTube Music** (web protocol) and **TIDAL** (user
-   collections v2).
-2. **Cover art** carried to the target where the API allows (Spotify).
-3. **Last.fm loves** (needs the API secret for the session flow).
-4. A throttled YouTube Music queue that resumes the next day by itself.
+1. **Cover art** carried to the target where the API allows (Spotify).
+2. **Last.fm loves** (needs the API secret for the session flow).
+3. A throttled YouTube Music queue that resumes the next day by itself.
 
 ## Name
 

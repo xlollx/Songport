@@ -7,6 +7,10 @@ import android.os.Bundle
 import com.xlollx.songport.BuildConfig
 import com.xlollx.songport.R
 import com.xlollx.songport.model.ProviderException
+import com.xlollx.songport.model.Track
+import com.xlollx.songport.net.Http
+import com.xlollx.songport.net.get
+import com.xlollx.songport.net.str
 
 /**
  * Apple Music through the companion app "Songport Bridge": the user signs in with their Apple ID on
@@ -52,6 +56,44 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
         BridgePlugin.installed(ctx) && runCatching { call(ctx, "apple.status").getBoolean("connected", false) }.getOrDefault(false)
     override fun accountName(ctx: Context): String? = runCatching { call(ctx, "apple.status").getString("account") }.getOrNull()
     override fun canRead(ctx: Context, playlistId: String): Boolean = isConnected(ctx)
+
+    // The web player's backend (amp-api.music.apple.com) takes the same two tokens and, unlike the
+    // public API, removes tracks, renames and deletes library playlists: what music.apple.com does.
+    override val canRemoveTracks: Boolean get() = true
+    override val canRenamePlaylists: Boolean get() = true
+    override val canDeletePlaylists: Boolean get() = true
+
+    private suspend fun amp(ctx: Context, method: String, path: String, body: kotlinx.serialization.json.JsonElement? = null) {
+        val dev = developerToken(ctx)
+        val user = userToken(ctx)
+        if (dev.isBlank() || user == null) throw ProviderException(ctx.getString(R.string.error_not_connected, displayName))
+        val headers = mapOf(
+            "Authorization" to "Bearer $dev", "Music-User-Token" to user, "Accept" to "application/json",
+            "Origin" to "https://music.apple.com", "Referer" to "https://music.apple.com/",
+        )
+        val resp = com.xlollx.songport.net.Http.send(method, "https://amp-api.music.apple.com$path", headers, body?.let { com.xlollx.songport.net.Http.jsonBody(it.toString()) })
+        if (!resp.ok) {
+            val detail = com.xlollx.songport.net.parseJson(resp.body)["errors"][0]["detail"].str ?: resp.body.take(200)
+            throw ProviderException("$displayName ${resp.code}: $detail")
+        }
+    }
+
+    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        amp(ctx, "PATCH", "/v1/me/library/playlists/$playlistId", com.xlollx.songport.net.jsonObj("attributes" to mapOf("name" to name)))
+    }
+
+    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        amp(ctx, "DELETE", "/v1/me/library/playlists/$playlistId")
+    }
+
+    /** Entries go by their library id (i.xxx), which the playlist listing carries as itemId. */
+    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+        if (tracks.isEmpty()) return
+        val missing = tracks.filter { it.itemId == null }.map { it.id }.toSet()
+        val byCatalog = if (missing.isNotEmpty()) tracks(ctx, playlistId).filter { it.id in missing }.groupBy { it.id } else emptyMap()
+        val libIds = tracks.flatMap { t -> if (t.itemId != null) listOf(t.itemId) else byCatalog[t.id].orEmpty().mapNotNull { it.itemId } }.distinct()
+        for (lib in libIds) amp(ctx, "DELETE", "/v1/me/library/playlists/$playlistId/tracks?ids[library-songs]=${Http.enc(lib)}&mode=all")
+    }
 
     override fun startAuth(ctx: Context) {
         val pkg = BridgePlugin.packageName(ctx)

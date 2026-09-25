@@ -373,6 +373,107 @@ class YtmClient(private val ctx: Context) {
             .take(20)
     }
 
+    // ------------------------------------------------------------------ library: albums and artists
+    // Paths as ytmusicapi reads them (get_library_albums, get_library_subscriptions, rate_playlist,
+    // subscribe_artists): the album's playlist id (OLAK5uy_...) is what "like" wants, the browse id
+    // (MPREb...) is what identifies it; an artist is its channel (UC...).
+
+    /** Saved albums: the "Albums" tab of the library. */
+    fun libraryAlbums(): List<TrackDto> {
+        val out = LinkedHashMap<String, TrackDto>()
+        var resp = call("browse", mapOf("browseId" to "FEmusic_liked_albums"))
+        var pages = 0
+        while (true) {
+            var added = 0
+            for (item in resp.findAll("musicTwoRowItemRenderer")) {
+                val t = albumRow(item) ?: continue
+                if (out.putIfAbsent(t.id, t) == null) added++
+            }
+            val scope = resp.findFirst("gridRenderer") ?: resp.findFirst("gridContinuation") ?: resp.findFirst("onResponseReceivedActions")
+            val next = continuationOf(scope) ?: break
+            if (added == 0 || ++pages > 50) break
+            resp = continueBrowse(next)
+        }
+        return out.values.toList()
+    }
+
+    /** Subscribed artists: the "Artists" tab of the library, subscriptions only. */
+    fun librarySubscriptions(): List<TrackDto> {
+        val out = LinkedHashMap<String, TrackDto>()
+        var resp = call("browse", mapOf("browseId" to "FEmusic_library_corpus_artists"))
+        var pages = 0
+        while (true) {
+            var added = 0
+            for (item in resp.findAll("musicResponsiveListItemRenderer")) {
+                val t = artistRow(item) ?: continue
+                if (out.putIfAbsent(t.id, t) == null) added++
+            }
+            val scope = resp.findFirst("musicShelfRenderer") ?: resp.findFirst("musicShelfContinuation") ?: resp.findFirst("onResponseReceivedActions")
+            val next = continuationOf(scope) ?: break
+            if (added == 0 || ++pages > 50) break
+            resp = continueBrowse(next)
+        }
+        return out.values.toList()
+    }
+
+    /** Catalogue search for albums or artists (the "Albums" and "Artists" filters). */
+    fun searchKind(query: String, kind: String): List<TrackDto> {
+        if (query.isBlank()) return emptyList()
+        val body = mapOf("query" to query, "params" to if (kind == "artist") ARTISTS_FILTER else ALBUMS_FILTER)
+        val resp = try { call("search", body, auth = false) } catch (e: Throttled) { call("search", body, auth = true) }
+        val seen = HashSet<String>()
+        return resp.findAll("musicResponsiveListItemRenderer")
+            .mapNotNull { if (kind == "artist") artistRow(it) else albumRow(it) }
+            .filter { seen.add(it.id) }
+            .take(10)
+    }
+
+    /** The album's playlist id, from its page when the row did not carry it. */
+    private fun albumPlaylistId(browseId: String): String? {
+        val page = call("browse", mapOf("browseId" to browseId))
+        return page.findFirst("watchPlaylistEndpoint")?.get("playlistId").str ?: page.findFirst("playlistId").str
+    }
+
+    /** Saves or removes albums: a "like" on the album's playlist. [uris] carry playlist ids when known. */
+    fun rateAlbums(browseIds: List<String>, uris: List<String?>, like: Boolean) {
+        browseIds.forEachIndexed { i, id ->
+            val pl = uris.getOrNull(i)?.takeIf { !it.isNullOrBlank() && !it.startsWith("MPREb") } ?: albumPlaylistId(id)
+                ?: throw BridgeException("album $id has no playlist to like")
+            call(if (like) "like/like" else "like/removelike", mapOf("target" to mapOf("playlistId" to pl)))
+        }
+    }
+
+    fun subscribeArtists(channelIds: List<String>, on: Boolean) {
+        if (channelIds.isEmpty()) return
+        channelIds.chunked(20).forEach { call(if (on) "subscription/subscribe" else "subscription/unsubscribe", mapOf("channelIds" to it)) }
+    }
+
+    /** An album row (library grid or search list): browse id MPREb..., title, artists, year, playlist id when present. */
+    private fun albumRow(item: JsonElement): TrackDto? {
+        val browseId = item["title"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"].str
+            ?: item["navigationEndpoint"]["browseEndpoint"]["browseId"].str ?: return null
+        if (!browseId.startsWith("MPREb")) return null
+        val cols = item["flexColumns"].arr.map { it["musicResponsiveListItemFlexColumnRenderer"]["text"] }
+        val title = item["title"].runsText() ?: cols.getOrNull(0).runsText() ?: return null
+        val runs = item["subtitle"]["runs"].arr.ifEmpty { cols.getOrNull(1)["runs"].arr }
+        val artists = runs.filter { r -> r["navigationEndpoint"]["browseEndpoint"]["browseId"].str?.let { it.startsWith("UC") || it.startsWith("MPLA") } == true }
+            .mapNotNull { it["text"].str }
+        val segments = runs.mapNotNull { it["text"].str }.joinToString("").split('•').map { it.trim() }
+        val year = segments.lastOrNull { Regex("""^\d{4}$""").matches(it) }?.toIntOrNull()
+        val fallbackArtists = segments.getOrNull(1)?.takeIf { artists.isEmpty() && !Regex("""^\d{4}$""").matches(it) }
+            ?.split(Regex(""",\s+|\s+&\s+"""))?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
+        val playlistId = item.findFirst("watchPlaylistEndpoint")?.get("playlistId").str
+        return TrackDto(browseId, title, artists.ifEmpty { fallbackArtists }, uri = playlistId, kind = "album", year = year)
+    }
+
+    private fun artistRow(item: JsonElement): TrackDto? {
+        val channel = item["navigationEndpoint"]["browseEndpoint"]["browseId"].str ?: return null
+        if (!channel.startsWith("UC")) return null
+        val cols = item["flexColumns"].arr.map { it["musicResponsiveListItemFlexColumnRenderer"]["text"] }
+        val name = cols.getOrNull(0).runsText() ?: item["title"].runsText() ?: return null
+        return TrackDto(channel, name, listOf(name), kind = "artist")
+    }
+
     // ------------------------------------------------------------------ writes
 
     fun createPlaylist(name: String, description: String): PlaylistDto {
@@ -503,6 +604,9 @@ class YtmClient(private val ctx: Context) {
         /** "1.2M views", "12 Mln di visualizzazioni", "3,4 M de vues": a play count, not an album. */
         private val COUNT = Regex("""^\d[\d.,\s]*\s*(K|M|B|Mln|Mrd|mila|k|m)?\.?\s*(di\s+)?(views?|plays?|visualizzazioni|riproduzioni|vues?|Aufrufe|Wiedergaben|visualizaciones)?$""", RegexOption.IGNORE_CASE)
         private const val SONGS_FILTER = "EgWKAQIIAWoMEA4QChADEAQQCRAF"
+        // The same parameters with the type nibble for albums (IY) and artists (Ig), as ytmusicapi builds them.
+        private const val ALBUMS_FILTER = "EgWKAQIYAWoMEA4QChADEAQQCRAF"
+        private const val ARTISTS_FILTER = "EgWKAQIgAWoMEA4QChADEAQQCRAF"
         // Same parameters as the songs filter with the type nibble set to videos (ytmusicapi: I -> Q).
         private const val VIDEOS_FILTER = "EgWKAQIQAWoMEA4QChADEAQQCRAF"
         private val JSON_TYPE = "application/json; charset=utf-8".toMediaType()
