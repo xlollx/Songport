@@ -25,6 +25,7 @@ object Http {
         .readTimeout(40, TimeUnit.SECONDS)
         .writeTimeout(40, TimeUnit.SECONDS)
         .retryOnConnectionFailure(true)
+        .addInterceptor(HostLog.interceptor)
         .build()
 
     suspend fun send(

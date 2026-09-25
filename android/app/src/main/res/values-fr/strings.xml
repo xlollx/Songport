@@ -472,6 +472,17 @@
     <string name="security_fact_2">Songport ne conserve que des jetons d\'accès révocables, chiffrés avec l\'Android Keystore.</string>
     <string name="security_fact_3">Il n\'y a pas de serveur Songport ni de compte à créer : rien ne quitte votre téléphone à part les requêtes vers les services que vous connectez.</string>
     <string name="security_fact_4">Déconnecter supprime le jeton du téléphone ; chaque service permet aussi de le révoquer depuis la page de votre compte.</string>
+    <string name="ai_trust_title">Où va la clé ?</string>
+    <string name="ai_trust_1">Elle reste sur ce téléphone seulement, chiffrée avec l\'Android Keystore, comme les jetons de vos services musicaux.</string>
+    <string name="ai_trust_2">Elle ne quitte le téléphone que vers %1$s, à chaque requête que vous faites. Songport n\'a pas de serveur : Options → Sécurité → Connexions liste tous les hôtes que cette app a contactés, pour vérifier.</string>
+    <string name="ai_trust_3">« Oublier la clé » la supprime aussitôt. Mieux encore : créez une clé réservée à Songport, avec une limite de dépense, et révoquez-la quand vous voulez.</string>
+    <string name="ai_limits">Fixer une limite de dépense</string>
+    <string name="security_connections">Afficher les connexions</string>
+    <string name="security_connections_desc">Tous les hôtes que cette app a contactés depuis son installation, et combien de fois. Seul le nom d\'hôte est enregistré, jamais ce qui a été envoyé.</string>
+    <string name="security_connections_web">Les connecteurs web (YouTube Music, Amazon Music, les connexions web) passent aussi par le moteur du navigateur, qui n\'apparaît pas ici.</string>
+    <string name="security_connections_none">Aucune connexion pour l\'instant.</string>
+    <string name="security_connections_clear">Vider la liste</string>
+    <string name="security_connections_count">%1$d requêtes · dernière le %2$s</string>
     <string name="security_lock">Exiger le déverrouillage à l\'ouverture</string>
     <string name="security_lock_desc">Empreinte, visage ou code PIN du téléphone avant l\'ouverture de Songport.</string>
     <string name="security_lock_unavailable">Aucun verrouillage d\'écran n\'est configuré sur ce téléphone.</string>

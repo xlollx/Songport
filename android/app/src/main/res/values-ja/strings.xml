@@ -468,6 +468,17 @@
     <string name="security_fact_2">Songport が保存するのは取り消し可能なアクセストークンのみで、Android Keystore で暗号化されます。</string>
     <string name="security_fact_3">Songport のサーバーはなく、作成するアカウントもありません。接続したサービスへのリクエスト以外、何も端末の外に送信されません。</string>
     <string name="security_fact_4">接続を解除すると、端末からトークンが削除されます。どのサービスでも、アカウントページからトークンを取り消すこともできます。</string>
+    <string name="ai_trust_title">キーはどこへ行く？</string>
+    <string name="ai_trust_1">このスマートフォンにのみ、Android Keystore で暗号化して保存されます。音楽サービスのトークンと同じです。</string>
+    <string name="ai_trust_2">あなたがリクエストするたびに %1$s へ送られるだけです。Songport に独自のサーバーはありません。「オプション → セキュリティ → 接続」で、このアプリが接続したすべてのホストを確認できます。</string>
+    <string name="ai_trust_3">「キーを削除」で即座に消えます。さらに安全に：Songport 専用に利用上限付きのキーを作り、いつでも無効化できます。</string>
+    <string name="ai_limits">利用上限を設定</string>
+    <string name="security_connections">接続を表示</string>
+    <string name="security_connections_desc">インストール以降にこのアプリが接続したすべてのホストと回数。記録されるのはホスト名だけで、送信内容は記録されません。</string>
+    <string name="security_connections_web">Web コネクタ（YouTube Music、Amazon Music、Web ログイン）はブラウザーエンジン経由でも通信しますが、ここには表示されません。</string>
+    <string name="security_connections_none">まだ接続はありません。</string>
+    <string name="security_connections_clear">一覧を消去</string>
+    <string name="security_connections_count">%1$d 件のリクエスト · 最終 %2$s</string>
     <string name="security_lock">起動時にロック解除を要求</string>
     <string name="security_lock_desc">Songport を開く前に、指紋、顔、または端末の PIN を要求します。</string>
     <string name="security_lock_unavailable">この端末には画面ロックが設定されていません。</string>

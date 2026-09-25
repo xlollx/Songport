@@ -11,6 +11,7 @@ import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import kotlinx.serialization.json.JsonObject
 import okhttp3.OkHttpClient
+import com.xlollx.songport.ytmbridge.BridgeNet.withHook
 import okhttp3.Request
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -35,7 +36,7 @@ object SpotifyBridge {
     class Token(val value: String, val expiresAt: Long)
 
     @Volatile private var cached: Token? = null
-    private val http = OkHttpClient.Builder().connectTimeout(20, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build()
+    private val http = OkHttpClient.Builder().connectTimeout(20, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).withHook().build()
 
     fun signedIn(cookies: String?): Boolean = WebSession.cookieValue(cookies, "sp_dc") != null
 

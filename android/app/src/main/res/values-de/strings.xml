@@ -472,6 +472,17 @@
     <string name="security_fact_2">Songport speichert nur widerrufbare Zugriffstoken, verschlüsselt mit dem Android Keystore.</string>
     <string name="security_fact_3">Es gibt keinen Songport-Server und kein Konto anzulegen: Nichts verlässt dein Handy außer den Anfragen an die Dienste, die du verbindest.</string>
     <string name="security_fact_4">Trennen löscht den Token vom Handy; jeder Dienst lässt dich ihn außerdem auf deiner Kontoseite widerrufen.</string>
+    <string name="ai_trust_title">Wohin geht der Schlüssel?</string>
+    <string name="ai_trust_1">Er bleibt nur auf diesem Telefon, verschlüsselt mit dem Android Keystore, wie die Tokens deiner Musikdienste.</string>
+    <string name="ai_trust_2">Er verlässt das Telefon nur in Richtung %1$s, bei jeder Anfrage, die du stellst. Songport hat keinen eigenen Server: Optionen → Sicherheit → Verbindungen listet jeden Host, den diese App je kontaktiert hat, zum Nachprüfen.</string>
+    <string name="ai_trust_3">„Schlüssel vergessen“ löscht ihn sofort. Noch sicherer: Erstelle einen Schlüssel nur für Songport, mit Ausgabenlimit, und widerrufe ihn, wann du willst.</string>
+    <string name="ai_limits">Ausgabenlimit setzen</string>
+    <string name="security_connections">Verbindungen anzeigen</string>
+    <string name="security_connections_desc">Jeder Host, den diese App seit der Installation kontaktiert hat, und wie oft. Nur der Hostname wird festgehalten, nie der Inhalt.</string>
+    <string name="security_connections_web">Die Web-Connectoren (YouTube Music, Amazon Music, die Web-Anmeldungen) sprechen auch über die Browser-Engine, die hier nicht erscheint.</string>
+    <string name="security_connections_none">Noch keine Verbindung.</string>
+    <string name="security_connections_clear">Liste leeren</string>
+    <string name="security_connections_count">%1$d Anfragen · zuletzt am %2$s</string>
     <string name="security_lock">Entsperren zum Öffnen verlangen</string>
     <string name="security_lock_desc">Fingerabdruck, Gesicht oder Handy-PIN, bevor Songport sich öffnet.</string>
     <string name="security_lock_unavailable">Auf diesem Handy ist keine Displaysperre eingerichtet.</string>

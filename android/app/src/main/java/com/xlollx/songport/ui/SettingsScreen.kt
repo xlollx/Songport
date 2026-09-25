@@ -38,6 +38,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -211,6 +212,25 @@ fun SettingsScreen(
                     Spacer(Modifier.width(10.dp))
                     Text(stringResource(it), style = MaterialTheme.typography.bodyMedium)
                 }
+            }
+            // "Nothing leaves your phone except…" made checkable: the hosts this app has talked to.
+            var connectionsOpen by remember { mutableStateOf(false) }
+            var connectionsVersion by remember { mutableIntStateOf(0) }
+            TextButton(onClick = { connectionsOpen = !connectionsOpen }) {
+                Text(stringResource(if (connectionsOpen) R.string.hide_details else R.string.security_connections))
+            }
+            if (connectionsOpen) {
+                val entries = remember(connectionsVersion) { com.xlollx.songport.net.HostLog.entries() }
+                Text(stringResource(R.string.security_connections_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (com.xlollx.songport.providers.BuiltIn.available) Text(stringResource(R.string.security_connections_web), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (entries.isEmpty()) Text(stringResource(R.string.security_connections_none), style = MaterialTheme.typography.bodySmall)
+                entries.forEach { e ->
+                    Column(Modifier.padding(vertical = 2.dp)) {
+                        Text(e.host, style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.security_connections_count, e.count, formatDate(e.lastAt)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+                if (entries.isNotEmpty()) TextButton(onClick = { com.xlollx.songport.net.HostLog.clear(); connectionsVersion++ }) { Text(stringResource(R.string.security_connections_clear)) }
             }
         }
 

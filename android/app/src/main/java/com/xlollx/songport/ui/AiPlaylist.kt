@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.res.pluralStringResource
@@ -346,6 +347,19 @@ fun AiSetupDialog(initial: AiClient.Config?, onDismiss: () -> Unit, onSaved: (Ai
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.ai_key_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
                     if (vendor.keyUrl.isNotEmpty()) TextButton(onClick = { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(vendor.keyUrl))) } }) { Text(stringResource(R.string.ai_key_get)) }
+                }
+                // The plain answer to "where does my key go?", with the one host it goes to, spelled out.
+                var trustOpen by remember { mutableStateOf(false) }
+                TextButton(contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 4.dp), onClick = { trustOpen = !trustOpen }) {
+                    Icon(Icons.Filled.Lock, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp))
+                    Text(stringResource(R.string.ai_trust_title), style = MaterialTheme.typography.labelLarge)
+                }
+                if (trustOpen) {
+                    val host = current().host.ifBlank { "…" }
+                    listOf(stringResource(R.string.ai_trust_1), stringResource(R.string.ai_trust_2, host), stringResource(R.string.ai_trust_3)).forEach {
+                        Text("• $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    if (vendor.limitsUrl.isNotEmpty()) TextButton(contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 4.dp), onClick = { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(vendor.limitsUrl))) } }) { Text(stringResource(R.string.ai_limits)) }
                 }
                 Spacer(Modifier.height(8.dp))
                 OutlinedTextField(

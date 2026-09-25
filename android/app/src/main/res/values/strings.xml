@@ -473,6 +473,17 @@
     <string name="security_fact_2">Songport keeps only revocable access tokens, encrypted with the Android Keystore.</string>
     <string name="security_fact_3">There is no Songport server and no account to create: nothing leaves your phone except requests to the services you connect.</string>
     <string name="security_fact_4">Disconnecting deletes the token from the phone; every service also lets you revoke it from your account page.</string>
+    <string name="ai_trust_title">Where does the key go?</string>
+    <string name="ai_trust_1">It is stored on this phone only, encrypted with the Android Keystore, like the tokens of your music services.</string>
+    <string name="ai_trust_2">It leaves the phone only towards %1$s, with each request you make. Songport has no server of its own: Options → Security → Connections lists every host this app has ever contacted, so you can check.</string>
+    <string name="ai_trust_3">“Forget the key” deletes it at once. Safer still: create a key just for Songport, with a spending limit, and revoke it whenever you like.</string>
+    <string name="ai_limits">Set a spending limit</string>
+    <string name="security_connections">Show connections</string>
+    <string name="security_connections_desc">Every host this app has contacted since it was installed, and how often. Only the host name is recorded, never what was sent.</string>
+    <string name="security_connections_web">The web connectors (YouTube Music, Amazon Music, the web sign-ins) also talk through the browser engine, which does not appear here.</string>
+    <string name="security_connections_none">No connection yet.</string>
+    <string name="security_connections_clear">Clear the list</string>
+    <string name="security_connections_count">%1$d requests · last on %2$s</string>
     <string name="security_lock">Require unlock to open</string>
     <string name="security_lock_desc">Fingerprint, face or phone PIN before Songport opens.</string>
     <string name="security_lock_unavailable">No screen lock is set up on this phone.</string>

@@ -472,6 +472,17 @@
     <string name="security_fact_2">Songport conserva solo token di accesso revocabili, cifrati con l\'Android Keystore.</string>
     <string name="security_fact_3">Non c\'è un server Songport né un account da creare: dal telefono escono solo le richieste ai servizi che colleghi.</string>
     <string name="security_fact_4">Scollegare cancella il token dal telefono; ogni servizio permette anche di revocarlo dalla pagina del proprio account.</string>
+    <string name="ai_trust_title">Dove va la chiave?</string>
+    <string name="ai_trust_1">Resta solo su questo telefono, cifrata con l\'Android Keystore, come i token dei tuoi servizi musicali.</string>
+    <string name="ai_trust_2">Esce dal telefono solo verso %1$s, a ogni richiesta che fai tu. Songport non ha un server suo: in Opzioni → Sicurezza → Connessioni c\'è l\'elenco di tutti gli host che questa app ha mai contattato, così puoi controllare.</string>
+    <string name="ai_trust_3">“Dimentica la chiave” la cancella subito. Ancora meglio: crea una chiave solo per Songport, con un limite di spesa, e revocala quando vuoi.</string>
+    <string name="ai_limits">Imposta un limite di spesa</string>
+    <string name="security_connections">Mostra le connessioni</string>
+    <string name="security_connections_desc">Tutti gli host che questa app ha contattato da quando è installata, e quante volte. Si registra solo il nome dell\'host, mai cosa è stato inviato.</string>
+    <string name="security_connections_web">I connettori web (YouTube Music, Amazon Music, gli accessi web) parlano anche attraverso il motore del browser, che qui non compare.</string>
+    <string name="security_connections_none">Nessuna connessione finora.</string>
+    <string name="security_connections_clear">Svuota l\'elenco</string>
+    <string name="security_connections_count">%1$d richieste · ultima il %2$s</string>
     <string name="security_lock">Richiedi sblocco all\'apertura</string>
     <string name="security_lock_desc">Impronta, volto o PIN del telefono prima di aprire Songport.</string>
     <string name="security_lock_unavailable">Nessun blocco schermo configurato sul telefono.</string>

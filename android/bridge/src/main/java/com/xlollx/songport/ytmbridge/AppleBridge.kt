@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Base64
 import kotlinx.serialization.json.JsonObject
 import okhttp3.OkHttpClient
+import com.xlollx.songport.ytmbridge.BridgeNet.withHook
 import okhttp3.Request
 import java.net.URLDecoder
 import java.util.concurrent.TimeUnit
@@ -21,7 +22,7 @@ object AppleBridge {
     const val HOME = "https://music.apple.com/"
     const val API = "https://api.music.apple.com"
 
-    private val http = OkHttpClient.Builder().connectTimeout(20, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build()
+    private val http = OkHttpClient.Builder().connectTimeout(20, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).withHook().build()
     private const val UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 
     fun signedIn(cookies: String?): Boolean = userToken(cookies) != null

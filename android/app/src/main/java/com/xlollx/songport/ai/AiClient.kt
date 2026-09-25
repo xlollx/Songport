@@ -29,14 +29,14 @@ import java.util.concurrent.TimeUnit
  */
 object AiClient {
 
-    enum class Vendor(val label: String, val defaultBase: String, val keyUrl: String) {
-        OPENAI("OpenAI", "https://api.openai.com/v1", "https://platform.openai.com/api-keys"),
-        ANTHROPIC("Anthropic", "https://api.anthropic.com/v1", "https://console.anthropic.com/settings/keys"),
-        GEMINI("Google Gemini", "https://generativelanguage.googleapis.com/v1beta", "https://aistudio.google.com/apikey"),
+    enum class Vendor(val label: String, val defaultBase: String, val keyUrl: String, val limitsUrl: String = "") {
+        OPENAI("OpenAI", "https://api.openai.com/v1", "https://platform.openai.com/api-keys", "https://platform.openai.com/settings/organization/limits"),
+        ANTHROPIC("Anthropic", "https://api.anthropic.com/v1", "https://console.anthropic.com/settings/keys", "https://console.anthropic.com/settings/limits"),
+        GEMINI("Google Gemini", "https://generativelanguage.googleapis.com/v1beta", "https://aistudio.google.com/apikey", "https://aistudio.google.com/apikey"),
         /** Livello gratuito generoso; parla l'API di OpenAI. */
-        GROQ("Groq", "https://api.groq.com/openai/v1", "https://console.groq.com/keys"),
+        GROQ("Groq", "https://api.groq.com/openai/v1", "https://console.groq.com/keys", "https://console.groq.com/settings/limits"),
         /** Molti modelli, alcuni gratuiti (quelli con ":free"); parla l'API di OpenAI. */
-        OPENROUTER("OpenRouter", "https://openrouter.ai/api/v1", "https://openrouter.ai/keys"),
+        OPENROUTER("OpenRouter", "https://openrouter.ai/api/v1", "https://openrouter.ai/keys", "https://openrouter.ai/settings/keys"),
         /** Ollama, LM Studio, Mistral…: tutti parlano l'API chat di OpenAI. */
         CUSTOM("OpenAI-compatible", "", ""),
         ;
@@ -46,6 +46,8 @@ object AiClient {
 
     data class Config(val vendor: Vendor, val apiKey: String, val model: String, val baseUrl: String) {
         val base: String get() = (baseUrl.ifBlank { vendor.defaultBase }).trimEnd('/')
+        /** The only host the key is ever sent to. */
+        val host: String get() = runCatching { java.net.URI(base).host }.getOrNull() ?: base
         val complete: Boolean get() = model.isNotBlank() && (apiKey.isNotBlank() || vendor == Vendor.CUSTOM) && base.isNotBlank()
     }
 

@@ -19,6 +19,9 @@ import com.xlollx.songport.ytmbridge.YtmClient
 object BuiltIn {
     const val available = true
 
+    /** The web connectors' own HTTP clients join the app's connections log. */
+    fun onAppStart(interceptor: okhttp3.Interceptor) { com.xlollx.songport.ytmbridge.BridgeNet.interceptor = interceptor }
+
     fun call(ctx: Context, method: String, arg: String?, extras: Bundle?): Bundle =
         BridgeCore.call(ctx.applicationContext, method, arg, extras)
 

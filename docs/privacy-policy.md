@@ -23,6 +23,9 @@ TIDAL, Deezer) and local files. All processing happens **on your device**.
   or a compatible server you choose), the description you type, the optional reference tracks and the
   number of tracks are sent to that provider, under its own policy; your API key is stored encrypted on
   the device only. Nothing else (playlists, tokens) is sent. The feature is off until you add a key.
+- **Connections log**: the app keeps, on the device, the list of host names it has contacted and how
+  many times (Settings › Security › Show connections), so you can verify the above yourself. Only host
+  names, never content; you can clear it at any time.
 - **Advertising data** (Google Play version only; the version downloaded from GitHub contains no
   advertising SDK and collects no advertising data): the app shows one banner via Google AdMob. The Google Mobile Ads SDK may collect
   the advertising ID, IP address, device and app information to serve and measure ads, according to the
@@ -64,6 +67,9 @@ YouTube Music, TIDAL, Deezer) e file locali. Tutta l'elaborazione avviene **sul 
   o un server compatibile a tua scelta), la descrizione che scrivi, gli eventuali brani di riferimento e il
   numero di brani vengono inviati a quel fornitore, secondo la sua informativa; la chiave API resta cifrata
   solo sul dispositivo. Nient'altro (playlist, token) viene inviato. La funzione è spenta finché non aggiungi una chiave.
+- **Registro delle connessioni**: l'app conserva, sul dispositivo, l'elenco degli host che ha contattato e quante
+  volte (Impostazioni › Sicurezza › Mostra le connessioni), così puoi verificare tu stesso quanto sopra. Solo nomi
+  di host, mai contenuti; puoi svuotarlo quando vuoi.
 - **Dati pubblicitari** (solo nella versione Google Play; la versione scaricata da GitHub non contiene
   alcun SDK pubblicitario e non raccoglie dati pubblicitari): l'app mostra un banner tramite Google AdMob. L'SDK Google Mobile Ads può
   raccogliere l'identificatore pubblicitario, indirizzo IP, informazioni sul dispositivo e sull'app per

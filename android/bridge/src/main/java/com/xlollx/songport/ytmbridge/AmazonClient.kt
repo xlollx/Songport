@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import com.xlollx.songport.ytmbridge.BridgeNet.withHook
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.TimeZone
@@ -55,7 +56,7 @@ class AmazonClient(private val ctx: Context) {
     private val http = OkHttpClient.Builder()
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(40, TimeUnit.SECONDS)
-        .build()
+        .withHook().build()
 
     private fun domain(): String = AmazonSession.domain(ctx) ?: throw BridgeException("not connected")
     private fun cookies(): String = AmazonSession.cookies(ctx) ?: throw BridgeException("not connected")

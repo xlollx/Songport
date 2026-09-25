@@ -468,6 +468,17 @@
     <string name="security_fact_2">Songport 只保存可撤销的访问令牌，并使用 Android Keystore 加密。</string>
     <string name="security_fact_3">没有 Songport 服务器，也无需创建账号：除了发往你所连接服务的请求外，没有任何数据离开你的手机。</string>
     <string name="security_fact_4">断开连接会从手机上删除令牌；每个服务也都允许你在账号页面中撤销它。</string>
+    <string name="ai_trust_title">密钥去了哪里？</string>
+    <string name="ai_trust_1">它只保存在这部手机上，用 Android Keystore 加密，和你音乐服务的令牌一样。</string>
+    <string name="ai_trust_2">它只会在你每次发出请求时发送到 %1$s。Songport 没有自己的服务器：在“选项 → 安全 → 连接”中可以看到此应用联系过的所有主机，你可以自行核对。</string>
+    <string name="ai_trust_3">“忘记密钥”会立即删除它。更安全的做法：为 Songport 单独创建一个带消费上限的密钥，并随时撤销。</string>
+    <string name="ai_limits">设置消费上限</string>
+    <string name="security_connections">显示连接</string>
+    <string name="security_connections_desc">自安装以来此应用联系过的所有主机及次数。只记录主机名，不记录发送的内容。</string>
+    <string name="security_connections_web">网页连接器（YouTube Music、Amazon Music、网页登录）也通过浏览器引擎通信，这里不会显示。</string>
+    <string name="security_connections_none">尚无连接。</string>
+    <string name="security_connections_clear">清空列表</string>
+    <string name="security_connections_count">%1$d 次请求 · 最近一次 %2$s</string>
     <string name="security_lock">打开时需要解锁</string>
     <string name="security_lock_desc">打开 Songport 前需验证指纹、面容或手机 PIN 码。</string>
     <string name="security_lock_unavailable">这部手机未设置屏幕锁定。</string>
