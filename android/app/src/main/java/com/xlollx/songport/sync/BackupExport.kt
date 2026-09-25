@@ -19,12 +19,36 @@ import kotlinx.coroutines.withContext
  */
 object BackupExport {
 
-    data class Result(val services: Int, val copied: Int, val failed: List<String>)
+    data class Result(val services: Int, val copied: Int, val failed: List<String>, val folderMissing: Boolean = false)
+
+    /** L'esito dell'ultima copia, per la schermata: quando e' andata bene, o cosa non e' andato. */
+    data class State(val lastOk: Long, val lastError: String?)
+
+    private fun prefs(ctx: Context) = ctx.applicationContext.getSharedPreferences("backup_state", Context.MODE_PRIVATE)
+    fun state(ctx: Context): State = prefs(ctx).let { State(it.getLong("ok", 0), it.getString("error", null)) }
+    private fun remember(ctx: Context, error: String?) {
+        prefs(ctx).edit().apply { if (error == null) putLong("ok", System.currentTimeMillis()).remove("error") else putString("error", error) }.apply()
+    }
+
+    /**
+     * La cartella e' ancora raggiungibile: esiste e il permesso persistente vale ancora. Una cartella
+     * cancellata, una scheda SD tolta o un'app di cloud disinstallata rispondono qui, non a meta' copia.
+     */
+    fun folderReachable(ctx: Context, tree: Uri): Boolean = runCatching {
+        val docUri = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
+        ctx.contentResolver.query(docUri, arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID), null, null, null)?.use { it.moveToFirst() } == true
+    }.getOrDefault(false)
 
     /** Aggiorna i backup locali di ogni servizio collegato, poi copia nella cartella i file nuovi. */
     suspend fun run(ctx: Context, onProgress: (String) -> Unit = {}): Result {
         val folder = Store.get(ctx).data.settings.backupFolder.takeIf { it.isNotBlank() }
             ?: return Result(0, 0, emptyList())
+        if (!folderReachable(ctx, Uri.parse(folder))) {
+            val msg = ctx.getString(com.xlollx.songport.R.string.backup_folder_missing)
+            Diagnostics.log(ctx, "backup", "folder not reachable: $folder")
+            remember(ctx, msg)
+            return Result(0, 0, listOf(msg), folderMissing = true)
+        }
         val failed = ArrayList<String>()
         var services = 0
         for (p in Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }) {
@@ -37,12 +61,16 @@ object BackupExport {
                 failed += "${p.displayName}: ${e.message}"
             }
         }
+        var copyError: String? = null
         val copied = try { copyNew(ctx, Uri.parse(folder)) } catch (e: Exception) {
             Diagnostics.log(ctx, "backup", "folder copy failed: ${e.message}")
-            failed += e.message ?: e.javaClass.simpleName
+            copyError = e.message ?: e.javaClass.simpleName
+            failed += copyError
             0
         }
         Diagnostics.log(ctx, "backup", "export: $services services, $copied new files" + (if (failed.isNotEmpty()) ", ${failed.size} failed" else ""))
+        // A copy that reached the folder counts as good, even if one service failed to answer.
+        remember(ctx, copyError ?: failed.firstOrNull()?.takeIf { services == 0 })
         return Result(services, copied, failed)
     }
 

@@ -396,6 +396,8 @@
     <string name="backup_folder_now">立即复制</string>
     <string name="backup_folder_done">已备份 %1$d 个服务，复制了 %2$d 个新文件</string>
     <string name="backup_folder_forget">停止</string>
+    <string name="backup_folder_missing">备份文件夹已无法访问：它被删除、存储卡被移除，或应用失去了访问权限。请重新选择文件夹。</string>
+    <string name="backup_last_ok">上次复制：%1$s</string>
     <string name="settings_battery_desc">部分手机（小米、华为、OPPO、三星）会停止后台应用。请将 Songport 排除在电池优化之外，以确保按计划运行。</string>
     <string name="settings_battery_button">打开电池设置</string>
     <string name="share_received">已收到链接：请选择要同步到哪里。</string>

@@ -400,6 +400,8 @@
     <string name="backup_folder_now">Copier maintenant</string>
     <string name="backup_folder_done">%1$d services sauvegardés, %2$d nouveaux fichiers copiés</string>
     <string name="backup_folder_forget">Arrêter</string>
+    <string name="backup_folder_missing">Le dossier de sauvegarde n\'est plus accessible : supprimé, carte retirée ou accès perdu par l\'app. Choisissez à nouveau un dossier.</string>
+    <string name="backup_last_ok">Dernière copie : %1$s</string>
     <string name="settings_battery_desc">Certains téléphones (Xiaomi, Huawei, Oppo, Samsung) arrêtent les applications en arrière-plan. Excluez Songport de l\'optimisation de la batterie pour que la planification soit respectée.</string>
     <string name="settings_battery_button">Ouvrir les réglages de batterie</string>
     <string name="share_received">Lien reçu : choisissez où le synchroniser.</string>

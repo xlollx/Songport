@@ -192,10 +192,16 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
 }
 
 /** Copia periodica dei backup nella cartella scelta dall'utente (vedi [BackupExport]). */
+private const val BACKUP_NOTICE_ID = 4242
+
 class BackupWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
     override suspend fun doWork(): Result {
         val ctx = applicationContext
         val r = BackupExport.run(ctx)
+        if (r.folderMissing) {
+            Notifications.notice(ctx, BACKUP_NOTICE_ID, ctx.getString(R.string.backup_folder_title), ctx.getString(R.string.backup_folder_missing))
+            return Result.success()
+        }
         // Network gone on every service: not an outcome, WorkManager tries again with its backoff.
         return if (r.services == 0 && r.failed.isNotEmpty() && r.failed.all { isTransientNetwork(it) }) Result.retry() else Result.success()
     }

@@ -400,6 +400,8 @@
     <string name="backup_folder_now">Copy now</string>
     <string name="backup_folder_done">%1$d services backed up, %2$d new files copied</string>
     <string name="backup_folder_forget">Stop</string>
+    <string name="backup_folder_missing">The backup folder can no longer be reached: it was deleted, the card was removed or the app lost access to it. Choose a folder again.</string>
+    <string name="backup_last_ok">Last copy: %1$s</string>
     <string name="settings_battery_desc">Some phones (Xiaomi, Huawei, Oppo, Samsung) stop background apps. Exclude Songport from battery optimisation so the schedule is respected.</string>
     <string name="settings_battery_button">Open battery settings</string>
     <string name="share_received">Link received: choose where to sync it.</string>

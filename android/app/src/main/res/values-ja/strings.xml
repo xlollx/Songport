@@ -396,6 +396,8 @@
     <string name="backup_folder_now">今すぐコピー</string>
     <string name="backup_folder_done">%1$d 件のサービスをバックアップ、%2$d 件の新しいファイルをコピーしました</string>
     <string name="backup_folder_forget">停止</string>
+    <string name="backup_folder_missing">バックアップ用フォルダーにアクセスできません。削除された、カードが取り外された、またはアプリがアクセス権を失いました。フォルダーを選び直してください。</string>
+    <string name="backup_last_ok">前回のコピー：%1$s</string>
     <string name="settings_battery_desc">一部の端末（Xiaomi、Huawei、Oppo、Samsung）はバックグラウンドのアプリを停止します。スケジュールどおりに実行されるよう、Songport を電池の最適化の対象から除外してください。</string>
     <string name="settings_battery_button">電池の設定を開く</string>
     <string name="share_received">リンクを受け取りました。同期先を選んでください。</string>

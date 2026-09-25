@@ -13,6 +13,7 @@ import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -68,6 +69,7 @@ private fun openUrl(ctx: android.content.Context, url: String) {
     runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }
 
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(
     data: StoreData,
@@ -143,24 +145,34 @@ fun SettingsScreen(
                 TextButton(onClick = { pickFolder.launch(null) }) { Text(stringResource(if (folder.isBlank()) R.string.backup_folder_pick else R.string.settings_language_open)) }
             }
             if (folder.isNotBlank()) {
+                // What the last copy did: a date, or the reason it could not (the folder gone, for one).
+                var stateVersion by remember { mutableIntStateOf(0) }
+                val state = remember(stateVersion, folder) { com.xlollx.songport.sync.BackupExport.state(ctx) }
+                when {
+                    state.lastError != null -> Text(state.lastError, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                    state.lastOk > 0 -> Text(stringResource(R.string.backup_last_ok, formatDate(state.lastOk)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
                 Text(stringResource(R.string.editor_schedule), style = MaterialTheme.typography.labelLarge)
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     listOf(Schedule.MANUAL, Schedule.DAILY, Schedule.WEEKLY).forEach { s ->
                         FilterChip(selected = data.settings.backupSchedule == s, onClick = { store.updateSettings { it.copy(backupSchedule = s) }; Scheduler.applyBackup(ctx) }, label = { Text(scheduleLabel(s)) })
                     }
                 }
                 var exporting by remember { mutableStateOf(false) }
                 var exportStep by remember { mutableStateOf("") }
+                if (exporting) Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(Modifier.size(16.dp)); Spacer(Modifier.width(8.dp)); Text(exportStep, style = MaterialTheme.typography.bodySmall)
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     OutlinedButton(enabled = !exporting, onClick = {
                         exporting = true
                         scope.launch {
                             val r = com.xlollx.songport.sync.BackupExport.run(ctx) { exportStep = it }
                             exporting = false
-                            snackbar.showSnackbar(ctx.getString(R.string.backup_folder_done, r.services, r.copied) + (if (r.failed.isNotEmpty()) " · " + r.failed.first() else ""))
+                            stateVersion++
+                            snackbar.showSnackbar(if (r.folderMissing) r.failed.first() else ctx.getString(R.string.backup_folder_done, r.services, r.copied) + (if (r.failed.isNotEmpty()) " · " + r.failed.first() else ""))
                         }
                     }) { Text(stringResource(R.string.backup_folder_now)) }
-                    if (exporting) { Spacer(Modifier.width(8.dp)); CircularProgressIndicator(Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text(exportStep, style = MaterialTheme.typography.bodySmall) }
                     Spacer(Modifier.weight(1f))
                     TextButton(onClick = { store.updateSettings { it.copy(backupFolder = "", backupSchedule = Schedule.MANUAL) }; Scheduler.applyBackup(ctx) }) { Text(stringResource(R.string.backup_folder_forget), color = MaterialTheme.colorScheme.error) }
                 }

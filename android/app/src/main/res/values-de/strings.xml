@@ -400,6 +400,8 @@
     <string name="backup_folder_now">Jetzt kopieren</string>
     <string name="backup_folder_done">%1$d Dienste gesichert, %2$d neue Dateien kopiert</string>
     <string name="backup_folder_forget">Beenden</string>
+    <string name="backup_folder_missing">Der Backup-Ordner ist nicht mehr erreichbar: gelöscht, die Karte entfernt oder der Zugriff der App verloren. Wähle wieder einen Ordner.</string>
+    <string name="backup_last_ok">Letzte Kopie: %1$s</string>
     <string name="settings_battery_desc">Manche Handys (Xiaomi, Huawei, Oppo, Samsung) stoppen Hintergrund-Apps. Nimm Songport von der Akku-Optimierung aus, damit der Zeitplan eingehalten wird.</string>
     <string name="settings_battery_button">Akku-Einstellungen öffnen</string>
     <string name="share_received">Link empfangen: Wähle, wohin er synchronisiert werden soll.</string>

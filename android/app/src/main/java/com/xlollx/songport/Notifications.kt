@@ -88,6 +88,25 @@ object Notifications {
         return parts.joinToString(", ")
     }
 
+    /** A one-line notice that opens the app on its Settings (the backup folder gone, and the like). */
+    fun notice(context: Context, id: Int, title: String, text: String) {
+        if (!canPost(context)) return
+        val open = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra(MainActivity.EXTRA_TAB, MainActivity.TAB_SETTINGS)
+        }
+        val pi = PendingIntent.getActivity(context, id, open, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        val n = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setContentIntent(pi)
+            .setAutoCancel(true)
+            .build()
+        ContextCompat.getSystemService(context, NotificationManager::class.java)?.notify(id, n)
+    }
+
     fun syncResult(context: Context, report: SyncReport) {
         if (!canPost(context)) return
         val open = Intent(context, MainActivity::class.java).apply {

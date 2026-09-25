@@ -227,19 +227,18 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                         ) {
                             if (!grouped) { ProviderBadge(s, 32.dp); Spacer(Modifier.width(12.dp)) }
                             Column(Modifier.weight(1f)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                     if (!grouped) Text(
                                         s.displayName,
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = if (taken) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
                                     )
                                     s.route?.let { r ->
-                                        if (!grouped) Spacer(Modifier.width(8.dp))
                                         // Both routes wear the lock: the quick one signs in on the service's own page too.
                                         StatusPill(stringResource(if (r == MusicProvider.Route.EASY) R.string.route_easy else R.string.route_official), if (r == MusicProvider.Route.EASY) Tone.Ok else Tone.Accent, Icons.Filled.Lock)
                                     }
-                                    if (!s.canWrite) { Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.read_only), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                                    if (s.beta) { Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.beta), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                                    if (!s.canWrite) Text(stringResource(R.string.read_only), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    if (s.beta) Text(stringResource(R.string.beta), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                                 s.routeNoteRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
                             }
