@@ -317,6 +317,10 @@
     <string name="ai_review_hint">Remove what you do not want, then confirm: the tracks will be looked up on %1$s and anything not found will be there to review.</string>
     <string name="ai_review_remove">Remove</string>
     <string name="ai_models_all">Show all models</string>
+    <string name="ai_check">Test</string>
+    <string name="ai_checking">Trying the model…</string>
+    <string name="ai_check_ok">Model ready</string>
+    <string name="ai_free_hint">Free to try: Google Gemini and Groq have a free tier, OpenRouter has free models (the ones ending in “:free”). A key takes a minute on the provider\'s site. Songport cannot ship a shared key: it would be visible in the open source code and used up within a day.</string>
     <string name="ai_badge_desc">Written by your AI</string>
     <string name="ai_extend">Add tracks with AI</string>
     <string name="ai_extend_title">Extend the playlist</string>

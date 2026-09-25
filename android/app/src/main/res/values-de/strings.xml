@@ -317,6 +317,10 @@
     <string name="ai_review_hint">Entferne, was du nicht willst, und bestätige dann: Die Titel werden auf %1$s gesucht, und nicht Gefundenes bleibt zur Prüfung.</string>
     <string name="ai_review_remove">Entfernen</string>
     <string name="ai_models_all">Alle Modelle anzeigen</string>
+    <string name="ai_check">Testen</string>
+    <string name="ai_checking">Modell wird ausprobiert…</string>
+    <string name="ai_check_ok">Modell bereit</string>
+    <string name="ai_free_hint">Kostenlos zum Ausprobieren: Google Gemini und Groq haben eine Gratisstufe, OpenRouter hat kostenlose Modelle (die auf „:free“ enden). Ein Schlüssel ist in einer Minute auf der Website des Anbieters erstellt. Songport kann keinen gemeinsamen Schlüssel mitliefern: Er wäre im offenen Quellcode sichtbar und innerhalb eines Tages aufgebraucht.</string>
     <string name="ai_badge_desc">Von deiner KI geschrieben</string>
     <string name="ai_extend">Titel mit KI hinzufügen</string>
     <string name="ai_extend_title">Playlist verlängern</string>

@@ -88,6 +88,9 @@ object AiDraft {
     var error by mutableStateOf<String?>(null)
     /** Models offered by the configured provider, read once per key/vendor. */
     var models by mutableStateOf<List<String>>(emptyList())
+    /** Outcome of the last model check: the configuration tried and its error (null = fine). */
+    var checked by mutableStateOf<Pair<AiClient.Config, String?>?>(null)
+    var checking by mutableStateOf(false)
 
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var loaded = false
@@ -184,7 +187,25 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
                 return@Column
             }
             // Provider and model on one line; the model is a menu right here, the rest is in the dialog.
-            ModelRow(c, onChange = { setupOpen = true }) { m -> AiClient.save(ctx, c.copy(model = m)); config = c.copy(model = m) }
+            ModelRow(c, onChange = { setupOpen = true }) { m -> AiClient.save(ctx, c.copy(model = m)); config = c.copy(model = m); d.checked = null }
+            // The model is tried with a one-word request whenever it changes: a wrong key, an exhausted
+            // quota or a retired model show up here, not after the playlist has been described.
+            LaunchedEffect(c.vendor, c.model, c.apiKey, c.baseUrl) {
+                if (d.checked?.first == c) return@LaunchedEffect
+                d.checking = true
+                val r = AiClient.check(c)
+                d.checked = c to r
+                d.checking = false
+            }
+            when {
+                d.checking -> Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(Modifier.size(12.dp)); Spacer(Modifier.width(6.dp))
+                    Text(stringResource(R.string.ai_checking), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                d.checked?.first == c && d.checked?.second == null -> Text(stringResource(R.string.ai_check_ok), style = MaterialTheme.typography.bodySmall, color = Tones.onSuccessContainer())
+                d.checked?.first == c -> Text(d.checked?.second.orEmpty(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            }
+            Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = d.prompt, onValueChange = { d.prompt = it; d.persist(ctx) }, minLines = 2, maxLines = 5,
                 label = { Text(stringResource(R.string.ai_prompt)) }, placeholder = { Text(stringResource(R.string.ai_prompt_hint)) },
@@ -290,6 +311,8 @@ fun AiSetupDialog(initial: AiClient.Config?, onDismiss: () -> Unit, onSaved: (Ai
     var modelsOpen by remember { mutableStateOf(false) }
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+    /** "" = the test passed; text = its error; null = not tried. */
+    var checkResult by remember { mutableStateOf<String?>(null) }
     fun current() = AiClient.Config(vendor, key.trim(), model.trim(), baseUrl.trim())
 
     AlertDialog(
@@ -301,9 +324,11 @@ fun AiSetupDialog(initial: AiClient.Config?, onDismiss: () -> Unit, onSaved: (Ai
                 Spacer(Modifier.height(4.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     AiClient.Vendor.entries.forEach { v ->
-                        FilterChip(selected = vendor == v, onClick = { vendor = v; models = emptyList() }, label = { Text(v.label) })
+                        FilterChip(selected = vendor == v, onClick = { vendor = v; models = emptyList(); checkResult = null }, label = { Text(v.label) })
                     }
                 }
+                Spacer(Modifier.height(4.dp))
+                Text(stringResource(R.string.ai_free_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 if (vendor == AiClient.Vendor.CUSTOM) {
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
@@ -314,7 +339,7 @@ fun AiSetupDialog(initial: AiClient.Config?, onDismiss: () -> Unit, onSaved: (Ai
                 }
                 Spacer(Modifier.height(8.dp))
                 OutlinedTextField(
-                    value = key, onValueChange = { key = it }, singleLine = true,
+                    value = key, onValueChange = { key = it; models = emptyList(); checkResult = null }, singleLine = true,
                     label = { Text(stringResource(R.string.ai_key)) }, visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -340,10 +365,25 @@ fun AiSetupDialog(initial: AiClient.Config?, onDismiss: () -> Unit, onSaved: (Ai
                                 loading = false
                             }
                         }) { Text(stringResource(R.string.ai_models_load)) }
-                        DropdownMenu(expanded = modelsOpen, onDismissRequest = { modelsOpen = false }) {
-                            models.forEach { m -> DropdownMenuItem(text = { Text(m) }, onClick = { model = m; modelsOpen = false }) }
+                        var all by remember { mutableStateOf(false) }
+                        val shown = if (all) models else AiClient.curated(vendor, models)
+                        DropdownMenu(expanded = modelsOpen, onDismissRequest = { modelsOpen = false; all = false }) {
+                            shown.forEach { m -> DropdownMenuItem(text = { Text(m) }, onClick = { model = m; modelsOpen = false; all = false; checkResult = null }) }
+                            if (!all && shown.size < models.size) DropdownMenuItem(
+                                text = { Text(stringResource(R.string.ai_models_all), color = MaterialTheme.colorScheme.primary) },
+                                onClick = { all = true },
+                            )
                         }
                     }
+                    Spacer(Modifier.width(8.dp))
+                    OutlinedButton(enabled = !loading && current().complete, onClick = {
+                        loading = true; error = null; checkResult = null
+                        scope.launch { checkResult = AiClient.check(current()) ?: ""; loading = false }
+                    }) { Text(stringResource(R.string.ai_check)) }
+                }
+                checkResult?.let { r ->
+                    if (r.isEmpty()) Text(stringResource(R.string.ai_check_ok), color = Tones.onSuccessContainer(), style = MaterialTheme.typography.bodySmall)
+                    else Text(r, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                 }
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
             }

@@ -317,6 +317,10 @@
     <string name="ai_review_hint">Quita lo que no quieras y confirma: las canciones se buscarán en %1$s y las que no se encuentren quedarán por revisar.</string>
     <string name="ai_review_remove">Quitar</string>
     <string name="ai_models_all">Mostrar todos los modelos</string>
+    <string name="ai_check">Probar</string>
+    <string name="ai_checking">Probando el modelo…</string>
+    <string name="ai_check_ok">Modelo listo</string>
+    <string name="ai_free_hint">Gratis para probar: Google Gemini y Groq tienen un nivel gratuito, OpenRouter tiene modelos gratuitos (los que terminan en “:free”). Una clave se crea en un minuto en el sitio del proveedor. Songport no puede incluir una clave compartida: sería visible en el código abierto y se agotaría en un día.</string>
     <string name="ai_badge_desc">Escrita por tu IA</string>
     <string name="ai_extend">Añadir canciones con la IA</string>
     <string name="ai_extend_title">Alargar la playlist</string>

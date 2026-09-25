@@ -315,6 +315,10 @@
     <string name="ai_review_hint">不要な曲を削除して確認してください。曲は %1$s で検索され、見つからなかった曲は確認用に残ります。</string>
     <string name="ai_review_remove">削除</string>
     <string name="ai_models_all">すべてのモデルを表示</string>
+    <string name="ai_check">テスト</string>
+    <string name="ai_checking">モデルを試しています…</string>
+    <string name="ai_check_ok">モデルを利用できます</string>
+    <string name="ai_free_hint">無料で試せます：Google Gemini と Groq には無料枠があり、OpenRouter には無料モデル（末尾が「:free」のもの）があります。キーは提供元のサイトで 1 分で作れます。Songport に共有キーを同梱することはできません。オープンソースのコードから見えてしまい、1 日で使い切られてしまいます。</string>
     <string name="ai_badge_desc">あなたの AI が作成</string>
     <string name="ai_extend">AI で曲を追加</string>
     <string name="ai_extend_title">プレイリストを増やす</string>

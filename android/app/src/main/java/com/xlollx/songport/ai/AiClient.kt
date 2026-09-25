@@ -33,8 +33,15 @@ object AiClient {
         OPENAI("OpenAI", "https://api.openai.com/v1", "https://platform.openai.com/api-keys"),
         ANTHROPIC("Anthropic", "https://api.anthropic.com/v1", "https://console.anthropic.com/settings/keys"),
         GEMINI("Google Gemini", "https://generativelanguage.googleapis.com/v1beta", "https://aistudio.google.com/apikey"),
-        /** Ollama, LM Studio, OpenRouter, Mistral, Groq…: tutti parlano l'API chat di OpenAI. */
+        /** Livello gratuito generoso; parla l'API di OpenAI. */
+        GROQ("Groq", "https://api.groq.com/openai/v1", "https://console.groq.com/keys"),
+        /** Molti modelli, alcuni gratuiti (quelli con ":free"); parla l'API di OpenAI. */
+        OPENROUTER("OpenRouter", "https://openrouter.ai/api/v1", "https://openrouter.ai/keys"),
+        /** Ollama, LM Studio, Mistral…: tutti parlano l'API chat di OpenAI. */
         CUSTOM("OpenAI-compatible", "", ""),
+        ;
+        /** Where a key costs nothing to try. */
+        val freeTier: Boolean get() = this == GEMINI || this == GROQ || this == OPENROUTER
     }
 
     data class Config(val vendor: Vendor, val apiKey: String, val model: String, val baseUrl: String) {
@@ -137,6 +144,9 @@ object AiClient {
      */
     fun curated(vendor: Vendor, models: List<String>): List<String> {
         if (vendor == Vendor.ANTHROPIC || vendor == Vendor.CUSTOM) return models
+        // OpenRouter is chosen for its free models: those first, the paid catalogue behind "show all".
+        if (vendor == Vendor.OPENROUTER) return models.filter { it.endsWith(":free") }.ifEmpty { models }
+        if (vendor == Vendor.GROQ) return models.filter { m -> val l = m.lowercase(); NOT_CHAT.none { it in l } && "guard" !in l }
         val chat = models.filter { m -> val l = m.lowercase(); NOT_CHAT.none { it in l } && "-exp" !in l && "experimental" !in l }
         val current = chat.filter { m ->
             val l = m.lowercase()
@@ -222,6 +232,17 @@ object AiClient {
         return Suggestion(match, queries, j["note"].str.orEmpty())
     }
 
+    /**
+     * Prova il modello con una richiesta minima: chiave, quota, modello ritirato o non abilitato
+     * danno errori diversi, e conviene vederli subito invece che a playlist descritta. Null = va bene.
+     */
+    suspend fun check(c: Config): String? = try {
+        val text = complete(c, "Reply with the single word OK.", "ping")
+        if (text.isBlank()) "Empty answer" else null
+    } catch (e: Exception) {
+        e.message ?: e.javaClass.simpleName
+    }
+
     /** Una richiesta, una risposta testuale, qualunque sia il fornitore. */
     private suspend fun complete(c: Config, system: String, user: String): String {
         return when (c.vendor) {
@@ -247,7 +268,9 @@ object AiClient {
                     "model" to c.model,
                     "messages" to jsonArr(listOf(jsonObj("role" to "system", "content" to system), jsonObj("role" to "user", "content" to user))),
                 )
-                val resp = post("${c.base}/chat/completions", bearer(c), body.toString())
+                // OpenRouter asks apps to say who they are; the others ignore the headers.
+                val headers = bearer(c) + mapOf("HTTP-Referer" to "https://github.com/xlollx/Songport", "X-Title" to "Songport")
+                val resp = post("${c.base}/chat/completions", headers, body.toString())
                 parseJson(resp)["choices"][0]["message"]["content"].str ?: ""
             }
         }

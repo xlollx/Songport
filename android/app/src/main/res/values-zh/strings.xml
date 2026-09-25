@@ -315,6 +315,10 @@
     <string name="ai_review_hint">删掉不想要的，然后确认：这些歌曲会在 %1$s 上查找，找不到的会留待复查。</string>
     <string name="ai_review_remove">删除</string>
     <string name="ai_models_all">显示全部模型</string>
+    <string name="ai_check">测试</string>
+    <string name="ai_checking">正在试用模型…</string>
+    <string name="ai_check_ok">模型可用</string>
+    <string name="ai_free_hint">免费试用：Google Gemini 和 Groq 有免费额度，OpenRouter 有免费模型（以“:free”结尾的）。在提供方网站上一分钟即可创建密钥。Songport 无法内置共享密钥：它会在开源代码中暴露，并在一天内被用完。</string>
     <string name="ai_badge_desc">由你的 AI 生成</string>
     <string name="ai_extend">用 AI 添加歌曲</string>
     <string name="ai_extend_title">扩充歌单</string>
