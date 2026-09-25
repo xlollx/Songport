@@ -532,8 +532,9 @@ class YtmClient(private val ctx: Context) {
     }
 
     private fun checkStatus(resp: JsonElement) {
-        val status = resp["status"].str ?: return
-        if (status != "STATUS_SUCCEEDED") throw BridgeException("YouTube Music answered $status")
+        val status = resp["status"].str
+            ?: throw BridgeException("YouTube Music did not confirm the change: ${resp.toString().take(240)}")
+        if (status != "STATUS_SUCCEEDED") throw BridgeException("YouTube Music answered $status: ${resp.toString().take(200)}")
     }
 
     // ------------------------------------------------------------------ parsing

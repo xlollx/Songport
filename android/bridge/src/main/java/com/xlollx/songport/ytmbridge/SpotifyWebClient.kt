@@ -291,6 +291,7 @@ class SpotifyWebClient(private val ctx: Context) {
             ))
             val lib = j["data"]["me"]["libraryV3"]
             val items = lib["items"].arr
+            if (offset == 0 && lib == null) unexpected("libraryV3", j, items)
             for (it in items) {
                 val d = it["item"]["data"] ?: it["item"]
                 val uri = d["uri"].str ?: it["item"]["_uri"].str ?: continue
@@ -346,10 +347,12 @@ class SpotifyWebClient(private val ctx: Context) {
             val j = gql("fetchPlaylist", jsonObj("uri" to "spotify:playlist:$id", "offset" to offset, "limit" to 100, "enableWatchFeedEntrypoint" to false))
             val content = j["data"]["playlistV2"]["content"]
             val items = content["items"].arr
+            var parsed = 0
             for (it in items) {
                 val d = it["itemV2"]["data"] ?: it["item"]["data"]
-                trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str)?.let { t -> out += t }
+                trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str)?.let { t -> out += t; parsed++ }
             }
+            if (parsed == 0 && (items.isNotEmpty() || (offset == 0 && content == null))) unexpected("fetchPlaylist", j, items)
             val total = content["totalCount"].long?.toInt() ?: 0
             offset += 100
             if (items.isEmpty() || offset >= total) break
@@ -364,10 +367,12 @@ class SpotifyWebClient(private val ctx: Context) {
             val j = gql("fetchLibraryTracks", jsonObj("offset" to offset, "limit" to 100))
             val lib = j["data"]["me"]["library"]["tracks"]
             val items = lib["items"].arr
+            var parsed = 0
             for (it in items) {
                 val d = it["track"]["data"] ?: it["item"]["data"]
-                trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str)?.let { t -> out += t }
+                trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str)?.let { t -> out += t; parsed++ }
             }
+            if (parsed == 0 && (items.isNotEmpty() || (offset == 0 && lib == null))) unexpected("fetchLibraryTracks", j, items)
             val total = lib["totalCount"].long?.toInt() ?: 0
             offset += 100
             if (items.isEmpty() || offset >= total) break
@@ -479,6 +484,14 @@ class SpotifyWebClient(private val ctx: Context) {
 
     fun removeFromLibrary(uris: List<String>) {
         uris.chunked(50).forEach { chunk -> gql("removeFromLibrary", jsonObj("uris" to chunk, "libraryItemUris" to chunk)) }
+    }
+
+    /** The shape of an answer nothing could be read from: the keys, so the parser can be fixed from a screenshot. */
+    private fun unexpected(operation: String, j: JsonElement, items: List<JsonElement>): Nothing {
+        val first = items.firstOrNull()
+        val what = if (first != null) "item keys ${(first as? JsonObject)?.keys?.joinToString(",")}, typename ${first.findFirst("__typename").str}"
+        else "data keys ${(j["data"] as? JsonObject)?.keys?.joinToString(",")}"
+        throw BridgeException("Spotify $operation: nothing readable in the answer ($what)")
     }
 
     // ---- shapes
