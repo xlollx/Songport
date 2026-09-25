@@ -416,8 +416,8 @@
     <string name="login_hint_plex">Enter the address of your Plex Media Server (for example http://192.168.1.10:32400) and your X-Plex-Token. Plex explains how to find the token in its support pages ("Finding an authentication token").</string>
     <string name="login_hint_lastfm">Enter the Last.fm username whose loved tracks you want to read. The profile must be public.</string>
     <string name="login_hint_listenbrainz">Enter the ListenBrainz username whose playlists and loved tracks you want to read. Add your user token (listenbrainz.org → Settings) to also write loved tracks.</string>
-    <string name="login_token">User token (optional)</string>
     <string name="listenbrainz_token_needed">ListenBrainz needs your user token to write loved tracks: add it in Accounts (listenbrainz.org → Settings).</string>
+    <string name="login_token_optional">User token (optional)</string>
     <string name="listenbrainz_token_invalid">ListenBrainz did not accept this token.</string>
     <string name="setup_why_lastfm">Last.fm needs a free API key, issued instantly, to read public profiles.</string>
     <string name="setup_field_api_key">API key</string>

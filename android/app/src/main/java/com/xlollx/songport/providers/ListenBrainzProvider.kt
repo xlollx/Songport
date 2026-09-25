@@ -33,7 +33,7 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
     override val loginForm = LoginForm(
-        needsUrl = false, needsUser = true, needsSecret = true, secretLabelRes = R.string.login_token,
+        needsUrl = false, needsUser = true, needsSecret = true, secretLabelRes = R.string.login_token_optional,
         hintRes = R.string.login_hint_listenbrainz, secretOptional = true,
     )
 

@@ -412,8 +412,8 @@
     <string name="login_hint_plex">请输入你的 Plex Media Server 地址（例如 http://192.168.1.10:32400）和你的 X-Plex-Token。Plex 的支持页面（“Finding an authentication token”）介绍了如何找到该令牌。</string>
     <string name="login_hint_lastfm">请输入要读取其喜爱歌曲的 Last.fm 用户名。该个人资料必须公开。</string>
     <string name="login_hint_listenbrainz">输入要读取其歌单和喜爱曲目的 ListenBrainz 用户名。添加你的用户令牌（listenbrainz.org → Settings）即可同时写入喜爱的曲目。</string>
-    <string name="login_token">用户令牌（可选）</string>
     <string name="listenbrainz_token_needed">ListenBrainz 需要你的用户令牌才能写入喜爱的曲目：请在“账号”中添加（listenbrainz.org → Settings）。</string>
+    <string name="login_token_optional">用户令牌（可选）</string>
     <string name="listenbrainz_token_invalid">ListenBrainz 不接受此令牌。</string>
     <string name="setup_why_lastfm">读取公开个人资料需要免费的 Last.fm API 密钥，可即时获取。</string>
     <string name="setup_field_api_key">API 密钥</string>

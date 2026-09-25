@@ -412,8 +412,8 @@
     <string name="login_hint_plex">Plex Media Server のアドレス（例：http://192.168.1.10:32400）と X-Plex-Token を入力してください。トークンの確認方法は Plex のサポートページ（「Finding an authentication token」）で説明されています。</string>
     <string name="login_hint_lastfm">Love した曲を読み込む Last.fm のユーザー名を入力してください。プロフィールは公開されている必要があります。</string>
     <string name="login_hint_listenbrainz">プレイリストと Love した曲を読み取る ListenBrainz のユーザー名を入力してください。ユーザートークン（listenbrainz.org → Settings）を追加すると Love した曲の書き込みもできます。</string>
-    <string name="login_token">ユーザートークン（任意）</string>
     <string name="listenbrainz_token_needed">Love した曲を書き込むには ListenBrainz のユーザートークンが必要です。「アカウント」で追加してください（listenbrainz.org → Settings）。</string>
+    <string name="login_token_optional">ユーザートークン（任意）</string>
     <string name="listenbrainz_token_invalid">ListenBrainz がこのトークンを受け付けませんでした。</string>
     <string name="setup_why_lastfm">Last.fm で公開プロフィールを読み込むには、無料の API キー（すぐに発行されます）が必要です。</string>
     <string name="setup_field_api_key">API キー</string>
