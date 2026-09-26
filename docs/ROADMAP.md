@@ -39,6 +39,10 @@ quota meter; own API keys to escape shared quotas.
 - Saved albums and subscribed artists on YouTube Music (the library tabs, as ytmusicapi reads
   them) and on TIDAL (user collections v2). Apple Music (web) removes tracks, renames and deletes
   playlists through the web player's backend, which the public API refuses.
+- Exact recording for tracks without an ISRC: Deezer's public catalogue gives the ISRC once per
+  track (anonymous, cached a week), so Spotify, Apple Music and TIDAL are asked for the recording,
+  not a look-alike. Off in Settings. The match cache is shared across the routes and accounts of
+  a service, and the Spotify web route reads only the query hash it needs.
 - YouTube Music already pauses on Google's abuse page with a doubling wait and a "verify" button;
   song results are preferred and videos are only a fallback.
 

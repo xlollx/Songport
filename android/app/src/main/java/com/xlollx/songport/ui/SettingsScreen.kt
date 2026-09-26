@@ -94,6 +94,9 @@ fun SettingsScreen(
             SettingRow(stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_desc)) {
                 Switch(checked = data.settings.notifyOnSync, onCheckedChange = { v -> store.updateSettings { it.copy(notifyOnSync = v) } })
             }
+            SettingRow(stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_desc)) {
+                Switch(checked = data.settings.isrcLookup, onCheckedChange = { v -> store.updateSettings { it.copy(isrcLookup = v) } })
+            }
             SettingRow(stringResource(R.string.security_lock), stringResource(R.string.security_lock_desc)) {
                 Switch(checked = data.settings.appLock, onCheckedChange = { v ->
                     if (v && !LockActivity.available(ctx)) {

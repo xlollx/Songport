@@ -105,6 +105,8 @@
 
     <string name="settings_notifications">每次同步后通知</string>
     <string name="settings_notifications_desc">当计划同步添加或移除歌曲，或同步失败时显示通知。</string>
+    <string name="settings_isrc">通过 Deezer 精确匹配录音</string>
+    <string name="settings_isrc_desc">当曲目没有 ISRC（网页路径、文件）时，Songport 会在 Deezer 的公开曲库中查询一次，让 Spotify、Apple Music 和 TIDAL 返回精确的录音而不是相似曲目。匿名请求，不涉及任何账号。</string>
     <string name="settings_language">语言</string>
     <string name="settings_language_desc">Songport 跟随系统语言：英语、意大利语、法语、德语、西班牙语、中文、日语。</string>
     <string name="settings_language_open">更改</string>

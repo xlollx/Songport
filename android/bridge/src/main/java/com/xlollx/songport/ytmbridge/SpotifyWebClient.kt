@@ -173,11 +173,15 @@ class SpotifyWebClient(private val ctx: Context) {
 
     private fun hashFor(operation: String, forceHarvest: Boolean = false): String {
         val map = hashes()
-        val pack = runCatching { page().jsPack }.getOrNull()
-        val stale = pack != null && pack != session.get(ctx, "hashesPack")
+        // The registry answers for the main queries without touching the bundle at all.
+        val known = registry()
+        if (!forceHarvest && known[operation] != null) {
+            if (map[operation] != known[operation]) { map[operation] = known[operation]!!; saveHashes(map, session.get(ctx, "hashesPack")) }
+            return known[operation]!!
+        }
         // One harvest per half hour at most: a missing operation is not found by asking again.
         val recently = (session.get(ctx, "hashesAt")?.toLongOrNull() ?: 0) > System.currentTimeMillis() - 30 * 60_000
-        if (forceHarvest || ((stale || map[operation] == null) && !recently)) harvest(map, pack)
+        if (forceHarvest || (map[operation] == null && !recently)) harvest(map, runCatching { page().jsPack }.getOrNull(), operation)
         return map[operation] ?: throw BridgeException("Spotify: no query hash for $operation (the player's code changed; try again in a while)")
     }
 
@@ -186,18 +190,19 @@ class SpotifyWebClient(private val ctx: Context) {
      * operation this client needs has a hash. Chunk names and hashes are two `{id:"..."}` maps in
      * the main bundle: joined by id they give `<name>.<hash>.js` under the same CDN folder.
      */
-    private fun harvest(map: MutableMap<String, String>, packUrl: String?) {
+    private fun harvest(map: MutableMap<String, String>, packUrl: String?, wanted: String) {
         // Bundle literals fill what the registry does not cover (the mutations); the first literal
         // for a name is kept, as the registry's own reader does.
         val known = registry()
         fun scan(text: String) { HASH.findAll(text).forEach { m -> if (m.groupValues[1] !in known) map.putIfAbsent(m.groupValues[1], m.groupValues[3]) } }
         map.putAll(known)
-        val pack = packUrl ?: run { if (NEEDED.all { it in map }) { saveHashes(map, null); return }; throw BridgeException("Spotify: the player page has no bundle to read the queries from") }
+        val pack = packUrl ?: run { if (wanted in map) { saveHashes(map, null); return }; throw BridgeException("Spotify: the player page has no bundle to read the queries from") }
         fun fetch(url: String): String = http.newCall(Request.Builder().url(url).header("User-Agent", SpotifyBridge.USER_AGENT).build())
             .execute().use { r -> if (r.isSuccessful) r.body?.string() ?: "" else "" }
         val main = fetch(pack)
         scan(main)
-        if (NEEDED.all { it in map }) { saveHashes(map, pack); return }
+        // Only what was asked for: the whole set would mean tens of megabytes on first use.
+        if (wanted in map) { saveHashes(map, pack); return }
         val maps = CHUNK_MAP.findAll(main).map { m ->
             PAIR.findAll(m.value).associate { it.groupValues[1].toInt() to it.groupValues[2] }
         }.filter { it.size > 3 }.toList()
@@ -214,7 +219,7 @@ class SpotifyWebClient(private val ctx: Context) {
         val ordered = chunks.distinct().sortedBy { u -> if (Regex("xpui|routes|playlist|library|search|collection").containsMatchIn(u)) 0 else 1 }
         var bytes = 0L
         for (u in ordered) {
-            if (NEEDED.all { it in map } || bytes > 60_000_000L) break
+            if (wanted in map || bytes > 60_000_000L) break
             val t = fetch(u)
             bytes += t.length
             scan(t)

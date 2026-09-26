@@ -105,6 +105,8 @@
 
     <string name="settings_notifications">Avisar tras cada sincronización</string>
     <string name="settings_notifications_desc">Muestra una notificación cuando una sincronización programada añade o quita canciones, o falla.</string>
+    <string name="settings_isrc">Grabación exacta vía Deezer</string>
+    <string name="settings_isrc_desc">Cuando una pista no tiene ISRC (vías web, archivos), Songport lo busca una vez en el catálogo público de Deezer, para que Spotify, Apple Music y TIDAL respondan con la grabación exacta y no con una parecida. Petición anónima, sin cuenta de por medio.</string>
     <string name="settings_language">Idioma</string>
     <string name="settings_language_desc">Songport sigue el idioma del sistema: inglés, italiano, francés, alemán, español, chino, japonés.</string>
     <string name="settings_language_open">Cambiar</string>

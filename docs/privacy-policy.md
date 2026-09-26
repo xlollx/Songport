@@ -19,6 +19,9 @@ TIDAL, Deezer) and local files. All processing happens **on your device**.
 - **Personal server credentials** (Subsonic/Navidrome, Jellyfin, Plex) and Last.fm/ListenBrainz **usernames** entered by the user: stored encrypted on the device only, used only towards the server you specify.
 - **Playlist content** (titles, artists, ISRC) read from the connected services to run syncs, plus a
   local match cache. Stays on the device.
+- **Exact recording lookups (optional, on by default)**: for a track without an ISRC, the app asks Deezer's
+  public catalogue (api.deezer.com) for the recording's ISRC: an anonymous search by title and artist, no
+  account or token. Off in Settings › General.
 - **Spotify web connector (GitHub and F-Droid version)**: to talk to Spotify's web player backend the app
   reads the player's public JavaScript and, at most every six hours, a public list of the player's
   query identifiers hosted on GitHub (raw.githubusercontent.com). Both are anonymous downloads: no

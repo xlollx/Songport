@@ -105,6 +105,8 @@
 
     <string name="settings_notifications">Notifica dopo ogni sync</string>
     <string name="settings_notifications_desc">Mostra una notifica quando una sync programmata aggiunge o rimuove brani, o fallisce.</string>
+    <string name="settings_isrc">Registrazione esatta via Deezer</string>
+    <string name="settings_isrc_desc">Quando un brano non ha l\'ISRC (strade web, file), Songport lo cerca una volta nel catalogo pubblico di Deezer, così Spotify, Apple Music e TIDAL rispondono con la registrazione esatta invece di una simile. Richiesta anonima, nessun account coinvolto.</string>
     <string name="settings_language">Lingua</string>
     <string name="settings_language_desc">Songport segue la lingua di sistema: inglese, italiano, francese, tedesco, spagnolo, cinese, giapponese.</string>
     <string name="settings_language_open">Cambia</string>

@@ -38,6 +38,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val brandColor = 0xFF1DB954
     override val noteRes = R.string.provider_note_spotify
     override val supportsLikedSongs = true
+    override val searchesByIsrc: Boolean get() = true
     override val supportsLikedTarget = true
     override val supportsAlbums = true
     override val supportsArtists = true

@@ -35,6 +35,7 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
     override val brandColor = 0xFF111111
     override val noteRes = R.string.provider_note_tidal
     override val beta = true
+    override val searchesByIsrc: Boolean get() = true
     override val supportsAlbums = true
     override val supportsArtists = true
 

@@ -412,7 +412,11 @@ class SyncEngine(private val ctx: Context) {
             return null
         }
         try {
-            consider(dst.search(ctx, s))?.let { return it }
+            // No ISRC on the source (web routes, files) but a target that searches by it: ask the
+            // catalogue oracle once, and the first search asks for the exact recording.
+            val withIsrc = if (s.isrc == null && s.kind.isEmpty() && dst.searchesByIsrc && dst.serviceId != "deezer" && store.data.settings.isrcLookup)
+                IsrcOracle.find(ctx, s)?.let { s.copy(isrc = it) } ?: s else s
+            consider(dst.search(ctx, withIsrc))?.let { return it }
             val tried = hashSetOf(query(s))
             val title = Matcher.searchTitle(s.title)
             val first = s.artists.firstOrNull()?.let { Matcher.searchArtist(it) }?.takeIf { it.isNotBlank() }

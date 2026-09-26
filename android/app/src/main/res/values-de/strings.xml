@@ -105,6 +105,8 @@
 
     <string name="settings_notifications">Nach jedem Sync benachrichtigen</string>
     <string name="settings_notifications_desc">Eine Benachrichtigung anzeigen, wenn ein geplanter Sync Titel hinzufügt oder entfernt oder fehlschlägt.</string>
+    <string name="settings_isrc">Exakte Aufnahme über Deezer</string>
+    <string name="settings_isrc_desc">Fehlt einem Titel der ISRC (Web-Wege, Dateien), sucht Songport ihn einmal im öffentlichen Deezer-Katalog, damit Spotify, Apple Music und TIDAL die exakte Aufnahme liefern statt einer ähnlichen. Anonyme Anfrage, kein Konto beteiligt.</string>
     <string name="settings_language">Sprache</string>
     <string name="settings_language_desc">Songport folgt der Systemsprache: Englisch, Italienisch, Französisch, Deutsch, Spanisch, Chinesisch, Japanisch.</string>
     <string name="settings_language_open">Ändern</string>

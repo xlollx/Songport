@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit
 @Serializable
 data class Settings(
     val notifyOnSync: Boolean = true,
+    /** Chiedere al catalogo Deezer l'ISRC dei brani che non lo portano (vedi IsrcOracle). */
+    val isrcLookup: Boolean = true,
     /** Client ID inseriti dall'utente, per servizio (vuoto = usa quello della build). */
     val clientIds: Map<String, String> = emptyMap(),
     /**
@@ -169,10 +171,12 @@ class Store private constructor(context: Context) {
 
     fun cachedMatch(srcProvider: String, srcTrackId: String, dstProvider: String): String? =
         data.matchCache[cacheKey(srcProvider, srcTrackId, dstProvider)]
+            // Entries written before the key was per family, under the exact connector id.
+            ?: data.matchCache["$srcProvider:$srcTrackId>$dstProvider"]
 
     /** "Ignore" in the review: this source track is not on that service, whichever sync meets it. */
     fun isIgnored(srcProvider: String, srcTrackId: String, dstProvider: String): Boolean =
-        cacheKey(srcProvider, srcTrackId, dstProvider) in data.ignoredTracks
+        cacheKey(srcProvider, srcTrackId, dstProvider) in data.ignoredTracks || "$srcProvider:$srcTrackId>$dstProvider" in data.ignoredTracks
 
     fun putIgnored(srcProvider: String, srcTrackId: String, dstProvider: String) =
         update { d -> d.copy(ignoredTracks = d.ignoredTracks + cacheKey(srcProvider, srcTrackId, dstProvider)) }
@@ -189,7 +193,7 @@ class Store private constructor(context: Context) {
 
     /** True se questa ricerca e' fallita da poco: inutile ripeterla a ogni esecuzione o ripresa. */
     fun cachedMiss(srcProvider: String, srcTrackId: String, dstProvider: String): Boolean {
-        val at = data.missCache[cacheKey(srcProvider, srcTrackId, dstProvider)] ?: return false
+        val at = data.missCache[cacheKey(srcProvider, srcTrackId, dstProvider)] ?: data.missCache["$srcProvider:$srcTrackId>$dstProvider"] ?: return false
         return System.currentTimeMillis() - at < MISS_TTL_MS
     }
 
@@ -210,7 +214,18 @@ class Store private constructor(context: Context) {
         /** Una ricerca fallita si ripete dopo una settimana: i cataloghi cambiano, ma non ogni giorno. */
         private const val MISS_TTL_MS = 7L * 24 * 3_600_000
 
-        fun cacheKey(srcProvider: String, srcTrackId: String, dstProvider: String) = "$srcProvider:$srcTrackId>$dstProvider"
+        fun cacheKey(srcProvider: String, srcTrackId: String, dstProvider: String) = "${family(srcProvider)}:$srcTrackId>${family(dstProvider)}"
+
+        /**
+         * Track ids are the service's, not the route's or the account's: a match found through the
+         * official Spotify route serves the web route and a second account alike. Files keep their id.
+         */
+        fun family(providerId: String): String = when (val base = providerId.substringBefore('@')) {
+            "spotify_bridge" -> "spotify"
+            "apple_bridge" -> "apple"
+            "ytm" -> "youtube"
+            else -> base
+        }
 
         @Volatile private var instance: Store? = null
         fun get(context: Context): Store = instance ?: synchronized(this) {
