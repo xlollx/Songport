@@ -45,6 +45,9 @@
     <string name="editor_provider">Servizio</string>
     <string name="editor_playlist">Playlist</string>
     <string name="editor_choose_playlist">Scegli una playlist</string>
+    <string name="editor_section_playlists">Playlist</string>
+    <string name="editor_section_library">Libreria</string>
+    <string name="editor_choose_library">Scegli una sezione della libreria</string>
     <string name="editor_new_playlist">Crea una nuova playlist</string>
     <string name="editor_new_playlist_name">Nome della nuova playlist</string>
     <string name="editor_schedule">Esecuzione automatica</string>

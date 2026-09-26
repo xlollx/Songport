@@ -60,6 +60,9 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -462,16 +465,9 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
             }
 
             Text(stringResource(R.string.editor_schedule), style = MaterialTheme.typography.titleMedium)
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
-                // due righe di chip per stare anche su schermi stretti
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Schedule.entries.take(3).forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Schedule.entries.drop(3).forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
-                    }
-                }
+            // I chip vanno a capo da soli, quante righe servono per lo schermo.
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+                Schedule.entries.forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
             }
             SwitchRow(stringResource(R.string.editor_mirror), stringResource(R.string.editor_mirror_desc), mirror) { mirror = it }
             val dstProviderObj = Providers.byId(dstProvider)
@@ -519,14 +515,16 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
             }
             if (matchingOpen) {
                 Text(stringResource(R.string.policy_strictness), style = MaterialTheme.typography.labelLarge)
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                // I chip vanno a capo: in alcune lingue tre etichette non stanno su una riga.
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     listOf(-1 to R.string.policy_loose, 0 to R.string.policy_normal, 1 to R.string.policy_strict).forEach { (v, res) ->
                         FilterChip(selected = policy.strictness == v, onClick = { policy = policy.copy(strictness = v) }, label = { Text(stringResource(res)) })
                     }
                 }
                 Text(stringResource(R.string.policy_strictness_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(stringResource(R.string.policy_explicit), style = MaterialTheme.typography.labelLarge)
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                // I chip vanno a capo: in alcune lingue tre etichette non stanno su una riga.
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     listOf(0 to R.string.policy_explicit_any, 1 to R.string.policy_explicit_yes, -1 to R.string.policy_explicit_clean).forEach { (v, res) ->
                         FilterChip(selected = policy.explicit == v, onClick = { policy = policy.copy(explicit = v) }, label = { Text(stringResource(res)) })
                     }
@@ -624,14 +622,28 @@ private fun PlaylistPicker(loaded: Loaded, selected: Playlist?, label: String, o
         is Loaded.Failed -> Text(loaded.message, color = MaterialTheme.colorScheme.error)
         is Loaded.Ok -> {
             var expanded by remember { mutableStateOf(false) }
-            val items = if (onlyOwned) loaded.items.filter { it.ownedByMe } else loaded.items
+            val all = if (onlyOwned) loaded.items.filter { it.ownedByMe } else loaded.items
+            // Le sezioni della libreria (preferiti, album, artisti, podcast, ascolti) stanno a parte dalle playlist,
+            // dietro un selettore: di default si vedono le playlist.
+            val (library, playlists) = all.partition { MusicProvider.isLibrary(it.id) }
+            var showLibrary by remember { mutableStateOf(selected?.let { MusicProvider.isLibrary(it.id) } ?: false) }
+            if (library.isEmpty()) showLibrary = false
+            val items = if (showLibrary) library else playlists
+            if (library.isNotEmpty()) {
+                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                    SegmentedButton(selected = !showLibrary, onClick = { showLibrary = false },
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)) { Text(stringResource(R.string.editor_section_playlists)) }
+                    SegmentedButton(selected = showLibrary, onClick = { showLibrary = true },
+                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2)) { Text(stringResource(R.string.editor_section_library)) }
+                }
+            }
             ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
                 OutlinedTextField(
                     value = selected?.let { playlistDisplayName(it.id, it.name) } ?: "",
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text(label) },
-                    placeholder = { Text(stringResource(R.string.editor_choose_playlist)) },
+                    label = { Text(if (showLibrary) stringResource(R.string.editor_section_library) else label) },
+                    placeholder = { Text(stringResource(if (showLibrary) R.string.editor_choose_library else R.string.editor_choose_playlist)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
                     modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
                 )

@@ -45,6 +45,9 @@
     <string name="editor_provider">Dienst</string>
     <string name="editor_playlist">Playlist</string>
     <string name="editor_choose_playlist">Playlist auswählen</string>
+    <string name="editor_section_playlists">Playlists</string>
+    <string name="editor_section_library">Mediathek</string>
+    <string name="editor_choose_library">Einen Bereich der Mediathek auswählen</string>
     <string name="editor_new_playlist">Neue Playlist erstellen</string>
     <string name="editor_new_playlist_name">Name der neuen Playlist</string>
     <string name="editor_schedule">Automatischer Zeitplan</string>

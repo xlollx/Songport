@@ -45,6 +45,9 @@
     <string name="editor_provider">服务</string>
     <string name="editor_playlist">歌单</string>
     <string name="editor_choose_playlist">选择歌单</string>
+    <string name="editor_section_playlists">歌单</string>
+    <string name="editor_section_library">媒体库</string>
+    <string name="editor_choose_library">选择媒体库中的一个部分</string>
     <string name="editor_new_playlist">新建歌单</string>
     <string name="editor_new_playlist_name">新歌单名称</string>
     <string name="editor_schedule">自动计划</string>

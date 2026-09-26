@@ -45,6 +45,9 @@
     <string name="editor_provider">サービス</string>
     <string name="editor_playlist">プレイリスト</string>
     <string name="editor_choose_playlist">プレイリストを選択</string>
+    <string name="editor_section_playlists">プレイリスト</string>
+    <string name="editor_section_library">ライブラリ</string>
+    <string name="editor_choose_library">ライブラリの項目を選択</string>
     <string name="editor_new_playlist">新しいプレイリストを作成</string>
     <string name="editor_new_playlist_name">新しいプレイリストの名前</string>
     <string name="editor_schedule">自動スケジュール</string>
