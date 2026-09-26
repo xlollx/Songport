@@ -93,6 +93,8 @@ object BridgeCore {
                     ids.forEachIndexed { i, id -> c.addTrack(pid, pname, id, titles.getOrNull(i) ?: ""); Thread.sleep(300) }
                     Bundle()
                 }
+                "amazon.rename" -> { AmazonClient(ctx).renamePlaylist(arg ?: return err("missing playlist id"), extras?.getString("name") ?: ""); Bundle() }
+                "amazon.delete" -> { AmazonClient(ctx).removePlaylist(arg ?: return err("missing playlist id")); Bundle() }
                 "amazon.remove" -> {
                     val pid = arg ?: return err("missing playlist id")
                     val ids = extras?.getStringArray("ids") ?: emptyArray()

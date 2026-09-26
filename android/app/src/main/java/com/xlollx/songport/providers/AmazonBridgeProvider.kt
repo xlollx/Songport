@@ -26,9 +26,9 @@ import kotlinx.serialization.json.JsonElement
  * answers those with a clear "not available yet" until then.
  */
 class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
-    // The web protocol for renaming and deleting is not mapped yet.
-    override val canRenamePlaylists: Boolean get() = false
-    override val canDeletePlaylists: Boolean get() = false
+    // Renaming and deleting were mapped from the desktop player's own calls; an older plugin lacks them.
+    override val canRenamePlaylists: Boolean get() = BridgePlugin.builtIn
+    override val canDeletePlaylists: Boolean get() = BridgePlugin.builtIn
     override val serviceId = SERVICE
     override val displayName = "Amazon Music"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.EASY
@@ -81,6 +81,14 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     override suspend fun search(ctx: Context, track: Track): List<Track> {
         val q = (track.artists.take(2) + track.title).joinToString(" ")
         return io(ctx, "amazon.search", q) { j -> j.arr.mapNotNull { toTrack(it) } }
+    }
+
+    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+        withContext(Dispatchers.IO) { call(ctx, "amazon.rename", playlistId, Bundle().apply { putString("name", name) }) }
+    }
+
+    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        withContext(Dispatchers.IO) { call(ctx, "amazon.delete", playlistId) }
     }
 
     override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist =

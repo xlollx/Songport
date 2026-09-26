@@ -51,6 +51,7 @@ quota meter; own API keys to escape shared quotas.
   covers; Spotify accepts one, under 256 KB).
 - In the review, a track link from any service is resolved to the target service through song.link
   (Odesli), an extra on top of the target's own links.
+- Amazon Music renames and deletes playlists, mapped from the desktop player's own calls.
 - YouTube Music already pauses on Google's abuse page with a doubling wait and a "verify" button;
   song results are preferred and videos are only a fallback.
 

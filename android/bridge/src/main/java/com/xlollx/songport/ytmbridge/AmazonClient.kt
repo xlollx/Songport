@@ -324,6 +324,24 @@ class AmazonClient(private val ctx: Context) {
         )
     }
 
+    /** The dialog's "Save": the same client information the player sends, with the new name. */
+    fun renamePlaylist(playlistId: String, name: String) {
+        val info = jsonObj(
+            "interface" to "Web.TemplatesInterface.v1_0.Touch.PlaylistTemplateInterface.PlaylistClientInformation",
+            "name" to name,
+            "path" to "/my/playlists/$playlistId",
+        ).toString()
+        val j = call("renamePlaylist", mapOf("id" to playlistId, "playlistInfo" to info), "https://${domain()}/my/playlists/$playlistId")
+        // The answer stores the new name (PLAYLIST_NAME); an error dialog means it did not.
+        if (j.toString().contains("MessageTemplate") && !j.toString().contains("PLAYLIST_NAME")) throw BridgeException("Amazon Music did not rename the playlist")
+    }
+
+    /** The dialog's "Delete": the library state of the playlist becomes NOT_IN_LIBRARY. */
+    fun removePlaylist(playlistId: String) {
+        val j = call("removePlaylist", mapOf("id" to playlistId), "https://${domain()}/my/playlists/$playlistId")
+        if (j.toString().contains("MessageTemplate") && !j.toString().contains("NOT_IN_LIBRARY")) throw BridgeException("Amazon Music did not delete the playlist")
+    }
+
     fun removeTrack(playlistId: String, trackEntryId: String, trackId: String) {
         call(
             "removeTrackFromPlaylist",
