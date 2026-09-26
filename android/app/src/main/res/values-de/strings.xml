@@ -644,6 +644,7 @@
     <string name="settings_log_desc">Ergebnis der letzten Synchronisierungen und die technischen Details für eine Meldung.</string>
     <string name="settings_open">Öffnen</string>
     <string name="accounts_intro">Du meldest dich auf der offiziellen Seite jedes Dienstes an. Songport sieht dein Passwort nie.</string>
+    <string name="web_auth_hint">Melde dich auf der Seite von %1$s an. Songport erhält nur die Bestätigung, die am Ende zurückkommt.</string>
     <string name="show_details">Details</string>
     <string name="hide_details">Details ausblenden</string>
     <!-- Werbung und Spenden -->

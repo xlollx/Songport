@@ -645,6 +645,7 @@
     <string name="settings_log_desc">Outcome of the last syncs, and the technical details to attach to a report.</string>
     <string name="settings_open">Open</string>
     <string name="accounts_intro">You log in on each service\'s official page. Songport never sees your password.</string>
+    <string name="web_auth_hint">Sign in on %1$s\'s own page. Songport only receives the confirmation that comes back at the end.</string>
     <string name="show_details">Details</string>
     <string name="hide_details">Hide details</string>
     <!-- Pubblicità e donazioni -->

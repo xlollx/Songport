@@ -98,6 +98,12 @@
             android:exported="false"
             android:theme="@style/Theme.Songport" />
 
+        <!-- The service's own sign-in page inside the app (Spotify, Deezer, TIDAL): see WebAuthActivity. -->
+        <activity
+            android:name=".auth.WebAuthActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Songport" />
+
         <!-- Riceve il redirect OAuth dal browser: songport://callback e lo schema Google. -->
         <activity
             android:name=".auth.AuthCallbackActivity"

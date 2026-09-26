@@ -30,6 +30,7 @@ import kotlinx.serialization.json.JsonNull
  */
 class DeezerProvider(override val slot: String = "") : OAuthProvider() {
     override val serviceId = SERVICE
+    override val loginInApp: Boolean get() = true
     override val revokeUrl = "https://www.deezer.com/account/apps"
     override val displayName = "Deezer"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.OFFICIAL

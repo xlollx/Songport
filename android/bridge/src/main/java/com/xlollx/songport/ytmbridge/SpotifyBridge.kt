@@ -145,7 +145,8 @@ object SpotifyBridge {
             try {
                 val w = WebView(app)
                 web = w
-                w.settings.apply { javaScriptEnabled = true; domStorageEnabled = true; userAgentString = BridgeUa.desktop(app) }
+                w.settings.apply { javaScriptEnabled = true; domStorageEnabled = true }
+                BridgeUa.apply(app, w)
                 w.addJavascriptInterface(sink, "SpBridge")
                 val early = WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)
                 if (early) WebViewCompat.addDocumentStartJavaScript(w, HOOK, setOf("*"))

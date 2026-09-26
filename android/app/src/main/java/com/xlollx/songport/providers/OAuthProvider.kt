@@ -55,6 +55,12 @@ abstract class OAuthProvider : MusicProvider {
 
     override fun startAuth(ctx: Context) = AuthFlow.startBrowserFlow(ctx, this)
 
+    /**
+     * True where the service's sign-in page may run inside the app (WebAuthActivity): Spotify,
+     * Deezer, TIDAL. False for Google, whose sign-in refuses embedded views.
+     */
+    open val loginInApp: Boolean get() = false
+
     override val authDomain: String? get() = runCatching { java.net.URI(authorizeEndpoint).host }.getOrNull()
 
     open fun authUrl(ctx: Context, state: String, codeChallenge: String): String =

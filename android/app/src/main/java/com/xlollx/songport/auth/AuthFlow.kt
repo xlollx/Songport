@@ -37,6 +37,17 @@ object AuthFlow {
             .putLong("at", System.currentTimeMillis())
             .apply()
         val url = (provider as OAuthProvider).authUrl(ctx, state, Pkce.challenge(verifier))
+        if (provider.loginInApp) {
+            // The service's sign-in page inside the app: "Continue with Facebook" stays on the page
+            // instead of being handed to the Facebook app (see WebAuthActivity).
+            ctx.startActivity(
+                Intent(ctx, WebAuthActivity::class.java)
+                    .putExtra(WebAuthActivity.EXTRA_URL, url)
+                    .putExtra(WebAuthActivity.EXTRA_SERVICE, provider.displayName)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            )
+            return
+        }
         val tab = CustomTabsIntent.Builder().setShowTitle(true).build()
         tab.launchUrl(ctx, Uri.parse(url))
     }

@@ -636,6 +636,7 @@
     <string name="settings_log_desc">最近の同期の結果と、報告に添付する技術的な詳細。</string>
     <string name="settings_open">開く</string>
     <string name="accounts_intro">各サービスの公式ページでログインします。Songport があなたのパスワードを見ることはありません。</string>
+    <string name="web_auth_hint">%1$s のページでログインしてください。Songport が受け取るのは、最後に返ってくる確認だけです。</string>
     <string name="show_details">詳細</string>
     <string name="hide_details">詳細を隠す</string>
     <!-- Pubblicità e donazioni -->

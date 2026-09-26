@@ -2,11 +2,20 @@ package com.xlollx.songport.ytmbridge
 
 import android.content.Context
 import android.webkit.WebSettings
+import android.webkit.WebView
+import androidx.webkit.UserAgentMetadata
+import androidx.webkit.WebSettingsCompat
+import androidx.webkit.WebViewCompat
+import androidx.webkit.WebViewFeature
 
 /**
  * The desktop browser identity the web connectors use: Chrome on Windows, at the version of this
  * phone's own WebView. A fixed version ages, and the players check it ("Update Chrome" on Amazon,
  * "unsupported browser" on Spotify); the WebView's version is the one Google ships to this phone.
+ *
+ * The user agent string is not the whole identity: a WebView also sends client hints (the
+ * `sec-ch-ua` headers, `navigator.userAgentData`) that say "Android WebView, mobile" whatever the
+ * string says, and Amazon reads those. [apply] sets both to the same desktop Chrome.
  */
 object BridgeUa {
     const val FALLBACK = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
@@ -17,4 +26,47 @@ object BridgeUa {
         val ver = Regex("""Chrome/(\d+(?:\.\d+)*)""").find(own)?.groupValues?.get(1) ?: return@runCatching FALLBACK
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/$ver Safari/537.36"
     }.getOrDefault(FALLBACK).also { cached = it }
+
+    private fun version(ua: String): Pair<String, String> {
+        val full = Regex("""Chrome/([\d.]+)""").find(ua)?.groupValues?.get(1) ?: "140.0.0.0"
+        return full.substringBefore('.') to full
+    }
+
+    /** The desktop identity on a WebView: the string, and the client hints where the WebView supports setting them. */
+    fun apply(ctx: Context, web: WebView) {
+        val ua = desktop(ctx)
+        web.settings.userAgentString = ua
+        val (major, full) = version(ua)
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.USER_AGENT_METADATA)) runCatching {
+            val brands = listOf(
+                UserAgentMetadata.BrandVersion.Builder().setBrand("Chromium").setMajorVersion(major).setFullVersion(full).build(),
+                UserAgentMetadata.BrandVersion.Builder().setBrand("Google Chrome").setMajorVersion(major).setFullVersion(full).build(),
+                UserAgentMetadata.BrandVersion.Builder().setBrand("Not:A-Brand").setMajorVersion("99").setFullVersion("99.0.0.0").build(),
+            )
+            val md = UserAgentMetadata.Builder()
+                .setBrandVersionList(brands).setFullVersion(full)
+                .setPlatform("Windows").setPlatformVersion("15.0.0")
+                .setArchitecture("x86").setBitness(UserAgentMetadata.BITNESS_64)
+                .setMobile(false).setModel("")
+                .build()
+            WebSettingsCompat.setUserAgentMetadata(web.settings, md)
+        }
+        // The page-side view of the same hints, for a WebView that cannot set them natively.
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) runCatching {
+            WebViewCompat.addDocumentStartJavaScript(web, hintsScript(major, full), setOf("*"))
+        }
+    }
+
+    fun hintsScript(major: String, full: String): String = """
+        (function(){
+          try {
+            var brands = [{brand:'Chromium',version:'$major'},{brand:'Google Chrome',version:'$major'},{brand:'Not:A-Brand',version:'99'}];
+            var fullList = [{brand:'Chromium',version:'$full'},{brand:'Google Chrome',version:'$full'},{brand:'Not:A-Brand',version:'99.0.0.0'}];
+            var data = { brands: brands, mobile: false, platform: 'Windows',
+              getHighEntropyValues: function(){ return Promise.resolve({ brands: brands, mobile: false, platform: 'Windows', platformVersion: '15.0.0', architecture: 'x86', bitness: '64', model: '', uaFullVersion: '$full', fullVersionList: fullList }); },
+              toJSON: function(){ return { brands: brands, mobile: false, platform: 'Windows' }; } };
+            Object.defineProperty(navigator, 'userAgentData', { get: function(){ return data; }, configurable: true });
+          } catch (e) {}
+        })();
+    """.trimIndent()
 }

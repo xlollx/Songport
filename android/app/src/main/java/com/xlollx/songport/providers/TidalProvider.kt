@@ -28,6 +28,7 @@ import kotlinx.serialization.json.JsonElement
  */
 class TidalProvider(override val slot: String = "") : OAuthProvider() {
     override val serviceId = SERVICE
+    override val loginInApp: Boolean get() = true
     override val revokeUrl = "https://account.tidal.com/"
     override val displayName = "TIDAL"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.OFFICIAL

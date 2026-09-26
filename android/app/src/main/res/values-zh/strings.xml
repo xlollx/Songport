@@ -636,6 +636,7 @@
     <string name="settings_log_desc">最近几次同步的结果，以及可附在问题报告中的技术详情。</string>
     <string name="settings_open">打开</string>
     <string name="accounts_intro">你在各服务的官方页面上登录。Songport 永远看不到你的密码。</string>
+    <string name="web_auth_hint">在 %1$s 的页面上登录。Songport 只会收到最后返回的确认。</string>
     <string name="show_details">详情</string>
     <string name="hide_details">隐藏详情</string>
     <!-- Pubblicità e donazioni -->

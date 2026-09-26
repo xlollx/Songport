@@ -61,10 +61,10 @@ class AmazonCaptureActivity : ComponentActivity() {
             displayZoomControls = false
             // The phone-sized player hides playlist editing (rename, delete) behind "open the app";
             // the desktop player shows them in the playlist's menu. Identify as a desktop browser.
-            userAgentString = BridgeUa.desktop(this@AmazonCaptureActivity)
             useWideViewPort = true
             loadWithOverviewMode = true
         }
+        BridgeUa.apply(this, web)
         web.addJavascriptInterface(Sink(), "SpCapture")
         val early = WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)
         if (early) WebViewCompat.addDocumentStartJavaScript(web, HOOK, setOf("*"))

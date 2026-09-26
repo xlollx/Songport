@@ -644,6 +644,7 @@
     <string name="settings_log_desc">Resultado de las últimas sincronizaciones y los detalles técnicos para adjuntar a un informe.</string>
     <string name="settings_open">Abrir</string>
     <string name="accounts_intro">Inicias sesión en la página oficial de cada servicio. Songport nunca ve tu contraseña.</string>
+    <string name="web_auth_hint">Inicia sesión en la página de %1$s. Songport solo recibe la confirmación que vuelve al final.</string>
     <string name="show_details">Detalles</string>
     <string name="hide_details">Ocultar detalles</string>
     <!-- Pubblicità e donazioni -->

@@ -30,6 +30,7 @@ import kotlinx.serialization.json.JsonElement
  */
 open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val serviceId = SERVICE
+    override val loginInApp: Boolean get() = true
     override val revokeUrl = "https://www.spotify.com/account/apps/"
     override val displayName = "Spotify"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.OFFICIAL
