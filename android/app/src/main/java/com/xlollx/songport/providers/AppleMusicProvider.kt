@@ -134,6 +134,8 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
             val detail = parseJson(resp.body)["errors"][0]["detail"].str ?: resp.body.take(200)
             // 401 sul developer token = scaduto; 403 con user token = sessione da rifare.
             if (resp.code == 401 && needsUser) TokenStore(ctx).clear(id)
+            // The library (/v1/me/library) answers 403 to an Apple ID without an Apple Music subscription.
+            if (resp.code == 403 && needsUser) throw ProviderException(ctx.getString(R.string.apple_subscription_needed, displayName, detail))
             throw ProviderException("$displayName API ${resp.code}: $detail")
         }
         return parseJson(resp.body)

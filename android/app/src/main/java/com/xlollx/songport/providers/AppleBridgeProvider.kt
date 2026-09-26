@@ -76,6 +76,7 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
         val resp = com.xlollx.songport.net.Http.send(method, "https://amp-api.music.apple.com$path", headers, body?.let { com.xlollx.songport.net.Http.jsonBody(it.toString()) })
         if (!resp.ok) {
             val detail = com.xlollx.songport.net.parseJson(resp.body)["errors"][0]["detail"].str ?: resp.body.take(200)
+            if (resp.code == 403) throw ProviderException(ctx.getString(R.string.apple_subscription_needed, displayName, detail))
             throw ProviderException("$displayName ${resp.code}: $detail")
         }
     }

@@ -158,6 +158,7 @@
     <string name="provider_note_apple">Playlist della tua libreria Apple Music. Servono un abbonamento e un developer token MusicKit. L\'API di Apple permette di aggiungere brani ma non di toglierli.</string>
     <string name="provider_note_files">File locali: importa una playlist esportata da qualsiasi servizio (CSV, M3U, XML di Apple Music/iTunes, JSON o un semplice elenco) e sincronizzala ovunque. E\' il ponte per i servizi senza API aperta: Amazon Music, Qobuz, SoundCloud.</string>
     <string name="apple_token_missing">Nessun developer token Apple Music. Inseriscilo da Account, Apple Music, Configura.</string>
+    <string name="apple_subscription_needed">%1$s: la libreria richiede un abbonamento Apple Music attivo; Apple ha rifiutato (403: %2$s).</string>
     <string name="link_paste">Oppure incolla il link di una playlist pubblica</string>
     <string name="link_use">Usa link</string>
     <string name="link_invalid">Link non riconosciuto. Supportati: Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL.</string>

@@ -158,6 +158,7 @@
     <string name="provider_note_apple">ライブラリ内の Apple Music プレイリスト。サブスクリプションと MusicKit のデベロッパートークンが必要です。Apple の API では曲の追加はできますが、削除はできません。</string>
     <string name="provider_note_files">ローカルファイル：任意のサービスからエクスポートしたプレイリスト（CSV、M3U、Apple Music/iTunes XML、JSON、またはテキストのリスト）をインポートし、どこへでも同期できます。オープンな API がないサービス（Amazon Music、Qobuz、SoundCloud）との橋渡しになります。</string>
     <string name="apple_token_missing">Apple Music のデベロッパートークンがまだありません。「アカウント」→「Apple Music」→「設定」から入力してください。</string>
+    <string name="apple_subscription_needed">%1$s: ライブラリには有効な Apple Music のサブスクリプションが必要です。Apple が拒否しました (403: %2$s)。</string>
     <string name="link_paste">または公開プレイリストのリンクを貼り付け</string>
     <string name="link_use">リンクを使用</string>
     <string name="link_invalid">認識できないリンクです。対応サービス：Spotify、Apple Music、YouTube/YouTube Music、Deezer、TIDAL。</string>

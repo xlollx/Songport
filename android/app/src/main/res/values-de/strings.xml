@@ -158,6 +158,7 @@
     <string name="provider_note_apple">Apple Music-Playlists in deiner Mediathek. Erfordert ein Abo und einen MusicKit Developer token. Die Apple-API kann Titel hinzufügen, aber nicht entfernen.</string>
     <string name="provider_note_files">Lokale Dateien: Importiere eine aus einem beliebigen Dienst exportierte Playlist (CSV, M3U, Apple Music/iTunes-XML, JSON oder eine einfache Liste) und synchronisiere sie überallhin. Die Brücke für Dienste ohne offene API: Amazon Music, Qobuz, SoundCloud.</string>
     <string name="apple_token_missing">Noch kein Apple Music Developer token. Gib deinen unter Konten, Apple Music, Einrichten ein.</string>
+    <string name="apple_subscription_needed">%1$s: Die Mediathek braucht ein aktives Apple-Music-Abo; Apple hat abgelehnt (403: %2$s).</string>
     <string name="link_paste">Oder füge den Link einer öffentlichen Playlist ein</string>
     <string name="link_use">Link verwenden</string>
     <string name="link_invalid">Link nicht erkannt. Unterstützt: Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL.</string>
