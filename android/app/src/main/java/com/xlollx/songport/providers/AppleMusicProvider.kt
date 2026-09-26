@@ -117,6 +117,10 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
      * Richiesta all'API. Il developer token basta per il catalogo; il music user token serve
      * solo per la libreria (endpoint /v1/me/...).
      */
+    /** The web route sends every call to the player's own backend, with the player's headers. */
+    protected open fun apiUrl(url: String): String = url
+    protected open fun apiHeaders(ctx: Context): Map<String, String> = emptyMap()
+
     private suspend fun api(ctx: Context, method: String, url: String, body: JsonElement? = null): JsonElement {
         // The web route fetches its tokens over the network: never on the caller's (main) thread.
         val dev = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { developerToken(ctx) }
@@ -130,9 +134,10 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
                 ?: throw ProviderException(ctx.getString(R.string.error_not_connected, displayName))
             headers["Music-User-Token"] = mut
         }
-        val resp = Http.send(method, url, headers, body?.let { Http.jsonBody(it.toString()) })
+        headers.putAll(apiHeaders(ctx))
+        val resp = Http.send(method, apiUrl(url), headers, body?.let { Http.jsonBody(it.toString()) })
         if (!resp.ok) {
-            val detail = parseJson(resp.body)["errors"][0]["detail"].str ?: resp.body.take(200)
+            val detail = parseJson(resp.body)["errors"][0]["detail"].str ?: resp.body.take(200).ifBlank { "no detail" }
             // 401 sul developer token = scaduto; 403 con user token = sessione da rifare.
             if (resp.code == 401 && needsUser) TokenStore(ctx).clear(id)
             // The library (/v1/me/library) answers 403 to an Apple ID without an Apple Music subscription.

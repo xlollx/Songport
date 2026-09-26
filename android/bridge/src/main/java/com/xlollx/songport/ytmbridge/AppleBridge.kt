@@ -21,6 +21,8 @@ object AppleBridge {
     val session = WebSession("apple", listOf("music.apple.com", "idmsa.apple.com", "apple.com"))
     const val HOME = "https://music.apple.com/"
     const val API = "https://api.music.apple.com"
+    /** The player's own backend: the only one that takes the player's token. */
+    const val AMP = "https://amp-api.music.apple.com"
 
     private val http = OkHttpClient.Builder().connectTimeout(20, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).withHook().build()
     private const val UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
@@ -118,9 +120,10 @@ object AppleBridge {
      */
     private val JWT = Regex("""eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}""")
 
+    /** A JWT with an algorithm in its header and, when it says so, an expiry still ahead. */
     private fun isJwt(tok: String): Boolean = JWT.matches(tok) && runCatching {
         val header = String(Base64.decode(tok.substringBefore('.'), Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP))
-        (parseJson(header) as? JsonObject)?.get("alg").str != null
+        (parseJson(header) as? JsonObject)?.get("alg").str != null && (jwtExpiry(tok)?.let { it > System.currentTimeMillis() } ?: true)
     }.getOrDefault(false)
 
     private fun findJwt(text: String): String? = JWT.findAll(text).map { it.value }.firstOrNull { isJwt(it) }
@@ -156,10 +159,12 @@ object AppleBridge {
     fun storefront(ctx: Context): String? {
         session.get(ctx, "storefront")?.let { return it }
         val user = userToken(session.cookies(ctx)) ?: return null
-        val req = Request.Builder().url("$API/v1/me/storefront")
+        val req = Request.Builder().url("$AMP/v1/me/storefront")
             .header("Authorization", "Bearer ${developerToken(ctx)}")
             .header("Music-User-Token", user)
+            .header("media-user-token", user)
             .header("Origin", "https://music.apple.com")
+            .header("Referer", "https://music.apple.com/")
             .header("User-Agent", UA)
             .build()
         http.newCall(req).execute().use { resp ->

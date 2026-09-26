@@ -65,6 +65,14 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     override fun accountName(ctx: Context): String? = runCatching { call(ctx, "apple.status").getString("account") }.getOrNull()
     override fun canRead(ctx: Context, playlistId: String): Boolean = isConnected(ctx)
 
+    // The player's token is bound to its origin: api.music.apple.com answers it with a bare 401. Every
+    // call goes to the player's own backend instead, with the headers the player sends.
+    override fun apiUrl(url: String): String = url.replace("https://api.music.apple.com", AMP)
+    override fun apiHeaders(ctx: Context): Map<String, String> = mapOf(
+        "Origin" to "https://music.apple.com", "Referer" to "https://music.apple.com/",
+        "media-user-token" to (runCatching { userToken(ctx) }.getOrNull() ?: ""),
+    ).filterValues { it.isNotEmpty() }
+
     // The web player's backend (amp-api.music.apple.com) takes the same two tokens and, unlike the
     // public API, removes tracks, renames and deletes library playlists: what music.apple.com does.
     override val canRemoveTracks: Boolean get() = true
@@ -75,10 +83,10 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
         val (dev, user) = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { developerToken(ctx) to userToken(ctx) }
         if (dev.isBlank() || user == null) throw ProviderException(ctx.getString(R.string.error_not_connected, displayName))
         val headers = mapOf(
-            "Authorization" to "Bearer $dev", "Music-User-Token" to user, "Accept" to "application/json",
+            "Authorization" to "Bearer $dev", "Music-User-Token" to user, "media-user-token" to user, "Accept" to "application/json",
             "Origin" to "https://music.apple.com", "Referer" to "https://music.apple.com/",
         )
-        val resp = com.xlollx.songport.net.Http.send(method, "https://amp-api.music.apple.com$path", headers, body?.let { com.xlollx.songport.net.Http.jsonBody(it.toString()) })
+        val resp = com.xlollx.songport.net.Http.send(method, "$AMP$path", headers, body?.let { com.xlollx.songport.net.Http.jsonBody(it.toString()) })
         if (!resp.ok) {
             val detail = com.xlollx.songport.net.parseJson(resp.body)["errors"][0]["detail"].str ?: resp.body.take(200)
             if (resp.code == 403) throw ProviderException(ctx.getString(R.string.apple_subscription_needed, displayName, detail))
@@ -134,5 +142,6 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     companion object {
         const val SERVICE = "apple_bridge"
         const val LOGIN_ACTION = "com.xlollx.songport.ytmbridge.APPLE_LOGIN"
+        private const val AMP = "https://amp-api.music.apple.com"
     }
 }
