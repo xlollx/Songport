@@ -43,6 +43,10 @@ quota meter; own API keys to escape shared quotas.
   track (anonymous, cached a week), so Spotify, Apple Music and TIDAL are asked for the recording,
   not a look-alike. Off in Settings. The match cache is shared across the routes and accounts of
   a service, and the Spotify web route reads only the query hash it needs.
+- Scheduled syncs skip the run when neither side changed since the last one (Spotify snapshot id,
+  Deezer checksum, TIDAL and Apple modification dates, the head of the liked list).
+- Listening history as a source: Spotify's last fifty plays, YouTube Music's history, Last.fm and
+  ListenBrainz recent listens, newest first, a track once.
 - YouTube Music already pauses on Google's abuse page with a doubling wait and a "verify" button;
   song results are preferred and videos are only a fallback.
 

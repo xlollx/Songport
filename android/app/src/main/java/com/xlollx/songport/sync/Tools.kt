@@ -26,7 +26,7 @@ object Tools {
      */
     suspend fun backupAll(ctx: Context, provider: MusicProvider, onProgress: (Progress) -> Unit = {}): BackupResult {
         // Liked songs, saved albums and followed artists come first: they are the library itself.
-        val lists = (provider.libraryEntries(ctx, asTarget = false) + provider.playlists(ctx)).toMutableList()
+        val lists = (provider.libraryEntries(ctx, asTarget = false).filter { it.id != MusicProvider.RECENT_ID } + provider.playlists(ctx)).toMutableList()
         var tracks = 0
         var done = 0
         var unchanged = 0

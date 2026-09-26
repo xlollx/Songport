@@ -162,6 +162,12 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
         return out
     }
 
+    override suspend fun playlistVersion(ctx: Context, playlistId: String): String? {
+        if (MusicProvider.isLibrary(playlistId) || playlistId.startsWith(CATALOG_PREFIX)) return null
+        val a = api(ctx, "GET", "$API/v1/me/library/playlists/$playlistId")["data"][0]["attributes"]
+        return a["lastModifiedDate"].str ?: a["dateModified"].str
+    }
+
     override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
         val url = if (playlistId.startsWith(CATALOG_PREFIX)) "$API/v1/catalog/${storefront(ctx)}/playlists/$playlistId"
         else "$API/v1/me/library/playlists/$playlistId"

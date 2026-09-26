@@ -73,6 +73,18 @@ class SyncEngine(private val ctx: Context) {
     suspend fun run(job: SyncJob, unattended: Boolean = false, onProgress: (Progress) -> Unit = {}): SyncReport {
         val started = System.currentTimeMillis()
         val reportId = UUID.randomUUID().toString()
+        // The source's version before anything is read: a change during the run is seen next time.
+        val (src0, dst0) = runCatching { providers(job) }.getOrNull() ?: (null to null)
+        val sourceVersion = job.source.playlistId?.let { id -> src0?.let { runCatching { it.playlistVersion(ctx, id) }.getOrNull() } }
+        if (unattended && sourceVersion != null && sourceVersion == job.sourceVersion && job.targetVersion != null) {
+            val targetVersion = job.target.playlistId?.let { id -> dst0?.let { runCatching { it.playlistVersion(ctx, id) }.getOrNull() } }
+            if (targetVersion == job.targetVersion) {
+                Diagnostics.log(ctx, "engine", "${job.name}: unchanged on both sides, skipped")
+                val report = SyncReport(reportId, job.id, job.name, started, System.currentTimeMillis() - started, notes = listOf(ctx.getString(R.string.note_unchanged)))
+                store.addReport(report)
+                return report
+            }
+        }
         val report = try {
             val plan = plan(job, onProgress, unattended = unattended)
             // La ricerca e' finita: i brani non trovati e gli abbinamenti incerti si possono gia'
@@ -98,6 +110,12 @@ class SyncEngine(private val ctx: Context) {
                 error = e.message ?: e.javaClass.simpleName)
         }
         store.addReport(report)
+        if (report.error == null && dst0 != null) {
+            // The target's version after our own writes: the next scheduled run compares against it.
+            val latest = store.job(job.id) ?: job
+            val targetVersion = latest.target.playlistId?.let { id -> runCatching { dst0.playlistVersion(ctx, id) }.getOrNull() }
+            if (sourceVersion != latest.sourceVersion || targetVersion != latest.targetVersion) store.upsertJob(latest.copy(sourceVersion = sourceVersion, targetVersion = targetVersion))
+        }
         return report
     }
 

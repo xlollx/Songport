@@ -76,6 +76,9 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
         j.arr.mapNotNull { p -> toPlaylist(p) }
     }
 
+    override suspend fun playlistVersion(ctx: Context, playlistId: String): String? =
+        withContext(Dispatchers.IO) { call(ctx, "spotify.version", playlistId).getString("version") }
+
     override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist =
         io(ctx, "spotify.playlistInfo", playlistId) { j -> toPlaylist(j) ?: Playlist(playlistId, playlistId) }
 

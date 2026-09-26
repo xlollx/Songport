@@ -42,6 +42,7 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     /** Saved albums and subscribed artists: the built-in connectors know them, an old plugin may not. */
     override val supportsAlbums: Boolean get() = BridgePlugin.builtIn
     override val supportsArtists: Boolean get() = BridgePlugin.builtIn
+    override val supportsRecent: Boolean get() = BridgePlugin.builtIn
     override val supportsMultipleAccounts = false
     override val authDomain = "accounts.google.com"
     override val revokeUrl = "https://myaccount.google.com/device-activity"

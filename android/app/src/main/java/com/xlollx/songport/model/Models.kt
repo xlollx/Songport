@@ -80,6 +80,9 @@ data class SyncJob(
     val linkedJobId: String? = null,
     /** Playlist scritta dall'AI dell'utente: la descrizione data, per riconoscerla e per allungarla. */
     val aiPrompt: String? = null,
+    /** Versioni (vedi MusicProvider.playlistVersion) viste all'ultimo giro riuscito: uguali = niente da fare. */
+    val sourceVersion: String? = null,
+    val targetVersion: String? = null,
     val policy: MatchPolicy = MatchPolicy(),
 )
 

@@ -365,6 +365,20 @@ class SpotifyWebClient(private val ctx: Context) {
         return out
     }
 
+    /** A cheap sign of change: total plus the newest entry (liked songs) or the first and last entries (playlists). */
+    fun version(id: String): String? {
+        if (id == "__liked__") {
+            val lib = gql("fetchLibraryTracks", jsonObj("offset" to 0, "limit" to 1))["data"]["me"]["library"]["tracks"]
+            return "${lib["totalCount"].long}|${lib["items"][0]["addedAt"]["isoString"].str}"
+        }
+        if (id.startsWith("__")) return null
+        val first = gql("fetchPlaylist", jsonObj("uri" to "spotify:playlist:$id", "offset" to 0, "limit" to 1, "enableWatchFeedEntrypoint" to false))["data"]["playlistV2"]
+        first["revisionId"].str?.let { return it }
+        val total = first["content"]["totalCount"].long ?: return null
+        val last = if (total > 1) gql("fetchPlaylist", jsonObj("uri" to "spotify:playlist:$id", "offset" to total - 1, "limit" to 1, "enableWatchFeedEntrypoint" to false))["data"]["playlistV2"]["content"]["items"][0]["uid"].str else null
+        return "$total|${first["content"]["items"][0]["uid"].str}|$last"
+    }
+
     fun playlistInfo(id: String): PlaylistDto {
         val j = gql("fetchPlaylist", jsonObj("uri" to "spotify:playlist:$id", "offset" to 0, "limit" to 1, "enableWatchFeedEntrypoint" to false))
         val p = j["data"]["playlistV2"]

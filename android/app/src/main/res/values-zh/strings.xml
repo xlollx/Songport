@@ -75,6 +75,7 @@
     <string name="saved_albums">已保存的专辑</string>
     <string name="followed_artists">关注的艺人</string>
     <string name="followed_podcasts">播客</string>
+    <string name="recently_played">最近播放</string>
     <string name="transfer_unsupported">在 %1$s 上不可用</string>
     <string name="tracks_count">%1$d 首歌曲</string>
     <string name="editor_error_incomplete">请选择来源歌单和目标。</string>
@@ -159,6 +160,7 @@
     <string name="note_no_removals">%1$s 的 API 不允许从歌单中移除歌曲：已保留 %2$d 首歌曲。</string>
     <string name="note_removals_deferred">移除已推迟：搜索尚未完成，因此目标中暂未匹配的 %1$d 首歌曲已保留。完整运行一次后会重新检查它们。</string>
     <string name="note_removals_capped">已暂缓删除：本次运行将从目标中删除 %2$d 首歌曲中的 %1$d 首，超出了计划同步自动删除的范围。请预览或手动运行同步以确认。</string>
+    <string name="note_unchanged">自上次运行以来两边都没有变化：已跳过。</string>
     <string name="review_share">分享列表</string>
     <string name="note_search_interrupted">已搜索 %2$d 首中的 %1$d 首，随后服务要求更长的暂停（%3$s）。这是服务的限制，不是 Songport 的错误：已找到的结果已应用并记住。几分钟后再次运行同步即可从此处继续。</string>
     <string name="error_no_removals">%1$s 无法从歌单中移除歌曲</string>

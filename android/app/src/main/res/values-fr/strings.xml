@@ -75,6 +75,7 @@
     <string name="saved_albums">Albums enregistrés</string>
     <string name="followed_artists">Artistes suivis</string>
     <string name="followed_podcasts">Podcasts</string>
+    <string name="recently_played">Écoutés récemment</string>
     <string name="transfer_unsupported">indisponible sur %1$s</string>
     <string name="tracks_count">%1$d titres</string>
     <string name="editor_error_incomplete">Choisissez une playlist source et une cible.</string>
@@ -159,6 +160,7 @@
     <string name="note_no_removals">%1$s ne permet pas de retirer des titres d\'une playlist via son API : %2$d titres ont été laissés en place.</string>
     <string name="note_removals_deferred">Suppressions reportées : la recherche n\'a pas été terminée, donc %1$d titres de la destination sans correspondance pour l\'instant restent en place. Ils seront réexaminés quand une exécution ira jusqu\'au bout.</string>
     <string name="note_removals_capped">Suppressions retenues : cette exécution retirerait %1$d des %2$d titres de la destination, plus qu\'une synchro programmée ne retire seule. Prévisualisez ou lancez la synchro à la main pour confirmer.</string>
+    <string name="note_unchanged">Rien n\'a changé d\'un côté ni de l\'autre depuis la dernière exécution : ignoré.</string>
     <string name="review_share">Partager la liste</string>
     <string name="note_search_interrupted">%1$d titres sur %2$d recherchés, puis le service a demandé une pause plus longue (%3$s). C\'est une limite du service, pas une erreur de Songport : ce qui a été trouvé a été appliqué et mémorisé. Relancez la sync dans quelques minutes pour continuer.</string>
     <string name="error_no_removals">%1$s ne peut pas retirer de titres d\'une playlist</string>

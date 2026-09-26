@@ -31,6 +31,7 @@ class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
     override val canWrite = false
     override val canRemoveTracks = false
     override val supportsLikedSongs = true
+    override val supportsRecent = true
     override val loginForm = LoginForm(needsUrl = false, needsUser = true, needsSecret = false, hintRes = R.string.login_hint_lastfm)
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://www.last.fm/api/account/create",
@@ -65,8 +66,21 @@ class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
     override suspend fun playlists(ctx: Context): List<Playlist> = emptyList()
 
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
-        if (playlistId != MusicProvider.LIKED_ID) return emptyList()
         val user = creds(ctx).userName
+        if (playlistId == MusicProvider.RECENT_ID) {
+            val j = call(ctx, mapOf("method" to "user.getrecenttracks", "user" to user, "limit" to "200"))
+            return j["recenttracks"]["track"].arr.mapNotNull { t ->
+                if (t["@attr"]["nowplaying"].str == "true") return@mapNotNull null
+                val title = t["name"].str ?: return@mapNotNull null
+                val artist = t["artist"]["#text"].str ?: t["artist"]["name"].str
+                Track(
+                    id = t["mbid"].str?.takeIf { it.isNotBlank() } ?: t["url"].str ?: "$title|$artist",
+                    title = title, artists = listOfNotNull(artist), album = t["album"]["#text"].str ?: "",
+                    addedAt = (t["date"]["uts"].str?.toLongOrNull() ?: 0) * 1000,
+                )
+            }.distinctBy { it.id }
+        }
+        if (playlistId != MusicProvider.LIKED_ID) return emptyList()
         val out = ArrayList<Track>()
         var page = 1
         var pages = 1

@@ -122,6 +122,11 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
         return trackResources.mapNotNull { r -> trackFrom(r, names) }
     }
 
+    override suspend fun playlistVersion(ctx: Context, playlistId: String): String? {
+        if (MusicProvider.isLibrary(playlistId)) return null
+        return api(ctx, "GET", "$API/playlists/$playlistId?countryCode=${cc(ctx)}")["data"]["attributes"]["lastModifiedAt"].str
+    }
+
     override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
         val d = api(ctx, "GET", "$API/playlists/$playlistId?countryCode=${cc(ctx)}")["data"]
         return Playlist(playlistId, d["attributes"]["name"].str ?: playlistId, d["attributes"]["numberOfItems"].int ?: -1, ownedByMe = false, description = d["attributes"]["description"].str.orEmpty())

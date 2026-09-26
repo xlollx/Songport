@@ -43,6 +43,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val supportsAlbums = true
     override val supportsArtists = true
     override val supportsPodcasts = true
+    override val supportsRecent = true
 
     override val setupGuide: SetupGuide? = SetupGuide(
         dashboardUrl = "https://developer.spotify.com/dashboard",
@@ -58,7 +59,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val tokenEndpoint = "https://accounts.spotify.com/api/token"
     override val scopes =
         "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public " +
-            "user-library-read user-library-modify user-follow-read user-follow-modify"
+            "user-library-read user-library-modify user-follow-read user-follow-modify user-read-recently-played ugc-image-upload"
     // Forces the consent page, which names the signed-in account and offers "Not you?" to switch.
     override val switchAccountParams = mapOf("show_dialog" to "true")
 
@@ -129,7 +130,26 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         return Playlist(playlistId, j["name"].str ?: playlistId, j["items"]["total"].int ?: j["tracks"]["total"].int ?: -1, ownedByMe = false, description = j["description"].str.orEmpty())
     }
 
+    override suspend fun playlistVersion(ctx: Context, playlistId: String): String? = when (playlistId) {
+        MusicProvider.LIKED_ID -> api(ctx, "GET", "$API/me/tracks?limit=1").let { "${it["total"].int}|${it["items"][0]["added_at"].str}" }
+        MusicProvider.ALBUMS_ID -> api(ctx, "GET", "$API/me/albums?limit=1").let { "${it["total"].int}|${it["items"][0]["added_at"].str}" }
+        MusicProvider.ARTISTS_ID -> api(ctx, "GET", "$API/me/following?type=artist&limit=1")["artists"].let { "${it["total"].int}|${it["items"][0]["id"].str}" }
+        MusicProvider.PODCASTS_ID -> api(ctx, "GET", "$API/me/shows?limit=1").let { "${it["total"].int}|${it["items"][0]["added_at"].str}" }
+        MusicProvider.RECENT_ID -> null
+        else -> api(ctx, "GET", "$API/playlists/$playlistId?fields=snapshot_id")["snapshot_id"].str
+    }
+
+    /** The last fifty plays, newest first, a track once. */
+    private suspend fun recentlyPlayed(ctx: Context): List<Track> {
+        val j = api(ctx, "GET", "$API/me/player/recently-played?limit=50")
+        return j["items"].arr.mapNotNull { item ->
+            val t = item["track"]
+            if (t.isNullish || t["id"].str == null) null else toTrack(t).copy(addedAt = Durations.parseInstant(item["played_at"].str))
+        }.distinctBy { it.id }
+    }
+
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+        if (playlistId == MusicProvider.RECENT_ID) return recentlyPlayed(ctx)
         if (playlistId == MusicProvider.ALBUMS_ID) return savedAlbums(ctx)
         if (playlistId == MusicProvider.ARTISTS_ID) return followedArtists(ctx)
         if (playlistId == MusicProvider.PODCASTS_ID) return savedShows(ctx)

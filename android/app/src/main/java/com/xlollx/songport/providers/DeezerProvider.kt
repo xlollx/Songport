@@ -146,6 +146,12 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
         return Playlist(playlistId, j["title"].str ?: playlistId, j["nb_tracks"].int ?: -1, ownedByMe = false, description = j["description"].str.orEmpty())
     }
 
+    override suspend fun playlistVersion(ctx: Context, playlistId: String): String? = when (playlistId) {
+        MusicProvider.LIKED_ID -> dz(ctx, "GET", "/user/me/tracks", mapOf("limit" to "1")).let { "${it["total"].int}|${it["data"][0]["id"].long}" }
+        MusicProvider.ALBUMS_ID, MusicProvider.ARTISTS_ID, MusicProvider.PODCASTS_ID, MusicProvider.RECENT_ID -> null
+        else -> dz(ctx, "GET", "/playlist/$playlistId")["checksum"].str
+    }
+
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
         val out = ArrayList<Track>()
         var url: String? = when (playlistId) {

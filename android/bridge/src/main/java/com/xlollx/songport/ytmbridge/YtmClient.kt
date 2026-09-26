@@ -416,6 +416,13 @@ class YtmClient(private val ctx: Context) {
         return out.values.toList()
     }
 
+    /** The listening history (ytmusicapi's get_history): newest first, a video once. */
+    fun history(): List<TrackDto> {
+        val resp = call("browse", mapOf("browseId" to "FEmusic_history"))
+        val seen = HashSet<String>()
+        return resp.findAll("musicResponsiveListItemRenderer").mapNotNull { parseItem(it) }.filter { seen.add(it.id) }
+    }
+
     /** Catalogue search for albums or artists (the "Albums" and "Artists" filters). */
     fun searchKind(query: String, kind: String): List<TrackDto> {
         if (query.isBlank()) return emptyList()

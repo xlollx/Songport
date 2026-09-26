@@ -29,6 +29,8 @@ interface MusicProvider {
     val supportsArtists: Boolean get() = false
     /** Podcast seguiti (PODCASTS_ID), in lettura e scrittura. */
     val supportsPodcasts: Boolean get() = false
+    /** Ascolti recenti (RECENT_ID), solo come origine: gli ultimi brani ascoltati, dal piu' recente, senza ripetizioni. */
+    val supportsRecent: Boolean get() = false
 
     /** Se questo id speciale (preferiti, album, artisti) e' disponibile qui, come origine o destinazione. */
     fun supportsLibrary(playlistId: String?, asTarget: Boolean): Boolean = when (playlistId) {
@@ -36,6 +38,7 @@ interface MusicProvider {
         ALBUMS_ID -> supportsAlbums
         ARTISTS_ID -> supportsArtists
         PODCASTS_ID -> supportsPodcasts
+        RECENT_ID -> !asTarget && supportsRecent
         else -> true
     }
 
@@ -45,6 +48,7 @@ interface MusicProvider {
         Playlist(ALBUMS_ID, ctx.getString(com.xlollx.songport.R.string.saved_albums)).takeIf { supportsAlbums },
         Playlist(ARTISTS_ID, ctx.getString(com.xlollx.songport.R.string.followed_artists)).takeIf { supportsArtists },
         Playlist(PODCASTS_ID, ctx.getString(com.xlollx.songport.R.string.followed_podcasts)).takeIf { supportsPodcasts },
+        Playlist(RECENT_ID, ctx.getString(com.xlollx.songport.R.string.recently_played)).takeIf { !asTarget && supportsRecent },
     )
     /** False per sorgenti locali (file) che non richiedono login. */
     val requiresAuth: Boolean get() = true
@@ -167,6 +171,14 @@ interface MusicProvider {
     suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist = Playlist(playlistId, playlistId)
 
     /**
+     * Un segno che cambia quando cambia il contenuto (lo snapshot id di Spotify, il checksum di
+     * Deezer, una data di modifica; per i preferiti il totale e l'ultimo aggiunto), o null dove il
+     * servizio non ne offre uno affidabile. Le sync programmate saltano il giro quando nessuno dei
+     * due lati e' cambiato dall'ultima volta: una chiamata al posto di decine.
+     */
+    suspend fun playlistVersion(ctx: Context, playlistId: String): String? = null
+
+    /**
      * True se questa playlist e' leggibile adesso. Di default richiede l'account collegato;
      * le playlist pubbliche del catalogo Apple Music si leggono anche senza login.
      */
@@ -180,9 +192,10 @@ interface MusicProvider {
         const val ALBUMS_ID = "__albums__"
         const val ARTISTS_ID = "__artists__"
         const val PODCASTS_ID = "__podcasts__"
+        const val RECENT_ID = "__recent__"
 
         fun isLibrary(playlistId: String?): Boolean =
-            playlistId == LIKED_ID || playlistId == ALBUMS_ID || playlistId == ARTISTS_ID || playlistId == PODCASTS_ID
+            playlistId == LIKED_ID || playlistId == ALBUMS_ID || playlistId == ARTISTS_ID || playlistId == PODCASTS_ID || playlistId == RECENT_ID
 
         /** Il tipo di elemento che un id speciale contiene: album, artista, o null per brani. */
         fun libraryKind(playlistId: String?): String? = when (playlistId) {

@@ -75,6 +75,7 @@
     <string name="saved_albums">Album salvati</string>
     <string name="followed_artists">Artisti seguiti</string>
     <string name="followed_podcasts">Podcast</string>
+    <string name="recently_played">Ascoltati di recente</string>
     <string name="transfer_unsupported">non disponibile su %1$s</string>
     <string name="tracks_count">%1$d brani</string>
     <string name="editor_error_incomplete">Scegli una playlist di origine e una destinazione.</string>
@@ -159,6 +160,7 @@
     <string name="note_no_removals">%1$s non permette di togliere brani da una playlist tramite API: %2$d brani sono rimasti al loro posto.</string>
     <string name="note_removals_deferred">Rimozioni rinviate: la ricerca non è stata completata, quindi %1$d brani della destinazione senza corrispondenza per ora restano al loro posto. Verranno rivalutati quando un giro arriva in fondo.</string>
     <string name="note_removals_capped">Rimozioni trattenute: questa esecuzione toglierebbe %1$d dei %2$d brani della destinazione, più di quanto una sync programmata rimuove da sola. Guarda l\'anteprima o esegui la sync a mano per confermare.</string>
+    <string name="note_unchanged">Niente è cambiato da nessuna delle due parti dall\'ultimo giro: saltato.</string>
     <string name="review_share">Condividi l\'elenco</string>
     <string name="note_search_interrupted">Cercati %1$d brani su %2$d, poi il servizio ha chiesto una pausa più lunga (%3$s). È un limite del servizio, non un errore di Songport: quanto trovato è stato applicato e memorizzato. Rilancia la sync tra qualche minuto per continuare da lì.</string>
     <string name="error_no_removals">%1$s non può rimuovere brani da una playlist</string>

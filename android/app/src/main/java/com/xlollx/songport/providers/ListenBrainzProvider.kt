@@ -32,6 +32,7 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
     override val canCreatePlaylists = false
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
+    override val supportsRecent = true
     override val loginForm = LoginForm(
         needsUrl = false, needsUser = true, needsSecret = true, secretLabelRes = R.string.login_token_optional,
         hintRes = R.string.login_hint_listenbrainz, secretOptional = true,
@@ -80,6 +81,20 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
     }
 
     override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+        if (playlistId == MusicProvider.RECENT_ID) {
+            val user = Http.enc(creds(ctx).userName)
+            val j = api(ctx, "/1/user/$user/listens?count=100")
+            return j["payload"]["listens"].arr.mapNotNull { l ->
+                val md = l["track_metadata"]
+                val title = md["track_name"].str ?: return@mapNotNull null
+                Track(
+                    id = md["additional_info"]["recording_mbid"].str ?: md["mbid_mapping"]["recording_mbid"].str ?: "$title|${md["artist_name"].str}",
+                    title = title, artists = listOfNotNull(md["artist_name"].str), album = md["release_name"].str ?: "",
+                    durationMs = md["additional_info"]["duration_ms"].long ?: 0,
+                    addedAt = (l["listened_at"].long ?: 0) * 1000,
+                )
+            }.distinctBy { it.id }
+        }
         if (playlistId == MusicProvider.LIKED_ID) {
             val user = Http.enc(creds(ctx).userName)
             val out = ArrayList<Track>()

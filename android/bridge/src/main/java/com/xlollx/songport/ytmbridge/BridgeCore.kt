@@ -18,6 +18,7 @@ object BridgeCore {
     /** Songport's ids for the library objects, the same on every connector. */
     const val ALBUMS = "__albums__"
     const val ARTISTS = "__artists__"
+    const val RECENT = "__recent__"
 
     fun call(ctx: Context, method: String, arg: String?, extras: Bundle?): Bundle {
         return try {
@@ -114,6 +115,7 @@ object BridgeCore {
                 }
                 "spotify.disconnect" -> { SpotifyBridge.session.clear(ctx); Bundle() }
                 "spotify.playlists" -> ok(json.encodeToString(SpotifyWebClient(ctx).libraryPlaylists()))
+                "spotify.version" -> Bundle().apply { SpotifyWebClient(ctx).version(arg ?: return err("missing playlist id"))?.let { putString("version", it) } }
                 "spotify.playlistInfo" -> ok(json.encodeToString(SpotifyWebClient(ctx).playlistInfo(arg ?: return err("missing playlist id"))))
                 "spotify.tracks" -> {
                     val id = arg ?: return err("missing playlist id")
@@ -195,7 +197,7 @@ object BridgeCore {
     private fun cachedTracks(client: YtmClient, id: String): List<TrackDto> {
         val now = System.currentTimeMillis()
         lastTracks?.let { (pid, at, list) -> if (pid == id && now - at < 120_000) return list }
-        val list = when (id) { ALBUMS -> client.libraryAlbums(); ARTISTS -> client.librarySubscriptions(); else -> client.tracks(id) }
+        val list = when (id) { ALBUMS -> client.libraryAlbums(); ARTISTS -> client.librarySubscriptions(); RECENT -> client.history(); else -> client.tracks(id) }
         lastTracks = Triple(id, now, list)
         return list
     }

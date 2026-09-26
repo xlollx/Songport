@@ -75,6 +75,7 @@
     <string name="saved_albums">保存したアルバム</string>
     <string name="followed_artists">フォロー中のアーティスト</string>
     <string name="followed_podcasts">ポッドキャスト</string>
+    <string name="recently_played">最近再生した曲</string>
     <string name="transfer_unsupported">%1$s では利用できません</string>
     <string name="tracks_count">%1$d 曲</string>
     <string name="editor_error_incomplete">同期元プレイリストと同期先を選択してください。</string>
@@ -159,6 +160,7 @@
     <string name="note_no_removals">%1$s は API によるプレイリストからの曲の削除に対応していないため、%2$d 曲はそのまま残しました。</string>
     <string name="note_removals_deferred">削除を延期しました：検索が完了しなかったため、同期先でまだどの曲とも一致していない %1$d 曲はそのまま残しました。実行が最後まで完了したときに確認されます。</string>
     <string name="note_removals_capped">削除を保留しました。この実行では転送先の %2$d 曲のうち %1$d 曲が削除され、スケジュール同期が自動で削除する範囲を超えています。プレビューを確認するか、手動で同期を実行して確定してください。</string>
+    <string name="note_unchanged">前回の実行から両側とも変更がありません。スキップしました。</string>
     <string name="review_share">リストを共有</string>
     <string name="note_search_interrupted">%2$d 曲中 %1$d 曲を検索したところで、サービスがより長い休止を求めました（%3$s）。これはサービス側の制限で、Songport のエラーではありません。見つかった曲は反映され、記憶されています。数分後にもう一度同期を実行すると、続きから再開します。</string>
     <string name="error_no_removals">%1$s はプレイリストから曲を削除できません</string>
