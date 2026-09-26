@@ -90,6 +90,11 @@ interface MusicProvider {
      */
     val canRemoveTracks: Boolean get() = true
 
+    /** Mettere una copertina a una playlist propria: solo dove l'API lo permette (Spotify). */
+    val canSetCover: Boolean get() = false
+    /** [jpeg]: at most 256 KB, as Spotify wants it. */
+    suspend fun setPlaylistCover(ctx: Context, playlistId: String, jpeg: ByteArray) {}
+
     /** Rinominare ed eliminare le proprie playlist: dove l'API lo permette (Apple Music e Amazon no). */
     val canRenamePlaylists: Boolean get() = canWrite && canCreatePlaylists
     val canDeletePlaylists: Boolean get() = canRenamePlaylists

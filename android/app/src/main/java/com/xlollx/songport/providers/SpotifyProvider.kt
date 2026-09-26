@@ -118,6 +118,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
                     name = p["name"].str ?: "",
                     trackCount = p["items"]["total"].int ?: p["tracks"]["total"].int ?: -1,
                     ownedByMe = p["owner"]["id"].str == me || p["collaborative"].bool == true,
+                    imageUrl = p["images"][0]["url"].str,
                 )
             }
             url = j["next"].str
@@ -126,8 +127,18 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     }
 
     override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
-        val j = api(ctx, "GET", "$API/playlists/$playlistId?fields=name,description,items(total),tracks(total)")
-        return Playlist(playlistId, j["name"].str ?: playlistId, j["items"]["total"].int ?: j["tracks"]["total"].int ?: -1, ownedByMe = false, description = j["description"].str.orEmpty())
+        val j = api(ctx, "GET", "$API/playlists/$playlistId?fields=name,description,images,items(total),tracks(total)")
+        return Playlist(playlistId, j["name"].str ?: playlistId, j["items"]["total"].int ?: j["tracks"]["total"].int ?: -1, ownedByMe = false, description = j["description"].str.orEmpty(), imageUrl = j["images"][0]["url"].str)
+    }
+
+    override val canSetCover: Boolean get() = true
+
+    /** The JPEG goes up base64-encoded as the body; Spotify wants it under 256 KB (scope ugc-image-upload). */
+    override suspend fun setPlaylistCover(ctx: Context, playlistId: String, jpeg: ByteArray) {
+        val t = tokens(ctx)
+        val body = android.util.Base64.encodeToString(jpeg, android.util.Base64.NO_WRAP)
+        val resp = Http.send("PUT", "$API/playlists/$playlistId/images", mapOf("Authorization" to "Bearer ${t.accessToken}"), Http.jsonBody(body, "image/jpeg"))
+        if (!resp.ok) throw ProviderException(friendlyApiError(ctx, resp) ?: "$displayName API ${resp.code}: ${errorMessage(resp)}")
     }
 
     override suspend fun playlistVersion(ctx: Context, playlistId: String): String? = when (playlistId) {

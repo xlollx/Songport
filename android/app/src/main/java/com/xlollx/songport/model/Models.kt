@@ -47,6 +47,8 @@ data class Playlist(
     val trackCount: Int = -1,
     val ownedByMe: Boolean = true,
     val description: String = "",
+    /** The cover's address, when the service lists one cheaply: carried to a created target where allowed. */
+    val imageUrl: String? = null,
 )
 
 @Serializable

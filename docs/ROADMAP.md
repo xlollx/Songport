@@ -47,14 +47,17 @@ quota meter; own API keys to escape shared quotas.
   Deezer checksum, TIDAL and Apple modification dates, the head of the liked list).
 - Listening history as a source: Spotify's last fifty plays, YouTube Music's history, Last.fm and
   ListenBrainz recent listens, newest first, a track once.
+- The source playlist's cover travels to a created Spotify playlist (Spotify and Deezer list
+  covers; Spotify accepts one, under 256 KB).
+- In the review, a track link from any service is resolved to the target service through song.link
+  (Odesli), an extra on top of the target's own links.
 - YouTube Music already pauses on Google's abuse page with a doubling wait and a "verify" button;
   song results are preferred and videos are only a fallback.
 
 ## Next
 
-1. **Cover art** carried to the target where the API allows (Spotify).
-2. **Last.fm loves** (needs the API secret for the session flow).
-3. A throttled YouTube Music queue that resumes the next day by itself.
+1. **Last.fm loves** (needs the API secret for the session flow).
+2. A throttled YouTube Music queue that resumes the next day by itself.
 
 ## Name
 

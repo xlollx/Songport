@@ -174,13 +174,16 @@ class SyncEngine(private val ctx: Context) {
             }
             onProgress(Progress(Progress.Step.CREATE_TARGET))
             val name = job.target.playlistName.ifBlank { job.source.playlistName.ifBlank { job.name } }
-            // The source's own description travels with the playlist, where the source has one to give.
-            val description = if (MusicProvider.isLibrary(srcPlaylistId)) "" else
-                runCatching { src.playlistInfo(ctx, srcPlaylistId).description }.getOrDefault("").trim().take(300)
+            // The source's own description and cover travel with the playlist, where the source has them to give.
+            val info = if (MusicProvider.isLibrary(srcPlaylistId)) null else runCatching { src.playlistInfo(ctx, srcPlaylistId) }.getOrNull()
+            val description = info?.description.orEmpty().trim().take(300)
             val created = patient(onProgress) { dst.createPlaylist(ctx, name, description.ifBlank { MusicProvider.DESCRIPTION }) }
             targetId = created.id
             targetCreated = true
             store.upsertJob(job.copy(target = job.target.copy(playlistId = created.id, playlistName = created.name)))
+            val cover = info?.imageUrl ?: (if (dst.canSetCover) runCatching { src.playlists(ctx).firstOrNull { it.id == srcPlaylistId }?.imageUrl }.getOrNull() else null)
+            if (dst.canSetCover && cover != null) runCatching { Covers.fetchJpeg(cover)?.let { dst.setPlaylistCover(ctx, created.id, it) } }
+                .onFailure { Diagnostics.log(ctx, "engine", "cover not set: ${it.message?.take(120)}") }
         }
 
         if (dst.serviceId == LocalFilesProvider.serviceId) notes += ctx.getString(R.string.note_file_target)
@@ -666,8 +669,11 @@ class SyncEngine(private val ctx: Context) {
         fun hit(t: Track, kind: TargetSearch.Kind) = TargetSearch.Hit(t, if (source != null) Matcher.score(source, t, job.policy) else 0.0, kind)
         // Il link del brano incollato: si aggiunge quello, letto dal servizio quando possibile. I link
         // brevi delle app (amzn.eu, spotify.link...) si seguono fino all'indirizzo vero.
-        (TrackLinks.parse(query) ?: resolveShortLink(query)?.let { TrackLinks.parse(it) })?.let { ref ->
-            if (!TrackLinks.matches(ref.service, dst.serviceId)) throw ProviderException(ctx.getString(R.string.link_other_service, dst.label(ctx)))
+        (TrackLinks.parse(query) ?: resolveShortLink(query)?.let { TrackLinks.parse(it) })?.let { ref0 ->
+            // A link from another service: song.link knows the same recording on the target service.
+            val ref = if (TrackLinks.matches(ref0.service, dst.serviceId)) ref0
+                else TrackLinks.viaOdesli(query, dst.serviceId)
+                    ?: throw ProviderException(ctx.getString(R.string.link_other_service, dst.label(ctx)))
             val t = runCatching { dst.track(ctx, ref.trackId) }.getOrNull()
             return TargetSearch(listOf(hit(t ?: dst.rehydrate(Track(id = ref.trackId, title = ctx.getString(R.string.link_track_unknown), album = ref.trackId)), TargetSearch.Kind.SONG)))
         }

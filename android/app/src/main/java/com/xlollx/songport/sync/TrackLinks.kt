@@ -1,5 +1,8 @@
 package com.xlollx.songport.sync
 
+import com.xlollx.songport.net.get
+import com.xlollx.songport.net.str
+
 /**
  * Riconosce il link di un singolo brano e lo traduce in (servizio, id): nella revisione dei non
  * trovati si puo' incollare l'indirizzo del brano giusto invece di cercarlo a parole.
@@ -41,6 +44,33 @@ object TrackLinks {
     }
 
     /** True se un link di [service] riguarda il servizio [serviceId] di un connettore (anche via Bridge). */
+    /**
+     * The same recording on [serviceId], through song.link (Odesli): a public service that maps a
+     * track's link across services, no key needed, ten lookups a minute. Null when it does not
+     * know the track there. Its free API has an announced retirement, so this is an extra, never
+     * a step the review depends on.
+     */
+    suspend fun viaOdesli(link: String, serviceId: String): Ref? {
+        val platform = when (serviceId) {
+            "spotify", "spotify_bridge" -> "spotify"
+            "apple", "apple_bridge" -> "appleMusic"
+            "youtube", "ytm" -> "youtubeMusic"
+            "tidal" -> "tidal"
+            "deezer" -> "deezer"
+            "amazon" -> "amazonMusic"
+            else -> return null
+        }
+        val url = Regex("""https?://\S+""").find(link)?.value ?: return null
+        val resp = runCatching {
+            com.xlollx.songport.net.Http.send("GET", "https://api.song.link/v1-alpha.1/links?userCountry=US&url=" + com.xlollx.songport.net.Http.enc(url), maxRateLimitRetries = 0)
+        }.getOrNull() ?: return null
+        if (!resp.ok) return null
+        val j = com.xlollx.songport.net.parseJson(resp.body)
+        val links = j["linksByPlatform"]
+        val target = links[platform]["url"].str ?: (if (platform == "youtubeMusic") links["youtube"]["url"].str else null) ?: return null
+        return parse(target)
+    }
+
     fun matches(service: String, serviceId: String): Boolean = when (service) {
         "spotify" -> serviceId == "spotify" || serviceId == "spotify_bridge"
         "apple" -> serviceId == "apple" || serviceId == "apple_bridge"

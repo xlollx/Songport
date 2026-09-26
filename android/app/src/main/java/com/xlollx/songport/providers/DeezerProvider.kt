@@ -121,6 +121,7 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
                     name = p["title"].str ?: "",
                     trackCount = p["nb_tracks"].int ?: -1,
                     ownedByMe = p["creator"]["id"].long?.toString() == me,
+                    imageUrl = p["picture_xl"].str ?: p["picture_big"].str,
                 )
             }
             url = j["next"].str
@@ -143,7 +144,7 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
 
     override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
         val j = dz(ctx, "GET", "/playlist/$playlistId")
-        return Playlist(playlistId, j["title"].str ?: playlistId, j["nb_tracks"].int ?: -1, ownedByMe = false, description = j["description"].str.orEmpty())
+        return Playlist(playlistId, j["title"].str ?: playlistId, j["nb_tracks"].int ?: -1, ownedByMe = false, description = j["description"].str.orEmpty(), imageUrl = j["picture_xl"].str ?: j["picture_big"].str)
     }
 
     override suspend fun playlistVersion(ctx: Context, playlistId: String): String? = when (playlistId) {
