@@ -382,6 +382,7 @@
     <string name="ai_expand_placeholder">z. B. mehr 90er Trip-Hop, nichts nach 2005</string>
     <string name="ai_expand_done">%1$d Titel zu „%2$s“ hinzugefügt</string>
     <string name="ai_expand_missing">%1$d auf %2$s nicht gefunden</string>
+    <string name="ai_expand_already">%d schon in der Playlist, übersprungen</string>
     <string name="error_manage_unsupported">%1$s erlaubt es nicht, Playlists aus anderen Apps umzubenennen oder zu löschen.</string>
     <string name="tools_manage_title">Playlists verwalten</string>
     <string name="tools_manage_desc">Deine Playlists auf diesem Dienst in einer Liste: umbenennen oder löschen, wo der Dienst es zulässt, oder exportieren.</string>

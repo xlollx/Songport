@@ -508,9 +508,10 @@ fun AiExtendDialog(job: SyncJob, onClose: () -> Unit) {
                     busy = true; error = null
                     d.scope.launch {
                         val outcome = runCatching {
-                            val existing = if (fileId != null) LocalFilesProvider.tracks(app, fileId).map { it.toString() }.take(200) else emptyList()
+                            val existing = if (fileId != null) LocalFilesProvider.tracks(app, fileId) else emptyList()
                             val language = java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH)
-                            AiClient.generate(c, AiClient.Prompt(job.aiPrompt.orEmpty(), count.toInt(), emptyList(), language, existing))
+                            val names = existing.map { it.toString() }.take(300)
+                            AiMatch.fresh(AiClient.generate(c, AiClient.Prompt(job.aiPrompt.orEmpty(), count.toInt(), emptyList(), language, names)), existing)
                         }
                         busy = false
                         outcome.onFailure { e -> error = e.message ?: app.getString(R.string.error_generic) }
@@ -530,7 +531,7 @@ fun AiExtendDialog(job: SyncJob, onClose: () -> Unit) {
  * poi dalla ricerca sul servizio, e solo i brani trovati vengono aggiunti alla playlist stessa.
  */
 @Composable
-fun AiExpandPlaylistDialog(provider: MusicProvider, playlist: Playlist, onClose: () -> Unit, onDone: (added: Int, missing: Int) -> Unit) {
+fun AiExpandPlaylistDialog(provider: MusicProvider, playlist: Playlist, onClose: () -> Unit, onDone: (added: Int, missing: Int, alreadyThere: Int) -> Unit) {
     val ctx = LocalContext.current
     val app = ctx.applicationContext
     val d = AiDraft
@@ -542,6 +543,9 @@ fun AiExpandPlaylistDialog(provider: MusicProvider, playlist: Playlist, onClose:
     var step by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
     var proposed by remember { mutableStateOf<List<Track>?>(null) }
+    // The playlist as it is: the AI is told, and whatever it repeats anyway is dropped, by name before
+    // the review and by id after the search on the service.
+    var existing by remember { mutableStateOf<List<Track>>(emptyList()) }
 
     if (setupOpen) {
         AiSetupDialog(config, onDismiss = { if (config?.complete == true) setupOpen = false else onClose() }) { config = it; d.models = emptyList(); setupOpen = false }
@@ -554,10 +558,10 @@ fun AiExpandPlaylistDialog(provider: MusicProvider, playlist: Playlist, onClose:
             busy = true
             d.scope.launch {
                 try {
-                    val r = AiMatch.match(app, provider, kept) { done, total -> step = "$done/$total" }
+                    val r = AiMatch.match(app, provider, kept, existing) { done, total -> step = "$done/$total" }
                     if (r.found.isNotEmpty()) provider.addTracks(app, playlist.id, r.found)
                     busy = false
-                    onDone(r.found.size, r.missing.size)
+                    onDone(r.found.size, r.missing.size, r.alreadyThere)
                     onClose()
                 } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                     busy = false
@@ -592,9 +596,10 @@ fun AiExpandPlaylistDialog(provider: MusicProvider, playlist: Playlist, onClose:
                     busy = true; error = null; step = ""
                     d.scope.launch {
                         val outcome = runCatching {
-                            val existing = provider.tracks(app, playlist.id).map { it.toString() }.take(200)
+                            existing = provider.tracks(app, playlist.id)
                             val language = java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH)
-                            AiClient.generate(c, AiClient.Prompt(prompt, count.toInt(), emptyList(), language, existing))
+                            val names = existing.map { it.toString() }.take(300)
+                            AiMatch.fresh(AiClient.generate(c, AiClient.Prompt(prompt, count.toInt(), emptyList(), language, names)), existing)
                         }
                         busy = false
                         outcome.onFailure { e -> error = e.message ?: app.getString(R.string.error_generic) }

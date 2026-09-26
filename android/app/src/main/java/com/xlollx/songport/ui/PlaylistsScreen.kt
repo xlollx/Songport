@@ -77,9 +77,14 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
     var expanding by remember { mutableStateOf<Playlist?>(null) }
     val aiReady = remember { com.xlollx.songport.ai.AiClient.config(ctx)?.complete == true }
     expanding?.let { pl ->
-        AiExpandPlaylistDialog(provider, pl, onClose = { expanding = null }) { added, missing ->
+        AiExpandPlaylistDialog(provider, pl, onClose = { expanding = null }) { added, missing, alreadyThere ->
             scope.launch {
-                snackbar.showSnackbar(ctx.getString(R.string.ai_expand_done, added, pl.name) + (if (missing > 0) " · " + ctx.getString(R.string.ai_expand_missing, missing, provider.label(ctx)) else ""))
+                val parts = listOfNotNull(
+                    ctx.getString(R.string.ai_expand_done, added, pl.name),
+                    if (missing > 0) ctx.getString(R.string.ai_expand_missing, missing, provider.label(ctx)) else null,
+                    if (alreadyThere > 0) ctx.getString(R.string.ai_expand_already, alreadyThere) else null,
+                )
+                snackbar.showSnackbar(parts.joinToString(" · "))
             }
             version++
         }

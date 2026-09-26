@@ -382,6 +382,7 @@
     <string name="ai_expand_placeholder">e.g. more 90s trip hop, nothing after 2005</string>
     <string name="ai_expand_done">%1$d tracks added to “%2$s”</string>
     <string name="ai_expand_missing">%1$d not found on %2$s</string>
+    <string name="ai_expand_already">%d already in the playlist, skipped</string>
     <string name="error_manage_unsupported">%1$s does not allow renaming or deleting playlists from other apps.</string>
     <string name="tools_manage_title">Manage playlists</string>
     <string name="tools_manage_desc">Your playlists on this service in one list: rename or delete them where the service allows it, or export them.</string>

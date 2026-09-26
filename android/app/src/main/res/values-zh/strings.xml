@@ -379,6 +379,7 @@
     <string name="ai_expand_placeholder">例如：更多 90 年代 trip hop，不要 2005 年以后的</string>
     <string name="ai_expand_done">已向“%2$s”添加 %1$d 首歌曲</string>
     <string name="ai_expand_missing">%1$d 首在 %2$s 上未找到</string>
+    <string name="ai_expand_already">%d 首已在歌单中，已跳过</string>
     <string name="error_manage_unsupported">%1$s 不允许其他应用重命名或删除歌单。</string>
     <string name="tools_manage_title">管理歌单</string>
     <string name="tools_manage_desc">把你在此服务上的歌单集中在一个列表中：在服务允许的情况下重命名或删除，或导出。</string>

@@ -379,6 +379,7 @@
     <string name="ai_expand_placeholder">例：90 年代のトリップホップをもっと、2005 年以降は不要</string>
     <string name="ai_expand_done">「%2$s」に %1$d 曲を追加しました</string>
     <string name="ai_expand_missing">%1$d 曲は %2$s で見つかりませんでした</string>
+    <string name="ai_expand_already">%d 曲はすでにプレイリストにあるためスキップ</string>
     <string name="error_manage_unsupported">%1$s では他のアプリからプレイリストの名前変更や削除ができません。</string>
     <string name="tools_manage_title">プレイリストを管理</string>
     <string name="tools_manage_desc">このサービスにあるあなたのプレイリストを一覧で表示します。サービスが許可していれば名前の変更や削除ができ、エクスポートもできます。</string>

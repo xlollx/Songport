@@ -382,6 +382,7 @@
     <string name="ai_expand_placeholder">ex. plus de trip hop des années 90, rien après 2005</string>
     <string name="ai_expand_done">%1$d titres ajoutés à « %2$s »</string>
     <string name="ai_expand_missing">%1$d introuvables sur %2$s</string>
+    <string name="ai_expand_already">%d déjà dans la playlist, ignorés</string>
     <string name="error_manage_unsupported">%1$s ne permet pas de renommer ou de supprimer des playlists depuis d\'autres applications.</string>
     <string name="tools_manage_title">Gérer les playlists</string>
     <string name="tools_manage_desc">Vos playlists sur ce service en une seule liste : renommez-les ou supprimez-les quand le service le permet, ou exportez-les.</string>

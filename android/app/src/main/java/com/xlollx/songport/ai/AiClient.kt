@@ -173,8 +173,9 @@ object AiClient {
         You build music playlists. Reply with ONLY a JSON array, no prose, no code fences.
         Each element is {"artist": "...", "title": "...", "album": "..."} with real, existing recordings;
         use the main artist's name as it appears on streaming services and the original song title,
-        with no year, no annotations. Exactly ${r.count} distinct tracks, no duplicates, no repeated artist
-        more than 3 times unless asked. ${if (r.language.isNotBlank()) "Song choice may follow this request language: ${r.language}." else ""}
+        with no year, no annotations. Exactly ${r.count} distinct tracks: never the same recording twice, not
+        even as a remaster, live or alternate version, and never a track the request lists as already present.
+        No repeated artist more than 3 times unless asked. ${if (r.language.isNotBlank()) "Song choice may follow this request language: ${r.language}." else ""}
     """.trimIndent()
 
     private fun user(r: Prompt): String = buildString {
@@ -285,6 +286,6 @@ object AiClient {
         val end = text.lastIndexOf(']')
         val body = if (start >= 0 && end > start) text.substring(start, end + 1) else text
         val tracks = PlaylistFiles.parseJson(body).ifEmpty { PlaylistFiles.parseText(text) }
-        return tracks.distinctBy { (it.artists.firstOrNull().orEmpty() + "|" + it.title).lowercase() }
+        return tracks.distinctBy { AiMatch.key(it) }
     }
 }
