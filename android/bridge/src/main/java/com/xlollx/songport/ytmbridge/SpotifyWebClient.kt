@@ -64,7 +64,7 @@ class SpotifyWebClient(private val ctx: Context) {
     fun page(): Page {
         cachedPage?.let { (at, p) -> if (System.currentTimeMillis() - at < 5 * 60_000) return p }
         val req = Request.Builder().url("https://open.spotify.com/")
-            .header("User-Agent", SpotifyBridge.USER_AGENT).header("Cookie", cookies())
+            .header("User-Agent", BridgeUa.desktop(ctx)).header("Cookie", cookies())
             .header("Accept", "text/html,application/xhtml+xml").header("Accept-Language", "en").build()
         val html = http.newCall(req).execute().use { r ->
             if (!r.isSuccessful) throw BridgeException("open.spotify.com answered ${r.code}")
@@ -105,7 +105,7 @@ class SpotifyWebClient(private val ctx: Context) {
         val req = Request.Builder().url("https://clienttoken.spotify.com/v1/clienttoken")
             .post(body.toString().toRequestBody(JSON))
             .header("Accept", "application/json").header("Content-Type", "application/json")
-            .header("User-Agent", SpotifyBridge.USER_AGENT).header("Origin", "https://open.spotify.com").header("Referer", "https://open.spotify.com/").build()
+            .header("User-Agent", BridgeUa.desktop(ctx)).header("Origin", "https://open.spotify.com").header("Referer", "https://open.spotify.com/").build()
         val j = http.newCall(req).execute().use { r -> parseJson(r.body?.string() ?: "") }
         val token = j["granted_token"]["token"].str
             ?: throw BridgeException("Spotify did not grant a client token (${j["response_type"].str ?: "no answer"})")
@@ -141,7 +141,7 @@ class SpotifyWebClient(private val ctx: Context) {
         val cached = session.get(ctx, "registry")?.let { runCatching { parseJson(it) as? JsonObject }.getOrNull() }
         if (cached != null && System.currentTimeMillis() - at < 6 * 3600_000) return cached.entries.associate { (k, v) -> k to (v.str ?: "") }
         val text = runCatching {
-            http.newCall(Request.Builder().url(REGISTRY_URL).header("User-Agent", SpotifyBridge.USER_AGENT).build()).execute().use { r -> if (r.isSuccessful) r.body?.string() else null }
+            http.newCall(Request.Builder().url(REGISTRY_URL).header("User-Agent", BridgeUa.desktop(ctx)).build()).execute().use { r -> if (r.isSuccessful) r.body?.string() else null }
         }.getOrNull() ?: return cached?.entries?.associate { (k, v) -> k to (v.str ?: "") } ?: emptyMap()
         val ops = runCatching { parseJson(text)["operations"] as? JsonObject }.getOrNull() ?: return emptyMap()
         val out = ops.entries.mapNotNull { (name, v) -> v["hash"].str?.takeIf { it.length == 64 }?.let { name to it } }.toMap()
@@ -197,7 +197,7 @@ class SpotifyWebClient(private val ctx: Context) {
         fun scan(text: String) { HASH.findAll(text).forEach { m -> if (m.groupValues[1] !in known) map.putIfAbsent(m.groupValues[1], m.groupValues[3]) } }
         map.putAll(known)
         val pack = packUrl ?: run { if (wanted in map) { saveHashes(map, null); return }; throw BridgeException("Spotify: the player page has no bundle to read the queries from") }
-        fun fetch(url: String): String = http.newCall(Request.Builder().url(url).header("User-Agent", SpotifyBridge.USER_AGENT).build())
+        fun fetch(url: String): String = http.newCall(Request.Builder().url(url).header("User-Agent", BridgeUa.desktop(ctx)).build())
             .execute().use { r -> if (r.isSuccessful) r.body?.string() ?: "" else "" }
         val main = fetch(pack)
         scan(main)
@@ -238,7 +238,7 @@ class SpotifyWebClient(private val ctx: Context) {
             .header("app-platform", "WebPlayer")
             .header("Accept", "application/json").header("Accept-Language", "en")
             .header("Origin", "https://open.spotify.com").header("Referer", "https://open.spotify.com/")
-            .header("User-Agent", SpotifyBridge.USER_AGENT)
+            .header("User-Agent", BridgeUa.desktop(ctx))
     }
 
     /** One persisted query. GraphQL errors and a refused write (HTTP 200, a failure typename) both throw. */
@@ -295,7 +295,7 @@ class SpotifyWebClient(private val ctx: Context) {
     fun profile(): Pair<String?, String?> {
         session.get(ctx, "userId")?.let { return it to session.account(ctx) }
         val req = Request.Builder().url("https://www.spotify.com/api/account-settings/v1/profile")
-            .header("Cookie", cookies()).header("User-Agent", SpotifyBridge.USER_AGENT).header("Accept", "application/json").build()
+            .header("Cookie", cookies()).header("User-Agent", BridgeUa.desktop(ctx)).header("Accept", "application/json").build()
         val j = http.newCall(req).execute().use { r -> if (r.isSuccessful) parseJson(r.body?.string() ?: "") else JsonNull }
         var username = j["profile"]["username"].str
         var name = j["profile"]["name"].str ?: j["profile"]["displayName"].str ?: username

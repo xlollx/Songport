@@ -76,7 +76,7 @@ class YtmClient(private val ctx: Context) {
             .header("Cookie", ck ?: ANON_COOKIES)
             .header("Origin", Session.ORIGIN)
             .header("Referer", "${Session.ORIGIN}/")
-            .header("User-Agent", USER_AGENT)
+            .header("User-Agent", BridgeUa.desktop(ctx))
             .build()
         // The web interface throttles bursts (403/429): pace the calls, slow down further after each
         // refusal, and retry once after a short pause. Longer waits are Songport's job, which shows
@@ -141,7 +141,7 @@ class YtmClient(private val ctx: Context) {
         val cached = if (ck != null) cachedVisitor else cachedAnonVisitor
         cached?.takeIf { System.currentTimeMillis() - it.at < 3_600_000 }?.let { return it }
         val fresh = runCatching {
-            val req = Request.Builder().url("${Session.ORIGIN}/").header("Cookie", ck ?: ANON_COOKIES).header("User-Agent", USER_AGENT)
+            val req = Request.Builder().url("${Session.ORIGIN}/").header("Cookie", ck ?: ANON_COOKIES).header("User-Agent", BridgeUa.desktop(ctx))
                 .header("Accept-Language", "en-US,en;q=0.9").build()
             http.newCall(req).execute().use { resp ->
                 val html = resp.body?.string() ?: ""
@@ -161,7 +161,7 @@ class YtmClient(private val ctx: Context) {
         val body = jsonObj("context" to mapOf("client" to mapOf("clientName" to "WEB_REMIX", "clientVersion" to clientVersion, "hl" to "en", "gl" to "US")))
         val req = Request.Builder().url("${Session.ORIGIN}/youtubei/v1/visitor_id?prettyPrint=false")
             .post(body.toString().toRequestBody(JSON_TYPE))
-            .header("Cookie", ANON_COOKIES).header("User-Agent", USER_AGENT).header("Origin", Session.ORIGIN)
+            .header("Cookie", ANON_COOKIES).header("User-Agent", BridgeUa.desktop(ctx)).header("Origin", Session.ORIGIN)
             .header("X-YouTube-Client-Name", "67").header("X-YouTube-Client-Version", clientVersion).build()
         http.newCall(req).execute().use { resp -> parseJson(resp.body?.string() ?: "")["responseContext"]["visitorData"].str }
     }.getOrNull()

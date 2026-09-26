@@ -39,8 +39,7 @@ object SpotifyBridge {
     val session = WebSession("spotify", listOf("open.spotify.com", "accounts.spotify.com", "www.spotify.com", "spotify.com"))
     const val LOGIN_URL = "https://accounts.spotify.com/login?continue=https%3A%2F%2Fopen.spotify.com%2F"
     /** Desktop Chrome: the web player refuses any user agent marked as a WebView ("wv"). */
-    const val USER_AGENT =
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    const val USER_AGENT = BridgeUa.FALLBACK
 
     class Token(val value: String, val expiresAt: Long)
 
@@ -146,7 +145,7 @@ object SpotifyBridge {
             try {
                 val w = WebView(app)
                 web = w
-                w.settings.apply { javaScriptEnabled = true; domStorageEnabled = true; userAgentString = USER_AGENT }
+                w.settings.apply { javaScriptEnabled = true; domStorageEnabled = true; userAgentString = BridgeUa.desktop(app) }
                 w.addJavascriptInterface(sink, "SpBridge")
                 val early = WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)
                 if (early) WebViewCompat.addDocumentStartJavaScript(w, HOOK, setOf("*"))

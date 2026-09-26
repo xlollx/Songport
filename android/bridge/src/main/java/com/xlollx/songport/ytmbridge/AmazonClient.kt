@@ -104,7 +104,7 @@ class AmazonClient(private val ctx: Context) {
         val req = Request.Builder()
             .url(url)
             .header("Cookie", cookies)
-            .header("User-Agent", USER_AGENT)
+            .header("User-Agent", BridgeUa.desktop(ctx))
             .header("Accept", accept)
             .header("Accept-Language", "en-US,en;q=0.9")
             .header("Referer", "https://${url.substringAfter("https://").substringBefore('/')}/")
@@ -170,7 +170,7 @@ class AmazonClient(private val ctx: Context) {
             "x-amzn-device-width" to "1920",
             "x-amzn-device-family" to "WebPlayer",
             "x-amzn-device-id" to cfg.deviceId,
-            "x-amzn-user-agent" to USER_AGENT,
+            "x-amzn-user-agent" to BridgeUa.desktop(ctx),
             "x-amzn-session-id" to cfg.sessionId,
             "x-amzn-device-height" to "1080",
             "x-amzn-request-id" to java.util.UUID.randomUUID().toString().replace("-", "").take(13),
@@ -235,7 +235,7 @@ class AmazonClient(private val ctx: Context) {
             .header("Origin", "https://$domain")
             .header("Referer", "https://$domain/")
             // The same user agent the player used when it built those headers.
-            .header("User-Agent", AmazonBridge.player(ctx, domain).userAgent ?: USER_AGENT)
+            .header("User-Agent", AmazonBridge.player(ctx, domain).userAgent ?: BridgeUa.desktop(ctx))
             .header("Accept", "*/*")
             .header("Accept-Language", "en-US,en;q=0.9")
             .build()

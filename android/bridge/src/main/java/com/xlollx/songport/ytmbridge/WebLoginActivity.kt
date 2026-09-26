@@ -85,7 +85,7 @@ class WebLoginActivity : ComponentActivity() {
             // Spotify refuses its web player to anything whose user agent says "wv" (a WebView) and
             // shows "Playback disabled - incompatible browser". A desktop identity avoids that page;
             // Apple's pages work with the default one.
-            if (service == SPOTIFY) userAgentString = SpotifyBridge.USER_AGENT
+            if (service == SPOTIFY) userAgentString = BridgeUa.desktop(this@WebLoginActivity)
         }
         web.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
