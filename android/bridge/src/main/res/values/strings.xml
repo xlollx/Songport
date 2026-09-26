@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Texts of the built-in web connectors. The bridge_ prefix keeps them apart from Songport's own. -->
 <resources>
-    <string name="bridge_amazon_capture_intro">Use Amazon Music normally here: open Library → Playlists, open one of your playlists, create a playlist, add a song to it, remove it, search for a song. Every call the player makes is written to a file on this phone, without cookies or tokens. Then tap Share and send the file to the developer.</string>
+    <string name="bridge_amazon_capture_intro">Use Amazon Music normally here: open Library → Playlists, open one of your playlists, create a playlist, add a song to it, remove it, search for a song; from the playlist\'s menu (the three dots next to Play) rename it and delete it. Every call the player makes is written to a file on this phone, without cookies or tokens. Then tap Share and send the file to the developer.</string>
     <string name="bridge_amazon_capture_share">Share</string>
     <string name="bridge_amazon_capture_clear">Clear</string>
     <string name="bridge_amazon_capture_count">%1$d calls captured</string>

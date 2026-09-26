@@ -59,6 +59,11 @@ class AmazonCaptureActivity : ComponentActivity() {
             setSupportZoom(true)
             builtInZoomControls = true
             displayZoomControls = false
+            // The phone-sized player hides playlist editing (rename, delete) behind "open the app";
+            // the desktop player shows them in the playlist's menu. Identify as a desktop browser.
+            userAgentString = SpotifyBridge.USER_AGENT
+            useWideViewPort = true
+            loadWithOverviewMode = true
         }
         web.addJavascriptInterface(Sink(), "SpCapture")
         val early = WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)

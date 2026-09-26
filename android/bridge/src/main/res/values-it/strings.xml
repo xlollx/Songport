@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Texts of the built-in web connectors. The bridge_ prefix keeps them apart from Songport's own. -->
 <resources>
-    <string name="bridge_amazon_capture_intro">Usa Amazon Music normalmente qui: apri Libreria → Playlist, apri una tua playlist, crea una playlist, aggiungici un brano, rimuovilo, cerca un brano. Ogni chiamata del player viene scritta in un file su questo telefono, senza cookie né token. Poi tocca Condividi e invia il file allo sviluppatore.</string>
+    <string name="bridge_amazon_capture_intro">Usa Amazon Music normalmente qui: apri Libreria → Playlist, apri una tua playlist, crea una playlist, aggiungici un brano, rimuovilo, cerca un brano; dal menu della playlist (i tre puntini accanto a Riproduci) rinominala ed eliminala. Ogni chiamata del player viene scritta in un file su questo telefono, senza cookie né token. Poi tocca Condividi e invia il file allo sviluppatore.</string>
     <string name="bridge_amazon_capture_share">Condividi</string>
     <string name="bridge_amazon_capture_clear">Svuota</string>
     <string name="bridge_amazon_capture_count">%1$d chiamate catturate</string>
