@@ -121,6 +121,11 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
         withContext(Dispatchers.IO) { call(ctx, "spotify.rename", playlistId, Bundle().apply { putString("name", name) }) }
     }
 
+    override val canSetVisibility: Boolean get() = true
+    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+        withContext(Dispatchers.IO) { call(ctx, "spotify.visibility", playlistId, Bundle().apply { putBoolean("public", public) }) }
+    }
+
     override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
         withContext(Dispatchers.IO) { call(ctx, "spotify.delete", playlistId) }
     }

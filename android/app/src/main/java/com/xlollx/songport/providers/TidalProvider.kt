@@ -86,6 +86,7 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
                     id = p["id"].str ?: continue,
                     name = p["attributes"]["name"].str ?: "",
                     trackCount = p["attributes"]["numberOfItems"].int ?: -1,
+                    isPublic = p["attributes"]["accessType"].str?.let { it == "PUBLIC" },
                 )
             }
             url = nextUrl(j)
@@ -255,6 +256,12 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
     override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
         api(ctx, "PATCH", "$API/playlists/$playlistId?countryCode=${cc(ctx)}",
             jsonObj("data" to mapOf("type" to "playlists", "id" to playlistId, "attributes" to mapOf("name" to name))))
+    }
+
+    override val canSetVisibility: Boolean get() = true
+    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+        api(ctx, "PATCH", "$API/playlists/$playlistId?countryCode=${cc(ctx)}",
+            jsonObj("data" to mapOf("type" to "playlists", "id" to playlistId, "attributes" to mapOf("accessType" to if (public) "PUBLIC" else "UNLISTED"))))
     }
 
     override suspend fun deletePlaylist(ctx: Context, playlistId: String) {

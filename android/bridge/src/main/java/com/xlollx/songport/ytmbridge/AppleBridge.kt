@@ -33,25 +33,57 @@ object AppleBridge {
         return if (raw.contains('%')) runCatching { URLDecoder.decode(raw, "UTF-8") }.getOrDefault(raw) else raw
     }
 
-    /** Apple's web developer token, scraped from the player's JavaScript and cached until it expires. */
+    /**
+     * Apple's web developer token. The sign-in screen captures it from the player itself (the
+     * `Authorization` header of its API calls, or MusicKit's instance), which is the reliable source;
+     * scraping the player's JavaScript is the fallback for a session saved before that existed. A
+     * token past its expiry is still handed over when nothing better is found: the player's own
+     * lasts months, and a stale one fails with a clear 401 rather than with "no token".
+     */
     @Synchronized
     fun developerToken(ctx: Context): String {
-        session.get(ctx, "devToken")?.let { tok ->
+        val stored = session.get(ctx, "devToken")
+        if (stored != null) {
             val exp = session.get(ctx, "devTokenExp")?.toLongOrNull() ?: 0
-            if (exp - 3_600_000 > System.currentTimeMillis()) return tok
+            if (exp - 3_600_000 > System.currentTimeMillis()) return stored
         }
+        return runCatching { scrape(ctx) }.getOrElse { e -> stored ?: throw e }
+    }
+
+    /** Keeps a developer token seen in the player: from the login screen's own WebView. */
+    fun rememberDeveloperToken(ctx: Context, jwt: String?): Boolean {
+        val tok = jwt?.trim()?.removePrefix("Bearer ")?.trim() ?: return false
+        if (!JWT.matches(tok)) return false
+        if (session.get(ctx, "devToken") == tok) return true
+        val exp = jwtExpiry(tok) ?: (System.currentTimeMillis() + 30L * 24 * 3_600_000)
+        session.put(ctx, "devToken", tok)
+        session.put(ctx, "devTokenExp", exp.toString())
+        return true
+    }
+
+    private val JWT = Regex("""eyJhbGci[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+""")
+
+    private fun scrape(ctx: Context): String {
         val html = get(HOME)
-        val scripts = Regex("""src="(/assets/index[^"]*\.js)"""").findAll(html).map { it.groupValues[1] }.toList()
+        // The token has been in the main bundle (/assets/index-*.js); take any same-origin script in
+        // page order, main bundle first, and the page itself in case it moves inline.
+        JWT.find(html)?.value?.let { return keep(ctx, it) }
+        val scripts = Regex("""(?:src|href)="((?:https://music\.apple\.com)?/assets/[^"]+\.js)"""").findAll(html)
+            .map { it.groupValues[1].removePrefix("https://music.apple.com") }.distinct().toList()
+            .sortedBy { if (it.contains("/index")) 0 else 1 }
         if (scripts.isEmpty()) throw BridgeException("Apple Music: player script not found")
         for (path in scripts) {
-            val js = get("https://music.apple.com$path")
-            val jwt = Regex("""(eyJhbGci[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)""").find(js)?.groupValues?.get(1) ?: continue
-            val exp = jwtExpiry(jwt) ?: (System.currentTimeMillis() + 7L * 24 * 3_600_000)
-            session.put(ctx, "devToken", jwt)
-            session.put(ctx, "devTokenExp", exp.toString())
-            return jwt
+            val js = runCatching { get("https://music.apple.com$path") }.getOrNull() ?: continue
+            JWT.find(js)?.value?.let { return keep(ctx, it) }
         }
         throw BridgeException("Apple Music: developer token not found in the player script")
+    }
+
+    private fun keep(ctx: Context, jwt: String): String {
+        val exp = jwtExpiry(jwt) ?: (System.currentTimeMillis() + 7L * 24 * 3_600_000)
+        session.put(ctx, "devToken", jwt)
+        session.put(ctx, "devTokenExp", exp.toString())
+        return jwt
     }
 
     /** Storefront of the signed-in account (it, de, us...), fetched once. */

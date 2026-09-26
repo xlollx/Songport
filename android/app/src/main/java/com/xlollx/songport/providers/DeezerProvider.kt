@@ -123,6 +123,7 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
                     trackCount = p["nb_tracks"].int ?: -1,
                     ownedByMe = p["creator"]["id"].long?.toString() == me,
                     imageUrl = p["picture_xl"].str ?: p["picture_big"].str,
+                    isPublic = p["public"].bool,
                 )
             }
             url = j["next"].str
@@ -249,6 +250,11 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
 
     override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
         dz(ctx, "POST", "/playlist/$playlistId", mapOf("title" to name))
+    }
+
+    override val canSetVisibility: Boolean get() = true
+    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+        dz(ctx, "POST", "/playlist/$playlistId", mapOf("public" to public.toString()))
     }
 
     override suspend fun deletePlaylist(ctx: Context, playlistId: String) {

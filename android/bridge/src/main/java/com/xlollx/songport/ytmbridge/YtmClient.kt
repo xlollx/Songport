@@ -501,6 +501,15 @@ class YtmClient(private val ctx: Context) {
         call("playlist/delete", mapOf("playlistId" to playlistId.removePrefix("VL")))
     }
 
+    /** The playlist's privacy: PUBLIC or PRIVATE (the same edit call the site's "Edit playlist" makes). */
+    fun setPrivacy(playlistId: String, public: Boolean) {
+        val resp = call(
+            "browse/edit_playlist",
+            mapOf("playlistId" to playlistId.removePrefix("VL"), "actions" to listOf(mapOf("action" to "ACTION_SET_PLAYLIST_PRIVACY", "playlistPrivacy" to if (public) "PUBLIC" else "PRIVATE"))),
+        )
+        checkStatus(resp)
+    }
+
     fun addTracks(playlistId: String, videoIds: List<String>) {
         if (playlistId == LIKED) {
             videoIds.forEach { call("like/like", mapOf("target" to mapOf("videoId" to it))) }

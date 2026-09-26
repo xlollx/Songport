@@ -284,6 +284,15 @@ class SpotifyWebClient(private val ctx: Context) {
         return runCatching { parseJson(text) }.getOrNull() ?: JsonNull
     }
 
+    private fun spclientGet(path: String, retry: Boolean = true): JsonElement {
+        val req = headers(Request.Builder().url("$SPCLIENT$path").get()).header("Accept", "application/json").build()
+        val (code, text, wait) = send(req)
+        if (code == 401 && retry) { SpotifyBridge.invalidateToken(); return spclientGet(path, retry = false) }
+        if (code == 429) throw BridgeException("Spotify asks to slow down (429, retry in $wait s)")
+        if (code !in 200..299) throw BridgeException("Spotify playlist store: HTTP $code on ${path.substringBefore('?')} ${text.take(200)}")
+        return runCatching { parseJson(text) }.getOrNull() ?: JsonNull
+    }
+
     private fun deltas(vararg ops: JsonObject): JsonObject = jsonObj(
         "deltas" to listOf(jsonObj("ops" to ops.toList(), "info" to jsonObj("source" to jsonObj("client" to 5)))),
         "wantResultingRevisions" to false, "wantSyncResult" to false, "nonces" to emptyList<String>(),
@@ -516,6 +525,22 @@ class SpotifyWebClient(private val ctx: Context) {
     fun renamePlaylist(id: String, name: String) {
         spclient("/playlist/v2/playlist/$id/changes", deltas(jsonObj(
             "kind" to 6, "updateListAttributes" to jsonObj("newAttributes" to jsonObj("values" to jsonObj("name" to name), "noValue" to emptyList<String>())),
+        )))
+    }
+
+    /**
+     * Public means shown on the profile: the `public` attribute of the playlist's entry in the
+     * rootlist, which is what the Web API's `public` flag sets too. The entry's position is needed
+     * for the change, so the rootlist is read first.
+     */
+    fun setPublic(id: String, public: Boolean) {
+        val uri = "spotify:playlist:$id"
+        val user = username()
+        val root = spclientGet("/playlist/v2/user/$user/rootlist?decorate=revision,length,attributes,timestamp,owner")
+        val index = root["contents"]["items"].arr.indexOfFirst { it["uri"].str == uri }
+        if (index < 0) throw BridgeException("Spotify: the playlist is not in your library")
+        spclient("/playlist/v2/user/$user/rootlist/changes", deltas(jsonObj(
+            "kind" to 5, "updateItemAttributes" to jsonObj("index" to index, "newAttributes" to jsonObj("values" to jsonObj("public" to public), "noValue" to emptyList<String>())),
         )))
     }
 

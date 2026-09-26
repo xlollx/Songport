@@ -98,6 +98,8 @@ interface MusicProvider {
     /** Rinominare ed eliminare le proprie playlist: dove l'API lo permette (Apple Music e Amazon no). */
     val canRenamePlaylists: Boolean get() = canWrite && canCreatePlaylists
     val canDeletePlaylists: Boolean get() = canRenamePlaylists
+    /** Making a playlist public or private, where the service has the notion and lets a client set it. */
+    val canSetVisibility: Boolean get() = false
 
     /**
      * Istruzioni per far usare all'utente le proprie credenziali. Null = non applicabile
@@ -148,6 +150,9 @@ interface MusicProvider {
         throw com.xlollx.songport.model.ProviderException(ctx.getString(com.xlollx.songport.R.string.error_manage_unsupported, displayName))
     }
     suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+        throw com.xlollx.songport.model.ProviderException(ctx.getString(com.xlollx.songport.R.string.error_manage_unsupported, displayName))
+    }
+    suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
         throw com.xlollx.songport.model.ProviderException(ctx.getString(com.xlollx.songport.R.string.error_manage_unsupported, displayName))
     }
 

@@ -403,6 +403,12 @@
     <string name="manage_delete_confirm">Delete “%1$s” from %2$s? This cannot be undone.</string>
     <string name="manage_renamed">Renamed</string>
     <string name="manage_deleted">Playlist deleted</string>
+    <string name="manage_make_public">Make public</string>
+    <string name="manage_make_private">Make private</string>
+    <string name="manage_now_public">Now public</string>
+    <string name="manage_now_private">Now private</string>
+    <string name="playlist_public">Public</string>
+    <string name="playlist_private">Private</string>
     <string name="manage_none">No playlists of yours on this service.</string>
     <plurals name="manage_delete_used">
         <item quantity="one">%1$d sync uses this playlist and will fail until you edit it.</item>

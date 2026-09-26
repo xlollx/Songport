@@ -10,6 +10,7 @@ import android.os.Message
 import android.webkit.CookieManager
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
@@ -100,7 +101,20 @@ class WebLoginActivity : ComponentActivity() {
                 }
                 return true
             }
-            override fun onPageFinished(view: WebView, url: String) { check() }
+            // The player sends Apple's developer token as the bearer of every API call it makes: that
+            // is where the Bridge takes it from, instead of guessing which script bundle holds it.
+            override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+                if (service == APPLE && request.url.host?.endsWith("music.apple.com") == true) {
+                    request.requestHeaders?.get("Authorization")?.let { AppleBridge.rememberDeveloperToken(applicationContext, it) }
+                }
+                return super.shouldInterceptRequest(view, request)
+            }
+            override fun onPageFinished(view: WebView, url: String) {
+                if (service == APPLE) view.evaluateJavascript(
+                    "(function(){try{return MusicKit.getInstance().developerToken||''}catch(e){return ''}})()"
+                ) { v -> AppleBridge.rememberDeveloperToken(applicationContext, v?.trim('"')) }
+                check()
+            }
         }
         web.settings.apply { setSupportMultipleWindows(true); javaScriptCanOpenWindowsAutomatically = true }
         web.webChromeClient = object : WebChromeClient() {

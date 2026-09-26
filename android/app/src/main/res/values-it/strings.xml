@@ -403,6 +403,12 @@
     <string name="manage_delete_confirm">Eliminare “%1$s” da %2$s? Non si può annullare.</string>
     <string name="manage_renamed">Rinominata</string>
     <string name="manage_deleted">Playlist eliminata</string>
+    <string name="manage_make_public">Rendi pubblica</string>
+    <string name="manage_make_private">Rendi privata</string>
+    <string name="manage_now_public">Ora è pubblica</string>
+    <string name="manage_now_private">Ora è privata</string>
+    <string name="playlist_public">Pubblica</string>
+    <string name="playlist_private">Privata</string>
     <string name="manage_none">Nessuna tua playlist su questo servizio.</string>
     <plurals name="manage_delete_used">
         <item quantity="one">%1$d sync usa questa playlist e fallirà finché non la modifichi.</item>

@@ -403,6 +403,12 @@
     <string name="manage_delete_confirm">„%1$s“ von %2$s löschen? Das lässt sich nicht rückgängig machen.</string>
     <string name="manage_renamed">Umbenannt</string>
     <string name="manage_deleted">Playlist gelöscht</string>
+    <string name="manage_make_public">Öffentlich machen</string>
+    <string name="manage_make_private">Privat machen</string>
+    <string name="manage_now_public">Jetzt öffentlich</string>
+    <string name="manage_now_private">Jetzt privat</string>
+    <string name="playlist_public">Öffentlich</string>
+    <string name="playlist_private">Privat</string>
     <string name="manage_none">Keine eigenen Playlists auf diesem Dienst.</string>
     <plurals name="manage_delete_used">
         <item quantity="one">%1$d Sync nutzt diese Playlist und schlägt fehl, bis du sie änderst.</item>

@@ -403,6 +403,12 @@
     <string name="manage_delete_confirm">Supprimer « %1$s » de %2$s ? Cette action est irréversible.</string>
     <string name="manage_renamed">Renommée</string>
     <string name="manage_deleted">Playlist supprimée</string>
+    <string name="manage_make_public">Rendre publique</string>
+    <string name="manage_make_private">Rendre privée</string>
+    <string name="manage_now_public">Désormais publique</string>
+    <string name="manage_now_private">Désormais privée</string>
+    <string name="playlist_public">Publique</string>
+    <string name="playlist_private">Privée</string>
     <string name="manage_none">Aucune de vos playlists sur ce service.</string>
     <plurals name="manage_delete_used">
         <item quantity="one">%1$d synchro utilise cette playlist et échouera tant que vous ne la modifiez pas.</item>

@@ -106,13 +106,14 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         val out = ArrayList<Playlist>()
         var page: String? = null
         do {
-            val j = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlists?part=snippet,contentDetails&mine=true&maxResults=50" +
+            val j = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlists?part=snippet,contentDetails,status&mine=true&maxResults=50" +
                 (page?.let { "&pageToken=$it" } ?: "")) }
             for (p in j["items"].arr) {
                 out += Playlist(
                     id = p["id"].str ?: continue,
                     name = p["snippet"]["title"].str ?: "",
                     trackCount = p["contentDetails"]["itemCount"].int ?: -1,
+                    isPublic = p["status"]["privacyStatus"].str?.let { it == "public" },
                 )
             }
             page = j["nextPageToken"].str
@@ -216,6 +217,18 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
     override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
         counted(ctx, QuotaMeter.COST_WRITE) {
             api(ctx, "PUT", "$API/playlists?part=snippet", jsonObj("id" to playlistId, "snippet" to mapOf("title" to name)))
+        }
+    }
+
+    /** An update must carry the title as well, so the current one is read first. */
+    override val canSetVisibility: Boolean get() = true
+    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+        val title = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlists?part=snippet&id=$playlistId") }["items"][0]["snippet"]["title"].str
+            ?: throw ProviderException("$displayName: playlist $playlistId not found")
+        counted(ctx, QuotaMeter.COST_WRITE) {
+            api(ctx, "PUT", "$API/playlists?part=snippet,status", jsonObj(
+                "id" to playlistId, "snippet" to mapOf("title" to title), "status" to mapOf("privacyStatus" to if (public) "public" else "private"),
+            ))
         }
     }
 

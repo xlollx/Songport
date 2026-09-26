@@ -80,7 +80,7 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
     override suspend fun playlists(ctx: Context): List<Playlist> {
         val me = creds(ctx).userName
         return call(ctx, "getPlaylists", emptyList())["playlists"]["playlist"].arr.mapNotNull { p ->
-            Playlist(p["id"].str ?: return@mapNotNull null, p["name"].str ?: "", p["songCount"].int ?: -1, ownedByMe = (p["owner"].str ?: me) == me)
+            Playlist(p["id"].str ?: return@mapNotNull null, p["name"].str ?: "", p["songCount"].int ?: -1, ownedByMe = (p["owner"].str ?: me) == me, isPublic = p["public"].bool)
         }
     }
 
@@ -150,6 +150,11 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
 
     override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
         call(ctx, "updatePlaylist", listOf("playlistId" to playlistId, "name" to name))
+    }
+
+    override val canSetVisibility: Boolean get() = true
+    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+        call(ctx, "updatePlaylist", listOf("playlistId" to playlistId, "public" to public.toString()))
     }
 
     override suspend fun deletePlaylist(ctx: Context, playlistId: String) {

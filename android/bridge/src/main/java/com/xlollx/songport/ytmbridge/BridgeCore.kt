@@ -62,6 +62,7 @@ object BridgeCore {
                 }
                 "rename" -> { client.renamePlaylist(arg ?: return err("missing playlist id"), extras?.getString("name") ?: ""); Bundle() }
                 "delete" -> { client.deletePlaylist(arg ?: return err("missing playlist id")); invalidate(arg); Bundle() }
+                "visibility" -> { client.setPrivacy(arg ?: return err("missing playlist id"), extras?.getBoolean("public") ?: false); Bundle() }
                 "remove" -> {
                     val id = arg ?: return err("missing playlist id")
                     when (id) {
@@ -95,6 +96,7 @@ object BridgeCore {
                 }
                 "amazon.rename" -> { AmazonClient(ctx).renamePlaylist(arg ?: return err("missing playlist id"), extras?.getString("name") ?: ""); Bundle() }
                 "amazon.delete" -> { AmazonClient(ctx).removePlaylist(arg ?: return err("missing playlist id")); Bundle() }
+                "amazon.visibility" -> { AmazonClient(ctx).setVisibility(arg ?: return err("missing playlist id"), extras?.getBoolean("public") ?: false); Bundle() }
                 "amazon.remove" -> {
                     val pid = arg ?: return err("missing playlist id")
                     val ids = extras?.getStringArray("ids") ?: emptyArray()
@@ -156,6 +158,7 @@ object BridgeCore {
                 }
                 "spotify.rename" -> { SpotifyWebClient(ctx).renamePlaylist(arg ?: return err("missing playlist id"), extras?.getString("name") ?: ""); Bundle() }
                 "spotify.delete" -> { SpotifyWebClient(ctx).deletePlaylist(arg ?: return err("missing playlist id")); invalidateSpotify(arg); Bundle() }
+                "spotify.visibility" -> { SpotifyWebClient(ctx).setPublic(arg ?: return err("missing playlist id"), extras?.getBoolean("public") ?: false); Bundle() }
                 "spotify.token" -> {
                     val t = SpotifyBridge.token(ctx)
                     if (SpotifyBridge.session.get(ctx, "userId") == null) runCatching {

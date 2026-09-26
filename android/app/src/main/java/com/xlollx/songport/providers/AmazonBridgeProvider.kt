@@ -87,6 +87,11 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
         withContext(Dispatchers.IO) { call(ctx, "amazon.rename", playlistId, Bundle().apply { putString("name", name) }) }
     }
 
+    override val canSetVisibility: Boolean get() = BridgePlugin.builtIn
+    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+        withContext(Dispatchers.IO) { call(ctx, "amazon.visibility", playlistId, Bundle().apply { putBoolean("public", public) }) }
+    }
+
     override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
         withContext(Dispatchers.IO) { call(ctx, "amazon.delete", playlistId) }
     }

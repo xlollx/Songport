@@ -400,6 +400,12 @@
     <string name="manage_delete_confirm">要从 %2$s 删除“%1$s”吗？此操作无法撤销。</string>
     <string name="manage_renamed">已重命名</string>
     <string name="manage_deleted">歌单已删除</string>
+    <string name="manage_make_public">设为公开</string>
+    <string name="manage_make_private">设为私密</string>
+    <string name="manage_now_public">已设为公开</string>
+    <string name="manage_now_private">已设为私密</string>
+    <string name="playlist_public">公开</string>
+    <string name="playlist_private">私密</string>
     <string name="manage_none">你在此服务上没有歌单。</string>
     <plurals name="manage_delete_used">
         <item quantity="other">%1$d 个同步任务使用此歌单，在你修改它们之前会失败。</item>

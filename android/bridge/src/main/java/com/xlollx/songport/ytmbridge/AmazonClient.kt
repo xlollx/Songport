@@ -336,6 +336,16 @@ class AmazonClient(private val ctx: Context) {
         if (j.toString().contains("MessageTemplate") && !j.toString().contains("PLAYLIST_NAME")) throw BridgeException("Amazon Music did not rename the playlist")
     }
 
+    /** The detail page's "Make public" / "Keep private": one call with the new visibility. */
+    fun setVisibility(playlistId: String, public: Boolean) {
+        val j = call(
+            "updatePlaylistVisibility",
+            mapOf("playlistId" to playlistId, "newVisibility" to if (public) "PUBLIC" else "PRIVATE", "refresh" to "true"),
+            "https://${domain()}/my/playlists/$playlistId",
+        )
+        if (j.toString().contains("MessageTemplate")) throw BridgeException("Amazon Music did not change the playlist's visibility")
+    }
+
     /** The dialog's "Delete": the library state of the playlist becomes NOT_IN_LIBRARY. */
     fun removePlaylist(playlistId: String) {
         val j = call("removePlaylist", mapOf("id" to playlistId), "https://${domain()}/my/playlists/$playlistId")

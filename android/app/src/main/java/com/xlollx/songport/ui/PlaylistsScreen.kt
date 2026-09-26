@@ -169,6 +169,18 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
         )
     }
 
+    fun setVisibility(pl: Playlist, public: Boolean) {
+        busy = true
+        scope.launch {
+            try {
+                provider.setPlaylistVisibility(ctx, pl.id, public)
+                snackbar.showSnackbar(ctx.getString(if (public) R.string.manage_now_public else R.string.manage_now_private))
+                version++
+            } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { fail(e) }
+            busy = false
+        }
+    }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
@@ -200,13 +212,20 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
                         Row(Modifier.padding(start = 14.dp, top = 4.dp, bottom = 4.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(pl.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                if (pl.trackCount >= 0) Text(stringResource(R.string.tracks_count, pl.trackCount), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                val sub = listOfNotNull(
+                                    pl.trackCount.takeIf { it >= 0 }?.let { stringResource(R.string.tracks_count, it) },
+                                    pl.isPublic?.let { stringResource(if (it) R.string.playlist_public else R.string.playlist_private) },
+                                )
+                                if (sub.isNotEmpty()) Text(sub.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             var menu by remember { mutableStateOf(false) }
                             Box {
                                 IconButton(enabled = !busy, onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, null) }
                                 DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                                     if (provider.canRenamePlaylists) DropdownMenuItem(text = { Text(stringResource(R.string.manage_rename)) }, onClick = { menu = false; renaming = pl })
+                                    // Both entries when the listing does not say which state the playlist is in.
+                                    if (provider.canSetVisibility && pl.isPublic != true) DropdownMenuItem(text = { Text(stringResource(R.string.manage_make_public)) }, onClick = { menu = false; setVisibility(pl, true) })
+                                    if (provider.canSetVisibility && pl.isPublic != false) DropdownMenuItem(text = { Text(stringResource(R.string.manage_make_private)) }, onClick = { menu = false; setVisibility(pl, false) })
                                     if (aiReady && provider.canWrite) DropdownMenuItem(text = { Text(stringResource(R.string.ai_expand)) }, onClick = { menu = false; expanding = pl })
                                     ExportMenuItems { fmt -> menu = false; exporting = pl; export(fmt, pl.name) }
                                     if (provider.canDeletePlaylists) DropdownMenuItem(

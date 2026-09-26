@@ -120,6 +120,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
                     trackCount = p["items"]["total"].int ?: p["tracks"]["total"].int ?: -1,
                     ownedByMe = p["owner"]["id"].str == me || p["collaborative"].bool == true,
                     imageUrl = p["images"][0]["url"].str,
+                    isPublic = p["public"].bool,
                 )
             }
             url = j["next"].str
@@ -318,6 +319,11 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
 
     override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
         api(ctx, "PUT", "$API/playlists/$playlistId", jsonObj("name" to name))
+    }
+
+    override val canSetVisibility: Boolean get() = canWrite
+    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+        api(ctx, "PUT", "$API/playlists/$playlistId", jsonObj("public" to public))
     }
 
     /** Spotify has no delete: a playlist you stop following disappears from your library. */

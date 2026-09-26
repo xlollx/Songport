@@ -155,6 +155,7 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
                     name = a["name"].str ?: "",
                     // canEdit=false per le playlist sincronizzate da iTunes o create da Apple.
                     ownedByMe = a["canEdit"].bool ?: true,
+                    isPublic = a["isPublic"].bool,
                 )
             }
             url = nextUrl(j)

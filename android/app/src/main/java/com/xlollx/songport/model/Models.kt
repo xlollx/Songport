@@ -49,6 +49,8 @@ data class Playlist(
     val description: String = "",
     /** The cover's address, when the service lists one cheaply: carried to a created target where allowed. */
     val imageUrl: String? = null,
+    /** Public (on the profile, findable) or private; null when the service does not say in its listing. */
+    val isPublic: Boolean? = null,
 )
 
 @Serializable

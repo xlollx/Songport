@@ -46,7 +46,9 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     }
 
     override fun usesOwnCredentials(ctx: Context) = false
-    override fun developerToken(ctx: Context): String = runCatching { tokens(ctx).getString("developerToken") }.getOrNull() ?: ""
+    // The Bridge's own reason (not signed in, token not found) is more useful than "no developer token".
+    override fun developerToken(ctx: Context): String =
+        runCatching { tokens(ctx) }.getOrElse { throw ProviderException(it.message ?: "$displayName: no tokens") }.getString("developerToken") ?: ""
     override fun userToken(ctx: Context): String? = runCatching { tokens(ctx).getString("userToken") }.getOrNull()
     override fun storefront(ctx: Context): String = runCatching { tokens(ctx).getString("storefront") }.getOrNull() ?: super.storefront(ctx)
 
@@ -80,6 +82,11 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
 
     override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
         amp(ctx, "PATCH", "/v1/me/library/playlists/$playlistId", com.xlollx.songport.net.jsonObj("attributes" to mapOf("name" to name)))
+    }
+
+    override val canSetVisibility: Boolean get() = true
+    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+        amp(ctx, "PATCH", "/v1/me/library/playlists/$playlistId", com.xlollx.songport.net.jsonObj("attributes" to mapOf("isPublic" to public)))
     }
 
     override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
