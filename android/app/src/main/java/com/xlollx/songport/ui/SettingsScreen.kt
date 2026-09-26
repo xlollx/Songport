@@ -103,7 +103,7 @@ fun SettingsScreen(
                         scope.launch { snackbar.showSnackbar(ctx.getString(R.string.security_lock_unavailable)) }
                     } else {
                         store.updateSettings { it.copy(appLock = v) }
-                    }
+            }
                 })
             }
             // Chosen in-app and applied at once (the activity is recreated), also while a sync runs.
@@ -124,7 +124,7 @@ fun SettingsScreen(
                                 }.padding(vertical = 10.dp),
                             ) { Text(AppLocale.label(ctx, tag), style = MaterialTheme.typography.bodyLarge) }
                         }
-                    }
+            }
                 },
                 confirmButton = { TextButton(onClick = { langOpen = false }) { Text(stringResource(R.string.cancel)) } },
             )
@@ -159,7 +159,7 @@ fun SettingsScreen(
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     listOf(Schedule.MANUAL, Schedule.DAILY, Schedule.WEEKLY).forEach { s ->
                         FilterChip(selected = data.settings.backupSchedule == s, onClick = { store.updateSettings { it.copy(backupSchedule = s) }; Scheduler.applyBackup(ctx) }, label = { Text(scheduleLabel(s)) })
-                    }
+            }
                 }
                 var exporting by remember { mutableStateOf(false) }
                 var exportStep by remember { mutableStateOf("") }
@@ -212,7 +212,7 @@ fun SettingsScreen(
                         OutlinedButton(onClick = { onSetup(p) }) {
                             Text(stringResource(if (configured) R.string.edit else R.string.setup_now))
                         }
-                    }
+            }
                 }
             }
             TextButton(onClick = { advanced = !advanced }) {
@@ -228,25 +228,6 @@ fun SettingsScreen(
                     Text(stringResource(it), style = MaterialTheme.typography.bodyMedium)
                 }
             }
-            // "Nothing leaves your phone except…" made checkable: the hosts this app has talked to.
-            var connectionsOpen by remember { mutableStateOf(false) }
-            var connectionsVersion by remember { mutableIntStateOf(0) }
-            TextButton(onClick = { connectionsOpen = !connectionsOpen }) {
-                Text(stringResource(if (connectionsOpen) R.string.hide_details else R.string.security_connections))
-            }
-            if (connectionsOpen) {
-                val entries = remember(connectionsVersion) { com.xlollx.songport.net.HostLog.entries() }
-                Text(stringResource(R.string.security_connections_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (com.xlollx.songport.providers.BuiltIn.available) Text(stringResource(R.string.security_connections_web), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (entries.isEmpty()) Text(stringResource(R.string.security_connections_none), style = MaterialTheme.typography.bodySmall)
-                entries.forEach { e ->
-                    Column(Modifier.padding(vertical = 2.dp)) {
-                        Text(e.host, style = MaterialTheme.typography.bodyMedium)
-                        Text(stringResource(R.string.security_connections_count, e.count, formatDate(e.lastAt)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-                if (entries.isNotEmpty()) TextButton(onClick = { com.xlollx.songport.net.HostLog.clear(); connectionsVersion++ }) { Text(stringResource(R.string.security_connections_clear)) }
-            }
         }
 
         SectionCard(stringResource(R.string.support_title)) {
@@ -257,7 +238,7 @@ fun SettingsScreen(
                         Icon(Icons.Filled.Favorite, null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
                         Text(stringResource(R.string.support_button))
-                    }
+            }
                 }
                 // Per chi ha un account GitHub: anche un contributo mensile.
                 if (BuildConfig.SPONSORS_URL.isNotBlank()) {
@@ -275,6 +256,33 @@ fun SettingsScreen(
             }) { Text(stringResource(R.string.settings_battery_button)) }
         }
 
+        SectionCard(stringResource(R.string.settings_developer)) {
+            SettingRow(stringResource(R.string.settings_developer_switch), stringResource(R.string.settings_developer_desc)) {
+                Switch(checked = data.settings.developerOptions, onCheckedChange = { v -> store.updateSettings { it.copy(developerOptions = v) } })
+            }
+            if (data.settings.developerOptions) {
+            // "Nothing leaves your phone except…" made checkable: the hosts this app has talked to.
+            var connectionsOpen by remember { mutableStateOf(false) }
+            var connectionsVersion by remember { mutableIntStateOf(0) }
+            TextButton(onClick = { connectionsOpen = !connectionsOpen }) {
+                Text(stringResource(if (connectionsOpen) R.string.hide_details else R.string.security_connections))
+            }
+            if (connectionsOpen) {
+                val entries = remember(connectionsVersion) { com.xlollx.songport.net.HostLog.entries() }
+                Text(stringResource(R.string.security_connections_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (com.xlollx.songport.providers.BuiltIn.available) Text(stringResource(R.string.security_connections_web), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (entries.isEmpty()) Text(stringResource(R.string.security_connections_none), style = MaterialTheme.typography.bodySmall)
+                entries.forEach { e ->
+                    Column(Modifier.padding(vertical = 2.dp)) {
+                        Text(e.host, style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.security_connections_count, e.count, formatDate(e.lastAt)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+                }
+                if (entries.isNotEmpty()) TextButton(onClick = { com.xlollx.songport.net.HostLog.clear(); connectionsVersion++ }) { Text(stringResource(R.string.security_connections_clear)) }
+            }
+            }
+        }
+
         SectionCard(stringResource(R.string.settings_about)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 BrandMark(28.dp)
@@ -288,7 +296,7 @@ fun SettingsScreen(
                 if (privacyRequired) {
                     OutlinedButton(onClick = { (ctx as? Activity)?.let { Ads.showPrivacyOptions(it) } }) {
                         Text(stringResource(R.string.settings_privacy_options))
-                    }
+            }
                 }
             }
             // Open source: the repository holds the code, the docs and the connector-plugin page.

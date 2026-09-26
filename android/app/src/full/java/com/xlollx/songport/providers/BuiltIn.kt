@@ -37,12 +37,13 @@ object BuiltIn {
      * Extra entries for a connector's menu: Google's own page while it blocks YouTube Music, the
      * traffic capture that helps fix Amazon Music when its web player changes.
      */
-    fun extraActions(ctx: Context, serviceId: String): List<Pair<String, Intent>> = when (serviceId) {
+    fun extraActions(ctx: Context, serviceId: String, developer: Boolean): List<Pair<String, Intent>> = when (serviceId) {
         YouTubeBridgeProvider.SERVICE ->
             if (YtmClient.Verification.pending(ctx)) listOf(ctx.getString(com.xlollx.songport.ytmbridge.R.string.bridge_verify_google) to Intent(ctx, VerifyActivity::class.java))
             else emptyList()
+        // The capture is a development aid: shown only with developer options on.
         AmazonBridgeProvider.SERVICE ->
-            listOf(ctx.getString(com.xlollx.songport.ytmbridge.R.string.bridge_amazon_capture) to Intent(ctx, AmazonCaptureActivity::class.java))
+            if (developer) listOf(ctx.getString(com.xlollx.songport.ytmbridge.R.string.bridge_amazon_capture) to Intent(ctx, AmazonCaptureActivity::class.java)) else emptyList()
         else -> emptyList()
     }
 }

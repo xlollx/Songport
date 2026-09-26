@@ -19,7 +19,7 @@ object BuiltIn {
     fun loginIntent(ctx: Context, action: String): Intent? = null
 
     @Suppress("UNUSED_PARAMETER")
-    fun extraActions(ctx: Context, serviceId: String): List<Pair<String, Intent>> = emptyList()
+    fun extraActions(ctx: Context, serviceId: String, developer: Boolean): List<Pair<String, Intent>> = emptyList()
 
     @Suppress("UNUSED_PARAMETER")
     fun onAppStart(interceptor: okhttp3.Interceptor) = Unit

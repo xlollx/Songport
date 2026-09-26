@@ -117,6 +117,9 @@
     <string name="settings_privacy_options">広告のプライバシー設定</string>
     <string name="settings_privacy_policy">プライバシーポリシー</string>
     <string name="settings_about">アプリについて</string>
+    <string name="settings_developer">開発者向けオプション</string>
+    <string name="settings_developer_switch">開発者向けツールを表示</string>
+    <string name="settings_developer_desc">接続ログ、共有用の技術レポート、ウェブ接続のトラフィック記録。オフなら邪魔になりません。</string>
     <string name="settings_version">バージョン %1$s</string>
     <string name="settings_ads_note">Songport は無料で、サブスクリプションもありません。小さなバナー広告1つで運営されています。データを販売することはなく、接続した音楽サービスへのリクエスト以外、何も端末の外に送信されません。</string>
     <string name="settings_csv">ファイル</string>

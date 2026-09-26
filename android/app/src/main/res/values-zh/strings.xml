@@ -117,6 +117,9 @@
     <string name="settings_privacy_options">广告隐私选项</string>
     <string name="settings_privacy_policy">隐私政策</string>
     <string name="settings_about">关于</string>
+    <string name="settings_developer">开发者选项</string>
+    <string name="settings_developer_switch">显示开发者工具</string>
+    <string name="settings_developer_desc">连接日志、可分享的技术报告、网页连接器的流量捕获。关闭时不会碍事。</string>
     <string name="settings_version">版本 %1$s</string>
     <string name="settings_ads_note">Songport 免费，无订阅。它依靠一个小横幅广告维持；不出售任何数据，除了向你连接的音乐服务发送的请求外，没有任何数据离开你的手机。</string>
     <string name="settings_csv">文件</string>

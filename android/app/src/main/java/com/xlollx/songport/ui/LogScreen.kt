@@ -104,7 +104,7 @@ private fun LogList(data: StoreData, snackbar: SnackbarHostState, onResolve: (St
                         "&body=" + Uri.encode("<!-- Describe what you were doing. Remove anything you prefer not to share. -->\n\n```\n$body\n```")
                     runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
                 }) { Text(stringResource(R.string.report_issue)) }
-                TextButton(onClick = {
+                if (data.settings.developerOptions) TextButton(onClick = {
                     val text = Diagnostics.report(ctx)
                     val share = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text); putExtra(Intent.EXTRA_SUBJECT, "Songport diagnostics") }
                     ctx.startActivity(Intent.createChooser(share, ctx.getString(R.string.diag_share)))

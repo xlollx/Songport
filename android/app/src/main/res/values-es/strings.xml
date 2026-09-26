@@ -117,6 +117,9 @@
     <string name="settings_privacy_options">Opciones de privacidad de anuncios</string>
     <string name="settings_privacy_policy">Política de privacidad</string>
     <string name="settings_about">Acerca de</string>
+    <string name="settings_developer">Opciones de desarrollador</string>
+    <string name="settings_developer_switch">Mostrar herramientas de desarrollador</string>
+    <string name="settings_developer_desc">Registro de conexiones, informe técnico para compartir, captura del tráfico de los conectores web. Apagadas, no estorban.</string>
     <string name="settings_version">Versión %1$s</string>
     <string name="settings_ads_note">Songport es gratis y sin suscripciones. Se mantiene con un único banner publicitario pequeño; no se vende ningún dato y nada sale de tu teléfono salvo las solicitudes a los servicios de música que conectes.</string>
     <string name="settings_csv">Archivos</string>

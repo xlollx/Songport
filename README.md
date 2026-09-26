@@ -106,7 +106,7 @@ that is exactly what to report.
 | | setlist.fm | Share or paste a setlist.fm link: the concert becomes a playlist to sync anywhere. |
 | Widget and shortcuts | Home widget and long-press on the icon | Last sync, "Sync all", "New sync". |
 | Diagnostics | "Share technical details" in the log | Version, device, services, last runs, error log; no tokens. |
-| Security | Connections log | Settings lists every host the app has contacted and how often, so "no Songport server" is something to check, not to believe. |
+| Security | Connections log | Settings › Developer options lists every host the app has contacted and how often, so "no Songport server" is something to check, not to believe. |
 | | Info sheet before every login, encrypted tokens, fingerprint or PIN lock | See [How logins are protected](#how-logins-are-protected). |
 
 ## Supported services and their limits
