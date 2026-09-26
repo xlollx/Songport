@@ -61,7 +61,7 @@ class AmazonCaptureActivity : ComponentActivity() {
             displayZoomControls = false
             // The phone-sized player hides playlist editing (rename, delete) behind "open the app";
             // the desktop player shows them in the playlist's menu. Identify as a desktop browser.
-            userAgentString = BridgeUa.desktop(this)
+            userAgentString = BridgeUa.desktop(this@AmazonCaptureActivity)
             useWideViewPort = true
             loadWithOverviewMode = true
         }
