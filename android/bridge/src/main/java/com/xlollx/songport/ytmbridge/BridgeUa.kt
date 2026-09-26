@@ -46,7 +46,7 @@ object BridgeUa {
             val md = UserAgentMetadata.Builder()
                 .setBrandVersionList(brands).setFullVersion(full)
                 .setPlatform("Windows").setPlatformVersion("15.0.0")
-                .setArchitecture("x86").setBitness(UserAgentMetadata.BITNESS_64)
+                .setArchitecture("x86").setBitness(64)
                 .setMobile(false).setModel("")
                 .build()
             WebSettingsCompat.setUserAgentMetadata(web.settings, md)

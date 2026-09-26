@@ -114,7 +114,7 @@ class WebAuthActivity : ComponentActivity() {
             )
             WebSettingsCompat.setUserAgentMetadata(w.settings, UserAgentMetadata.Builder()
                 .setBrandVersionList(brands).setFullVersion(full).setPlatform("Windows").setPlatformVersion("15.0.0")
-                .setArchitecture("x86").setBitness(UserAgentMetadata.BITNESS_64).setMobile(false).setModel("").build())
+                .setArchitecture("x86").setBitness(64).setMobile(false).setModel("").build())
         }
         w.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean = handle(request.url)
