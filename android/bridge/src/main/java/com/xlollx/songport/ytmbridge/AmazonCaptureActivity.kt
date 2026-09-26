@@ -120,6 +120,33 @@ class AmazonCaptureActivity : ComponentActivity() {
         private val HOOK = """
             (function(){
               if (window.__spCap) return; window.__spCap = 1;
+              // A WebView has no window.chrome: a page that tells Chrome by it sees an old browser.
+              try { if (!window.chrome) window.chrome = { runtime: {}, app: { isInstalled: false }, loadTimes: function(){ return {}; }, csi: function(){ return {}; } }; } catch(e){}
+              // The "update your browser" page: what the player's own code checks, taken from its
+              // scripts, so the check can be met instead of guessed at.
+              var probe = function(){
+                try {
+                  var t = String(document.body && document.body.innerText || '');
+                  if (!/Aggiornare Chrome|Update Chrome|browser non è più supportat|no longer supported|non è più supportata/i.test(t)) return;
+                  var facts = { userAgent: navigator.userAgent, uaData: navigator.userAgentData ? JSON.stringify(navigator.userAgentData) : null,
+                    chrome: !!window.chrome, plugins: navigator.plugins ? navigator.plugins.length : -1, vendor: navigator.vendor, platform: navigator.platform,
+                    mediaSource: !!window.MediaSource, eme: !!navigator.requestMediaKeySystemAccess, wasm: !!window.WebAssembly, subtle: !!(window.crypto && crypto.subtle),
+                    sw: !!navigator.serviceWorker, storage: !!navigator.storage, share: !!navigator.share, bt: !!navigator.bluetooth, usb: !!navigator.usb, hid: !!navigator.hid, pip: !!document.pictureInPictureEnabled,
+                    gpu: !!navigator.gpu, wakeLock: !!navigator.wakeLock, credentials: !!navigator.credentials, cookies: !!window.cookieStore, scheduler: !!window.scheduler, url: location.href };
+                  SpCapture.log(JSON.stringify({ t: Date.now(), url: 'diag://browser-check', method: 'facts', body: facts, status: 0, response: '' }));
+                  var scripts = Array.prototype.slice.call(document.scripts).map(function(s){ return s.src; }).filter(Boolean);
+                  scripts.forEach(function(src){
+                    fetch(src).then(function(r){ return r.text(); }).then(function(js){
+                      var out = [];
+                      var re = /(unsupported|Unsupported|UNSUPPORTED|isSupportedBrowser|browserSupport|supportedBrowser|minimumVersion|minVersion|updateChrome|update-chrome|browserNotSupported|outdated)/g;
+                      var m, n = 0;
+                      while ((m = re.exec(js)) && n < 12) { out.push(js.substring(Math.max(0, m.index - 700), m.index + 700)); n++; re.lastIndex = m.index + 1; }
+                      if (out.length) SpCapture.log(JSON.stringify({ t: Date.now(), url: 'diag://browser-check', method: 'script', body: src, status: js.length, response: out.join('\n----\n') }));
+                    }).catch(function(){});
+                  });
+                } catch(e){}
+              };
+              setTimeout(probe, 4000); setTimeout(probe, 12000);
               var match = function(u){ return /skill\.music\.a2z\.com|music\.amazon\.[a-z.]+\/(?:[A-Z]{2}\/)?api\//.test(String(u||'')); };
               var send = function(o){ try { SpCapture.log(JSON.stringify(o)); } catch(e){} };
               var redact = function(b){
