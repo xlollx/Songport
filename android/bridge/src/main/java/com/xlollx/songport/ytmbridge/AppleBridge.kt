@@ -63,8 +63,12 @@ object AppleBridge {
 
     private val JWT = Regex("""eyJhbGci[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+""")
 
-    private fun scrape(ctx: Context): String {
-        val html = get(HOME)
+    private fun scrape(ctx: Context): String = runCatching { scrapePage(ctx, HOME) }
+        .recoverCatching { scrapePage(ctx, "https://music.apple.com/us/browse") }
+        .getOrElse { e -> throw BridgeException("${e.message}. Disconnect Apple Music and sign in again: the sign-in screen takes the token from the player itself") }
+
+    private fun scrapePage(ctx: Context, page: String): String {
+        val html = get(page)
         // The token has been in the main bundle (/assets/index-*.js); take any same-origin script in
         // page order, main bundle first, and the page itself in case it moves inline.
         JWT.find(html)?.value?.let { return keep(ctx, it) }

@@ -623,10 +623,11 @@ private fun PlaylistPicker(loaded: Loaded, selected: Playlist?, label: String, o
         is Loaded.Ok -> {
             var expanded by remember { mutableStateOf(false) }
             val all = if (onlyOwned) loaded.items.filter { it.ownedByMe } else loaded.items
-            // Le sezioni della libreria (preferiti, album, artisti, podcast, ascolti) stanno a parte dalle playlist,
-            // dietro un selettore: di default si vedono le playlist.
-            val (library, playlists) = all.partition { MusicProvider.isLibrary(it.id) }
-            var showLibrary by remember { mutableStateOf(selected?.let { MusicProvider.isLibrary(it.id) } ?: false) }
+            // Le sezioni della libreria (album, artisti, podcast, ascolti) stanno a parte dalle playlist, dietro
+            // un selettore: di default si vedono le playlist. I brani preferiti restano con le playlist, in testa.
+            val isSection = { p: Playlist -> MusicProvider.isLibrary(p.id) && p.id != MusicProvider.LIKED_ID }
+            val (library, playlists) = all.partition(isSection)
+            var showLibrary by remember { mutableStateOf(selected?.let(isSection) ?: false) }
             if (library.isEmpty()) showLibrary = false
             val items = if (showLibrary) library else playlists
             if (library.isNotEmpty()) {

@@ -118,14 +118,15 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
      * solo per la libreria (endpoint /v1/me/...).
      */
     private suspend fun api(ctx: Context, method: String, url: String, body: JsonElement? = null): JsonElement {
-        val dev = developerToken(ctx)
+        // The web route fetches its tokens over the network: never on the caller's (main) thread.
+        val dev = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { developerToken(ctx) }
         if (dev.isBlank()) throw ProviderException(ctx.getString(R.string.apple_token_missing))
         val headers = HashMap<String, String>()
         headers["Authorization"] = "Bearer $dev"
         headers["Accept"] = "application/json"
         val needsUser = "/v1/me/" in url
         if (needsUser) {
-            val mut = userToken(ctx)
+            val mut = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { userToken(ctx) }
                 ?: throw ProviderException(ctx.getString(R.string.error_not_connected, displayName))
             headers["Music-User-Token"] = mut
         }

@@ -40,7 +40,14 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     private fun tokens(ctx: Context): Bundle {
         val now = System.currentTimeMillis()
         cache?.let { (at, b) -> if (now - at < 5 * 60_000) return b }
-        val b = call(ctx, "apple.tokens")
+        // Built in, the Bridge may have to fetch the token from the player: not allowed on the main
+        // thread, which is where a storefront lookup for a URL can land. A worker does it then.
+        val b = if (android.os.Looper.getMainLooper().isCurrentThread) {
+            var result: Result<Bundle>? = null
+            val t = kotlin.concurrent.thread { result = runCatching { call(ctx, "apple.tokens") } }
+            t.join()
+            result!!.getOrThrow()
+        } else call(ctx, "apple.tokens")
         cache = now to b
         return b
     }

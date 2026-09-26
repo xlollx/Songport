@@ -272,7 +272,8 @@ fun formatDate(epoch: Long): String =
 
 @Composable
 fun playlistDisplayName(playlistId: String?, name: String): String = when (playlistId) {
-    MusicProvider.LIKED_ID -> stringResource(R.string.liked_songs)
+    // The heart marks the service's own default list, the one every app has.
+    MusicProvider.LIKED_ID -> "\u2665 " + stringResource(R.string.liked_songs)
     MusicProvider.ALBUMS_ID -> stringResource(R.string.saved_albums)
     MusicProvider.ARTISTS_ID -> stringResource(R.string.followed_artists)
     MusicProvider.PODCASTS_ID -> stringResource(R.string.followed_podcasts)
