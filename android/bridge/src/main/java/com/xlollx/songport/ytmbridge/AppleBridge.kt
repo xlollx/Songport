@@ -47,7 +47,57 @@ object AppleBridge {
             val exp = session.get(ctx, "devTokenExp")?.toLongOrNull() ?: 0
             if (exp - 3_600_000 > System.currentTimeMillis()) return stored
         }
-        return runCatching { scrape(ctx) }.getOrElse { e -> stored ?: throw e }
+        val scraped = runCatching { scrape(ctx) }
+        scraped.getOrNull()?.let { return it }
+        // The player's own API calls carry the token: load it off screen and take it from there.
+        viaWebView(ctx)?.let { return keep(ctx, it) }
+        return stored ?: throw BridgeException("${scraped.exceptionOrNull()?.message ?: "Apple Music: developer token not found"}. Disconnect Apple Music and sign in again: the sign-in screen takes the token from the player itself")
+    }
+
+    private const val TOKEN_JS = "(function(){try{return MusicKit.getInstance().developerToken||''}catch(e){return ''}})()"
+
+    /**
+     * Loads music.apple.com in an off-screen WebView on the main thread and waits, at most 25 s, for
+     * the token to show up: in the `Authorization` header of a call the player makes, or in MusicKit's
+     * instance. Gives up at once when the main thread is busy (a caller blocking it would deadlock).
+     */
+    private fun viaWebView(ctx: Context): String? {
+        val app = ctx.applicationContext
+        val main = android.os.Handler(android.os.Looper.getMainLooper())
+        if (android.os.Looper.getMainLooper().isCurrentThread) return null
+        val started = java.util.concurrent.CountDownLatch(1)
+        val done = java.util.concurrent.CountDownLatch(1)
+        val found = java.util.concurrent.atomic.AtomicReference<String?>(null)
+        var web: android.webkit.WebView? = null
+        fun offer(raw: String?) {
+            val tok = raw?.trim()?.removePrefix("Bearer ")?.trim('"', ' ') ?: return
+            if (JWT.matches(tok) && found.compareAndSet(null, tok)) done.countDown()
+        }
+        main.post {
+            runCatching {
+                val w = android.webkit.WebView(app)
+                web = w
+                w.settings.javaScriptEnabled = true
+                w.settings.domStorageEnabled = true
+                w.webViewClient = object : android.webkit.WebViewClient() {
+                    override fun shouldInterceptRequest(view: android.webkit.WebView, request: android.webkit.WebResourceRequest): android.webkit.WebResourceResponse? {
+                        if (request.url.host?.endsWith("music.apple.com") == true) offer(request.requestHeaders?.get("Authorization"))
+                        return null
+                    }
+                    override fun onPageFinished(view: android.webkit.WebView, url: String) { poll(view, 0) }
+                    private fun poll(view: android.webkit.WebView, n: Int) {
+                        if (found.get() != null || n > 20) return
+                        view.evaluateJavascript(TOKEN_JS) { v -> offer(v); if (found.get() == null) main.postDelayed({ poll(view, n + 1) }, 1000) }
+                    }
+                }
+                w.loadUrl(HOME)
+            }.onFailure { done.countDown() }
+            started.countDown()
+        }
+        if (!started.await(3, TimeUnit.SECONDS)) return null
+        done.await(25, TimeUnit.SECONDS)
+        main.post { runCatching { web?.stopLoading(); web?.destroy() } }
+        return found.get()
     }
 
     /** Keeps a developer token seen in the player: from the login screen's own WebView. */
@@ -65,7 +115,7 @@ object AppleBridge {
 
     private fun scrape(ctx: Context): String = runCatching { scrapePage(ctx, HOME) }
         .recoverCatching { scrapePage(ctx, "https://music.apple.com/us/browse") }
-        .getOrElse { e -> throw BridgeException("${e.message}. Disconnect Apple Music and sign in again: the sign-in screen takes the token from the player itself") }
+        .getOrThrow()
 
     private fun scrapePage(ctx: Context, page: String): String {
         val html = get(page)

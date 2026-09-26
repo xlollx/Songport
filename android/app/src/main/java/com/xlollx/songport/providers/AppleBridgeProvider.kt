@@ -40,14 +40,10 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     private fun tokens(ctx: Context): Bundle {
         val now = System.currentTimeMillis()
         cache?.let { (at, b) -> if (now - at < 5 * 60_000) return b }
-        // Built in, the Bridge may have to fetch the token from the player: not allowed on the main
-        // thread, which is where a storefront lookup for a URL can land. A worker does it then.
-        val b = if (android.os.Looper.getMainLooper().isCurrentThread) {
-            var result: Result<Bundle>? = null
-            val t = kotlin.concurrent.thread { result = runCatching { call(ctx, "apple.tokens") } }
-            t.join()
-            result!!.getOrThrow()
-        } else call(ctx, "apple.tokens")
+        // Built in, the Bridge may fetch the token from the player, even through a WebView on the
+        // main thread: the callers read tokens off the main thread (see api and amp).
+        if (android.os.Looper.getMainLooper().isCurrentThread) throw ProviderException("$displayName: tokens are read off the main thread")
+        val b = call(ctx, "apple.tokens")
         cache = now to b
         return b
     }
@@ -57,7 +53,10 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     override fun developerToken(ctx: Context): String =
         runCatching { tokens(ctx) }.getOrElse { throw ProviderException(it.message ?: "$displayName: no tokens") }.getString("developerToken") ?: ""
     override fun userToken(ctx: Context): String? = runCatching { tokens(ctx).getString("userToken") }.getOrNull()
-    override fun storefront(ctx: Context): String = runCatching { tokens(ctx).getString("storefront") }.getOrNull() ?: super.storefront(ctx)
+    // The storefront goes into URLs built on the caller's thread: the cache a token read filled
+    // serves it there; failing that, the default one, rather than a network call on the main thread.
+    override fun storefront(ctx: Context): String =
+        cache?.second?.getString("storefront") ?: runCatching { tokens(ctx).getString("storefront") }.getOrNull() ?: super.storefront(ctx)
 
     override fun isConfigured(ctx: Context): Boolean =
         BridgePlugin.installed(ctx) && runCatching { call(ctx, "apple.status").containsKey("connected") }.getOrDefault(false)
@@ -73,8 +72,7 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     override val canDeletePlaylists: Boolean get() = true
 
     private suspend fun amp(ctx: Context, method: String, path: String, body: kotlinx.serialization.json.JsonElement? = null) {
-        val dev = developerToken(ctx)
-        val user = userToken(ctx)
+        val (dev, user) = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { developerToken(ctx) to userToken(ctx) }
         if (dev.isBlank() || user == null) throw ProviderException(ctx.getString(R.string.error_not_connected, displayName))
         val headers = mapOf(
             "Authorization" to "Bearer $dev", "Music-User-Token" to user, "Accept" to "application/json",
