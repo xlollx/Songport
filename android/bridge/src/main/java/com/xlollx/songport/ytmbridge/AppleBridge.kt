@@ -71,7 +71,7 @@ object AppleBridge {
         var web: android.webkit.WebView? = null
         fun offer(raw: String?) {
             val tok = raw?.trim()?.removePrefix("Bearer ")?.trim('"', ' ') ?: return
-            if (JWT.matches(tok) && found.compareAndSet(null, tok)) done.countDown()
+            if (isJwt(tok) && found.compareAndSet(null, tok)) done.countDown()
         }
         main.post {
             runCatching {
@@ -103,7 +103,7 @@ object AppleBridge {
     /** Keeps a developer token seen in the player: from the login screen's own WebView. */
     fun rememberDeveloperToken(ctx: Context, jwt: String?): Boolean {
         val tok = jwt?.trim()?.removePrefix("Bearer ")?.trim() ?: return false
-        if (!JWT.matches(tok)) return false
+        if (!isJwt(tok)) return false
         if (session.get(ctx, "devToken") == tok) return true
         val exp = jwtExpiry(tok) ?: (System.currentTimeMillis() + 30L * 24 * 3_600_000)
         session.put(ctx, "devToken", tok)
@@ -111,7 +111,19 @@ object AppleBridge {
         return true
     }
 
-    private val JWT = Regex("""eyJhbGci[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+""")
+    /**
+     * Any JWT, whatever the order of the header's fields: Apple's token used to start with
+     * `eyJhbGci` ({"alg" first) and now starts with `eyJ0eXAi` ({"typ" first). A match is taken only
+     * when its header decodes to JSON naming an algorithm, which rules out other base64 strings.
+     */
+    private val JWT = Regex("""eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}""")
+
+    private fun isJwt(tok: String): Boolean = JWT.matches(tok) && runCatching {
+        val header = String(Base64.decode(tok.substringBefore('.'), Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP))
+        (parseJson(header) as? JsonObject)?.get("alg").str != null
+    }.getOrDefault(false)
+
+    private fun findJwt(text: String): String? = JWT.findAll(text).map { it.value }.firstOrNull { isJwt(it) }
 
     private fun scrape(ctx: Context): String = runCatching { scrapePage(ctx, HOME) }
         .recoverCatching { scrapePage(ctx, "https://music.apple.com/us/browse") }
@@ -121,14 +133,14 @@ object AppleBridge {
         val html = get(page)
         // The token has been in the main bundle (/assets/index-*.js); take any same-origin script in
         // page order, main bundle first, and the page itself in case it moves inline.
-        JWT.find(html)?.value?.let { return keep(ctx, it) }
+        findJwt(html)?.let { return keep(ctx, it) }
         val scripts = Regex("""(?:src|href)="((?:https://music\.apple\.com)?/assets/[^"]+\.js)"""").findAll(html)
             .map { it.groupValues[1].removePrefix("https://music.apple.com") }.distinct().toList()
             .sortedBy { if (it.contains("/index")) 0 else 1 }
         if (scripts.isEmpty()) throw BridgeException("Apple Music: player script not found")
         for (path in scripts) {
             val js = runCatching { get("https://music.apple.com$path") }.getOrNull() ?: continue
-            JWT.find(js)?.value?.let { return keep(ctx, it) }
+            findJwt(js)?.let { return keep(ctx, it) }
         }
         throw BridgeException("Apple Music: developer token not found in the player script")
     }
