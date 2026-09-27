@@ -359,6 +359,9 @@
     <string name="ai_seeds">Ähnlich wie (optional)</string>
     <string name="ai_seeds_hint">Ein Titel pro Zeile, als „Künstler – Titel“</string>
     <string name="ai_count">Titel: %1$d</string>
+    <string name="ai_count_label">Anzahl der Titel</string>
+    <string name="ai_count_hint">Bis etwa 100 passen in eine Antwort; mehr wird in Runden angefragt.</string>
+    <string name="ai_count_warning">Über 100 wird das Modell in Runden befragt und verbraucht mehr Tokens: Bei großen Zahlen vorher das Token-Guthaben des KI-Tarifs prüfen.</string>
     <string name="ai_target">Erstellen auf</string>
     <string name="ai_generate">Generieren</string>
     <string name="ai_generating">Frage die KI…</string>

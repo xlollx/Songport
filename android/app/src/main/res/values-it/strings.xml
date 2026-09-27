@@ -359,6 +359,9 @@
     <string name="ai_seeds">Simile a (facoltativo)</string>
     <string name="ai_seeds_hint">Un brano per riga, come “Artista – Titolo”</string>
     <string name="ai_count">Brani: %1$d</string>
+    <string name="ai_count_label">Numero di brani</string>
+    <string name="ai_count_hint">Fino a circa 100 stanno in una risposta; oltre si va a giri.</string>
+    <string name="ai_count_warning">Oltre 100 il modello viene interrogato a giri e consuma più token: per numeri grandi verifica prima i token disponibili nel tuo piano AI.</string>
     <string name="ai_target">Crea su</string>
     <string name="ai_generate">Genera</string>
     <string name="ai_generating">Chiedo all\'AI…</string>

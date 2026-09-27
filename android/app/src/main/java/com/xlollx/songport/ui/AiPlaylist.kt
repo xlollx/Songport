@@ -37,7 +37,8 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -229,8 +230,7 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.ai_count, d.count.toInt()), style = MaterialTheme.typography.bodyMedium)
-            Slider(value = d.count, onValueChange = { d.count = it }, onValueChangeFinished = { d.persist(ctx) }, valueRange = 5f..100f, steps = 18)
+            AiCountField(d.count.toInt()) { d.count = it.toFloat(); d.persist(ctx) }
             Text(stringResource(R.string.ai_target), style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(4.dp))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -262,7 +262,7 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
                     d.scope.launch {
                         // A file takes any name; a service gets only what it has, checked before the review.
                         val outcome = runCatching {
-                            if (target.id == LocalFilesProvider.id) AiClient.generate(c, request)
+                            if (target.id == LocalFilesProvider.id) AiClient.generateAll(c, request)
                             else AiMatch.available(app, c, target, request, emptyList()) { found, want -> d.step = "$found/$want" }.found
                         }
                         d.busy = false; d.step = ""
@@ -512,8 +512,7 @@ fun AiExtendDialog(job: SyncJob, onClose: () -> Unit) {
                 Spacer(Modifier.height(8.dp))
                 Text(job.aiPrompt.orEmpty(), style = MaterialTheme.typography.bodyMedium)
                 Spacer(Modifier.height(8.dp))
-                Text(stringResource(R.string.ai_count, count.toInt()), style = MaterialTheme.typography.bodyMedium)
-                Slider(value = count, onValueChange = { count = it }, valueRange = 5f..50f, steps = 8)
+                AiCountField(count.toInt()) { count = it.toFloat() }
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
             }
         },
@@ -530,7 +529,7 @@ fun AiExtendDialog(job: SyncJob, onClose: () -> Unit) {
                             val request = AiClient.Prompt(job.aiPrompt.orEmpty(), count.toInt(), emptyList(), language, names)
                             // Checked on the destination first: the review shows only what it has.
                             if (target != null && target.id != LocalFilesProvider.id) AiMatch.available(app, c, target, request, existing).found
-                            else AiMatch.fresh(AiClient.generate(c, request), existing)
+                            else AiMatch.fresh(AiClient.generateAll(c, request), existing)
                         }
                         busy = false
                         outcome.onFailure { e -> error = e.message ?: app.getString(R.string.error_generic) }
@@ -603,8 +602,7 @@ fun AiExpandPlaylistDialog(provider: MusicProvider, playlist: Playlist, onClose:
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Spacer(Modifier.height(8.dp))
-                Text(stringResource(R.string.ai_count, count.toInt()), style = MaterialTheme.typography.bodyMedium)
-                Slider(value = count, onValueChange = { count = it }, valueRange = 5f..50f, steps = 8)
+                AiCountField(count.toInt()) { count = it.toFloat() }
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
             }
         },
@@ -629,5 +627,30 @@ fun AiExpandPlaylistDialog(provider: MusicProvider, playlist: Playlist, onClose:
             }
         },
         dismissButton = { TextButton(enabled = !busy, onClick = onClose) { Text(stringResource(R.string.cancel)) } },
+    )
+}
+
+/**
+ * How many tracks to ask for: a number, typed. Above a hundred the model is asked in rounds and the
+ * bill in tokens grows with the count, so the field says so and suggests checking the plan first.
+ */
+@Composable
+fun AiCountField(value: Int, onChange: (Int) -> Unit) {
+    var text by remember(value) { mutableStateOf(value.toString()) }
+    OutlinedTextField(
+        value = text,
+        onValueChange = { t ->
+            val digits = t.filter { it.isDigit() }.take(4)
+            text = digits
+            digits.toIntOrNull()?.coerceIn(1, 2000)?.let(onChange)
+        },
+        singleLine = true,
+        label = { Text(stringResource(R.string.ai_count_label)) },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        supportingText = {
+            if (value > AiClient.ROUND) Text(stringResource(R.string.ai_count_warning), color = MaterialTheme.colorScheme.tertiary)
+            else Text(stringResource(R.string.ai_count_hint))
+        },
+        modifier = Modifier.fillMaxWidth(),
     )
 }

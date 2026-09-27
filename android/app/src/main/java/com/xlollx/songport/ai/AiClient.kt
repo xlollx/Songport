@@ -201,6 +201,23 @@ object AiClient {
     /** La playlist proposta, come brani senza id (li trovera' la ricerca del servizio di destinazione). */
     suspend fun generate(c: Config, r: Prompt): List<Track> = parseTracks(complete(c, system(r), user(r)))
 
+    /** One answer holds about a hundred tracks at most: a larger request goes in rounds, each told what came before. */
+    const val ROUND = 100
+
+    suspend fun generateAll(c: Config, r: Prompt): List<Track> {
+        if (r.count <= ROUND) return generate(c, r)
+        val out = ArrayList<Track>()
+        var rounds = 0
+        while (out.size < r.count && rounds < r.count / ROUND + 3) {
+            rounds++
+            val ask = r.copy(count = minOf(ROUND, r.count - out.size), existing = (r.existing + out.map { it.toString() }).distinct().take(400))
+            val got = AiMatch.fresh(generate(c, ask), out)
+            if (got.isEmpty()) break
+            out += got
+        }
+        return out.take(r.count)
+    }
+
     data class Suggestion(val match: Int?, val queries: List<String>, val note: String)
 
     /**

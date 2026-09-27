@@ -359,6 +359,9 @@
     <string name="ai_seeds">Similar to (optional)</string>
     <string name="ai_seeds_hint">One track per line, as “Artist – Title”</string>
     <string name="ai_count">Tracks: %1$d</string>
+    <string name="ai_count_label">Number of tracks</string>
+    <string name="ai_count_hint">Up to about 100 fits in one answer; more is asked in rounds.</string>
+    <string name="ai_count_warning">Above 100 the model is asked in rounds and uses more tokens: for large numbers check your AI plan\'s token allowance first.</string>
     <string name="ai_target">Create on</string>
     <string name="ai_generate">Generate</string>
     <string name="ai_generating">Asking the AI…</string>

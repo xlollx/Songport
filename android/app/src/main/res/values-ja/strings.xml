@@ -356,6 +356,9 @@
     <string name="ai_seeds">こんな曲に似た（任意）</string>
     <string name="ai_seeds_hint">1 行に 1 曲、「アーティスト – タイトル」の形式で</string>
     <string name="ai_count">曲数：%1$d</string>
+    <string name="ai_count_label">曲数</string>
+    <string name="ai_count_hint">1 回の回答に入るのは約 100 曲まで。それ以上は複数回に分けて依頼します。</string>
+    <string name="ai_count_warning">100 曲を超えると複数回に分けてモデルに依頼し、トークンを多く消費します。大きな数の場合は先に AI プランのトークン残量を確認してください。</string>
     <string name="ai_target">作成先</string>
     <string name="ai_generate">生成</string>
     <string name="ai_generating">AI に問い合わせ中…</string>

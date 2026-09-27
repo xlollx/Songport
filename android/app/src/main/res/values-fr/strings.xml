@@ -359,6 +359,9 @@
     <string name="ai_seeds">Dans le style de (facultatif)</string>
     <string name="ai_seeds_hint">Un titre par ligne, sous la forme « Artiste – Titre »</string>
     <string name="ai_count">Titres : %1$d</string>
+    <string name="ai_count_label">Nombre de titres</string>
+    <string name="ai_count_hint">Jusqu\'à 100 environ tiennent dans une réponse ; au-delà, plusieurs tours.</string>
+    <string name="ai_count_warning">Au-delà de 100, le modèle est interrogé en plusieurs tours et consomme plus de jetons : pour de grands nombres, vérifiez d\'abord les jetons disponibles dans votre offre IA.</string>
     <string name="ai_target">Créer sur</string>
     <string name="ai_generate">Générer</string>
     <string name="ai_generating">Demande à l\'IA…</string>

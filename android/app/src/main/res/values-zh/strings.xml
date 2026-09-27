@@ -356,6 +356,9 @@
     <string name="ai_seeds">类似于（可选）</string>
     <string name="ai_seeds_hint">每行一首，格式为“艺人 – 标题”</string>
     <string name="ai_count">歌曲数：%1$d</string>
+    <string name="ai_count_label">曲目数量</string>
+    <string name="ai_count_hint">一次回答最多约 100 首；更多则分轮请求。</string>
+    <string name="ai_count_warning">超过 100 首时会分轮询问模型并消耗更多 token：数量较大时请先确认你的 AI 套餐的 token 额度。</string>
     <string name="ai_target">创建到</string>
     <string name="ai_generate">生成</string>
     <string name="ai_generating">正在询问 AI…</string>

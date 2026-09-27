@@ -359,6 +359,9 @@
     <string name="ai_seeds">Parecido a (opcional)</string>
     <string name="ai_seeds_hint">Una canción por línea, como “Artista – Título”</string>
     <string name="ai_count">Canciones: %1$d</string>
+    <string name="ai_count_label">Número de canciones</string>
+    <string name="ai_count_hint">Hasta unas 100 caben en una respuesta; más se pide por rondas.</string>
+    <string name="ai_count_warning">Por encima de 100 el modelo se consulta por rondas y consume más tokens: para números grandes comprueba antes los tokens disponibles en tu plan de IA.</string>
     <string name="ai_target">Crear en</string>
     <string name="ai_generate">Generar</string>
     <string name="ai_generating">Preguntando a la IA…</string>
