@@ -19,8 +19,10 @@ object LinkResolver {
         PlaylistLinks.parse(text)?.let { return it }
         val url = URL.find(text)?.value ?: return null
         for (ua in listOf(Http.DESKTOP_UA, Http.MOBILE_UA)) {
-            val landing = runCatching { Http.follow(url, ua) }.getOrElse { e ->
-                Diagnostics.log(ctx, "link", "follow failed for $url: ${e.message ?: e.javaClass.simpleName}")
+            val attempt = runCatching { Http.follow(url, ua) }
+            val landing = attempt.getOrNull()
+            if (landing == null) {
+                Diagnostics.log(ctx, "link", "follow failed for $url: ${attempt.exceptionOrNull()?.message ?: "error"}")
                 continue
             }
             Diagnostics.log(ctx, "link", "$url -> HTTP ${landing.code} ${landing.url.take(160)} (${landing.page.length} chars)")
