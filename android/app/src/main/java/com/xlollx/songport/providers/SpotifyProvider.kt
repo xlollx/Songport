@@ -317,9 +317,15 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override fun rehydrate(track: Track): Track = track.copy(uri = "spotify:track:${track.id}")
 
     override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist {
-        val me = tokens(ctx).userId
-        val j = api(ctx, "POST", "$API/users/${Http.enc(me)}/playlists",
-            jsonObj("name" to name, "public" to false, "description" to description))
+        val body = jsonObj("name" to name, "public" to false, "description" to description)
+        // Creation moved to /me/playlists; the older /users/{id}/playlists answers Development Mode
+        // apps with a 403. The old path stays as the fallback should the new one be missing.
+        val j = try {
+            api(ctx, "POST", "$API/me/playlists", body)
+        } catch (e: ProviderException) {
+            if (e.code != 404 && e.code != 405) throw e
+            api(ctx, "POST", "$API/users/${Http.enc(tokens(ctx).userId)}/playlists", body)
+        }
         return Playlist(j["id"].str ?: throw ProviderException("Spotify: playlist not created"), name, 0)
     }
 
