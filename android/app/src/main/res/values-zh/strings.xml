@@ -409,6 +409,23 @@
     <string name="playlist_public">公开</string>
     <string name="playlist_private">私密</string>
     <string name="manage_none">你在此服务上没有歌单。</string>
+    <string name="manage_tracks">曲目…</string>
+    <string name="tracks_search">在歌单中搜索</string>
+    <string name="tracks_shown">显示 %1$d / %2$d</string>
+    <string name="tracks_select_shown">选中已显示的</string>
+    <string name="tracks_unselect_shown">取消选中已显示的</string>
+    <string name="tracks_select_artist">选中 %1$s 的全部曲目</string>
+    <string name="tracks_select_album">选中《%1$s》的全部曲目</string>
+    <string name="tracks_remove_confirm">从 %3$s 的“%2$s”中移除 %1$d 首曲目？</string>
+    <string name="tracks_removed">已移除 %d 首</string>
+    <string name="tracks_none">此歌单中没有曲目。</string>
+    <string name="export_menu">导出…</string>
+    <string name="export_choose">导出格式</string>
+    <string name="remove">移除</string>
+    <plurals name="tracks_remove_n">
+        <item quantity="one">移除 %d 首</item>
+        <item quantity="other">移除 %d 首</item>
+    </plurals>
     <plurals name="manage_delete_used">
         <item quantity="other">%1$d 个同步任务使用此歌单，在你修改它们之前会失败。</item>
     </plurals>

@@ -75,7 +75,9 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     /** On the regional site the account signed in to (music.amazon.it...), where the links then work. */
     override fun webSearchUrl(ctx: Context, query: String): String {
         val domain = runCatching { call(ctx, "amazon.status").getString("domain") }.getOrNull()?.takeIf { it.startsWith("music.amazon.") } ?: "music.amazon.com"
-        return "https://$domain/search/" + android.net.Uri.encode(query)
+        // A slash in a title ("n/A") would read as a path separator and land on "page not found".
+        val q = query.replace(Regex("""[/\\]+"""), " ").replace(Regex("""\s+"""), " ").trim()
+        return "https://$domain/search/" + android.net.Uri.encode(q)
     }
 
     override suspend fun search(ctx: Context, track: Track): List<Track> {

@@ -412,6 +412,23 @@
     <string name="playlist_public">Öffentlich</string>
     <string name="playlist_private">Privat</string>
     <string name="manage_none">Keine eigenen Playlists auf diesem Dienst.</string>
+    <string name="manage_tracks">Titel…</string>
+    <string name="tracks_search">In der Playlist suchen</string>
+    <string name="tracks_shown">%1$d von %2$d angezeigt</string>
+    <string name="tracks_select_shown">Angezeigte auswählen</string>
+    <string name="tracks_unselect_shown">Auswahl der Angezeigten aufheben</string>
+    <string name="tracks_select_artist">Alle von %1$s auswählen</string>
+    <string name="tracks_select_album">Alle aus „%1$s“ auswählen</string>
+    <string name="tracks_remove_confirm">%1$d Titel aus „%2$s“ auf %3$s entfernen?</string>
+    <string name="tracks_removed">%d entfernt</string>
+    <string name="tracks_none">Keine Titel in dieser Playlist.</string>
+    <string name="export_menu">Exportieren…</string>
+    <string name="export_choose">Exportformat</string>
+    <string name="remove">Entfernen</string>
+    <plurals name="tracks_remove_n">
+        <item quantity="one">%d Titel entfernen</item>
+        <item quantity="other">%d Titel entfernen</item>
+    </plurals>
     <plurals name="manage_delete_used">
         <item quantity="one">%1$d Sync nutzt diese Playlist und schlägt fehl, bis du sie änderst.</item>
         <item quantity="other">%1$d Syncs nutzen diese Playlist und schlagen fehl, bis du sie änderst.</item>

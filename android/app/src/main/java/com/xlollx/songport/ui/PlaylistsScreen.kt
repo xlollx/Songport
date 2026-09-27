@@ -91,6 +91,12 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
     }
     var deleting by remember { mutableStateOf<Playlist?>(null) }
     var busy by remember { mutableStateOf(false) }
+    var viewing by remember { mutableStateOf<Playlist?>(null) }
+    var choosingFormat by remember { mutableStateOf<Playlist?>(null) }
+    viewing?.let { pl ->
+        PlaylistTracksScreen(provider, pl, onClose = { viewing = null }, onChanged = { version++ })
+        return
+    }
     BackHandler { onClose() }
 
     LaunchedEffect(version) {
@@ -99,8 +105,11 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
     }
     fun fail(e: Exception) { scope.launch { snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic)) } }
 
-    // Export: the tracks are read when the file destination is chosen.
+    // Export: the format is asked in a dialog, the tracks are read when the file destination is chosen.
     var exporting by remember { mutableStateOf<Playlist?>(null) }
+    choosingFormat?.let { pl ->
+        ExportFormatDialog(onDismiss = { choosingFormat = null }) { fmt -> choosingFormat = null; exporting = pl; export(fmt, pl.name) }
+    }
     val export = rememberPlaylistExporter { uri: Uri?, fmt ->
         val pl = exporting
         exporting = null
@@ -231,8 +240,9 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
                                     // Both entries when the listing does not say which state the playlist is in.
                                     if (provider.canSetVisibility && pl.isPublic != true) DropdownMenuItem(text = { Text(stringResource(R.string.manage_make_public)) }, onClick = { menu = false; setVisibility(pl, true) })
                                     if (provider.canSetVisibility && pl.isPublic != false) DropdownMenuItem(text = { Text(stringResource(R.string.manage_make_private)) }, onClick = { menu = false; setVisibility(pl, false) })
+                                    if (provider.canRemoveTracks && provider.canWrite) DropdownMenuItem(text = { Text(stringResource(R.string.manage_tracks)) }, onClick = { menu = false; viewing = pl })
                                     if (aiReady && provider.canWrite) DropdownMenuItem(text = { Text(stringResource(R.string.ai_expand)) }, onClick = { menu = false; expanding = pl })
-                                    ExportMenuItems { fmt -> menu = false; exporting = pl; export(fmt, pl.name) }
+                                    ExportMenuItem { menu = false; choosingFormat = pl }
                                     if (provider.canDeletePlaylists) DropdownMenuItem(
                                         text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },
                                         onClick = { menu = false; deleting = pl },

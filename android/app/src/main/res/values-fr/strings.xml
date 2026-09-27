@@ -412,6 +412,23 @@
     <string name="playlist_public">Publique</string>
     <string name="playlist_private">Privée</string>
     <string name="manage_none">Aucune de vos playlists sur ce service.</string>
+    <string name="manage_tracks">Titres…</string>
+    <string name="tracks_search">Chercher dans la playlist</string>
+    <string name="tracks_shown">%1$d sur %2$d affichés</string>
+    <string name="tracks_select_shown">Sélectionner les affichés</string>
+    <string name="tracks_unselect_shown">Désélectionner les affichés</string>
+    <string name="tracks_select_artist">Tout sélectionner de %1$s</string>
+    <string name="tracks_select_album">Tout sélectionner de « %1$s »</string>
+    <string name="tracks_remove_confirm">Retirer %1$d titres de « %2$s » sur %3$s ?</string>
+    <string name="tracks_removed">%d retirés</string>
+    <string name="tracks_none">Aucun titre dans cette playlist.</string>
+    <string name="export_menu">Exporter…</string>
+    <string name="export_choose">Format d\'exportation</string>
+    <string name="remove">Retirer</string>
+    <plurals name="tracks_remove_n">
+        <item quantity="one">Retirer %d titre</item>
+        <item quantity="other">Retirer %d titres</item>
+    </plurals>
     <plurals name="manage_delete_used">
         <item quantity="one">%1$d synchro utilise cette playlist et échouera tant que vous ne la modifiez pas.</item>
         <item quantity="other">%1$d synchros utilisent cette playlist et échoueront tant que vous ne les modifiez pas.</item>

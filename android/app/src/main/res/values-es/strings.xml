@@ -412,6 +412,23 @@
     <string name="playlist_public">Pública</string>
     <string name="playlist_private">Privada</string>
     <string name="manage_none">No tienes playlists en este servicio.</string>
+    <string name="manage_tracks">Canciones…</string>
+    <string name="tracks_search">Buscar en la playlist</string>
+    <string name="tracks_shown">%1$d de %2$d mostradas</string>
+    <string name="tracks_select_shown">Seleccionar las mostradas</string>
+    <string name="tracks_unselect_shown">Deseleccionar las mostradas</string>
+    <string name="tracks_select_artist">Seleccionar todas de %1$s</string>
+    <string name="tracks_select_album">Seleccionar todas de «%1$s»</string>
+    <string name="tracks_remove_confirm">¿Quitar %1$d canciones de «%2$s» en %3$s?</string>
+    <string name="tracks_removed">%d quitadas</string>
+    <string name="tracks_none">No hay canciones en esta playlist.</string>
+    <string name="export_menu">Exportar…</string>
+    <string name="export_choose">Formato de exportación</string>
+    <string name="remove">Quitar</string>
+    <plurals name="tracks_remove_n">
+        <item quantity="one">Quitar %d canción</item>
+        <item quantity="other">Quitar %d canciones</item>
+    </plurals>
     <plurals name="manage_delete_used">
         <item quantity="one">%1$d sincronización usa esta playlist y fallará hasta que la edites.</item>
         <item quantity="other">%1$d sincronizaciones usan esta playlist y fallarán hasta que las edites.</item>

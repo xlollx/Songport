@@ -412,6 +412,23 @@
     <string name="playlist_public">Public</string>
     <string name="playlist_private">Private</string>
     <string name="manage_none">No playlists of yours on this service.</string>
+    <string name="manage_tracks">Tracks…</string>
+    <string name="tracks_search">Search in the playlist</string>
+    <string name="tracks_shown">%1$d of %2$d shown</string>
+    <string name="tracks_select_shown">Select shown</string>
+    <string name="tracks_unselect_shown">Unselect shown</string>
+    <string name="tracks_select_artist">Select all by %1$s</string>
+    <string name="tracks_select_album">Select all from “%1$s”</string>
+    <string name="tracks_remove_confirm">Remove %1$d tracks from “%2$s” on %3$s?</string>
+    <string name="tracks_removed">%d removed</string>
+    <string name="tracks_none">No tracks in this playlist.</string>
+    <string name="export_menu">Export…</string>
+    <string name="export_choose">Export format</string>
+    <string name="remove">Remove</string>
+    <plurals name="tracks_remove_n">
+        <item quantity="one">Remove %d track</item>
+        <item quantity="other">Remove %d tracks</item>
+    </plurals>
     <plurals name="manage_delete_used">
         <item quantity="one">%1$d sync uses this playlist and will fail until you edit it.</item>
         <item quantity="other">%1$d syncs use this playlist and will fail until you edit them.</item>

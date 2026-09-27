@@ -412,6 +412,23 @@
     <string name="playlist_public">Pubblica</string>
     <string name="playlist_private">Privata</string>
     <string name="manage_none">Nessuna tua playlist su questo servizio.</string>
+    <string name="manage_tracks">Brani…</string>
+    <string name="tracks_search">Cerca nella playlist</string>
+    <string name="tracks_shown">%1$d di %2$d mostrati</string>
+    <string name="tracks_select_shown">Seleziona i mostrati</string>
+    <string name="tracks_unselect_shown">Deseleziona i mostrati</string>
+    <string name="tracks_select_artist">Seleziona tutti di %1$s</string>
+    <string name="tracks_select_album">Seleziona tutti da “%1$s”</string>
+    <string name="tracks_remove_confirm">Rimuovere %1$d brani da “%2$s” su %3$s?</string>
+    <string name="tracks_removed">%d rimossi</string>
+    <string name="tracks_none">Nessun brano in questa playlist.</string>
+    <string name="export_menu">Esporta…</string>
+    <string name="export_choose">Formato di esportazione</string>
+    <string name="remove">Rimuovi</string>
+    <plurals name="tracks_remove_n">
+        <item quantity="one">Rimuovi %d brano</item>
+        <item quantity="other">Rimuovi %d brani</item>
+    </plurals>
     <plurals name="manage_delete_used">
         <item quantity="one">%1$d sync usa questa playlist e fallirà finché non la modifichi.</item>
         <item quantity="other">%1$d sync usano questa playlist e falliranno finché non le modifichi.</item>

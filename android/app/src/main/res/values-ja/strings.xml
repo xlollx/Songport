@@ -409,6 +409,23 @@
     <string name="playlist_public">公開</string>
     <string name="playlist_private">非公開</string>
     <string name="manage_none">このサービスにあなたのプレイリストはありません。</string>
+    <string name="manage_tracks">曲…</string>
+    <string name="tracks_search">プレイリスト内を検索</string>
+    <string name="tracks_shown">%2$d 曲中 %1$d 曲を表示</string>
+    <string name="tracks_select_shown">表示中を選択</string>
+    <string name="tracks_unselect_shown">表示中の選択を解除</string>
+    <string name="tracks_select_artist">%1$s の曲をすべて選択</string>
+    <string name="tracks_select_album">「%1$s」の曲をすべて選択</string>
+    <string name="tracks_remove_confirm">%3$s の「%2$s」から %1$d 曲を削除しますか？</string>
+    <string name="tracks_removed">%d 曲を削除しました</string>
+    <string name="tracks_none">このプレイリストに曲はありません。</string>
+    <string name="export_menu">エクスポート…</string>
+    <string name="export_choose">エクスポート形式</string>
+    <string name="remove">削除</string>
+    <plurals name="tracks_remove_n">
+        <item quantity="one">%d 曲を削除</item>
+        <item quantity="other">%d 曲を削除</item>
+    </plurals>
     <plurals name="manage_delete_used">
         <item quantity="other">%1$d 件の同期がこのプレイリストを使用しており、編集するまで失敗します。</item>
     </plurals>

@@ -183,10 +183,12 @@ private fun FileRow(title: String?, entry: LocalFilesProvider.Entry, onExport: (
             )
         }
         var menu by remember { mutableStateOf(false) }
+        var choosing by remember { mutableStateOf(false) }
+        if (choosing) ExportFormatDialog(onDismiss = { choosing = false }) { choosing = false; onExport(it) }
         Box {
             IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, stringResource(R.string.csv_export)) }
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                ExportMenuItems { menu = false; onExport(it) }
+                ExportMenuItem { menu = false; choosing = true }
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },
                     onClick = { menu = false; onDelete() },

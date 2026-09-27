@@ -3,7 +3,11 @@ package com.xlollx.songport.ui
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -36,4 +40,32 @@ fun ExportMenuItems(onExport: (LocalFilesProvider.Export) -> Unit) {
     LocalFilesProvider.Export.entries.forEach { fmt ->
         DropdownMenuItem(text = { Text(stringResource(R.string.export_format, formatLabel(fmt))) }, onClick = { onExport(fmt) })
     }
+}
+
+/** One "Export…" entry: the format is asked afterwards, in [ExportFormatDialog]. */
+@Composable
+fun ExportMenuItem(onClick: () -> Unit) {
+    DropdownMenuItem(text = { Text(stringResource(R.string.export_menu)) }, onClick = onClick)
+}
+
+/** The format chooser: one row per format, tapping one exports. */
+@Composable
+fun ExportFormatDialog(onDismiss: () -> Unit, onPick: (LocalFilesProvider.Export) -> Unit) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.export_choose)) },
+        text = {
+            androidx.compose.foundation.layout.Column {
+                LocalFilesProvider.Export.entries.forEach { fmt ->
+                    Text(
+                        formatLabel(fmt),
+                        style = androidx.compose.material3.MaterialTheme.typography.bodyLarge,
+                        modifier = androidx.compose.ui.Modifier.fillMaxWidth().clickable { onPick(fmt) }.padding(vertical = 12.dp, horizontal = 4.dp),
+                    )
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = { androidx.compose.material3.TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
+    )
 }
