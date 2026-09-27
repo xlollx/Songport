@@ -162,6 +162,10 @@
     <string name="link_paste">Oder füge den Link einer öffentlichen Playlist ein</string>
     <string name="link_use">Link verwenden</string>
     <string name="link_invalid">Link nicht erkannt. Unterstützt: Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL.</string>
+    <string name="editor_source_link">Aus Link</string>
+    <string name="source_link_label">Link (%1$s)</string>
+    <string name="editor_source_ai">Von der KI erstellt</string>
+    <string name="editor_source_ai_desc">Die von der KI vorgeschlagenen Titel liegen in der Datei „%1$s“. Mehr davon gibt „Mit KI verlängern“ im Menü der Synchronisation.</string>
     <string name="link_not_connected">Verbinde zuerst %1$s, um diesen Link zu lesen.</string>
     <string name="link_resolving">Playlist wird gelesen…</string>
     <string name="note_no_removals">%1$s erlaubt über seine API kein Entfernen von Titeln aus einer Playlist: %2$d Titel wurden belassen.</string>

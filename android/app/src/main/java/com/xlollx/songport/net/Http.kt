@@ -30,6 +30,14 @@ object Http {
         .addInterceptor(HostLog.interceptor)
         .build()
 
+    /** Where [url] lands after redirects, and the page there (short share links open this way). */
+    suspend fun follow(url: String): Pair<String, String> = withContext(Dispatchers.IO) {
+        val req = Request.Builder().url(url)
+            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36")
+            .header("Accept", "text/html,*/*").build()
+        client.newCall(req).execute().use { r -> r.request.url.toString() to (r.body?.string()?.take(300_000) ?: "") }
+    }
+
     suspend fun send(
         method: String,
         url: String,

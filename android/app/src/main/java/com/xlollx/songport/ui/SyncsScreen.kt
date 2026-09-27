@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Sync
@@ -96,7 +97,6 @@ import com.xlollx.songport.model.Schedule
 import com.xlollx.songport.model.SyncJob
 import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.Providers
-import com.xlollx.songport.sync.PlaylistLinks
 import com.xlollx.songport.sync.SyncState
 import java.util.UUID
 
@@ -194,7 +194,7 @@ private fun JobCard(
                         Text(job.name.ifBlank { job.source.playlistName }, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     Text(
-                        (src?.label(ctx) ?: job.source.provider) + " · " + srcName +
+                        (src?.label(ctx) ?: job.source.provider).let { if (job.source.link != null) stringResource(R.string.source_link_label, it) else it } + " · " + srcName +
                             (if (job.linkedJobId != null) "  ↔  " else "  →  ") +
                             (dst?.label(ctx) ?: job.target.provider) + " · " + dstName,
                         style = MaterialTheme.typography.bodySmall,
@@ -374,6 +374,11 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
     var name by remember { mutableStateOf(job.name) }
     var srcProvider by remember { mutableStateOf(job.source.provider.ifEmpty { available.firstOrNull()?.id ?: "" }) }
     var srcPlaylist by remember { mutableStateOf<Playlist?>(job.source.playlistId?.let { Playlist(it, job.source.playlistName) }) }
+    // A pasted link is a source of its own: the field stays, the service's playlist list does not.
+    var linkMode by remember { mutableStateOf(job.source.link != null) }
+    var linkText by remember { mutableStateOf(job.source.link ?: "") }
+    // Written by the AI: the source is the AI's own list, kept in a file; nothing to pick.
+    val aiSource = job.aiPrompt != null && job.source.provider == com.xlollx.songport.providers.LocalFilesProvider.id
     val writable = available.filter { it.canWrite }
     var dstProvider by remember { mutableStateOf(job.target.provider.ifEmpty { writable.getOrNull(1)?.id ?: writable.firstOrNull()?.id ?: "" }) }
     var createNew by remember { mutableStateOf(job.target.playlistId == null) }
@@ -434,13 +439,35 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                 placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
 
             Text(stringResource(R.string.editor_source), style = MaterialTheme.typography.titleMedium)
-            // Il servizio di un link incollato puo' non essere fra quelli collegati (playlist pubblica).
-            val srcProviders = (available + listOfNotNull(Providers.byId(srcProvider))).distinctBy { it.id }
-            ProviderPicker(srcProviders, srcProvider) { srcProvider = it; srcPlaylist = null }
-            PlaylistPicker(srcLists, srcPlaylist, label = stringResource(R.string.editor_playlist)) { srcPlaylist = it }
-            LinkImportField { providerId, playlist ->
-                srcProvider = providerId
-                srcPlaylist = playlist
+            if (aiSource) {
+                Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                    Row(Modifier.padding(14.dp), verticalAlignment = Alignment.Top) {
+                        Icon(Icons.Filled.AutoAwesome, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.tertiary)
+                        Spacer(Modifier.width(10.dp))
+                        Column {
+                            Text(stringResource(R.string.editor_source_ai), style = MaterialTheme.typography.titleSmall)
+                            if (!job.aiPrompt.isNullOrBlank()) Text(job.aiPrompt, style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(R.string.editor_source_ai_desc, job.source.playlistName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
+            } else {
+                // Il servizio di un link incollato puo' non essere fra quelli collegati (playlist pubblica).
+                val srcProviders = (available + listOfNotNull(Providers.byId(srcProvider))).distinctBy { it.id }
+                ProviderPicker(srcProviders, if (linkMode) "" else srcProvider, link = true, linkSelected = linkMode,
+                    onLink = { if (!linkMode) { linkMode = true; srcPlaylist = null } }) { srcProvider = it; srcPlaylist = null; linkMode = false }
+                if (linkMode) {
+                    LinkImportField(initial = linkText, keep = true) { providerId, playlist, text ->
+                        srcProvider = providerId
+                        srcPlaylist = playlist
+                        linkText = text
+                    }
+                    srcPlaylist?.let { sp ->
+                        Text((Providers.byId(srcProvider)?.label(ctx) ?: srcProvider) + " · " + playlistDisplayName(sp.id, sp.name), style = MaterialTheme.typography.bodyMedium)
+                    }
+                } else {
+                    PlaylistPicker(srcLists, srcPlaylist, label = stringResource(R.string.editor_playlist)) { srcPlaylist = it }
+                }
             }
 
             Text(stringResource(R.string.editor_target), style = MaterialTheme.typography.titleMedium)
@@ -548,9 +575,10 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                         val srcName = sp.name
                         val target = if (createNew) PlaylistRef(dstProvider, null, newName.ifBlank { srcName })
                         else PlaylistRef(dstProvider, dp!!.id, dp.name)
+                        val source = PlaylistRef(srcProvider, sp.id, srcName, link = linkText.trim().takeIf { linkMode && it.isNotBlank() })
                         val main = job.copy(
                             name = name.ifBlank { srcName },
-                            source = PlaylistRef(srcProvider, sp.id, srcName),
+                            source = source,
                             target = target,
                             schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
                         )
@@ -558,7 +586,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                             id = job.linkedJobId ?: UUID.randomUUID().toString(),
                             name = "${main.name} ↔",
                             source = target,
-                            target = PlaylistRef(srcProvider, sp.id, srcName),
+                            target = source,
                             schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
                             linkedJobId = job.id,
                         ) else null
@@ -597,18 +625,28 @@ private fun SwitchRow(title: String, subtitle: String?, checked: Boolean, onChan
 
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-private fun ProviderPicker(available: List<MusicProvider>, selected: String, onSelect: (String) -> Unit) {
+private fun ProviderPicker(
+    available: List<MusicProvider>, selected: String,
+    link: Boolean = false, linkSelected: Boolean = false, onLink: () -> Unit = {},
+    onSelect: (String) -> Unit,
+) {
     val ctx = LocalContext.current
     // Le chip vanno a capo: con gli account multipli e i server personali possono essere molte.
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         available.forEach { p ->
             FilterChip(
-                selected = p.id == selected,
+                selected = p.id == selected && !linkSelected,
                 onClick = { onSelect(p.id) },
                 label = { Text(p.label(ctx)) },
                 leadingIcon = { ProviderDot(p) },
             )
         }
+        if (link) FilterChip(
+            selected = linkSelected,
+            onClick = onLink,
+            label = { Text(stringResource(R.string.editor_source_link)) },
+            leadingIcon = { Icon(Icons.Filled.Link, null, Modifier.size(18.dp)) },
+        )
     }
 }
 
@@ -668,10 +706,10 @@ private fun PlaylistPicker(loaded: Loaded, selected: Playlist?, label: String, o
 
 /** Campo per incollare il link di una playlist pubblica e usarla come origine. */
 @Composable
-private fun LinkImportField(onResolved: (String, Playlist) -> Unit) {
+private fun LinkImportField(initial: String = "", keep: Boolean = false, onResolved: (String, Playlist, String) -> Unit) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf(initial) }
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
 
@@ -688,28 +726,30 @@ private fun LinkImportField(onResolved: (String, Playlist) -> Unit) {
             TextButton(
                 enabled = !busy && text.isNotBlank(),
                 onClick = {
-                    val ref = PlaylistLinks.parse(text)
-                    // A Spotify link opens with whichever Spotify route is connected, web or official.
-                    val provider = ref?.let { r ->
-                        val named = Providers.byId(r.providerId)
-                        named?.takeIf { it.canRead(ctx, r.playlistId) }
-                            ?: Providers.connectors().firstOrNull { it.familyName == named?.familyName && it.canRead(ctx, r.playlistId) }
-                            ?: named
-                    }
-                    if (ref == null || provider == null) {
-                        error = ctx.getString(R.string.link_invalid)
-                    } else if (!provider.canRead(ctx, ref.playlistId)) {
-                        error = ctx.getString(R.string.link_not_connected, provider.displayName)
-                    } else {
-                        error = null
-                        busy = true
-                        scope.launch {
+                    error = null
+                    busy = true
+                    scope.launch {
+                        // Short share links (open.spotify.com/s/…) are followed to the playlist first.
+                        val ref = com.xlollx.songport.sync.LinkResolver.resolve(text)
+                        // A Spotify link opens with whichever Spotify route is connected, web or official.
+                        val provider = ref?.let { r ->
+                            val named = Providers.byId(r.providerId)
+                            named?.takeIf { it.canRead(ctx, r.playlistId) }
+                                ?: Providers.connectors().firstOrNull { it.familyName == named?.familyName && it.canRead(ctx, r.playlistId) }
+                                ?: named
+                        }
+                        if (ref == null || provider == null) {
+                            error = ctx.getString(R.string.link_invalid)
+                        } else if (!provider.canRead(ctx, ref.playlistId)) {
+                            error = ctx.getString(R.string.link_not_connected, provider.displayName)
+                        } else {
                             val info = runCatching { provider.playlistInfo(ctx, ref.playlistId) }
                                 .getOrElse { Playlist(ref.playlistId, provider.displayName, ownedByMe = false) }
-                            busy = false
-                            text = ""
-                            onResolved(provider.id, info)
+                            val pasted = text.trim()
+                            if (!keep) text = ""
+                            onResolved(provider.id, info, pasted)
                         }
+                        busy = false
                     }
                 },
             ) { Text(stringResource(R.string.link_use)) }

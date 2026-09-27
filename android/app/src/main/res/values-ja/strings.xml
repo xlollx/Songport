@@ -162,6 +162,10 @@
     <string name="link_paste">または公開プレイリストのリンクを貼り付け</string>
     <string name="link_use">リンクを使用</string>
     <string name="link_invalid">認識できないリンクです。対応サービス：Spotify、Apple Music、YouTube/YouTube Music、Deezer、TIDAL。</string>
+    <string name="editor_source_link">リンクから</string>
+    <string name="source_link_label">リンク (%1$s)</string>
+    <string name="editor_source_ai">AI が生成</string>
+    <string name="editor_source_ai_desc">AI が提案した曲はファイル「%1$s」に保存されています。さらに追加するには、同期のメニューから「AI で延長」を使ってください。</string>
     <string name="link_not_connected">このリンクを読み込むには、先に %1$s を接続してください。</string>
     <string name="link_resolving">プレイリストを読み込み中…</string>
     <string name="note_no_removals">%1$s は API によるプレイリストからの曲の削除に対応していないため、%2$d 曲はそのまま残しました。</string>

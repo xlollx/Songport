@@ -162,6 +162,10 @@
     <string name="link_paste">或粘贴公开歌单链接</string>
     <string name="link_use">使用链接</string>
     <string name="link_invalid">无法识别该链接。支持：Spotify、Apple Music、YouTube/YouTube Music、Deezer、TIDAL。</string>
+    <string name="editor_source_link">来自链接</string>
+    <string name="source_link_label">链接（%1$s）</string>
+    <string name="editor_source_ai">由 AI 生成</string>
+    <string name="editor_source_ai_desc">AI 推荐的曲目保存在文件“%1$s”中。要添加更多，请在同步的菜单中使用“用 AI 扩展”。</string>
     <string name="link_not_connected">请先连接 %1$s 才能读取此链接。</string>
     <string name="link_resolving">正在读取歌单…</string>
     <string name="note_no_removals">%1$s 的 API 不允许从歌单中移除歌曲：已保留 %2$d 首歌曲。</string>

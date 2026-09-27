@@ -162,6 +162,10 @@
     <string name="link_paste">Ou collez le lien d\'une playlist publique</string>
     <string name="link_use">Utiliser le lien</string>
     <string name="link_invalid">Lien non reconnu. Pris en charge : Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL.</string>
+    <string name="editor_source_link">Depuis un lien</string>
+    <string name="source_link_label">Lien (%1$s)</string>
+    <string name="editor_source_ai">Générée par l\'IA</string>
+    <string name="editor_source_ai_desc">Les titres proposés par l\'IA sont conservés dans le fichier « %1$s ». Pour en ajouter, utilisez « Prolonger avec l\'IA » dans le menu de la synchro.</string>
     <string name="link_not_connected">Connectez d\'abord %1$s pour lire ce lien.</string>
     <string name="link_resolving">Lecture de la playlist…</string>
     <string name="note_no_removals">%1$s ne permet pas de retirer des titres d\'une playlist via son API : %2$d titres ont été laissés en place.</string>

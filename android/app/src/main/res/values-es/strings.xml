@@ -162,6 +162,10 @@
     <string name="link_paste">O pega el enlace de una playlist pública</string>
     <string name="link_use">Usar enlace</string>
     <string name="link_invalid">Enlace no reconocido. Compatibles: Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL.</string>
+    <string name="editor_source_link">Desde enlace</string>
+    <string name="source_link_label">Enlace (%1$s)</string>
+    <string name="editor_source_ai">Generada por la IA</string>
+    <string name="editor_source_ai_desc">Las canciones propuestas por la IA se guardan en el archivo «%1$s». Para añadir más, usa «Alargar con IA» en el menú de la sincronización.</string>
     <string name="link_not_connected">Conecta primero %1$s para leer este enlace.</string>
     <string name="link_resolving">Leyendo la playlist…</string>
     <string name="note_no_removals">%1$s no permite quitar canciones de una playlist a través de su API: %2$d canciones se quedaron donde estaban.</string>

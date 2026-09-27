@@ -64,6 +64,8 @@ data class PlaylistRef(
     val provider: String,
     val playlistId: String? = null,
     val playlistName: String = "",
+    /** The pasted link this source came from: the editor then shows "From link" rather than the service. */
+    val link: String? = null,
 )
 
 @Serializable
