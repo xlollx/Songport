@@ -30,12 +30,18 @@ object Http {
         .addInterceptor(HostLog.interceptor)
         .build()
 
-    /** Where [url] lands after redirects, and the page there (short share links open this way). */
-    suspend fun follow(url: String): Pair<String, String> = withContext(Dispatchers.IO) {
+    class Landing(val url: String, val code: Int, val page: String)
+
+    const val DESKTOP_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    const val MOBILE_UA = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36"
+
+    /** Where [url] lands after redirects, with the status and the page there (short share links open this way). */
+    suspend fun follow(url: String, userAgent: String = DESKTOP_UA): Landing = withContext(Dispatchers.IO) {
         val req = Request.Builder().url(url)
-            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36")
-            .header("Accept", "text/html,*/*").build()
-        client.newCall(req).execute().use { r -> r.request.url.toString() to (r.body?.string()?.take(300_000) ?: "") }
+            .header("User-Agent", userAgent)
+            .header("Accept", "text/html,application/json,*/*")
+            .header("Accept-Language", "en-US,en;q=0.8").build()
+        client.newCall(req).execute().use { r -> Landing(r.request.url.toString(), r.code, r.body?.string()?.take(400_000) ?: "") }
     }
 
     suspend fun send(

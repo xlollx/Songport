@@ -730,7 +730,7 @@ private fun LinkImportField(initial: String = "", keep: Boolean = false, onResol
                     busy = true
                     scope.launch {
                         // Short share links (open.spotify.com/s/…) are followed to the playlist first.
-                        val ref = com.xlollx.songport.sync.LinkResolver.resolve(text)
+                        val ref = com.xlollx.songport.sync.LinkResolver.resolve(ctx, text)
                         // A Spotify link opens with whichever Spotify route is connected, web or official.
                         val provider = ref?.let { r ->
                             val named = Providers.byId(r.providerId)
