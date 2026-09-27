@@ -177,7 +177,13 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
                     "track(id,name,uri,duration_ms,is_local,external_ids(isrc),artists(name),album(name)))")
         }
         while (url != null) {
-            val j = api(ctx, "GET", url)
+            val j = try {
+                api(ctx, "GET", url)
+            } catch (e: ProviderException) {
+                // Which of the two paths an app may read has changed twice: try the other before giving up.
+                if (e.code != 403 || !url.contains("/items?")) throw e
+                api(ctx, "GET", url.replace("/items?", "/tracks?"))
+            }
             for (item in j["items"].arr) {
                 val t = item["item"].takeUnless { it.isNullish } ?: item["track"]
                 if (t.isNullish || t["is_local"].bool == true) continue

@@ -217,8 +217,23 @@ object PlaylistFiles {
     // ---------------------------------------------------------------- JSON
 
     fun parseJson(text: String): List<Track> {
-        val root = try { json.parseToJsonElement(text) } catch (e: Exception) { return emptyList() }
+        val root = try { json.parseToJsonElement(text) } catch (e: Exception) { return salvageJson(text) }
         val best = bestTrackArray(root) ?: return emptyList()
+        return tracksOf(best)
+    }
+
+    /**
+     * A JSON array that does not parse as a whole (cut off by a token limit, a trailing comma, a stray
+     * comment): every object in it that parses on its own still counts.
+     */
+    private fun salvageJson(text: String): List<Track> {
+        val objects = Regex("""\{[^{}]*\}""").findAll(text).mapNotNull { m ->
+            try { json.parseToJsonElement(m.value) as? JsonObject } catch (e: Exception) { null }
+        }.toList()
+        return tracksOf(objects)
+    }
+
+    private fun tracksOf(best: Iterable<JsonElement>): List<Track> {
         val out = ArrayList<Track>()
         for (el in best) {
             val o = el as? JsonObject ?: continue
@@ -285,6 +300,8 @@ object PlaylistFiles {
         for (raw in text.lineSequence()) {
             val line = LIST_PREFIX.replace(raw.trim(), "").trim()
             if (line.isEmpty() || line.startsWith("#")) continue
+            // JSON punctuation or a JSON object is not a track name.
+            if (line.first() in "[]{}" || line == "```" || line.startsWith("```")) continue
             val (artists, title) = splitArtistTitle(line)
             if (title.isNotBlank()) out += CsvCodec.withStableId(Track(id = "", title = title, artists = artists))
         }

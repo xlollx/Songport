@@ -165,7 +165,7 @@ abstract class OAuthProvider : MusicProvider {
         }
         if (!resp.ok) {
             Diagnostics.log(ctx, id, "HTTP ${resp.code} $method ${url.substringBefore('?').take(120)}: ${errorMessage(resp).take(160)}")
-            throw ProviderException(friendlyApiError(ctx, resp) ?: "$displayName API ${resp.code}: ${errorMessage(resp)}")
+            throw ProviderException(friendlyApiError(ctx, resp) ?: "$displayName API ${resp.code}: ${errorMessage(resp)}", code = resp.code)
         }
         return parseJson(resp.body)
     }

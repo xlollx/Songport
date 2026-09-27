@@ -107,9 +107,6 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
 
     // Export: the format is asked in a dialog, the tracks are read when the file destination is chosen.
     var exporting by remember { mutableStateOf<Playlist?>(null) }
-    choosingFormat?.let { pl ->
-        ExportFormatDialog(onDismiss = { choosingFormat = null }) { fmt -> choosingFormat = null; exporting = pl; export(fmt, pl.name) }
-    }
     val export = rememberPlaylistExporter { uri: Uri?, fmt ->
         val pl = exporting
         exporting = null
@@ -121,6 +118,10 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
                 snackbar.showSnackbar(ctx.getString(R.string.tools_export_done, tracks.size))
             } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { fail(e) }
         }
+    }
+
+    choosingFormat?.let { pl ->
+        ExportFormatDialog(onDismiss = { choosingFormat = null }) { fmt -> choosingFormat = null; exporting = pl; export(fmt, pl.name) }
     }
 
     renaming?.let { pl ->

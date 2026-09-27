@@ -189,4 +189,5 @@ data class Progress(val step: Step, val done: Int = 0, val total: Int = 0, val l
     val percent: Int? get() = if (total > 0) (done * 100 / total).coerceIn(0, 100) else null
 }
 
-class ProviderException(message: String, cause: Throwable? = null) : Exception(message, cause)
+/** [code]: the HTTP status behind the message, when there is one (0 otherwise). */
+class ProviderException(message: String, cause: Throwable? = null, val code: Int = 0) : Exception(message, cause)
