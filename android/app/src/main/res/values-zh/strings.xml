@@ -50,6 +50,7 @@
     <string name="editor_choose_library">选择媒体库中的一个部分</string>
     <string name="editor_new_playlist">新建歌单</string>
     <string name="editor_new_playlist_name">新歌单名称</string>
+    <string name="editor_new_playlist_name_hint">留空则使用来源歌单的名称。</string>
     <string name="editor_schedule">自动计划</string>
     <string name="editor_mirror">同步删除</string>
     <string name="editor_mirror_desc">同时从目标中移除来源里已不存在的歌曲。关闭则只添加。</string>

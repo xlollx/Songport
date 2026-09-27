@@ -50,6 +50,7 @@
     <string name="editor_choose_library">Einen Bereich der Mediathek auswählen</string>
     <string name="editor_new_playlist">Neue Playlist erstellen</string>
     <string name="editor_new_playlist_name">Name der neuen Playlist</string>
+    <string name="editor_new_playlist_name_hint">Leer lassen, um den Namen der Quell-Playlist zu übernehmen.</string>
     <string name="editor_schedule">Automatischer Zeitplan</string>
     <string name="editor_mirror">Entfernungen spiegeln</string>
     <string name="editor_mirror_desc">Titel, die nicht mehr in der Quelle sind, auch aus dem Ziel entfernen. Aus = nur hinzufügen.</string>

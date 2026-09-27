@@ -486,7 +486,8 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
             if (createNew) {
                 OutlinedTextField(value = newName, onValueChange = { newName = it }, singleLine = true, modifier = Modifier.fillMaxWidth(),
                     label = { Text(stringResource(R.string.editor_new_playlist_name)) },
-                    placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
+                    placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") },
+                    supportingText = { Text(stringResource(R.string.editor_new_playlist_name_hint)) })
             } else {
                 PlaylistPicker(dstLists, dstPlaylist, label = stringResource(R.string.editor_playlist), onlyOwned = true) { dstPlaylist = it }
             }
@@ -573,7 +574,8 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                             return@Button
                         }
                         val srcName = sp.name
-                        val target = if (createNew) PlaylistRef(dstProvider, null, newName.ifBlank { srcName })
+                        // A link whose name could not be read yet: the run reads it and names the new playlist after it.
+                        val target = if (createNew) PlaylistRef(dstProvider, null, newName.ifBlank { if (linkMode) "" else srcName })
                         else PlaylistRef(dstProvider, dp!!.id, dp.name)
                         val source = PlaylistRef(srcProvider, sp.id, srcName, link = linkText.trim().takeIf { linkMode && it.isNotBlank() })
                         val main = job.copy(
@@ -743,8 +745,9 @@ private fun LinkImportField(initial: String = "", keep: Boolean = false, onResol
                         } else if (!provider.canRead(ctx, ref.playlistId)) {
                             error = ctx.getString(R.string.link_not_connected, provider.displayName)
                         } else {
+                            // No name when the service will not say yet: the run fills it in.
                             val info = runCatching { provider.playlistInfo(ctx, ref.playlistId) }
-                                .getOrElse { Playlist(ref.playlistId, provider.displayName, ownedByMe = false) }
+                                .getOrElse { Playlist(ref.playlistId, "", ownedByMe = false) }
                             val pasted = text.trim()
                             if (!keep) text = ""
                             onResolved(provider.id, info, pasted)

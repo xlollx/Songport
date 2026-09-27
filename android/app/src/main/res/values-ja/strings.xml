@@ -50,6 +50,7 @@
     <string name="editor_choose_library">ライブラリの項目を選択</string>
     <string name="editor_new_playlist">新しいプレイリストを作成</string>
     <string name="editor_new_playlist_name">新しいプレイリストの名前</string>
+    <string name="editor_new_playlist_name_hint">空のままにすると元のプレイリストの名前を使います。</string>
     <string name="editor_schedule">自動スケジュール</string>
     <string name="editor_mirror">削除も反映</string>
     <string name="editor_mirror_desc">同期元にない曲を同期先からも削除します。オフの場合は追加のみ行います。</string>

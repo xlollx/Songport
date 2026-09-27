@@ -50,6 +50,7 @@
     <string name="editor_choose_library">Choose a library section</string>
     <string name="editor_new_playlist">Create a new playlist</string>
     <string name="editor_new_playlist_name">New playlist name</string>
+    <string name="editor_new_playlist_name_hint">Leave empty to use the source playlist’s name.</string>
     <string name="editor_schedule">Automatic schedule</string>
     <string name="editor_mirror">Mirror removals</string>
     <string name="editor_mirror_desc">Also remove from the target the tracks no longer in the source. Off = only add.</string>

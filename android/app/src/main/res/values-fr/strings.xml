@@ -50,6 +50,7 @@
     <string name="editor_choose_library">Choisir une section de la bibliothèque</string>
     <string name="editor_new_playlist">Créer une nouvelle playlist</string>
     <string name="editor_new_playlist_name">Nom de la nouvelle playlist</string>
+    <string name="editor_new_playlist_name_hint">Laissez vide pour reprendre le nom de la playlist d\'origine.</string>
     <string name="editor_schedule">Planification automatique</string>
     <string name="editor_mirror">Refléter les retraits</string>
     <string name="editor_mirror_desc">Retire aussi de la cible les titres qui ne sont plus dans la source. Désactivé = ajout uniquement.</string>

@@ -50,6 +50,7 @@
     <string name="editor_choose_library">Scegli una sezione della libreria</string>
     <string name="editor_new_playlist">Crea una nuova playlist</string>
     <string name="editor_new_playlist_name">Nome della nuova playlist</string>
+    <string name="editor_new_playlist_name_hint">Lascia vuoto per usare il nome della playlist di origine.</string>
     <string name="editor_schedule">Esecuzione automatica</string>
     <string name="editor_mirror">Rispecchia le rimozioni</string>
     <string name="editor_mirror_desc">Rimuovi dalla destinazione anche i brani non più presenti nell\'origine. Spento = aggiunge soltanto.</string>

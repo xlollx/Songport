@@ -173,14 +173,21 @@ class SyncEngine(private val ctx: Context) {
                 return previewWithoutTarget(job, src, dst, srcTracks, ignored, notes, onProgress)
             }
             onProgress(Progress(Progress.Step.CREATE_TARGET))
-            val name = job.target.playlistName.ifBlank { job.source.playlistName.ifBlank { job.name } }
-            // The source's own description and cover travel with the playlist, where the source has them to give.
+            // The source's own name, description and cover travel with the playlist, where the source has them to give.
             val info = if (MusicProvider.isLibrary(srcPlaylistId)) null else runCatching { src.playlistInfo(ctx, srcPlaylistId) }.getOrNull()
+            val srcName = job.source.playlistName.ifBlank { info?.name.orEmpty() }
+            // No name given for the new playlist: the shared one's own name, read now (a link pasted
+            // without a name resolves here), then whatever the sync is called.
+            val name = job.target.playlistName.ifBlank { info?.name?.takeIf { it.isNotBlank() } ?: srcName.ifBlank { job.name } }
             val description = info?.description.orEmpty().trim().take(300)
             val created = patient(onProgress) { dst.createPlaylist(ctx, name, description.ifBlank { MusicProvider.DESCRIPTION }) }
             targetId = created.id
             targetCreated = true
-            store.upsertJob(job.copy(target = job.target.copy(playlistId = created.id, playlistName = created.name)))
+            store.upsertJob(job.copy(
+                name = job.name.ifBlank { name },
+                source = job.source.copy(playlistName = srcName),
+                target = job.target.copy(playlistId = created.id, playlistName = created.name),
+            ))
             val cover = info?.imageUrl ?: (if (dst.canSetCover) runCatching { src.playlists(ctx).firstOrNull { it.id == srcPlaylistId }?.imageUrl }.getOrNull() else null)
             if (dst.canSetCover && cover != null) runCatching { Covers.fetchJpeg(cover)?.let { dst.setPlaylistCover(ctx, created.id, it) } }
                 .onFailure { Diagnostics.log(ctx, "engine", "cover not set: ${it.message?.take(120)}") }
