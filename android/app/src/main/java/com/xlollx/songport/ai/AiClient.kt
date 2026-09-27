@@ -59,6 +59,8 @@ object AiClient {
         val language: String = "",
         /** Brani gia' nella playlist quando la si allunga: stesso spirito, nessuno di questi. */
         val existing: List<String> = emptyList(),
+        /** Proposals the destination service turned out not to have: not again, and nothing like them by name only. */
+        val unavailable: List<String> = emptyList(),
     )
 
     private const val STORE_ID = "__ai__"
@@ -188,6 +190,10 @@ object AiClient {
         if (r.existing.isNotEmpty()) {
             append("The playlist already contains these tracks; add new ones that fit with them, and do not repeat any of them:\n")
             r.existing.forEach { append("- ").append(it).append('\n') }
+        }
+        if (r.unavailable.isNotEmpty()) {
+            append("These were proposed before and are NOT available on the listener's streaming service; do not propose them again:\n")
+            r.unavailable.forEach { append("- ").append(it).append('\n') }
         }
         append("Number of NEW tracks to return: ").append(r.count)
     }

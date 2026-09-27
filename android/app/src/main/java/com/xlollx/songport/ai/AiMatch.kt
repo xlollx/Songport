@@ -22,6 +22,41 @@ object AiMatch {
         return proposals.filter { taken.add(key(it)) }
     }
 
+    /**
+     * The AI's proposals filtered by what [provider] actually has: each round asks the model for
+     * what is still missing, tells it what the service did not have, and searches the answers on the
+     * service. Stops when [prompt].count tracks are found or after three rounds. The result's tracks
+     * are the service's own, ready to add; [Result.missing] is what the service never had.
+     */
+    suspend fun available(
+        ctx: Context, c: AiClient.Config, provider: MusicProvider, prompt: AiClient.Prompt, existing: List<Track>,
+        onProgress: (found: Int, wanted: Int) -> Unit = { _, _ -> },
+    ): Result {
+        val want = prompt.count
+        val found = ArrayList<Track>()
+        val missing = ArrayList<Track>()
+        var alreadyThere = 0
+        for (round in 0 until 3) {
+            val need = want - found.size
+            if (need <= 0) break
+            onProgress(found.size, want)
+            val ask = prompt.copy(
+                count = need,
+                existing = (prompt.existing + found.map { it.toString() }).distinct().take(300),
+                unavailable = missing.map { it.toString() }.distinct().take(100),
+            )
+            val proposals = fresh(AiClient.generate(c, ask), existing + found + missing)
+            if (proposals.isEmpty()) break
+            val r = match(ctx, provider, proposals, existing + found) { done, _ -> onProgress(found.size + done.coerceAtMost(need), want) }
+            found += r.found.take(need)
+            missing += r.missing
+            alreadyThere += r.alreadyThere
+            if (r.found.isEmpty()) break
+        }
+        onProgress(found.size, want)
+        return Result(found, missing, alreadyThere)
+    }
+
     suspend fun match(ctx: Context, provider: MusicProvider, proposals: List<Track>, existing: List<Track> = emptyList(), onProgress: (Int, Int) -> Unit = { _, _ -> }): Result {
         val found = ArrayList<Track>()
         val missing = ArrayList<Track>()

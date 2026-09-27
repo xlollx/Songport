@@ -85,6 +85,8 @@ object AiDraft {
     var count by mutableStateOf(25f)
     var targetId by mutableStateOf("")
     var busy by mutableStateOf(false)
+    /** "found/wanted" while the proposals are checked on the destination. */
+    var step by mutableStateOf("")
     /** The AI's proposal, shown for a look (and a prune) before anything is created. */
     var proposed by mutableStateOf<List<Track>?>(null)
     /** Error of the last request, shown once by whoever is on screen. */
@@ -152,20 +154,26 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
                         d.clearText(app)
                         snackbar.showSnackbar(app.getString(R.string.ai_done_file, kept.size, fileId))
                     } else {
+                        // The tracks are the service's own already: the playlist is made here, with them in it,
+                        // and the sync keeps the file and the playlist paired for "Extend with AI" and later runs.
+                        d.busy = true
+                        val created = target.createPlaylist(app, finalName, MusicProvider.DESCRIPTION)
+                        if (kept.isNotEmpty()) target.addTracks(app, created.id, kept)
                         val job = SyncJob(
                             id = UUID.randomUUID().toString(),
                             name = finalName,
                             source = PlaylistRef(provider = LocalFilesProvider.id, playlistId = fileId, playlistName = fileId),
-                            target = PlaylistRef(provider = target.id, playlistId = null, playlistName = finalName),
+                            target = PlaylistRef(provider = target.id, playlistId = created.id, playlistName = created.name),
                             aiPrompt = d.prompt.trim(),
                         )
                         Store.get(app).upsertJob(job)
-                        Scheduler.runNow(app, job.id)
+                        d.busy = false
                         d.clearText(app)
                         onSyncStarted()
-                        snackbar.showSnackbar(app.getString(R.string.ai_done_sync, kept.size, target.label(app)))
+                        snackbar.showSnackbar(app.getString(R.string.ai_done_created, kept.size, created.name, target.label(app)))
                     }
                 } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
+                    d.busy = false
                     d.error = e.message ?: app.getString(R.string.error_generic)
                 }
             }
@@ -240,16 +248,24 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 if (d.busy) {
                     CircularProgressIndicator(Modifier.size(18.dp)); Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.ai_generating), style = MaterialTheme.typography.bodySmall); Spacer(Modifier.width(8.dp))
+                    Text(
+                        if (d.step.isEmpty()) stringResource(R.string.ai_generating) else stringResource(R.string.ai_checking_availability, target.label(ctx), d.step),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    Spacer(Modifier.width(8.dp))
                 }
                 Button(enabled = !d.busy && d.prompt.isNotBlank(), onClick = {
-                    d.busy = true
+                    d.busy = true; d.step = ""
                     val app = ctx.applicationContext
                     val seedLines = d.seeds.lines().map { it.trim() }.filter { it.isNotEmpty() }
                     val request = AiClient.Prompt(d.prompt, d.count.toInt(), seedLines, java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH))
                     d.scope.launch {
-                        val outcome = runCatching { AiClient.generate(c, request) }
-                        d.busy = false
+                        // A file takes any name; a service gets only what it has, checked before the review.
+                        val outcome = runCatching {
+                            if (target.id == LocalFilesProvider.id) AiClient.generate(c, request)
+                            else AiMatch.available(app, c, target, request, emptyList()) { found, want -> d.step = "$found/$want" }.found
+                        }
+                        d.busy = false; d.step = ""
                         outcome.onFailure { e -> d.error = e.message ?: app.getString(R.string.error_generic) }
                         val tracks = outcome.getOrNull() ?: return@launch
                         if (tracks.isEmpty()) d.error = app.getString(R.string.ai_empty) else d.proposed = tracks
@@ -511,7 +527,10 @@ fun AiExtendDialog(job: SyncJob, onClose: () -> Unit) {
                             val existing = if (fileId != null) LocalFilesProvider.tracks(app, fileId) else emptyList()
                             val language = java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH)
                             val names = existing.map { it.toString() }.take(300)
-                            AiMatch.fresh(AiClient.generate(c, AiClient.Prompt(job.aiPrompt.orEmpty(), count.toInt(), emptyList(), language, names)), existing)
+                            val request = AiClient.Prompt(job.aiPrompt.orEmpty(), count.toInt(), emptyList(), language, names)
+                            // Checked on the destination first: the review shows only what it has.
+                            if (target != null && target.id != LocalFilesProvider.id) AiMatch.available(app, c, target, request, existing).found
+                            else AiMatch.fresh(AiClient.generate(c, request), existing)
                         }
                         busy = false
                         outcome.onFailure { e -> error = e.message ?: app.getString(R.string.error_generic) }
@@ -558,10 +577,10 @@ fun AiExpandPlaylistDialog(provider: MusicProvider, playlist: Playlist, onClose:
             busy = true
             d.scope.launch {
                 try {
-                    val r = AiMatch.match(app, provider, kept, existing) { done, total -> step = "$done/$total" }
-                    if (r.found.isNotEmpty()) provider.addTracks(app, playlist.id, r.found)
+                    // Already the service's own tracks: straight in.
+                    if (kept.isNotEmpty()) provider.addTracks(app, playlist.id, kept)
                     busy = false
-                    onDone(r.found.size, r.missing.size, r.alreadyThere)
+                    onDone(kept.size, 0, 0)
                     onClose()
                 } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
                     busy = false
@@ -599,7 +618,7 @@ fun AiExpandPlaylistDialog(provider: MusicProvider, playlist: Playlist, onClose:
                             existing = provider.tracks(app, playlist.id)
                             val language = java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH)
                             val names = existing.map { it.toString() }.take(300)
-                            AiMatch.fresh(AiClient.generate(c, AiClient.Prompt(prompt, count.toInt(), emptyList(), language, names)), existing)
+                            AiMatch.available(app, c, provider, AiClient.Prompt(prompt, count.toInt(), emptyList(), language, names), existing) { found, want -> step = "$found/$want" }.found
                         }
                         busy = false
                         outcome.onFailure { e -> error = e.message ?: app.getString(R.string.error_generic) }
