@@ -233,6 +233,7 @@ object Scheduler {
             wm.cancelUniqueWork(name(job.id))
             return
         }
+        com.xlollx.songport.NotificationAsk.onUse()
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(if (job.wifiOnly) NetworkType.UNMETERED else NetworkType.CONNECTED)
             .build()
@@ -260,6 +261,7 @@ object Scheduler {
      * rete manca davvero, sono le chiamate ai servizi a fallire, con i loro tentativi.
      */
     fun runNow(ctx: Context, jobId: String) {
+        com.xlollx.songport.NotificationAsk.onUse()
         val req = OneTimeWorkRequestBuilder<SyncWorker>()
             .setInputData(workDataOf(SyncWorker.KEY_JOB to jobId, SyncWorker.KEY_SCHEDULED to false))
             .addTag("sync")

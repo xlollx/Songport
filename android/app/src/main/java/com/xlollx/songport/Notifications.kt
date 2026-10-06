@@ -12,6 +12,22 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.xlollx.songport.model.SyncReport
 
+/**
+ * Notifications are asked for when they are first needed, a sync run or scheduled, not on first
+ * start: the visible activity registers the request here and the scheduler calls it.
+ */
+object NotificationAsk {
+    @Volatile var request: (() -> Unit)? = null
+    @Volatile private var asked = false
+
+    fun onUse() {
+        if (asked) return
+        val r = request ?: return
+        asked = true
+        android.os.Handler(android.os.Looper.getMainLooper()).post { runCatching { r() } }
+    }
+}
+
 object Notifications {
     private const val CHANNEL_ID = "sync_results"
     const val PROGRESS_CHANNEL_ID = "sync_progress"

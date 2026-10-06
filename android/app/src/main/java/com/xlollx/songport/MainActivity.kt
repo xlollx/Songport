@@ -103,7 +103,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         Ads.start(this)
-        askNotificationPermission()
+        // Asked for on the first sync run or schedule, not here (see NotificationAsk).
+        NotificationAsk.request = { askNotificationPermission() }
         handleIntent(intent)
         if (Store.get(this).data.settings.appLock && !unlockedThisProcess) {
             locked.value = true
@@ -115,6 +116,11 @@ class MainActivity : ComponentActivity() {
                 if (isLocked) LockScreen { requestUnlock() } else MainScreen(messages, tabRequests, sharedText, newSyncRequests)
             }
         }
+    }
+
+    override fun onDestroy() {
+        if (isFinishing) NotificationAsk.request = null
+        super.onDestroy()
     }
 
     override fun onNewIntent(intent: Intent) {
