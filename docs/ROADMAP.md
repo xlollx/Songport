@@ -55,6 +55,23 @@ quota meter; own API keys to escape shared quotas.
 - YouTube Music already pauses on Google's abuse page with a doubling wait and a "verify" button;
   song results are preferred and videos are only a fallback.
 
+- Keep the source order: after adding, the target is moved into the source's order where the
+  service has a move (Spotify on both routes, YouTube Music, Deezer); the fewest moves, computed in
+  pure Kotlin and tested.
+- A track the target already holds under another id (remaster, single edition) is not added twice:
+  the target index answers by ISRC and name after the search as well.
+- Not-found tracks for which the target returned no candidate at all are marked and listed last.
+- "Test the connection" in each account's menu; the preview opens right after a sync is created.
+- A single track shared from a service's app goes into one of your playlists; several
+  "Artist - Title" lines shared as text become a file playlist. Short share links resolve.
+- The AI generator checks each proposal on the destination before the review and asks for more
+  until the count is met; the count is typed, any size, in rounds above a hundred.
+- The sync engine runs in JUnit against in-memory services; a daily canary workflow makes the
+  anonymous calls the app depends on (Spotify registry and player page, short links, Apple's web
+  token, Deezer, song.link, YouTube Music and Amazon Music pages) and fails loudly. Its first run
+  found song.link answering 401 to anonymous calls: the review's song.link extra is quietly off
+  until that API opens again or a key scheme is added.
+
 ## Next
 
 1. **Last.fm loves** (needs the API secret for the session flow).

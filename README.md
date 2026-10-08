@@ -83,29 +83,32 @@ that is exactly what to report.
 | | Scheduled: hourly, every 6 hours, daily, weekly | WorkManager, survives reboots; "Wi-Fi only" option. |
 | | Additions only (default) or mirror removals | Removals are skipped when the source comes back empty. |
 | | Bidirectional | One switch creates the reverse twin sync without removals; the two are deleted together. |
+| | Keep the source order | After the adds, the target is put in the source's order; Spotify (both routes), YouTube Music and Deezer can move tracks. |
 | | "Liked songs" as source or target | Spotify, Deezer, Subsonic, Jellyfin, Last.fm, ListenBrainz. |
 | | Saved albums, followed artists, podcasts | Sync or transfer them like a playlist (Spotify, Deezer, Subsonic/Navidrome, Jellyfin; Apple Music albums, add only). Matched by UPC where available, then title and artist; the review works the same. YouTube Music and TIDAL not yet. |
 | Preview | What would change, before doing it | Already present, to add, to remove, not found, uncertain. |
 | Matching | Rules per sync | Strictness, explicit or clean preference, same album, studio versions only. |
 | | ISRC, then title + artist + duration | Match cache; penalises live, karaoke, cover and sped-up versions when the original is not one. |
 | Review | Uncertain matches to confirm | Below 86% similarity a match is accepted but flagged; confirm or replace it. |
-| Not found | Manual fix | Free search on the target, pick the result, or "ignore". |
+| Not found | Manual fix | Free search on the target, pick the result, or "ignore". Tracks the service has no trace of are marked so and listed last. |
 | Restore | Put back tracks removed by a mirror sync | From the log. |
 | YouTube quota | Ring with the units used today | Search 100, write 50 out of 10,000 per day; the app shows what is left and what a sync will cost. |
 | Multiple accounts | Several accounts of the same service | Also for migrating between two accounts. |
 | Tools | Playlist generator (beta) | Describe a playlist; your own AI (OpenAI, Anthropic, Gemini or any OpenAI-compatible server, even local) proposes the tracks, Songport finds them on the chosen service through a normal sync. The proposal is reviewed before anything is created, the sync is marked with a spark and can be extended later with more AI picks. No AI of Songport's: your key, stored encrypted; only the text you type is sent. |
-| | Manage playlists | Your playlists on a service in one list: rename, delete (where the API allows it: Spotify, YouTube, YouTube Music, Deezer, TIDAL, Subsonic, Jellyfin, Plex, files) and export. |
+| | Manage playlists | Your playlists on a service in one list: rename, delete, make public or private (where the API allows it), search the tracks and remove them by track, artist or album, extend with AI, export. |
 | | Batch transfer | Pick many playlists of one service and send them all to another: one sync each, run one after the other, kept in Syncs. |
 | | Playlist tools | Copy, merge (skipping duplicates), split into parts, sort by artist/title/album/year/date added/duration, shuffle; always into a new playlist, the originals untouched. |
 | | Repeats across playlists | Tracks in more than one playlist and liked songs in no playlist, per service; each list can become a file. |
 | | Backup to a folder | The dated backups also copied to a folder you pick (SD card, Nextcloud, Drive…), daily or weekly. |
 | | Full backup of a service | Playlists and likes into local files, with dated versions. |
 | | Duplicate removal | Same track even with a different id or version; keeps the first copy. |
-| Links | Paste or share a public playlist link | Spotify, Apple Music, YouTube, Deezer, TIDAL. |
+| Links | Paste or share a public playlist link | Spotify, Apple Music, YouTube, Deezer, TIDAL; short share links too. "From link" is a source of its own in the editor. |
+| | Share a single track or a text list | A track link from a service's app goes into one of your playlists there; several "Artist - Title" lines become a file playlist and a new sync. |
 | Files | Import/export | Reads CSV, TSV, M3U/M3U8, XSPF, JSPF, OPML (podcasts), Apple Music/iTunes XML, JSON, Shazam exports, plain text lists; writes CSV, M3U, XSPF, JSPF and plain text. |
 | | setlist.fm | Share or paste a setlist.fm link: the concert becomes a playlist to sync anywhere. |
 | Widget and shortcuts | Home widget and long-press on the icon | Last sync, "Sync all", "New sync". |
 | Diagnostics | "Share technical details" in the log | Version, device, services, last runs, error log; no tokens. |
+| | "Test the connection" per account | Account, playlist list and one search, with the service's answer on failure. |
 | Security | Connections log | Settings › Developer options lists every host the app has contacted and how often, so "no Songport server" is something to check, not to believe. |
 | | Info sheet before every login, encrypted tokens, fingerprint or PIN lock | See [How logins are protected](#how-logins-are-protected). |
 

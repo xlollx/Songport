@@ -45,9 +45,11 @@ def is_jwt(tok):
 def spotify_registry():
     code, _, body = get("https://raw.githubusercontent.com/Jigen-Ohtsusuki/spotify-gql-registry/main/hashes.json")
     assert code == 200, f"HTTP {code}"
-    hashes = json.loads(body)
-    assert isinstance(hashes, dict) and len(hashes) > 10, "registry empty"
-    assert any("laylist" in k for k in hashes), "no playlist operations in the registry"
+    ops = json.loads(body).get("operations") or {}
+    assert isinstance(ops, dict) and ops, "registry has no operations"
+    for name in ("fetchPlaylist", "fetchLibraryTracks"):
+        h = (ops.get(name) or {}).get("hash") or ""
+        assert len(h) == 64, f"{name}: no 64-char hash"
 
 
 def spotify_player_page():
@@ -91,8 +93,16 @@ def deezer_catalogue():
     assert json.loads(body).get("isrc"), "track without ISRC"
 
 
+class Warning_(Exception):
+    """A check that may fail without the app breaking: reported, never fatal."""
+
+
 def odesli():
     code, _, body = get("https://api.song.link/v1-alpha.1/links?url=" + urllib.parse.quote("https://open.spotify.com/track/4u7EnebtmKWzUH433cf5Qv", safe=""))
+    # song.link is an extra on top of the services' own links: the app shrugs when it is gone
+    # (a 401 means its anonymous API is closed), so this is a warning, not a failure.
+    if code in (401, 403, 429):
+        raise Warning_(f"HTTP {code}: the anonymous API is closed or throttled")
     assert code == 200, f"HTTP {code}"
     assert "linksByPlatform" in json.loads(body), "unexpected answer"
 
@@ -126,6 +136,8 @@ def main():
         try:
             fn()
             print(f"OK    {name}")
+        except Warning_ as e:
+            print(f"WARN  {name}: {e}")
         except Exception as e:  # noqa: BLE001
             failed += 1
             print(f"FAIL  {name}: {e}")
