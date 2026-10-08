@@ -24,8 +24,12 @@ class SyncEngineTest {
     private lateinit var dst: FakeProvider
     private lateinit var engine: SyncEngine
 
+    // The store (and its match cache) is one for the whole JVM: ids carry a per-test prefix so a
+    // match remembered by one test never answers another.
+    private val run = UUID.randomUUID().toString().take(6)
+    private fun sid(id: String) = "$run-$id"
     private fun t(id: String, title: String, artist: String = "Band", isrc: String? = null) =
-        Track(id = id, title = title, artists = listOf(artist), album = "Album", durationMs = 200_000, isrc = isrc)
+        Track(id = sid(id), title = title, artists = listOf(artist), album = "Album", durationMs = 200_000, isrc = isrc?.let { "$run-$it" })
 
     @Before fun setUp() {
         src = FakeProvider("fsrc")
@@ -53,9 +57,9 @@ class SyncEngineTest {
         val r = engine.run(job())
         val why = "error=${r.error} notes=${r.notes} unmatched=${r.unmatched} added=${r.added}"
         assertEquals(why, 2, r.added)
-        assertEquals(why, listOf("da", "db"), dst.lists["t"]!!.map { it.id })
-        assertEquals(why, listOf("c"), r.unmatchedTracks.map { it.id })
-        assertEquals(why, listOf("c"), r.absent)
+        assertEquals(why, listOf(sid("da"), sid("db")), dst.lists["t"]!!.map { it.id })
+        assertEquals(why, listOf(sid("c")), r.unmatchedTracks.map { it.id })
+        assertEquals(why, listOf(sid("c")), r.absent)
     }
 
     @Test fun secondRunAddsNothingAndAnUnattendedRunIsSkipped() = runBlocking {
@@ -80,7 +84,7 @@ class SyncEngineTest {
         dst.lists["t"] = mutableListOf(t("da", "Alpha"), t("dx", "Extra"))
         val r = engine.run(job(mirror = true))
         assertEquals(1, r.removed)
-        assertEquals(listOf("da"), dst.lists["t"]!!.map { it.id })
+        assertEquals(listOf(sid("da")), dst.lists["t"]!!.map { it.id })
     }
 
     @Test fun anEmptySourceNeverEmptiesTheTarget() = runBlocking {
@@ -106,7 +110,7 @@ class SyncEngineTest {
         dst.lists["t"] = mutableListOf(t("dc", "Gamma"), t("db", "Beta"), t("da", "Alpha"))
         val r = engine.run(job(keepOrder = true))
         assertEquals(0, r.added)
-        assertEquals(listOf(listOf("da", "db", "dc")), dst.reorders)
+        assertEquals(listOf(listOf(sid("da"), sid("db"), sid("dc"))), dst.reorders)
         assertTrue(r.notes.any { it == "s${R.string.note_order_aligned}" })
     }
 
@@ -126,6 +130,6 @@ class SyncEngineTest {
         assertEquals(1, r.added)
         val saved = Store.get(ctx).job(j.id)!!
         assertEquals("new", saved.target.playlistId)
-        assertEquals(listOf("da"), dst.lists["new"]!!.map { it.id })
+        assertEquals(listOf(sid("da")), dst.lists["new"]!!.map { it.id })
     }
 }
