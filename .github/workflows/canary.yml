@@ -1,0 +1,23 @@
+# Daily, anonymous checks of the services the app talks to: the Spotify web route's registry and
+# player page, short share links, Apple's web developer token, Deezer, song.link, the YouTube Music
+# and Amazon Music pages. A red run is the early warning that a route is about to break for users.
+name: Canary
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 scripts/canary.py

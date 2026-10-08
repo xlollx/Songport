@@ -40,7 +40,18 @@ class ReorderTest {
     @Test fun oneMoveForOneDisplacedItem() {
         val current = listOf("a", "b", "c", "d")
         val desired = listOf("a", "c", "d", "b")
-        assertEquals(1, Reorder.moves(current, desired).size)
+        val moves = Reorder.moves(current, desired)
+        assertEquals(1, moves.size)
+        assertEquals(desired, applyMoves(current, moves))
+        // Spotify wants the insertion point before the removal: the end of a four-item list is 4.
+        assertEquals(4, Reorder.insertBefore(moves[0].first, moves[0].second))
+    }
+
+    @Test fun insertBeforeMatchesSpotifysSemantics() {
+        // Moving backwards: the index is the same before and after the removal.
+        assertEquals(1, Reorder.insertBefore(3, 1))
+        // Moving forwards: one more, since the removal shifts what follows.
+        assertEquals(3, Reorder.insertBefore(0, 2))
     }
 
     @Test fun beforeStepsReachTheDesiredOrder() {

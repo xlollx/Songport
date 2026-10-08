@@ -266,7 +266,10 @@ object Providers {
         return out
     }
 
-    fun all(): List<MusicProvider> = cached
+    /** Providers registered by tests, looked up before the real ones. */
+    @Volatile var testDoubles: List<MusicProvider> = emptyList()
+
+    fun all(): List<MusicProvider> = testDoubles + cached
 
     /**
      * I connettori aggiunti dall'utente, nell'ordine in cui li ha aggiunti. E' questo l'elenco che la
@@ -274,7 +277,7 @@ object Providers {
      * se il token o la sessione nell'app plugin sono ancora validi.
      */
     fun connectors(): List<MusicProvider> = connectorIds.mapNotNull { id -> cached.firstOrNull { it.id == id } }
-    fun byId(id: String): MusicProvider? = cached.firstOrNull { it.id == id }
+    fun byId(id: String): MusicProvider? = testDoubles.firstOrNull { it.id == id } ?: cached.firstOrNull { it.id == id }
     /** Un'istanza per servizio (account principale). */
     fun services(): List<MusicProvider> = cached.filter { it.slot.isEmpty() }
     /** Tutte le istanze (account) di un servizio. */

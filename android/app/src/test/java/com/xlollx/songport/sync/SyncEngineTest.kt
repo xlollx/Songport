@@ -1,0 +1,128 @@
+package com.xlollx.songport.sync
+
+import com.xlollx.songport.R
+import com.xlollx.songport.data.Store
+import com.xlollx.songport.model.PlaylistRef
+import com.xlollx.songport.model.SyncJob
+import com.xlollx.songport.model.Track
+import com.xlollx.songport.providers.Providers
+import kotlinx.coroutines.runBlocking
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import java.util.UUID
+
+/**
+ * The sync engine against two in-memory services: what gets added, removed, skipped and reordered.
+ * Resource strings come back as "s<id>" so notes can be checked by id.
+ */
+class SyncEngineTest {
+    private val ctx = FakeContext()
+    private lateinit var src: FakeProvider
+    private lateinit var dst: FakeProvider
+    private lateinit var engine: SyncEngine
+
+    private fun t(id: String, title: String, artist: String = "Band", isrc: String? = null) =
+        Track(id = id, title = title, artists = listOf(artist), album = "Album", durationMs = 200_000, isrc = isrc)
+
+    @Before fun setUp() {
+        src = FakeProvider("fsrc")
+        dst = FakeProvider("fdst")
+        Providers.testDoubles = listOf(src, dst)
+        engine = SyncEngine(ctx) { id, args -> "s$id" + (if (args.isEmpty()) "" else args.joinToString(",", "(", ")")) }
+    }
+
+    @After fun tearDown() { Providers.testDoubles = emptyList() }
+
+    private fun job(mirror: Boolean = false, keepOrder: Boolean = false, target: String? = "t"): SyncJob {
+        val j = SyncJob(
+            id = UUID.randomUUID().toString(), name = "test",
+            source = PlaylistRef("fsrc", "p", "p"), target = PlaylistRef("fdst", target, target ?: "new"),
+            mirrorRemovals = mirror, keepOrder = keepOrder,
+        )
+        Store.get(ctx).upsertJob(j)
+        return j
+    }
+
+    @Test fun firstRunAddsWhatTheTargetHas() = runBlocking {
+        src.lists["p"] = mutableListOf(t("a", "Alpha"), t("b", "Beta"), t("c", "Gamma"))
+        dst.catalogue += listOf(t("da", "Alpha"), t("db", "Beta"))
+        dst.lists["t"] = mutableListOf()
+        val r = engine.run(job())
+        assertEquals(2, r.added)
+        assertEquals(listOf("da", "db"), dst.lists["t"]!!.map { it.id })
+        assertEquals(listOf("c"), r.unmatchedTracks.map { it.id })
+        assertEquals(listOf("c"), r.absent)
+    }
+
+    @Test fun secondRunAddsNothingAndAnUnattendedRunIsSkipped() = runBlocking {
+        src.lists["p"] = mutableListOf(t("a", "Alpha"))
+        dst.catalogue += t("da", "Alpha")
+        dst.lists["t"] = mutableListOf()
+        val j = job()
+        assertEquals(1, engine.run(j).added)
+        val again = engine.run(Store.get(ctx).job(j.id)!!)
+        assertEquals(0, again.added)
+        assertEquals(1, dst.lists["t"]!!.size)
+        val skipped = engine.run(Store.get(ctx).job(j.id)!!, unattended = true)
+        assertTrue(skipped.notes.any { it == "s${R.string.note_unchanged}" })
+        assertEquals(1, dst.searches.size)
+    }
+
+    @Test fun mirrorRemovesWhatTheSourceLost() = runBlocking {
+        src.lists["p"] = mutableListOf(t("a", "Alpha"))
+        dst.catalogue += t("da", "Alpha")
+        dst.lists["t"] = mutableListOf(t("da", "Alpha"), t("dx", "Extra"))
+        val r = engine.run(job(mirror = true))
+        assertEquals(1, r.removed)
+        assertEquals(listOf("da"), dst.lists["t"]!!.map { it.id })
+    }
+
+    @Test fun anEmptySourceNeverEmptiesTheTarget() = runBlocking {
+        src.lists["p"] = mutableListOf()
+        dst.lists["t"] = mutableListOf(t("dx", "Extra"), t("dy", "More"))
+        val r = engine.run(job(mirror = true))
+        assertEquals(0, r.removed)
+        assertEquals(2, dst.lists["t"]!!.size)
+    }
+
+    @Test fun sameRecordingUnderAnotherIdIsNotAddedTwice() = runBlocking {
+        src.lists["p"] = mutableListOf(t("a", "Alpha", isrc = "ISRC1"))
+        dst.catalogue += t("da", "Alpha", isrc = "ISRC1")
+        dst.lists["t"] = mutableListOf(t("da-remaster", "Alpha", isrc = "ISRC1"))
+        val r = engine.run(job())
+        assertEquals(0, r.added)
+        assertEquals(1, dst.lists["t"]!!.size)
+    }
+
+    @Test fun keepOrderPutsTheTargetInTheSourcesOrder() = runBlocking {
+        src.lists["p"] = mutableListOf(t("a", "Alpha"), t("b", "Beta"), t("c", "Gamma"))
+        dst.catalogue += listOf(t("da", "Alpha"), t("db", "Beta"), t("dc", "Gamma"))
+        dst.lists["t"] = mutableListOf(t("dc", "Gamma"), t("db", "Beta"), t("da", "Alpha"))
+        val r = engine.run(job(keepOrder = true))
+        assertEquals(0, r.added)
+        assertEquals(listOf(listOf("da", "db", "dc")), dst.reorders)
+        assertTrue(r.notes.any { it == "s${R.string.note_order_aligned}" })
+    }
+
+    @Test fun keepOrderDoesNothingWhenAlreadyInOrder() = runBlocking {
+        src.lists["p"] = mutableListOf(t("a", "Alpha"), t("b", "Beta"))
+        dst.catalogue += listOf(t("da", "Alpha"), t("db", "Beta"))
+        dst.lists["t"] = mutableListOf(t("da", "Alpha"), t("db", "Beta"))
+        engine.run(job(keepOrder = true))
+        assertTrue(dst.reorders.isEmpty())
+    }
+
+    @Test fun aMissingTargetIsCreatedAndRemembered() = runBlocking {
+        src.lists["p"] = mutableListOf(t("a", "Alpha"))
+        dst.catalogue += t("da", "Alpha")
+        val j = job(target = null)
+        val r = engine.run(j)
+        assertEquals(1, r.added)
+        val saved = Store.get(ctx).job(j.id)!!
+        assertEquals("new", saved.target.playlistId)
+        assertEquals(listOf("da"), dst.lists["new"]!!.map { it.id })
+    }
+}

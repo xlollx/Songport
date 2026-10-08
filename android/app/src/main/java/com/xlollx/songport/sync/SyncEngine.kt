@@ -67,8 +67,13 @@ private const val MAX_REORDER = 1500
 /** Hosts of the short links music apps put in their share text. */
 private val SHORT_LINK_HOSTS = setOf("amzn.to", "amzn.eu", "a.co", "spotify.link", "spoti.fi", "apple.co", "deezer.page.link", "link.deezer.com", "tidal.link")
 
-class SyncEngine(private val ctx: Context) {
+class SyncEngine(
+    private val ctx: Context,
+    /** Resource strings; replaced in JVM tests, where there are no resources. */
+    private val texts: (Int, Array<out Any>) -> String = { id, args -> if (args.isEmpty()) ctx.getString(id) else ctx.getString(id, *args) },
+) {
     private val store = Store.get(ctx)
+    private fun str(id: Int, vararg args: Any): String = texts(id, args)
     /** Best candidate under the threshold per source track searched in this run: the review's proposals. */
     private val hints = java.util.concurrent.ConcurrentHashMap<String, Track>()
     /** Source ids whose searches on the target returned nothing at all: not there, nothing to review. */
@@ -84,7 +89,7 @@ class SyncEngine(private val ctx: Context) {
             val targetVersion = job.target.playlistId?.let { id -> dst0?.let { runCatching { it.playlistVersion(ctx, id) }.getOrNull() } }
             if (targetVersion == job.targetVersion) {
                 Diagnostics.log(ctx, "engine", "${job.name}: unchanged on both sides, skipped")
-                val report = SyncReport(reportId, job.id, job.name, started, System.currentTimeMillis() - started, notes = listOf(ctx.getString(R.string.note_unchanged)))
+                val report = SyncReport(reportId, job.id, job.name, started, System.currentTimeMillis() - started, notes = listOf(str(R.string.note_unchanged)))
                 store.addReport(report)
                 return report
             }
@@ -133,7 +138,7 @@ class SyncEngine(private val ctx: Context) {
         val listed = runCatching { p.playlists(ctx).any { it.id == playlistId } }.getOrDefault(true)
         if (listed) return
         if (isSource && runCatching { p.playlistInfo(ctx, playlistId) }.isSuccess) return
-        throw ProviderException(ctx.getString(if (isSource) R.string.error_source_gone else R.string.error_target_gone, name.ifBlank { playlistId }, p.label(ctx)))
+        throw ProviderException(str(if (isSource) R.string.error_source_gone else R.string.error_target_gone, name.ifBlank { playlistId }, p.label(ctx)))
     }
 
     /** Below this many removals a scheduled run proceeds whatever the share of the target they are. */
@@ -150,8 +155,8 @@ class SyncEngine(private val ctx: Context) {
         val (src, dst) = providers(job)
         val srcPlaylistId = job.source.playlistId ?: throw ProviderException("No source playlist selected")
         // L'origine puo' essere una playlist pubblica leggibile senza login (catalogo Apple Music).
-        if (!src.canRead(ctx, srcPlaylistId)) throw ProviderException(ctx.getString(R.string.error_not_connected, src.displayName))
-        if (!dst.isConnected(ctx)) throw ProviderException(ctx.getString(R.string.error_not_connected, dst.displayName))
+        if (!src.canRead(ctx, srcPlaylistId)) throw ProviderException(str(R.string.error_not_connected, src.displayName))
+        if (!dst.isConnected(ctx)) throw ProviderException(str(R.string.error_not_connected, dst.displayName))
 
         val notes = ArrayList<String>()
 
@@ -197,7 +202,7 @@ class SyncEngine(private val ctx: Context) {
                 .onFailure { Diagnostics.log(ctx, "engine", "cover not set: ${it.message?.take(120)}") }
         }
 
-        if (dst.serviceId == LocalFilesProvider.serviceId) notes += ctx.getString(R.string.note_file_target)
+        if (dst.serviceId == LocalFilesProvider.serviceId) notes += str(R.string.note_file_target)
 
         onProgress(Progress(Progress.Step.FETCH_TARGET))
         // A playlist created a moment ago is empty: skip the fetch (saves quota, and YouTube's Data API
@@ -254,7 +259,7 @@ class SyncEngine(private val ctx: Context) {
         }
         // Il servizio ha smesso di rispondere (limiti, sessione): si applica quanto trovato finora e
         // la prossima esecuzione riparte dalla cache, senza rifare le ricerche.
-        if (interrupted != null) notes += ctx.getString(R.string.note_search_interrupted, searched, toSearch.size, interrupted)
+        if (interrupted != null) notes += str(R.string.note_search_interrupted, searched, toSearch.size, interrupted)
 
         // 3) rimozioni: solo cio' che nella destinazione non corrisponde a nulla dell'origine
         var toRemove: List<Track> = emptyList()
@@ -263,14 +268,14 @@ class SyncEngine(private val ctx: Context) {
             when {
                 // Ricerca non completata: un brano della destinazione puo' corrispondere a uno
                 // dell'origine non ancora cercato. Nulla si toglie finche' non si sa.
-                interrupted != null -> if (extra.isNotEmpty()) notes += ctx.getString(R.string.note_removals_deferred, extra.size)
-                !dst.canRemoveTracks -> if (extra.isNotEmpty()) notes += ctx.getString(R.string.note_no_removals, dst.displayName, extra.size)
+                interrupted != null -> if (extra.isNotEmpty()) notes += str(R.string.note_removals_deferred, extra.size)
+                !dst.canRemoveTracks -> if (extra.isNotEmpty()) notes += str(R.string.note_no_removals, dst.displayName, extra.size)
                 // Origine vuota: quasi certamente un errore, non svuotiamo la destinazione.
-                srcTracks.isEmpty() -> notes += ctx.getString(R.string.error_source_empty)
+                srcTracks.isEmpty() -> notes += str(R.string.error_source_empty)
                 // Una sync programmata che toglierebbe un quarto della destinazione (una playlist
                 // svuotata per sbaglio, un account cambiato): si aspetta che l'utente lo veda.
                 unattended && extra.size > REMOVAL_CAP_MIN && extra.size * 4 > dstTracks.size ->
-                    notes += ctx.getString(R.string.note_removals_capped, extra.size, dstTracks.size)
+                    notes += str(R.string.note_removals_capped, extra.size, dstTracks.size)
                 else -> toRemove = extra
             }
         }
@@ -449,7 +454,7 @@ class SyncEngine(private val ctx: Context) {
         try {
             onProgress(Progress(Progress.Step.FETCH_TARGET))
             val current = dst.tracks(ctx, targetId)
-            if (current.size > MAX_REORDER) { notes += ctx.getString(R.string.note_order_failed, "${current.size} > $MAX_REORDER"); return }
+            if (current.size > MAX_REORDER) { notes += str(R.string.note_order_failed, "${current.size} > $MAX_REORDER"); return }
             val byId = current.groupBy { it.id }
             val seen = HashSet<String>()
             val wanted = ArrayList<Track>()
@@ -462,9 +467,9 @@ class SyncEngine(private val ctx: Context) {
             if (wanted.size != current.size) return
             if (wanted.map { it.id } == current.map { it.id }) return
             dst.reorderTracks(ctx, targetId, current, wanted)
-            notes += ctx.getString(R.string.note_order_aligned)
+            notes += str(R.string.note_order_aligned)
         } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
-            notes += ctx.getString(R.string.note_order_failed, e.message ?: e.javaClass.simpleName)
+            notes += str(R.string.note_order_failed, e.message ?: e.javaClass.simpleName)
         }
     }
 
@@ -702,7 +707,7 @@ class SyncEngine(private val ctx: Context) {
         if (report.removedTracks.isEmpty()) return
         dst.addTracks(ctx, targetId, report.removedTracks)
         store.updateReport(report.id) { r ->
-            r.copy(removedTracks = emptyList(), notes = r.notes + ctx.getString(R.string.restored_note, report.removedTracks.size))
+            r.copy(removedTracks = emptyList(), notes = r.notes + str(R.string.restored_note, report.removedTracks.size))
         }
     }
 
@@ -725,9 +730,9 @@ class SyncEngine(private val ctx: Context) {
             // A link from another service: song.link knows the same recording on the target service.
             val ref = if (TrackLinks.matches(ref0.service, dst.serviceId)) ref0
                 else TrackLinks.viaOdesli(query, dst.serviceId)
-                    ?: throw ProviderException(ctx.getString(R.string.link_other_service, dst.label(ctx)))
+                    ?: throw ProviderException(str(R.string.link_other_service, dst.label(ctx)))
             val t = runCatching { dst.track(ctx, ref.trackId) }.getOrNull()
-            return TargetSearch(listOf(hit(t ?: dst.rehydrate(Track(id = ref.trackId, title = ctx.getString(R.string.link_track_unknown), album = ref.trackId)), TargetSearch.Kind.SONG)))
+            return TargetSearch(listOf(hit(t ?: dst.rehydrate(Track(id = ref.trackId, title = str(R.string.link_track_unknown), album = ref.trackId)), TargetSearch.Kind.SONG)))
         }
         val kind = source?.kind?.ifEmpty { null } ?: MusicProvider.libraryKind(job.target.playlistId).orEmpty()
         // An artist is searched by name alone: "Artist - Title" splitting would cut a name with a dash.

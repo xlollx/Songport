@@ -337,8 +337,8 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override suspend fun reorderTracks(ctx: Context, playlistId: String, current: List<Track>, ordered: List<Track>) {
         val moves = com.xlollx.songport.sync.Reorder.moves(current.map { it.id }, ordered.map { it.id })
         var path = "items"
-        for ((from, before) in moves) {
-            val body = jsonObj("range_start" to from, "insert_before" to before, "range_length" to 1)
+        for ((from, to) in moves) {
+            val body = jsonObj("range_start" to from, "insert_before" to com.xlollx.songport.sync.Reorder.insertBefore(from, to), "range_length" to 1)
             try {
                 api(ctx, "PUT", "$API/playlists/$playlistId/$path", body)
             } catch (e: ProviderException) {

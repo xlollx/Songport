@@ -6,23 +6,48 @@ package com.xlollx.songport.sync
  */
 object Reorder {
     /**
-     * Moves "take the item at [from], insert it before [before]" (Spotify's reorder call), to apply
-     * one after another, each on the list as the previous one left it. Items of [desired] that
-     * [current] lacks are skipped; items of [current] that [desired] lacks drift to the end.
+     * Moves "take the item at [from], put it at [to]" (remove, then insert at that index), to apply
+     * one after another, each on the list as the previous one left it. The longest run of items
+     * already in the right relative order stays put; only the others move, each to just after its
+     * predecessor in [desired]. Keys missing on either side are left alone.
      */
     fun moves(current: List<String>, desired: List<String>): List<Pair<Int, Int>> {
+        val pos = HashMap<String, Int>()
+        current.forEachIndexed { i, k -> pos.putIfAbsent(k, i) }
+        val seq = desired.filter { it in pos }.distinct()
+        val fixed = longestIncreasing(seq.map { pos.getValue(it) }).map { seq[it] }.toHashSet()
         val cur = current.toMutableList()
         val out = ArrayList<Pair<Int, Int>>()
-        var i = 0
-        for (key in desired) {
-            if (i >= cur.size) break
-            if (cur[i] == key) { i++; continue }
-            val j = (i until cur.size).firstOrNull { cur[it] == key } ?: continue
-            cur.add(i, cur.removeAt(j))
-            out += j to i
-            i++
+        for ((k, key) in seq.withIndex()) {
+            if (key in fixed) continue
+            val from = cur.indexOf(key)
+            cur.removeAt(from)
+            val to = if (k == 0) 0 else cur.indexOf(seq[k - 1]) + 1
+            cur.add(to, key)
+            if (from != to) out += from to to
         }
         return out
+    }
+
+    /** Spotify's call wants the insertion point in the list before the removal: one more when moving forward. */
+    fun insertBefore(from: Int, to: Int): Int = if (from < to) to + 1 else to
+
+    /** Indices into [values] of one longest strictly increasing subsequence. */
+    private fun longestIncreasing(values: List<Int>): List<Int> {
+        if (values.isEmpty()) return emptyList()
+        val tails = ArrayList<Int>()
+        val prev = IntArray(values.size) { -1 }
+        for (i in values.indices) {
+            var lo = 0
+            var hi = tails.size
+            while (lo < hi) { val mid = (lo + hi) / 2; if (values[tails[mid]] < values[i]) lo = mid + 1 else hi = mid }
+            if (lo > 0) prev[i] = tails[lo - 1]
+            if (lo == tails.size) tails += i else tails[lo] = i
+        }
+        val out = ArrayList<Int>()
+        var at = tails.last()
+        while (at >= 0) { out += at; at = prev[at] }
+        return out.asReversed()
     }
 
     /**

@@ -128,7 +128,7 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
         withContext(Dispatchers.IO) {
             call(ctx, "spotify.reorder", playlistId, Bundle().apply {
                 putIntArray("from", moves.map { it.first }.toIntArray())
-                putIntArray("to", moves.map { it.second }.toIntArray())
+                putIntArray("to", moves.map { (from, to) -> com.xlollx.songport.sync.Reorder.insertBefore(from, to) }.toIntArray())
             })
         }
     }
