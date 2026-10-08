@@ -51,10 +51,11 @@ class SyncEngineTest {
         dst.catalogue += listOf(t("da", "Alpha"), t("db", "Beta"))
         dst.lists["t"] = mutableListOf()
         val r = engine.run(job())
-        assertEquals(2, r.added)
-        assertEquals(listOf("da", "db"), dst.lists["t"]!!.map { it.id })
-        assertEquals(listOf("c"), r.unmatchedTracks.map { it.id })
-        assertEquals(listOf("c"), r.absent)
+        val why = "error=${r.error} notes=${r.notes} unmatched=${r.unmatched} added=${r.added}"
+        assertEquals(why, 2, r.added)
+        assertEquals(why, listOf("da", "db"), dst.lists["t"]!!.map { it.id })
+        assertEquals(why, listOf("c"), r.unmatchedTracks.map { it.id })
+        assertEquals(why, listOf("c"), r.absent)
     }
 
     @Test fun secondRunAddsNothingAndAnUnattendedRunIsSkipped() = runBlocking {
@@ -62,13 +63,15 @@ class SyncEngineTest {
         dst.catalogue += t("da", "Alpha")
         dst.lists["t"] = mutableListOf()
         val j = job()
-        assertEquals(1, engine.run(j).added)
+        val first = engine.run(j)
+        assertEquals("error=${first.error} notes=${first.notes}", 1, first.added)
         val again = engine.run(Store.get(ctx).job(j.id)!!)
-        assertEquals(0, again.added)
+        assertEquals("error=${again.error} notes=${again.notes}", 0, again.added)
         assertEquals(1, dst.lists["t"]!!.size)
-        val skipped = engine.run(Store.get(ctx).job(j.id)!!, unattended = true)
-        assertTrue(skipped.notes.any { it == "s${R.string.note_unchanged}" })
-        assertEquals(1, dst.searches.size)
+        val saved = Store.get(ctx).job(j.id)!!
+        val skipped = engine.run(saved, unattended = true)
+        assertTrue("versions=${saved.sourceVersion}/${saved.targetVersion} notes=${skipped.notes} error=${skipped.error}", skipped.notes.any { it == "s${R.string.note_unchanged}" })
+        assertEquals("searches=${dst.searches}", 1, dst.searches.size)
     }
 
     @Test fun mirrorRemovesWhatTheSourceLost() = runBlocking {

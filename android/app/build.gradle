@@ -153,6 +153,16 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true
+        // A failed test prints its message and cause in the CI log, not only its line number.
+        unitTests.all { test ->
+            test.testLogging {
+                events "failed"
+                exceptionFormat "full"
+                showExceptions true
+                showCauses true
+                showStackTraces false
+            }
+        }
     }
 }
 

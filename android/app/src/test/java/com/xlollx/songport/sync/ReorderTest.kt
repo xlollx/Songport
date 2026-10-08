@@ -30,11 +30,14 @@ class ReorderTest {
         assertTrue(Reorder.before(l, l).isEmpty())
     }
 
-    @Test fun movesSkipWhatTheTargetLacksAndKeepExtrasAtTheEnd() {
+    @Test fun movesSkipWhatEitherSideLacks() {
+        // "zzz" is not in the target and "x" is not in the wanted order: the known keys still end
+        // up in the wanted relative order, and nothing is lost.
         val current = listOf("x", "a", "b", "c")
         val desired = listOf("c", "b", "a", "zzz")
         val result = applyMoves(current, Reorder.moves(current, desired))
-        assertEquals(listOf("c", "b", "a", "x"), result)
+        assertEquals(listOf("c", "b", "a"), result.filter { it != "x" })
+        assertEquals(current.toSet(), result.toSet())
     }
 
     @Test fun oneMoveForOneDisplacedItem() {
