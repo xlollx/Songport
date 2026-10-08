@@ -352,7 +352,10 @@ private fun ProviderCard(
                         color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f),
                     )
                 } else Spacer(Modifier.weight(1f))
+                var testing by remember { mutableStateOf(false) }
+                if (testing) ConnectionTestDialog(p) { testing = false }
                 val actions = listOfNotNull(
+                    if (connected) MenuAction(stringResource(R.string.account_test), { testing = true }) else null,
                     if (p.setupGuide != null && p.slot.isEmpty() && configured) MenuAction(stringResource(R.string.setup_cta), { onSetup(p) }) else null,
                     if (connected && p.revokeUrl != null) MenuAction(stringResource(R.string.account_revoke, p.displayName), {
                         ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(p.revokeUrl)))

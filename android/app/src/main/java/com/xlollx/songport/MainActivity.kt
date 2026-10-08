@@ -185,6 +185,8 @@ private fun MainScreen(
     var scanProvider by remember { mutableStateOf<MusicProvider?>(null) }
     var previewJob by remember { mutableStateOf<SyncJob?>(null) }
     var addConnector by remember { mutableStateOf(false) }
+    // A single track shared from a service's app: which of your playlists it goes to.
+    var sharedTrack by remember { mutableStateOf<Pair<MusicProvider, com.xlollx.songport.model.Track>?>(null) }
 
     val newSync by newSyncRequests.collectAsState()
     LaunchedEffect(newSync) { if (newSync) { newSyncRequests.value = false; tab = MainActivity.TAB_SYNCS; editing = newJob() } }
@@ -196,7 +198,27 @@ private fun MainScreen(
         sharedText.value = null
         val ref = PlaylistLinks.parse(text)
         val setlist = com.xlollx.songport.sync.SetlistImport.linkIn(text)
-        if (setlist != null) {
+        val trackRef = if (ref == null && setlist == null) com.xlollx.songport.sync.TrackLinks.parse(text) else null
+        // Several "Artist - Title" lines shared as text become a file playlist, like a setlist.
+        val lines = if (ref == null && setlist == null && trackRef == null && text.lines().count { it.isNotBlank() } >= 2)
+            com.xlollx.songport.sync.PlaylistFiles.parseText(text) else emptyList()
+        if (trackRef != null) {
+            val provider = Providers.connectors().firstOrNull {
+                com.xlollx.songport.sync.TrackLinks.matches(trackRef.service, it.serviceId) && it.isConnected(ctx) && it.canWrite
+            }
+            if (provider == null) {
+                snackbar.showSnackbar(ctx.getString(R.string.link_not_connected, trackRef.service.replaceFirstChar { it.uppercase() }))
+            } else {
+                val t = runCatching { provider.track(ctx, trackRef.trackId) }.getOrNull()
+                if (t == null) snackbar.showSnackbar(ctx.getString(R.string.share_invalid)) else sharedTrack = provider to t
+            }
+        } else if (lines.size >= 2) {
+            tab = MainActivity.TAB_SYNCS
+            val name = ctx.getString(R.string.share_file_name) + " " + java.text.SimpleDateFormat("yyyy-MM-dd HH.mm", java.util.Locale.ROOT).format(java.util.Date())
+            val id = LocalFilesProvider.importTracks(ctx, name, lines)
+            editing = newJob().copy(name = name, source = PlaylistRef(provider = LocalFilesProvider.id, playlistId = id, playlistName = id))
+            snackbar.showSnackbar(ctx.getString(R.string.share_text_imported, lines.size, id))
+        } else if (setlist != null) {
             // A concert setlist becomes a file playlist, the source of a new sync.
             tab = MainActivity.TAB_SYNCS
             try {
@@ -237,6 +259,9 @@ private fun MainScreen(
     if (!data.settings.onboardingDone) {
         OnboardingScreen { store.updateSettings { it.copy(onboardingDone = true) } }
         return
+    }
+    sharedTrack?.let { (p, t) ->
+        AddTrackDialog(p, t, onClose = { sharedTrack = null }) { messages.value = it }
     }
     val preview = previewJob
     if (preview != null) {
@@ -291,6 +316,8 @@ private fun MainScreen(
                     store.deleteJob(old); Scheduler.cancel(ctx, old)
                 }
                 editing = null
+                // A sync just made: what its first run would do, before it does it.
+                if (previous == null) previewJob = job
             },
         )
         return

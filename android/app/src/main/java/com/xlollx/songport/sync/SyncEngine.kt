@@ -69,6 +69,8 @@ class SyncEngine(private val ctx: Context) {
     private val store = Store.get(ctx)
     /** Best candidate under the threshold per source track searched in this run: the review's proposals. */
     private val hints = java.util.concurrent.ConcurrentHashMap<String, Track>()
+    /** Source ids whose searches on the target returned nothing at all: not there, nothing to review. */
+    private val absent: MutableSet<String> = java.util.concurrent.ConcurrentHashMap.newKeySet()
 
     suspend fun run(job: SyncJob, unattended: Boolean = false, onProgress: (Progress) -> Unit = {}): SyncReport {
         val started = System.currentTimeMillis()
@@ -95,7 +97,7 @@ class SyncEngine(private val ctx: Context) {
                         reportId, job.id, job.name, started, System.currentTimeMillis() - started,
                         sourceCount = plan.sourceCount, unmatched = plan.unmatched.map { it.toString() }, unmatchedTracks = plan.unmatched,
                         ignored = plan.ignored, reviewTracks = plan.uncertain, notes = plan.notes, partial = true,
-                        suggestions = suggestionsFor(plan.unmatched),
+                        suggestions = suggestionsFor(plan.unmatched), absent = plan.unmatched.filter { it.id in absent }.map { it.id },
                     ),
                 )
             }
@@ -236,9 +238,13 @@ class SyncEngine(private val ctx: Context) {
                 ),
             )
             if (found != null) {
-                if (found.id !in matchedDstIds) toAdd[found.id] = found
-                matchedDstIds += found.id
-                newCache[Store.cacheKey(src.id, s.id, dst.id)] = found.id
+                // The target may hold the same recording under another id (a remaster, the single
+                // edition): by ISRC or by name it counts as present, and nothing is added twice.
+                val present = dstById[found.id] ?: if (found.id in matchedDstIds) found else index.best(found)
+                val target = present ?: found
+                if (present == null) toAdd[found.id] = found
+                matchedDstIds += target.id
+                newCache[Store.cacheKey(src.id, s.id, dst.id)] = target.id
                 if (score != null && score < job.policy.reviewThreshold) uncertain += MatchReview(s, found, score)
                 // Salvataggio progressivo: un errore a meta' strada non butta via le ricerche fatte.
                 if (newCache.size % 100 == 0) store.putMatches(newCache)
@@ -433,7 +439,9 @@ class SyncEngine(private val ctx: Context) {
      */
     private suspend fun searchScored(dst: MusicProvider, s: Track, policy: MatchPolicy): Matcher.Scored? {
         var runnerUp: Matcher.Scored? = null
+        var sawCandidates = false
         fun consider(found: List<Track>): Matcher.Scored? {
+            if (found.isNotEmpty()) sawCandidates = true
             val best = Matcher.bestScored(s, found, 0.0, policy) ?: return null
             if (best.score >= policy.acceptThreshold) return best
             if (best.score > (runnerUp?.score ?: 0.0)) runnerUp = best
@@ -462,6 +470,7 @@ class SyncEngine(private val ctx: Context) {
         } finally {
             // Not found, but something came close: the review offers it as a one-tap proposal.
             runnerUp?.takeIf { it.score >= HINT_THRESHOLD }?.let { hints[s.id] = it.track }
+            if (!sawCandidates) absent += s.id else absent -= s.id
         }
     }
 
@@ -617,6 +626,7 @@ class SyncEngine(private val ctx: Context) {
             removedTracks = if (removed > 0) plan.toRemove else emptyList(),
             notes = plan.notes,
             suggestions = suggestionsFor(unmatched),
+            absent = unmatched.filter { it.id in absent }.map { it.id },
         )
     }
 

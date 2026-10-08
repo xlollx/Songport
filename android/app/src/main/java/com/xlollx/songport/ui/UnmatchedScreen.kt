@@ -165,9 +165,10 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
             }
             if (tracks.isNotEmpty()) {
                 item(key = "h-unmatched") { SectionTitle(stringResource(R.string.review_section_unmatched, tracks.size)) }
-                items(tracks, key = { "u-" + it.id }) { track ->
+                // What the service has no trace of goes last: there is little to do about it by hand.
+                items(tracks.sortedBy { it.id in report.absent }, key = { "u-" + it.id }) { track ->
                     UnmatchedRow(
-                        track = track, dstName = dstName, suggestion = report.suggestions[track.id],
+                        track = track, dstName = dstName, suggestion = report.suggestions[track.id], absent = track.id in report.absent,
                         expanded = expanded == "u-" + track.id, onToggle = { toggle("u-" + track.id) },
                         search = { q -> engine.searchOnTarget(job, q, track) },
                         webSearchUrl = webSearch, askAi = askFor(track),
@@ -198,6 +199,7 @@ private fun CollapsibleRow(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(track.title, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    if (absent) Text(stringResource(R.string.review_absent), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
                     Text(
                         listOfNotNull(track.artistLine.ifBlank { null }, track.album.ifBlank { null }).joinToString(" · "),
                         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -263,6 +265,7 @@ private fun UnmatchedRow(
     track: Track,
     dstName: String,
     suggestion: Track?,
+    absent: Boolean = false,
     expanded: Boolean,
     onToggle: () -> Unit,
     search: suspend (String) -> TargetSearch,

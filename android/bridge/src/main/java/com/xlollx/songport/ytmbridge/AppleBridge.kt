@@ -49,10 +49,16 @@ object AppleBridge {
             val exp = session.get(ctx, "devTokenExp")?.toLongOrNull() ?: 0
             if (exp - 3_600_000 > System.currentTimeMillis()) return stored
         }
+        // The scrape is quick when it works; when it failed last time (within a week) the off-screen
+        // player goes first, since the bundles probably still hide the token.
+        val scrapeFailedAt = session.get(ctx, "scrapeFailedAt")?.toLongOrNull() ?: 0
+        val webFirst = scrapeFailedAt > System.currentTimeMillis() - 7L * 24 * 3_600_000
+        if (webFirst) viaWebView(ctx)?.let { return keep(ctx, it) }
         val scraped = runCatching { scrape(ctx) }
-        scraped.getOrNull()?.let { return it }
+        scraped.getOrNull()?.let { session.put(ctx, "scrapeFailedAt", null); return it }
+        session.put(ctx, "scrapeFailedAt", System.currentTimeMillis().toString())
         // The player's own API calls carry the token: load it off screen and take it from there.
-        viaWebView(ctx)?.let { return keep(ctx, it) }
+        if (!webFirst) viaWebView(ctx)?.let { return keep(ctx, it) }
         return stored ?: throw BridgeException("${scraped.exceptionOrNull()?.message ?: "Apple Music: developer token not found"}. Disconnect Apple Music and sign in again: the sign-in screen takes the token from the player itself")
     }
 

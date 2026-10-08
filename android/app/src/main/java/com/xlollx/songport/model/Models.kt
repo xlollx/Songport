@@ -141,6 +141,8 @@ data class SyncReport(
     val error: String? = null,
     /** True finche' la sync e' in corso: contiene gia' i brani da rivedere, il resto arriva alla fine. */
     val partial: Boolean = false,
+    /** Among the not found, the source ids for which the target returned no candidate at all. */
+    val absent: List<String> = emptyList(),
     /**
      * Per i non trovati, il candidato migliore rimasto sotto soglia (id del brano d'origine -> brano
      * della destinazione): una proposta da accettare con un tocco, senza rifare la ricerca.
