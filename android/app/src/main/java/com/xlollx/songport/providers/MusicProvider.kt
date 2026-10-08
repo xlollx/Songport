@@ -90,6 +90,11 @@ interface MusicProvider {
      */
     val canRemoveTracks: Boolean get() = true
 
+    /** Putting a playlist's tracks in a given order, where the API has a move: Spotify, YouTube Music, Deezer. */
+    val canReorder: Boolean get() = false
+    /** [current] as the playlist lists it now, [ordered] the same tracks in the wanted order (ids and item ids as listed). */
+    suspend fun reorderTracks(ctx: Context, playlistId: String, current: List<Track>, ordered: List<Track>) {}
+
     /** Mettere una copertina a una playlist propria: solo dove l'API lo permette (Spotify). */
     val canSetCover: Boolean get() = false
     /** [jpeg]: at most 256 KB, as Spotify wants it. */

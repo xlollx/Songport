@@ -54,6 +54,10 @@
     <string name="editor_schedule">自动计划</string>
     <string name="editor_mirror">同步删除</string>
     <string name="editor_mirror_desc">同时从目标中移除来源里已不存在的歌曲。关闭则只添加。</string>
+    <string name="editor_keep_order">保持来源的顺序</string>
+    <string name="editor_keep_order_desc">添加完成后，目标会按来源的顺序排列。Spotify、YouTube Music 和 Deezer 支持。</string>
+    <string name="note_order_aligned">顺序已与来源对齐。</string>
+    <string name="note_order_failed">顺序未对齐：%1$s</string>
     <string name="policy_title">匹配规则</string>
     <string name="policy_desc">如何在候选中选择歌曲。默认设置适合大多数同步。</string>
     <string name="policy_strictness">严格程度</string>

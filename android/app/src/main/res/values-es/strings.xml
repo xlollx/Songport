@@ -54,6 +54,10 @@
     <string name="editor_schedule">Programación automática</string>
     <string name="editor_mirror">Replicar eliminaciones</string>
     <string name="editor_mirror_desc">Quita también del destino las canciones que ya no están en el origen. Desactivado = solo añadir.</string>
+    <string name="editor_keep_order">Mantener el orden del origen</string>
+    <string name="editor_keep_order_desc">Tras añadir, el destino se pone en el orden del origen. Lo permiten Spotify, YouTube Music y Deezer.</string>
+    <string name="note_order_aligned">Orden alineado con el origen.</string>
+    <string name="note_order_failed">Orden no alineado: %1$s</string>
     <string name="policy_title">Reglas de coincidencia</string>
     <string name="policy_desc">Cómo se elige una canción entre los candidatos. Los valores predeterminados sirven para casi todas las sincronizaciones.</string>
     <string name="policy_strictness">Rigor</string>

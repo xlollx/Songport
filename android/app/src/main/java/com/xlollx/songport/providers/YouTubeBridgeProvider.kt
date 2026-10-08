@@ -131,6 +131,20 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         withContext(Dispatchers.IO) { call(ctx, "rename", playlistId, Bundle().apply { putString("name", name) }) }
     }
 
+    override val canReorder: Boolean get() = BridgePlugin.builtIn
+    override suspend fun reorderTracks(ctx: Context, playlistId: String, current: List<Track>, ordered: List<Track>) {
+        // Entries move by their set id; a listing without them cannot be reordered.
+        if (current.any { it.itemId.isNullOrEmpty() }) return
+        val steps = com.xlollx.songport.sync.Reorder.before(current.map { it.itemId!! }, ordered.map { it.itemId!! })
+        if (steps.isEmpty()) return
+        withContext(Dispatchers.IO) {
+            call(ctx, "reorder", playlistId, Bundle().apply {
+                putStringArray("items", steps.map { it.first }.toTypedArray())
+                putStringArray("before", steps.map { it.second }.toTypedArray())
+            })
+        }
+    }
+
     override val canSetVisibility: Boolean get() = BridgePlugin.builtIn
     override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
         withContext(Dispatchers.IO) { call(ctx, "visibility", playlistId, Bundle().apply { putBoolean("public", public) }) }

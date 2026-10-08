@@ -386,6 +386,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
     var newName by remember { mutableStateOf(if (job.target.playlistId == null) job.target.playlistName else "") }
     var schedule by remember { mutableStateOf(job.schedule) }
     var mirror by remember { mutableStateOf(job.mirrorRemovals) }
+    var keepOrder by remember { mutableStateOf(job.keepOrder) }
     var wifiOnly by remember { mutableStateOf(job.wifiOnly) }
     var enabled by remember { mutableStateOf(job.enabled) }
     var bidirectional by remember { mutableStateOf(job.linkedJobId != null) }
@@ -498,6 +499,9 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                 Schedule.entries.forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
             }
             SwitchRow(stringResource(R.string.editor_mirror), stringResource(R.string.editor_mirror_desc), mirror) { mirror = it }
+            if (Providers.byId(dstProvider)?.canReorder == true) {
+                SwitchRow(stringResource(R.string.editor_keep_order), stringResource(R.string.editor_keep_order_desc), keepOrder) { keepOrder = it }
+            }
             val dstProviderObj = Providers.byId(dstProvider)
             if (mirror && dstProviderObj != null && !dstProviderObj.canRemoveTracks) {
                 Text(
@@ -583,6 +587,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                             source = source,
                             target = target,
                             schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
+                            keepOrder = keepOrder,
                         )
                         val reverse = if (bidirectional && !createNew && dp != null) SyncJob(
                             id = job.linkedJobId ?: UUID.randomUUID().toString(),

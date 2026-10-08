@@ -191,7 +191,7 @@ private fun SectionTitle(text: String) {
 /** Riga chiusa: titolo e artista in una riga, freccia a destra. Aperta: le azioni. */
 @Composable
 private fun CollapsibleRow(
-    track: Track, expanded: Boolean, onToggle: () -> Unit,
+    track: Track, expanded: Boolean, onToggle: () -> Unit, absent: Boolean = false,
     trailing: @Composable () -> Unit = {}, below: (@Composable () -> Unit)? = null, content: @Composable () -> Unit,
 ) {
     Card(Modifier.fillMaxWidth().clickable(onClick = onToggle)) {
@@ -294,7 +294,7 @@ private fun UnmatchedRow(
             }
         }
     } else null
-    CollapsibleRow(track = track, expanded = expanded, onToggle = onToggle, below = proposal) {
+    CollapsibleRow(track = track, expanded = expanded, onToggle = onToggle, absent = absent, below = proposal) {
         MatchSearch(
             initialQuery = if (track.artists.isEmpty()) track.title else "${track.artistLine} - ${track.title}",
             targetName = dstName,

@@ -544,6 +544,15 @@ class SpotifyWebClient(private val ctx: Context) {
         )))
     }
 
+    /** Moves "item at from, inserted before to", applied in order: the store's MOV op, a hundred per request. */
+    fun moveItems(id: String, moves: List<Pair<Int, Int>>) {
+        moves.chunked(100).forEach { chunk ->
+            spclient("/playlist/v2/playlist/$id/changes", deltas(*chunk.map { (from, to) ->
+                jsonObj("kind" to 4, "mov" to jsonObj("fromIndex" to from, "length" to 1, "toIndex" to to))
+            }.toTypedArray()))
+        }
+    }
+
     /** Spotify has no delete: a playlist taken off the rootlist leaves the library. */
     fun deletePlaylist(id: String) {
         val uri = "spotify:playlist:$id"

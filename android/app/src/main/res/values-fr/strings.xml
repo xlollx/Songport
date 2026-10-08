@@ -54,6 +54,10 @@
     <string name="editor_schedule">Planification automatique</string>
     <string name="editor_mirror">Refléter les retraits</string>
     <string name="editor_mirror_desc">Retire aussi de la cible les titres qui ne sont plus dans la source. Désactivé = ajout uniquement.</string>
+    <string name="editor_keep_order">Garder l\'ordre de la source</string>
+    <string name="editor_keep_order_desc">Après les ajouts, la destination est remise dans l\'ordre de la source. Possible avec Spotify, YouTube Music et Deezer.</string>
+    <string name="note_order_aligned">Ordre aligné sur la source.</string>
+    <string name="note_order_failed">Ordre non aligné : %1$s</string>
     <string name="policy_title">Règles d\'appariement</string>
     <string name="policy_desc">Comment un titre est choisi parmi les candidats. Les valeurs par défaut conviennent à la plupart des synchros.</string>
     <string name="policy_strictness">Sévérité</string>

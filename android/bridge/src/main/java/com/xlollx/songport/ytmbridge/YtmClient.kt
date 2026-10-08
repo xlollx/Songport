@@ -501,6 +501,19 @@ class YtmClient(private val ctx: Context) {
         call("playlist/delete", mapOf("playlistId" to playlistId.removePrefix("VL")))
     }
 
+    /** "Put this entry right before that one", by set ids, as the site's drag and drop sends it; fifty per call. */
+    fun moveBefore(playlistId: String, steps: List<Pair<String, String>>) {
+        steps.chunked(50).forEach { chunk ->
+            val resp = call(
+                "browse/edit_playlist",
+                mapOf("playlistId" to playlistId.removePrefix("VL"), "actions" to chunk.map { (item, successor) ->
+                    mapOf("action" to "ACTION_MOVE_VIDEO_BEFORE", "setVideoId" to item, "movedSetVideoIdSuccessor" to successor)
+                }),
+            )
+            checkStatus(resp)
+        }
+    }
+
     /** The playlist's privacy: PUBLIC or PRIVATE (the same edit call the site's "Edit playlist" makes). */
     fun setPrivacy(playlistId: String, public: Boolean) {
         val resp = call(

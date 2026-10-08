@@ -121,6 +121,18 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
         withContext(Dispatchers.IO) { call(ctx, "spotify.rename", playlistId, Bundle().apply { putString("name", name) }) }
     }
 
+    override val canReorder: Boolean get() = true
+    override suspend fun reorderTracks(ctx: Context, playlistId: String, current: List<Track>, ordered: List<Track>) {
+        val moves = com.xlollx.songport.sync.Reorder.moves(current.map { it.id }, ordered.map { it.id })
+        if (moves.isEmpty()) return
+        withContext(Dispatchers.IO) {
+            call(ctx, "spotify.reorder", playlistId, Bundle().apply {
+                putIntArray("from", moves.map { it.first }.toIntArray())
+                putIntArray("to", moves.map { it.second }.toIntArray())
+            })
+        }
+    }
+
     override val canSetVisibility: Boolean get() = true
     override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
         withContext(Dispatchers.IO) { call(ctx, "spotify.visibility", playlistId, Bundle().apply { putBoolean("public", public) }) }

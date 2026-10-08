@@ -54,6 +54,10 @@
     <string name="editor_schedule">自動スケジュール</string>
     <string name="editor_mirror">削除も反映</string>
     <string name="editor_mirror_desc">同期元にない曲を同期先からも削除します。オフの場合は追加のみ行います。</string>
+    <string name="editor_keep_order">元の順序を保つ</string>
+    <string name="editor_keep_order_desc">追加後、同期先を元の順序に並べ替えます。Spotify、YouTube Music、Deezer で使えます。</string>
+    <string name="note_order_aligned">順序を元に合わせました。</string>
+    <string name="note_order_failed">順序を合わせられませんでした: %1$s</string>
     <string name="policy_title">マッチングのルール</string>
     <string name="policy_desc">候補の中から曲を選ぶ方法です。ほとんどの同期では初期設定で問題ありません。</string>
     <string name="policy_strictness">厳しさ</string>

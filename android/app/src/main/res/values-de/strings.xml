@@ -54,6 +54,10 @@
     <string name="editor_schedule">Automatischer Zeitplan</string>
     <string name="editor_mirror">Entfernungen spiegeln</string>
     <string name="editor_mirror_desc">Titel, die nicht mehr in der Quelle sind, auch aus dem Ziel entfernen. Aus = nur hinzufügen.</string>
+    <string name="editor_keep_order">Reihenfolge der Quelle beibehalten</string>
+    <string name="editor_keep_order_desc">Nach dem Hinzufügen wird das Ziel in die Reihenfolge der Quelle gebracht. Spotify, YouTube Music und Deezer können das.</string>
+    <string name="note_order_aligned">Reihenfolge an die Quelle angeglichen.</string>
+    <string name="note_order_failed">Reihenfolge nicht angeglichen: %1$s</string>
     <string name="policy_title">Zuordnungsregeln</string>
     <string name="policy_desc">Wie ein Titel unter den Kandidaten gewählt wird. Die Voreinstellungen passen für die meisten Syncs.</string>
     <string name="policy_strictness">Strenge</string>

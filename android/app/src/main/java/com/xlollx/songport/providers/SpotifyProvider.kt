@@ -333,6 +333,22 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         api(ctx, "PUT", "$API/playlists/$playlistId", jsonObj("name" to name))
     }
 
+    override val canReorder: Boolean get() = canWrite
+    override suspend fun reorderTracks(ctx: Context, playlistId: String, current: List<Track>, ordered: List<Track>) {
+        val moves = com.xlollx.songport.sync.Reorder.moves(current.map { it.id }, ordered.map { it.id })
+        var path = "items"
+        for ((from, before) in moves) {
+            val body = jsonObj("range_start" to from, "insert_before" to before, "range_length" to 1)
+            try {
+                api(ctx, "PUT", "$API/playlists/$playlistId/$path", body)
+            } catch (e: ProviderException) {
+                if (e.code != 403 || path != "items") throw e
+                path = "tracks"
+                api(ctx, "PUT", "$API/playlists/$playlistId/$path", body)
+            }
+        }
+    }
+
     override val canSetVisibility: Boolean get() = canWrite
     override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
         api(ctx, "PUT", "$API/playlists/$playlistId", jsonObj("public" to public))

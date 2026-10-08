@@ -63,6 +63,14 @@ object BridgeCore {
                 "rename" -> { client.renamePlaylist(arg ?: return err("missing playlist id"), extras?.getString("name") ?: ""); Bundle() }
                 "delete" -> { client.deletePlaylist(arg ?: return err("missing playlist id")); invalidate(arg); Bundle() }
                 "visibility" -> { client.setPrivacy(arg ?: return err("missing playlist id"), extras?.getBoolean("public") ?: false); Bundle() }
+                "reorder" -> {
+                    val pid = arg ?: return err("missing playlist id")
+                    val items = extras?.getStringArray("items") ?: emptyArray()
+                    val before = extras?.getStringArray("before") ?: emptyArray()
+                    client.moveBefore(pid, items.indices.map { items[it] to before[it] })
+                    invalidate(pid)
+                    Bundle()
+                }
                 "remove" -> {
                     val id = arg ?: return err("missing playlist id")
                     when (id) {
@@ -159,6 +167,14 @@ object BridgeCore {
                 "spotify.rename" -> { SpotifyWebClient(ctx).renamePlaylist(arg ?: return err("missing playlist id"), extras?.getString("name") ?: ""); Bundle() }
                 "spotify.delete" -> { SpotifyWebClient(ctx).deletePlaylist(arg ?: return err("missing playlist id")); invalidateSpotify(arg); Bundle() }
                 "spotify.visibility" -> { SpotifyWebClient(ctx).setPublic(arg ?: return err("missing playlist id"), extras?.getBoolean("public") ?: false); Bundle() }
+                "spotify.reorder" -> {
+                    val pid = arg ?: return err("missing playlist id")
+                    val from = extras?.getIntArray("from") ?: IntArray(0)
+                    val to = extras?.getIntArray("to") ?: IntArray(0)
+                    SpotifyWebClient(ctx).moveItems(pid, from.indices.map { from[it] to to[it] })
+                    invalidateSpotify(pid)
+                    Bundle()
+                }
                 "spotify.token" -> {
                     val t = SpotifyBridge.token(ctx)
                     if (SpotifyBridge.session.get(ctx, "userId") == null) runCatching {

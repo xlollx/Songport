@@ -62,6 +62,8 @@ internal fun isTransientNetwork(msg: String?): Boolean {
 
 /** Below the match threshold but close enough to be worth proposing in the review. */
 private const val HINT_THRESHOLD = 0.45
+/** Above this many tracks the order step is skipped: too many single moves for one run. */
+private const val MAX_REORDER = 1500
 /** Hosts of the short links music apps put in their share text. */
 private val SHORT_LINK_HOSTS = setOf("amzn.to", "amzn.eu", "a.co", "spotify.link", "spoti.fi", "apple.co", "deezer.page.link", "link.deezer.com", "tidal.link")
 
@@ -288,6 +290,7 @@ class SyncEngine(private val ctx: Context) {
             notes = notes,
             newMatches = newCache,
             targetCreated = targetCreated,
+            sourceOrder = srcTracks.map { it.id },
         )
     }
 
@@ -437,6 +440,34 @@ class SyncEngine(private val ctx: Context) {
      * primo artista, poi con il solo titolo: alcuni cataloghi rispondono meglio a query corte, e i
      * candidati sono comunque valutati contro l'artista originale, quindi un omonimo non passa.
      */
+    /**
+     * The target in the source's order: each source track maps to the target track the cache holds
+     * for it, in source order; what the target has beyond the source stays at the end. One read of
+     * the target, then the service's own moves. A failure is a note, never a failed sync.
+     */
+    private suspend fun alignOrder(src: MusicProvider, dst: MusicProvider, targetId: String, sourceOrder: List<String>, notes: MutableList<String>, onProgress: (Progress) -> Unit) {
+        try {
+            onProgress(Progress(Progress.Step.FETCH_TARGET))
+            val current = dst.tracks(ctx, targetId)
+            if (current.size > MAX_REORDER) { notes += ctx.getString(R.string.note_order_failed, "${current.size} > $MAX_REORDER"); return }
+            val byId = current.groupBy { it.id }
+            val seen = HashSet<String>()
+            val wanted = ArrayList<Track>()
+            for (sid in sourceOrder) {
+                val tid = store.cachedMatch(src.id, sid, dst.id) ?: continue
+                if (!seen.add(tid)) continue
+                byId[tid]?.firstOrNull()?.let { wanted += it }
+            }
+            wanted += current.filter { it.id !in seen }
+            if (wanted.size != current.size) return
+            if (wanted.map { it.id } == current.map { it.id }) return
+            dst.reorderTracks(ctx, targetId, current, wanted)
+            notes += ctx.getString(R.string.note_order_aligned)
+        } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
+            notes += ctx.getString(R.string.note_order_failed, e.message ?: e.javaClass.simpleName)
+        }
+    }
+
     private suspend fun searchScored(dst: MusicProvider, s: Track, policy: MatchPolicy): Matcher.Scored? {
         var runnerUp: Matcher.Scored? = null
         var sawCandidates = false
@@ -536,10 +567,11 @@ class SyncEngine(private val ctx: Context) {
 
     /** Applica un piano: aggiunte, rimozioni, cache e report. */
     suspend fun apply(job: SyncJob, plan: SyncPlan, started: Long, reportId: String, onProgress: (Progress) -> Unit = {}): SyncReport {
-        val (_, dst) = providers(job)
+        val (src, dst) = providers(job)
         val targetId = plan.targetPlaylistId.ifEmpty { throw ProviderException("No target playlist") }
         val unmatched = ArrayList(plan.unmatched)
         val failed = ArrayList<String>()
+        val notes = ArrayList(plan.notes)
 
         var added = 0
         if (plan.toAdd.isNotEmpty()) {
@@ -614,6 +646,9 @@ class SyncEngine(private val ctx: Context) {
             val stillOpen = provisional.unmatchedTracks.map { it.id }.toHashSet()
             unmatched.retainAll { it.id in stillOpen }
         }
+        if (job.keepOrder && dst.canReorder && !MusicProvider.isLibrary(targetId) && plan.sourceOrder.isNotEmpty()) {
+            alignOrder(src, dst, targetId, plan.sourceOrder, notes, onProgress)
+        }
         val reviews = provisional?.reviewTracks ?: plan.uncertain
         return SyncReport(
             id = reportId, jobId = job.id, jobName = job.name, startedEpoch = started,
@@ -624,7 +659,7 @@ class SyncEngine(private val ctx: Context) {
             ignored = plan.ignored,
             reviewTracks = reviews,
             removedTracks = if (removed > 0) plan.toRemove else emptyList(),
-            notes = plan.notes,
+            notes = notes,
             suggestions = suggestionsFor(unmatched),
             absent = unmatched.filter { it.id in absent }.map { it.id },
         )

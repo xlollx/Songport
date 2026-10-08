@@ -252,6 +252,12 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
         dz(ctx, "POST", "/playlist/$playlistId", mapOf("title" to name))
     }
 
+    /** Deezer takes the whole order in one call. */
+    override val canReorder: Boolean get() = true
+    override suspend fun reorderTracks(ctx: Context, playlistId: String, current: List<Track>, ordered: List<Track>) {
+        dz(ctx, "POST", "/playlist/$playlistId/tracks", mapOf("order" to ordered.joinToString(",") { it.id }))
+    }
+
     override val canSetVisibility: Boolean get() = true
     override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
         dz(ctx, "POST", "/playlist/$playlistId", mapOf("public" to public.toString()))

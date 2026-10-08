@@ -90,6 +90,8 @@ data class SyncJob(
     val sourceVersion: String? = null,
     val targetVersion: String? = null,
     val policy: MatchPolicy = MatchPolicy(),
+    /** After adding, put the target in the source's order (where the target service can move tracks). */
+    val keepOrder: Boolean = false,
 )
 
 /**
@@ -171,6 +173,8 @@ data class SyncPlan(
     val newMatches: Map<String, String>,
     /** True se la destinazione e' stata creata adesso (il job e' gia' stato aggiornato). */
     val targetCreated: Boolean,
+    /** The source's track ids in its order, for the order step. */
+    val sourceOrder: List<String> = emptyList(),
 )
 
 /** Progresso di una sync in corso, mostrato nella UI. */
