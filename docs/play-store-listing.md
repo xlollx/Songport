@@ -166,10 +166,11 @@ has run.
    **Play App Signing** is proposed at the first upload: accept it; Google keeps the app signing key
    and the key in the secrets stays the upload key. Only if a shared `GOOGLE_CLIENT_ID` is shipped do
    the SHA-1s of both keys (Setup › App signing) need registering in the Google OAuth client.
-6. **Closed testing**: create a closed track, upload the AAB, add testers as an e-mail list or Google
-   Group, send them the opt-in link; the console states the current requirement (12 testers opted in
-   for 14 continuous days at the time of writing; it was 20 before). Testers install from Play, so
-   they must uninstall the GitHub/F-Droid Songport first if they want both: same package id.
+6. **Closed testing**: create a closed track, upload the AAB, add testers as a Google Group, send
+   them the opt-in link; the console states the current requirement (12 testers opted in for 14
+   continuous days at the time of writing; it was 20 before). Recruiting texts, group setup and the
+   final questionnaire are in `docs/play-testers.md`. Testers install from Play, so they must
+   uninstall the GitHub/F-Droid Songport first: same package id.
 7. **Apply for production access** when the test is complete (Dashboard › Apply for production): a few
    questions on who tested, what they found and how it was fixed. Google answers within a few days.
 8. **Production release**: upload the AAB (a newer one if the version moved on), release notes
