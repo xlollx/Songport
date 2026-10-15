@@ -81,7 +81,7 @@ jobs:
       - name: Carica l'APK come artifact
         # Se la quota artifact dell'account e' piena l'upload fallisce, ma la build e' comunque valida.
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Songport-debug-apk
           path: android/app/build/outputs/apk/full/debug/app-full-debug.apk
@@ -113,7 +113,7 @@ jobs:
       - name: Carica l'AAB come artifact
         if: steps.key.outputs.present == 'true'
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Songport-release-aab
           path: android/app/build/outputs/bundle/playRelease/app-play-release.aab
@@ -123,7 +123,7 @@ jobs:
       - name: Carica l'APK release come artifact
         if: steps.key.outputs.present == 'true'
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Songport-release-apk
           path: android/app/build/outputs/apk/full/release/app-full-release.apk
