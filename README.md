@@ -423,6 +423,7 @@ every main string that names the app (CI fails if they are stale: run the script
    (`dataSync` type, user-initiated); the policy is in `docs/privacy-policy.md`.
    Texts, answers, Data safety rows and the step-by-step checklist (including the closed test that
    personal developer accounts must run first) are in `docs/play-store-listing.md`.
+   How to find the twelve testers that test needs: `docs/play-testers.md`.
 5. Do not use the services' official logos in the icon or screenshots; name them in the description
    only to indicate compatibility.
 
