@@ -66,6 +66,12 @@ jobs:
         with:
           gradle-version: '8.14.3'
 
+      - name: Stringhe del brand Play aggiornate
+        # Su Google Play l'app si chiama Trackhop: le stringhe che nominano l'app vengono generate
+        # da scripts/play_strings.py. Se qualcuno tocca strings.xml senza rilanciarlo, la build si ferma qui.
+        working-directory: .
+        run: python3 scripts/play_strings.py --check
+
       - name: Test unitari
         run: gradle testFullDebugUnitTest --no-daemon --stacktrace
 

@@ -106,7 +106,7 @@ private fun LogList(data: StoreData, snackbar: SnackbarHostState, onResolve: (St
                 }) { Text(stringResource(R.string.report_issue)) }
                 if (data.settings.developerOptions) TextButton(onClick = {
                     val text = Diagnostics.report(ctx)
-                    val share = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text); putExtra(Intent.EXTRA_SUBJECT, "Songport diagnostics") }
+                    val share = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text); putExtra(Intent.EXTRA_SUBJECT, ctx.getString(R.string.app_name) + " diagnostics") }
                     ctx.startActivity(Intent.createChooser(share, ctx.getString(R.string.diag_share)))
                 }) { Text(stringResource(R.string.diag_share)) }
             }

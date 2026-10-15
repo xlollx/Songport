@@ -189,7 +189,7 @@ class SyncEngine(
             // without a name resolves here), then whatever the sync is called.
             val name = job.target.playlistName.ifBlank { info?.name?.takeIf { it.isNotBlank() } ?: srcName.ifBlank { job.name } }
             val description = info?.description.orEmpty().trim().take(300)
-            val created = patient(onProgress) { dst.createPlaylist(ctx, name, description.ifBlank { MusicProvider.DESCRIPTION }) }
+            val created = patient(onProgress) { dst.createPlaylist(ctx, name, description.ifBlank { MusicProvider.description(str(R.string.app_name)) }) }
             targetId = created.id
             targetCreated = true
             store.upsertJob(job.copy(

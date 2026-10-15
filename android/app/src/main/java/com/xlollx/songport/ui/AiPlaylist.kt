@@ -158,7 +158,7 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
                         // The tracks are the service's own already: the playlist is made here, with them in it,
                         // and the sync keeps the file and the playlist paired for "Extend with AI" and later runs.
                         d.busy = true
-                        val created = target.createPlaylist(app, finalName, MusicProvider.DESCRIPTION)
+                        val created = target.createPlaylist(app, finalName, MusicProvider.description(app.getString(R.string.app_name)))
                         if (kept.isNotEmpty()) target.addTracks(app, created.id, kept)
                         val job = SyncJob(
                             id = UUID.randomUUID().toString(),

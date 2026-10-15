@@ -3,6 +3,7 @@ package com.xlollx.songport.data
 import android.content.Context
 import android.os.Build
 import com.xlollx.songport.BuildConfig
+import com.xlollx.songport.R
 import com.xlollx.songport.providers.Providers
 import java.io.File
 import java.text.SimpleDateFormat
@@ -39,7 +40,7 @@ object Diagnostics {
     fun report(ctx: Context): String {
         val data = Store.get(ctx).data
         val sb = StringBuilder()
-        sb.appendLine("Songport ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+        sb.appendLine("${ctx.getString(R.string.app_name)} ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
         sb.appendLine("Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT}) · ${Build.MANUFACTURER} ${Build.MODEL}")
         sb.appendLine("Locale: ${Locale.getDefault()}")
         sb.appendLine()

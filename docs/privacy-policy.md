@@ -4,7 +4,9 @@ _Last updated / Ultimo aggiornamento: 2026-09-12_
 
 ## English
 
-**Controller**: the independent developer of Songport (contact on the Google Play listing).
+_This policy covers the app published on GitHub and F-Droid as **Songport** and on Google Play as **Trackhop**: the same app, with the one difference described under "Advertising data"._
+
+**Controller**: the independent developer of Songport / Trackhop (contact on the Google Play listing).
 
 **What the app does**: syncs playlists between music services you connect (Spotify, Apple Music, YouTube Music,
 TIDAL, Deezer) and local files. All processing happens **on your device**.
@@ -54,7 +56,9 @@ Questions: contact on the Play Store listing.
 
 ## Italiano
 
-**Titolare**: lo sviluppatore indipendente dell'app Songport (contatti nella scheda Google Play).
+_Questa informativa riguarda l'app pubblicata su GitHub e F-Droid come **Songport** e su Google Play come **Trackhop**: la stessa app, con l'unica differenza descritta in "Dati pubblicitari"._
+
+**Titolare**: lo sviluppatore indipendente dell'app Songport / Trackhop (contatti nella scheda Google Play).
 
 **Cosa fa l'app**: sincronizza playlist tra i servizi musicali che l'utente collega (Spotify, Apple Music,
 YouTube Music, TIDAL, Deezer) e file locali. Tutta l'elaborazione avviene **sul dispositivo**.

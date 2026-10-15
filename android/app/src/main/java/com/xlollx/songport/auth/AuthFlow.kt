@@ -61,7 +61,7 @@ object AuthFlow {
     fun startLoopbackFlow(scope: CoroutineScope, ctx: Context, provider: OAuthProvider) {
         scope.launch {
             val server = try {
-                LoopbackServer.open()
+                LoopbackServer.open(ctx.getString(R.string.app_name))
             } catch (e: Exception) {
                 AuthEvents.post(ctx.getString(R.string.auth_failed, e.message ?: e.javaClass.simpleName))
                 return@launch

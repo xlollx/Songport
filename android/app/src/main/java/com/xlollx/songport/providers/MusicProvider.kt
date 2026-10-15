@@ -219,7 +219,8 @@ interface MusicProvider {
             PODCASTS_ID -> Track.KIND_PODCAST
             else -> null
         }
-        const val DESCRIPTION = "Synced with Songport"
+        /** Description of the playlists this app creates, from the app name (R.string.app_name): "Trackhop" on Google Play. */
+        fun description(appName: String) = "Synced with $appName"
     }
 }
 

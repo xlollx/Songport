@@ -16,7 +16,7 @@ import java.net.URLDecoder
  * Ascolta solo su loopback: nessun'altra app o dispositivo in rete puo' raggiungerlo, e resta
  * aperto un solo giro di autorizzazione.
  */
-class LoopbackServer private constructor(private val socket: ServerSocket) {
+class LoopbackServer private constructor(private val socket: ServerSocket, private val appName: String) {
 
     val port: Int get() = socket.localPort
     val redirectUri: String get() = "http://127.0.0.1:$port"
@@ -35,7 +35,8 @@ class LoopbackServer private constructor(private val socket: ServerSocket) {
                 // Ci basta la request line: "GET /?code=...&state=... HTTP/1.1"
                 val requestLine = reader.readLine() ?: return@withContext emptyMap()
                 val params = parseQuery(requestLine.split(' ').getOrNull(1) ?: "")
-                val body = if (params.containsKey("code")) PAGE_OK else PAGE_ERROR
+                val body = if (params.containsKey("code")) page("Tutto fatto", "Puoi chiudere questa scheda e tornare a $appName.")
+                    else page("Accesso non riuscito", "Torna a $appName e riprova.")
                 conn.getOutputStream().apply {
                     write(
                         ("HTTP/1.1 200 OK\r\n" +
@@ -66,16 +67,13 @@ class LoopbackServer private constructor(private val socket: ServerSocket) {
 
     companion object {
         /** Apre una porta libera sul loopback. */
-        suspend fun open(): LoopbackServer = withContext(Dispatchers.IO) {
-            LoopbackServer(ServerSocket(0, 1, InetAddress.getByName("127.0.0.1")))
+        suspend fun open(appName: String): LoopbackServer = withContext(Dispatchers.IO) {
+            LoopbackServer(ServerSocket(0, 1, InetAddress.getByName("127.0.0.1")), appName)
         }
-
-        private val PAGE_OK = page("Tutto fatto", "Puoi chiudere questa scheda e tornare a Songport.")
-        private val PAGE_ERROR = page("Accesso non riuscito", "Torna a Songport e riprova.")
 
         private fun page(title: String, text: String) = """
             <!doctype html><html lang="it"><head><meta charset="utf-8">
-            <meta name="viewport" content="width=device-width,initial-scale=1"><title>Songport</title>
+            <meta name="viewport" content="width=device-width,initial-scale=1"><title>$title</title>
             <style>body{font-family:system-ui,sans-serif;margin:0;min-height:100vh;display:flex;
             flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;
             padding:24px;color:#222;background:#fafafa}h1{font-size:1.2rem;margin:0}p{margin:0;opacity:.75}</style>
