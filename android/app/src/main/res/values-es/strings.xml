@@ -175,7 +175,7 @@
     <string name="link_resolving">Leyendo la playlist…</string>
     <string name="note_no_removals">%1$s no permite quitar canciones de una playlist a través de su API: %2$d canciones se quedaron donde estaban.</string>
     <string name="note_removals_deferred">Eliminaciones aplazadas: la búsqueda no se completó, así que %1$d canciones del destino que aún no coincidían con nada se dejaron donde estaban. Se revisarán cuando una ejecución termine por completo.</string>
-    <string name="note_removals_capped">Eliminaciones retenidas: esta ejecución quitaría %1$d de las %2$d canciones del destino, más de lo que una sincronización programada quita por sí sola. Mira la vista previa o ejecuta la sincronización a mano para confirmar.</string>
+    <string name="note_removals_capped">Eliminaciones retenidas: esta ejecución quitaría %1$d de las %2$d pistas del destino. Abre la vista previa para verlas y confirmar; si el origen no las ha perdido de verdad, el servicio lo leyó a medias y no debe quitarse nada.</string>
     <string name="note_unchanged">Nada ha cambiado en ninguno de los dos lados desde la última ejecución: omitido.</string>
     <string name="review_share">Compartir la lista</string>
     <string name="note_search_interrupted">Se buscaron %1$d de %2$d canciones y luego el servicio pidió una pausa más larga (%3$s). Es un límite del servicio, no un error de Songport: lo encontrado ya se aplicó y queda guardado. Vuelve a ejecutar la sincronización en unos minutos para seguir desde ahí.</string>
@@ -216,6 +216,7 @@
     <string name="preview_present">%1$d ya en el destino</string>
     <string name="preview_add">%1$d por añadir</string>
     <string name="preview_remove">%1$d por quitar</string>
+    <string name="preview_remove_warning">Quitaría %1$d de las %2$d pistas del destino. Antes de confirmar, comprueba que el origen tenga de verdad tan pocas pistas: una lectura incompleta por parte del servicio se ve exactamente así.</string>
     <string name="preview_unmatched">%1$d no encontradas</string>
     <string name="preview_ignored">%1$d ignoradas</string>
     <string name="preview_target_new">Se creará la playlist de destino.</string>

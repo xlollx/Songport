@@ -175,7 +175,7 @@
     <string name="link_resolving">Reading the playlist…</string>
     <string name="note_no_removals">%1$s does not allow removing tracks from a playlist via its API: %2$d tracks were left in place.</string>
     <string name="note_removals_deferred">Removals postponed: the search was not completed, so %1$d tracks in the target that matched nothing yet were left in place. They will be reviewed when a run completes.</string>
-    <string name="note_removals_capped">Removals held back: this run would remove %1$d of the %2$d tracks in the target, more than a scheduled sync removes on its own. Preview or run the sync by hand to confirm.</string>
+    <string name="note_removals_capped">Removals held back: this run would remove %1$d of the %2$d tracks in the target. Open the preview to see them and confirm; if the source has not really lost them, the service listed it incompletely and nothing should go.</string>
     <string name="note_unchanged">Nothing changed on either side since the last run: skipped.</string>
     <string name="review_share">Share the list</string>
     <string name="note_search_interrupted">%1$d of %2$d tracks searched, then the service asked for a longer pause (%3$s). This is a limit of the service, not a Songport error: what was found has been applied and remembered. Run the sync again in a few minutes to continue from there.</string>
@@ -216,6 +216,7 @@
     <string name="preview_present">%1$d already on the target</string>
     <string name="preview_add">%1$d to add</string>
     <string name="preview_remove">%1$d to remove</string>
+    <string name="preview_remove_warning">This would remove %1$d of the %2$d tracks in the target. Before confirming, check that the source really lists that few: an incomplete listing by the service looks exactly like this.</string>
     <string name="preview_unmatched">%1$d not found</string>
     <string name="preview_ignored">%1$d ignored</string>
     <string name="preview_target_new">The target playlist will be created.</string>

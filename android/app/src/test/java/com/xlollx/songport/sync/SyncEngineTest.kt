@@ -87,6 +87,23 @@ class SyncEngineTest {
         assertEquals(listOf(sid("da")), dst.lists["t"]!!.map { it.id })
     }
 
+    @Test fun bigRemovalsWaitForThePreview() = runBlocking {
+        // The source lists 2 of the target's 20 tracks, as a service that read it only partly would.
+        src.lists["p"] = mutableListOf(t("a", "Alpha"), t("b", "Beta"))
+        dst.catalogue += listOf(t("da", "Alpha"), t("db", "Beta"))
+        dst.lists["t"] = (listOf(t("da", "Alpha"), t("db", "Beta")) + (1..18).map { t("dx$it", "Extra $it") }).toMutableList()
+        val j = job(mirror = true)
+        val r = engine.run(j)
+        assertEquals("error=${r.error} notes=${r.notes}", 0, r.removed)
+        assertEquals(20, dst.lists["t"]!!.size)
+        assertTrue(r.notes.toString(), r.notes.any { it == "s${R.string.note_removals_capped}(18,20)" })
+        assertEquals(20, r.targetCount)
+        // The preview shows them all; applying it is the confirmation.
+        val plan = engine.plan(j, createTarget = false, interactive = true)
+        assertEquals(18, plan.toRemove.size)
+        assertTrue(plan.notes.isEmpty())
+    }
+
     @Test fun anEmptySourceNeverEmptiesTheTarget() = runBlocking {
         src.lists["p"] = mutableListOf()
         dst.lists["t"] = mutableListOf(t("dx", "Extra"), t("dy", "More"))

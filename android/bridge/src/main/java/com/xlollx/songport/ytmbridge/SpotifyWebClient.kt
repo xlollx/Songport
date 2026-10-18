@@ -399,6 +399,7 @@ class SpotifyWebClient(private val ctx: Context) {
     fun playlistTracks(id: String): List<TrackDto> {
         val out = ArrayList<TrackDto>()
         var offset = 0
+        var broken = 0
         while (true) {
             val j = gql("fetchPlaylist", jsonObj("uri" to "spotify:playlist:$id", "offset" to offset, "limit" to 100, "enableWatchFeedEntrypoint" to false))
             val content = j["data"]["playlistV2"]["content"]
@@ -406,19 +407,37 @@ class SpotifyWebClient(private val ctx: Context) {
             var parsed = 0
             for (it in items) {
                 val d = it["itemV2"]["data"] ?: it["item"]["data"]
-                trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str, it["itemV2"]["_uri"].str ?: it["item"]["_uri"].str)?.let { t -> out += t; parsed++ }
+                val uri = it["itemV2"]["_uri"].str ?: it["item"]["_uri"].str
+                val t = trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str, uri)
+                if (t != null) { out += t; parsed++ } else if (isTrackItem(d, uri)) broken++
             }
             val total = content["totalCount"].long?.toInt() ?: 0
             if (parsed == 0 && offset == 0 && (items.isNotEmpty() || content == null || total != 0)) unexpected("fetchPlaylist", j, items, content)
             offset += 100
             if (items.isEmpty() || offset >= total) break
         }
+        checkReadable("fetchPlaylist", out.size, broken)
         return out
+    }
+
+    /** An entry that is a track (not a local file or an episode) and still did not parse: the page shape moved. */
+    private fun isTrackItem(d: JsonElement?, outerUri: String?) = (d["uri"].str ?: outerUri)?.startsWith("spotify:track:") == true
+
+    /**
+     * A listing where many track entries could not be read is not a shorter playlist, it is a page
+     * the parser no longer understands: handing it over as is would make a mirror sync remove the
+     * tracks it could not read. A few unreadable entries (tracks pulled from the catalogue) are normal.
+     */
+    private fun checkReadable(operation: String, parsed: Int, broken: Int) {
+        if (broken > 10 && broken * 5 > parsed + broken) {
+            throw BridgeException("Spotify $operation: $broken of ${parsed + broken} tracks could not be read, the page shape has changed")
+        }
     }
 
     fun likedTracks(): List<TrackDto> {
         val out = ArrayList<TrackDto>()
         var offset = 0
+        var broken = 0
         while (true) {
             val j = gql("fetchLibraryTracks", jsonObj("offset" to offset, "limit" to 100))
             val lib = j["data"]["me"]["library"]["tracks"]
@@ -426,7 +445,9 @@ class SpotifyWebClient(private val ctx: Context) {
             var parsed = 0
             for (it in items) {
                 val d = it["track"]["data"] ?: it["item"]["data"]
-                trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str, it["track"]["_uri"].str ?: it["item"]["_uri"].str)?.let { t -> out += t; parsed++ }
+                val uri = it["track"]["_uri"].str ?: it["item"]["_uri"].str
+                val t = trackDto(d, it["uid"].str, it["addedAt"]["isoString"].str, uri)
+                if (t != null) { out += t; parsed++ } else if (isTrackItem(d, uri)) broken++
             }
             val total = lib["totalCount"].long?.toInt() ?: 0
             // Zero liked songs is a legitimate answer only when Spotify says the total is zero.
@@ -434,6 +455,7 @@ class SpotifyWebClient(private val ctx: Context) {
             offset += 100
             if (items.isEmpty() || offset >= total) break
         }
+        checkReadable("fetchLibraryTracks", out.size, broken)
         return out
     }
 

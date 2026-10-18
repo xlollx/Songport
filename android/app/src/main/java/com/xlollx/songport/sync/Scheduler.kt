@@ -122,7 +122,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                     Diagnostics.log(ctx, "sync", "paused by the system$reason ${job.name}: will resume")
                     throw e
                 }
-                Diagnostics.log(ctx, "sync", "end ${job.name}: +${report.added} -${report.removed} nf=${report.unmatched.size}" + (report.error?.let { " ERR $it" } ?: ""))
+                Diagnostics.log(ctx, "sync", "end ${job.name}: +${report.added} -${report.removed} nf=${report.unmatched.size} src=${report.sourceCount} dst=${report.targetCount}" + (report.error?.let { " ERR $it" } ?: ""))
                 // Una sync programmata morta per mancanza di rete non ha "fallito": WorkManager la
                 // riprova col suo backoff, quindi niente notifica d'errore per una giornata persa.
                 val networkGone = scheduled && !report.ok && isTransientNetwork(report.error)

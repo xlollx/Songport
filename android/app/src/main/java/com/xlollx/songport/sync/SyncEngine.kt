@@ -151,7 +151,13 @@ class SyncEngine(
     }
 
     /** Calcola cosa farebbe la sync senza modificare nulla (a parte creare la destinazione se manca). */
-    suspend fun plan(job: SyncJob, onProgress: (Progress) -> Unit = {}, createTarget: Boolean = true, unattended: Boolean = false): SyncPlan {
+    /**
+     * [interactive]: the plan is for the preview, where the user sees every removal before applying it.
+     * Any other run (scheduled or started with a tap) holds back removals that would take a large
+     * part of the target: a source the service listed only partly looks exactly like a source that
+     * lost most of its tracks, and only a person can tell the two apart.
+     */
+    suspend fun plan(job: SyncJob, onProgress: (Progress) -> Unit = {}, createTarget: Boolean = true, unattended: Boolean = false, interactive: Boolean = false): SyncPlan {
         val (src, dst) = providers(job)
         val srcPlaylistId = job.source.playlistId ?: throw ProviderException("No source playlist selected")
         // L'origine puo' essere una playlist pubblica leggibile senza login (catalogo Apple Music).
@@ -272,10 +278,12 @@ class SyncEngine(
                 !dst.canRemoveTracks -> if (extra.isNotEmpty()) notes += str(R.string.note_no_removals, dst.displayName, extra.size)
                 // Origine vuota: quasi certamente un errore, non svuotiamo la destinazione.
                 srcTracks.isEmpty() -> notes += str(R.string.error_source_empty)
-                // Una sync programmata che toglierebbe un quarto della destinazione (una playlist
-                // svuotata per sbaglio, un account cambiato): si aspetta che l'utente lo veda.
-                unattended && extra.size > REMOVAL_CAP_MIN && extra.size * 4 > dstTracks.size ->
+                // Toglierebbe un quarto o piu' della destinazione (playlist svuotata per sbaglio, account
+                // cambiato, o un elenco letto a meta' dal servizio): senza l'anteprima non si tocca nulla.
+                !interactive && extra.size > REMOVAL_CAP_MIN && extra.size * 4 > dstTracks.size -> {
                     notes += str(R.string.note_removals_capped, extra.size, dstTracks.size)
+                    Diagnostics.log(ctx, "engine", "${job.name}: removals held back, ${extra.size} of ${dstTracks.size} in the target matched none of the ${srcTracks.size} source tracks")
+                }
                 else -> toRemove = extra
             }
         }
@@ -296,6 +304,7 @@ class SyncEngine(
             newMatches = newCache,
             targetCreated = targetCreated,
             sourceOrder = srcTracks.map { it.id },
+            targetCount = dstTracks.size,
         )
     }
 
@@ -658,7 +667,7 @@ class SyncEngine(
         return SyncReport(
             id = reportId, jobId = job.id, jobName = job.name, startedEpoch = started,
             durationMs = System.currentTimeMillis() - started,
-            sourceCount = plan.sourceCount, added = added, removed = removed,
+            sourceCount = plan.sourceCount, targetCount = plan.targetCount, added = added, removed = removed,
             unmatched = unmatched.map { it.toString() } + failed,
             unmatchedTracks = unmatched,
             ignored = plan.ignored,

@@ -175,7 +175,7 @@
     <string name="link_resolving">Lettura della playlist…</string>
     <string name="note_no_removals">%1$s non permette di togliere brani da una playlist tramite API: %2$d brani sono rimasti al loro posto.</string>
     <string name="note_removals_deferred">Rimozioni rinviate: la ricerca non è stata completata, quindi %1$d brani della destinazione senza corrispondenza per ora restano al loro posto. Verranno rivalutati quando un giro arriva in fondo.</string>
-    <string name="note_removals_capped">Rimozioni trattenute: questa esecuzione toglierebbe %1$d dei %2$d brani della destinazione, più di quanto una sync programmata rimuove da sola. Guarda l\'anteprima o esegui la sync a mano per confermare.</string>
+    <string name="note_removals_capped">Rimozioni trattenute: questa esecuzione toglierebbe %1$d dei %2$d brani della destinazione. Apri l\'anteprima per vederli e confermare; se l\'origine non li ha davvero persi, il servizio l\'ha letta a metà e non va tolto nulla.</string>
     <string name="note_unchanged">Niente è cambiato da nessuna delle due parti dall\'ultimo giro: saltato.</string>
     <string name="review_share">Condividi l\'elenco</string>
     <string name="note_search_interrupted">Cercati %1$d brani su %2$d, poi il servizio ha chiesto una pausa più lunga (%3$s). È un limite del servizio, non un errore di Songport: quanto trovato è stato applicato e memorizzato. Rilancia la sync tra qualche minuto per continuare da lì.</string>
@@ -216,6 +216,7 @@
     <string name="preview_present">%1$d già sulla destinazione</string>
     <string name="preview_add">%1$d da aggiungere</string>
     <string name="preview_remove">%1$d da rimuovere</string>
+    <string name="preview_remove_warning">Toglierebbe %1$d dei %2$d brani della destinazione. Prima di confermare, controlla che l\'origine abbia davvero così pochi brani: una lettura incompleta da parte del servizio si presenta esattamente così.</string>
     <string name="preview_unmatched">%1$d non trovati</string>
     <string name="preview_ignored">%1$d ignorati</string>
     <string name="preview_target_new">La playlist di destinazione verrà creata.</string>

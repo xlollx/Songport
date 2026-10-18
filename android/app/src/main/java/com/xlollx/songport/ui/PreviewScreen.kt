@@ -71,7 +71,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
     BackHandler { onClose() }
 
     LaunchedEffect(job.id) {
-        try { plan = engine.plan(job, { progress = it }, createTarget = false) }
+        try { plan = engine.plan(job, { progress = it }, createTarget = false, interactive = true) }
         catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { error = e.message ?: ctx.getString(R.string.error_generic) }
     }
 
@@ -104,6 +104,10 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                             Text(stringResource(R.string.preview_present, p.alreadyPresent))
                             Text(stringResource(R.string.preview_add, p.toAdd.size))
                             if (job.mirrorRemovals) Text(stringResource(R.string.preview_remove, p.toRemove.size))
+                            // A quarter of the target or more: the one case where "confirm" deserves a second look.
+                            if (p.toRemove.size > 10 && p.toRemove.size * 4 > p.targetCount) {
+                                Text(stringResource(R.string.preview_remove_warning, p.toRemove.size, p.targetCount), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                            }
                             Text(stringResource(R.string.preview_unmatched, p.unmatched.size))
                             if (p.uncertain.isNotEmpty()) Text(stringResource(R.string.preview_uncertain, p.uncertain.size), color = MaterialTheme.colorScheme.tertiary)
                             if (p.ignored > 0) Text(stringResource(R.string.preview_ignored, p.ignored))

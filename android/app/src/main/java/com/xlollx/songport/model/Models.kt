@@ -127,6 +127,8 @@ data class SyncReport(
     val startedEpoch: Long,
     val durationMs: Long,
     val sourceCount: Int = 0,
+    /** Tracks the target listed before this run (0 when not read, e.g. a target created now). */
+    val targetCount: Int = 0,
     val added: Int = 0,
     val removed: Int = 0,
     val unmatched: List<String> = emptyList(),
@@ -175,6 +177,8 @@ data class SyncPlan(
     val targetCreated: Boolean,
     /** The source's track ids in its order, for the order step. */
     val sourceOrder: List<String> = emptyList(),
+    /** How many tracks the target listed: the scale a removal count is read against. */
+    val targetCount: Int = 0,
 )
 
 /** Progresso di una sync in corso, mostrato nella UI. */
