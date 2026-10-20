@@ -493,6 +493,7 @@
     <string name="error_create_unsupported">%1$s ではアプリからプレイリストを作成できません。%1$s で作成してから、ここで選択してください。</string>
     <string name="connect_title">%1$s に接続中</string>
     <string name="connect_where_oauth">ブラウザで %1$s にログインします。Songport があなたのパスワードを見ることはありません。</string>
+    <string name="connect_where_web">%1$s のページがアプリ内に表示され、そこでサインインします。Songport がパスワードを見ることはなく、残されたセッションだけを保持します。</string>
     <string name="connect_where_apple">Apple 自身のウインドウで Apple ID を使ってサインインします。Songport があなたのパスワードを見ることはありません。</string>
     <string name="connect_where_server">サーバーの情報はこの端末上で暗号化して保存されます。Songport はあなたのサーバーとのみ通信します。</string>
     <string name="connect_token">Songport が受け取るのは限定的で取り消し可能な権限のみで、この端末上で暗号化して保存されます（Android Keystore）。</string>

@@ -38,6 +38,8 @@ import com.xlollx.songport.providers.MusicProvider
 fun ConnectDialog(provider: MusicProvider, onDismiss: () -> Unit, onContinue: () -> Unit) {
     val isServer = provider is CredentialsProvider
     val isApple = provider.serviceId == AppleMusicProvider.SERVICE
+    // Web routes host the service's own sign-in page in the app, not in the browser: said as it is.
+    val isWeb = provider.routeNoteRes == R.string.route_note_web || provider.routeNoteRes == R.string.route_note_web_only
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(Icons.Filled.VerifiedUser, null, tint = MaterialTheme.colorScheme.primary) },
@@ -49,6 +51,7 @@ fun ConnectDialog(provider: MusicProvider, onDismiss: () -> Unit, onContinue: ()
                     when {
                         isServer -> stringResource(R.string.connect_where_server)
                         isApple -> stringResource(R.string.connect_where_apple)
+                        isWeb -> stringResource(R.string.connect_where_web, provider.authDomain ?: provider.displayName)
                         else -> stringResource(R.string.connect_where_oauth, provider.authDomain ?: provider.displayName)
                     },
                 )

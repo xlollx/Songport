@@ -18,6 +18,7 @@
     <string name="settings_battery_desc">Algunos teléfonos (Xiaomi, Huawei, Oppo, Samsung) detienen las apps en segundo plano. Excluye Trackhop de la optimización de batería para que se respete la programación.</string>
     <string name="login_trust_server">Tus credenciales se guardan cifradas en este teléfono. Trackhop solo se comunica con el servidor que indiques aquí.</string>
     <string name="connect_where_oauth">Iniciarás sesión en %1$s, en tu navegador. Trackhop nunca ve tu contraseña.</string>
+    <string name="connect_where_web">Iniciarás sesión en la página de %1$s, mostrada dentro de la app. Trackhop nunca ve tu contraseña, solo la sesión que deja.</string>
     <string name="connect_where_apple">Iniciarás sesión con tu Apple ID en la propia ventana de Apple. Trackhop nunca ve tu contraseña.</string>
     <string name="connect_where_server">Los datos de tu servidor se guardan cifrados en este teléfono. Trackhop solo se comunica con tu servidor.</string>
     <string name="connect_token">Trackhop solo recibe un permiso limitado y revocable, guardado cifrado en este teléfono (Android Keystore).</string>

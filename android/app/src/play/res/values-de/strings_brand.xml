@@ -18,6 +18,7 @@
     <string name="settings_battery_desc">Manche Handys (Xiaomi, Huawei, Oppo, Samsung) stoppen Hintergrund-Apps. Nimm Trackhop von der Akku-Optimierung aus, damit der Zeitplan eingehalten wird.</string>
     <string name="login_trust_server">Deine Zugangsdaten bleiben verschlüsselt auf diesem Handy. Trackhop kommuniziert nur mit dem Server, den du hier eingibst.</string>
     <string name="connect_where_oauth">Du meldest dich bei %1$s in deinem Browser an. Trackhop sieht dein Passwort nie.</string>
+    <string name="connect_where_web">Du meldest dich auf der Seite von %1$s an, die in der App angezeigt wird. Trackhop sieht dein Passwort nie, nur die Sitzung, die sie hinterlässt.</string>
     <string name="connect_where_apple">Du meldest dich mit deiner Apple-ID in Apples eigenem Fenster an. Trackhop sieht dein Passwort nie.</string>
     <string name="connect_where_server">Deine Serverdaten bleiben verschlüsselt auf diesem Handy. Trackhop kommuniziert nur mit deinem Server.</string>
     <string name="connect_token">Trackhop erhält nur eine begrenzte, widerrufbare Berechtigung, die verschlüsselt auf diesem Handy gespeichert wird (Android Keystore).</string>

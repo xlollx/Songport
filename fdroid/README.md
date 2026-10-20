@@ -23,8 +23,12 @@ What F-Droid reads from this repository:
 
 The recipe must stay exactly as `fdroid rewritemeta` writes it, or fdroiddata's CI fails: no
 comments, Unix line endings (LF). Pasting it into GitLab's web editor on Windows saves CRLF; upload
-the file with "Replace" instead. No `prebuild` step is needed for the Play flavor's ads SDK: F-Droid's
-scanner ignores the flavors it does not build.
+the file with "Replace" instead. No `prebuild` step is needed for the Play flavor's ads SDK: the
+`playImplementation` lines in `build.gradle` belong to a flavor F-Droid does not build, and
+fdroiddata's CI (pipeline 2878053202 on !49974, scanner included) passed on the recipe without it.
+
+The icon and the feature graphics are CC BY-SA 4.0 (see the README's licence section), so F-Droid
+can carry them; the code is GPL-3.0-only.
 
 Check a change locally with `pip install fdroidserver`, then `fdroid rewritemeta` and `fdroid lint`
 in a folder holding `metadata/com.xlollx.songport.yml`.
@@ -36,8 +40,11 @@ After inclusion F-Droid picks up new versions by itself from the `vX.Y.Z` tags.
 The recipe has `Binaries` and `AllowedAPKSigningKeys`: F-Droid builds the app from source, compares it
 with the APK published on GitHub Releases and, when they match, distributes the GitHub APK with its
 original signature. Users can then move between the GitHub and the F-Droid version without
-uninstalling. Checked for 1.0.44: F-Droid's build with the GitHub signature copied onto it
-(`apksigcopier copy`) is byte-identical to the GitHub APK.
+uninstalling. Checked for 1.0.44 locally, and for 1.0.45 by fdroiddata's CI on !49974 (job
+16703446859: "compared built binary to supplied reference binary successfully"): F-Droid's build
+with the GitHub signature copied onto it (`apksigcopier copy`) is byte-identical to the GitHub APK.
+The GitHub build uses a system Gradle 8.14.3, F-Droid the wrapper of the same version; the output
+is the same.
 
 It stays reproducible as long as:
 

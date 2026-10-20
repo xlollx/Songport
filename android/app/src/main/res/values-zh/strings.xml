@@ -493,6 +493,7 @@
     <string name="error_create_unsupported">%1$s 无法通过应用创建歌单：请在 %1$s 中创建，再在这里选择。</string>
     <string name="connect_title">正在连接 %1$s</string>
     <string name="connect_where_oauth">你将在浏览器中登录 %1$s。Songport 永远看不到你的密码。</string>
+    <string name="connect_where_web">你将在应用内显示的 %1$s 页面上登录。Songport 永远不会看到你的密码，只保留登录后留下的会话。</string>
     <string name="connect_where_apple">你将在 Apple 自己的窗口中使用 Apple ID 登录。Songport 永远看不到你的密码。</string>
     <string name="connect_where_server">你的服务器信息会加密保存在这部手机上。Songport 只与你的服务器通信。</string>
     <string name="connect_token">Songport 只会获得一项有限、可撤销的权限，并加密保存在这部手机上（Android Keystore）。</string>

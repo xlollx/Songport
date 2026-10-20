@@ -498,6 +498,7 @@
     <string name="error_create_unsupported">%1$s kann aus der App heraus keine Playlists erstellen: Erstelle sie in %1$s und wähle sie hier aus.</string>
     <string name="connect_title">%1$s verbinden</string>
     <string name="connect_where_oauth">Du meldest dich bei %1$s in deinem Browser an. Songport sieht dein Passwort nie.</string>
+    <string name="connect_where_web">Du meldest dich auf der Seite von %1$s an, die in der App angezeigt wird. Songport sieht dein Passwort nie, nur die Sitzung, die sie hinterlässt.</string>
     <string name="connect_where_apple">Du meldest dich mit deiner Apple-ID in Apples eigenem Fenster an. Songport sieht dein Passwort nie.</string>
     <string name="connect_where_server">Deine Serverdaten bleiben verschlüsselt auf diesem Handy. Songport kommuniziert nur mit deinem Server.</string>
     <string name="connect_token">Songport erhält nur eine begrenzte, widerrufbare Berechtigung, die verschlüsselt auf diesem Handy gespeichert wird (Android Keystore).</string>

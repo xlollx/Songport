@@ -22,7 +22,7 @@ them through it in about two minutes. Personal servers and files need nothing.
 
 Download: the signed APK of every version is on the
 [Releases](https://github.com/xlollx/Songport/releases/latest) page. UI languages: English, Italian,
-French, German, Spanish, Chinese and Japanese. License: GPL-3.0, see [LICENSE](LICENSE). Security reports: see
+French, German, Spanish, Chinese and Japanese. License: GPL-3.0-only, see [LICENSE](LICENSE). Security reports: see
 [SECURITY.md](SECURITY.md).
 
 <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="54" alt="Get it on Obtainium"></a>
@@ -170,7 +170,7 @@ plugin must verify the caller's package name and signing certificate before answ
 ### Songport Bridge and the built-in web connectors
 
 [**Songport Bridge**](https://github.com/xlollx/Songport-YTM-Bridge) is the reference plugin, by the
-same author, free and open source (GPL-3.0), distributed on GitHub only and never on Google Play.
+same author, free and open source (GPL-3.0-only), distributed on GitHub only and never on Google Play.
 Its connectors are also built into Songport's GitHub and F-Droid build, as the `:bridge` library module
 (`android/bridge`, included with `fullImplementation`): the same code runs inside Songport, called
 in-process through `BridgeCore` instead of a ContentProvider (`providers/BuiltIn.kt` in `src/full`,
@@ -438,13 +438,21 @@ issue.
 ## License, copyright and trademark
 
 Songport is free software: you can redistribute it and/or modify it under the terms of the GNU
-General Public License, version 3 (see [LICENSE](LICENSE)). Copyright (C) 2026 xlollx and
+General Public License, version 3 only (SPDX `GPL-3.0-only`, see [LICENSE](LICENSE)). Copyright (C) 2026 xlollx and
 contributors. Any distributed build of this code or of a modified version must ship its complete
 source code under the same license, as the GPL requires.
 
-The name "Songport", the app icon and the feature graphics in `docs/store/` are not covered by the
-GPL. They identify this project's official releases and may not be used for forks, rebuilds or
-derived apps without written permission. A fork must use its own name and icon. Names of the music
+The app icon (`android/app/src/main/res/mipmap*`, `android/app/src/main/res/drawable/ic_launcher*`,
+`fastlane/metadata/android/en-US/images/icon.png`, `docs/store/icon512.png`) and the feature
+graphics (`fastlane/metadata/android/*/images/featureGraphic.png`, `docs/store/feature_*.png`) are
+© 2026 xlollx and licensed under [Creative Commons Attribution-ShareAlike 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+(CC BY-SA 4.0): they may be copied, redistributed and adapted with attribution and under the same
+licence, so that repositories such as F-Droid can ship them as they are. Unmodified rebuilds of this
+project may keep them.
+
+The name "Songport" (and "Trackhop", the Google Play name) is not licensed: it identifies this
+project's official releases. A fork that changes the app and distributes it should use a name of its
+own, as GPLv3 section 7(c) permits to require, so users can tell the two apart. Names of the music
 services mentioned in this project are trademarks of their respective owners.
 
 ## Known limits

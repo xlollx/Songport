@@ -18,6 +18,7 @@
     <string name="settings_battery_desc">Certains téléphones (Xiaomi, Huawei, Oppo, Samsung) arrêtent les applications en arrière-plan. Excluez Trackhop de l\'optimisation de la batterie pour que la planification soit respectée.</string>
     <string name="login_trust_server">Vos identifiants restent chiffrés sur ce téléphone. Trackhop ne communique qu\'avec le serveur que vous indiquez ici.</string>
     <string name="connect_where_oauth">Vous vous connecterez sur %1$s, dans votre navigateur. Trackhop ne voit jamais votre mot de passe.</string>
+    <string name="connect_where_web">Vous vous connecterez sur la page de %1$s, affichée dans l\'application. Trackhop ne voit jamais votre mot de passe, seulement la session qu\'elle laisse.</string>
     <string name="connect_where_apple">Vous vous connecterez avec votre identifiant Apple dans la fenêtre d\'Apple. Trackhop ne voit jamais votre mot de passe.</string>
     <string name="connect_where_server">Les détails de votre serveur restent chiffrés sur ce téléphone. Trackhop ne communique qu\'avec votre serveur.</string>
     <string name="connect_token">Trackhop ne reçoit qu\'une autorisation limitée et révocable, stockée chiffrée sur ce téléphone (Android Keystore).</string>

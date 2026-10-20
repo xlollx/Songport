@@ -8,6 +8,6 @@
 <li>为没有 API 的服务导入和导出歌单文件（CSV、M3U、iTunes XML、JSON）</li>
 <li>将整个账号备份为带日期的版本，移除重复歌曲</li>
 </ul>
-<p>支持 Spotify、Apple Music、YouTube Music、TIDAL、Deezer，Subsonic/Navidrome、Jellyfin 和 Plex 服务器，可将 Last.fm 和 ListenBrainz 用作来源，也支持文件。需要开发者密钥的服务可按应用内指南完成设置；密钥和所有访问令牌都加密保存在设备上。</p>
+<p>支持 Spotify、Apple Music、YouTube Music、TIDAL、Deezer，Subsonic/Navidrome、Jellyfin 和 Plex 服务器，可将 Last.fm 和 ListenBrainz 用作来源，也支持文件。需要开发者密钥的服务可按应用内指南完成设置；密钥和所有访问令牌都加密保存在设备上。 Deezer 登录会经由 xlollx.github.io 上的一个静态页面返回应用，这是 Deezer 要求的 https 重定向：它只负责跳回应用，不记录任何内容。</p>
 <p>YouTube Music、Amazon Music，以及无需开发者密钥的 Spotify 和 Apple Music 登录，均通过内置的各服务自己的网页播放器实现。这些并非官方 API：首次登录前，应用会显示相关说明。</p>
 <p>Songport 与上述任何服务均无关联；使用其名称仅为说明兼容性。</p>

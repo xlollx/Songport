@@ -8,6 +8,6 @@
 <li>Importa ed esporta file di playlist (CSV, M3U, XML di iTunes, JSON) per i servizi senza API</li>
 <li>Backup di un intero account in versioni datate, rimozione dei doppioni</li>
 </ul>
-<p>Funziona con Spotify, Apple Music, YouTube Music, TIDAL, Deezer, server Subsonic/Navidrome, Jellyfin e Plex, Last.fm e ListenBrainz come origini, e file. I servizi che richiedono una chiave sviluppatore si configurano con una guida nell'app; la chiave e ogni token di accesso restano cifrati sul dispositivo.</p>
+<p>Funziona con Spotify, Apple Music, YouTube Music, TIDAL, Deezer, server Subsonic/Navidrome, Jellyfin e Plex, Last.fm e ListenBrainz come origini, e file. I servizi che richiedono una chiave sviluppatore si configurano con una guida nell'app; la chiave e ogni token di accesso restano cifrati sul dispositivo. L'accesso a Deezer rientra nell'app passando da una pagina statica su xlollx.github.io, il redirect https che Deezer richiede: si limita a rimandare all'app e non registra nulla.</p>
 <p>YouTube Music, Amazon Music e l'accesso a Spotify e Apple Music senza chiavi sviluppatore funzionano tramite i player web dei servizi, integrati nell'app. Non sono API ufficiali: l'app mostra un avviso prima del primo accesso.</p>
 <p>Songport non è affiliata a nessuno di questi servizi; i loro nomi sono usati solo per indicare la compatibilità.</p>

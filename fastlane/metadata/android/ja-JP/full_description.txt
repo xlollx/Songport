@@ -8,6 +8,6 @@
 <li>API のないサービス向けに、プレイリストファイル（CSV、M3U、iTunes XML、JSON）のインポートとエクスポート</li>
 <li>アカウント全体を日付付きのバージョンとしてバックアップ、重複の削除</li>
 </ul>
-<p>Spotify、Apple Music、YouTube Music、TIDAL、Deezer、Subsonic/Navidrome・Jellyfin・Plex サーバー、同期元としての Last.fm と ListenBrainz、そしてファイルに対応しています。開発者キーが必要なサービスは、アプリ内のガイドに沿って設定できます。キーとすべてのアクセストークンは端末上で暗号化されたまま保存されます。</p>
+<p>Spotify、Apple Music、YouTube Music、TIDAL、Deezer、Subsonic/Navidrome・Jellyfin・Plex サーバー、同期元としての Last.fm と ListenBrainz、そしてファイルに対応しています。開発者キーが必要なサービスは、アプリ内のガイドに沿って設定できます。キーとすべてのアクセストークンは端末上で暗号化されたまま保存されます。 Deezer のサインインは、Deezer が要求する https リダイレクト先である xlollx.github.io 上の静的ページを経由してアプリに戻ります。このページはアプリへ転送するだけで、何も記録しません。</p>
 <p>YouTube Music、Amazon Music、および開発者キーなしでの Spotify と Apple Music へのサインインは、アプリに組み込まれた各サービス自身のウェブプレーヤーを通じて動作します。これらは公式 API ではないため、最初のサインインの前にアプリが注意事項を表示します。</p>
 <p>Songport はこれらのサービスのいずれとも提携していません。サービス名は互換性を示す目的でのみ使用しています。</p>

@@ -18,6 +18,7 @@
     <string name="settings_battery_desc">Some phones (Xiaomi, Huawei, Oppo, Samsung) stop background apps. Exclude Trackhop from battery optimisation so the schedule is respected.</string>
     <string name="login_trust_server">Your credentials stay encrypted on this phone. Trackhop only talks to the server you enter here.</string>
     <string name="connect_where_oauth">You will sign in on %1$s, in your browser. Trackhop never sees your password.</string>
+    <string name="connect_where_web">You will sign in on %1$s\'s own page, shown inside the app. Trackhop never sees your password, only the session it leaves.</string>
     <string name="connect_where_apple">You will sign in with your Apple ID in Apple\'s own window. Trackhop never sees your password.</string>
     <string name="connect_where_server">Your server details stay encrypted on this phone. Trackhop only talks to your server.</string>
     <string name="connect_token">Trackhop only receives a limited, revocable permission, stored encrypted on this phone (Android Keystore).</string>
