@@ -35,7 +35,11 @@ import java.util.concurrent.atomic.AtomicReference
 object AmazonBridge {
 
     /** What the player uses: its API headers (preferred) or, failing that, its configuration object. */
-    class Player(val headers: Map<String, String>, val config: JsonObject?, val userAgent: String?, val at: Long) {
+    class Player(
+        val headers: Map<String, String>, val config: JsonObject?, val userAgent: String?, val at: Long,
+        /** Calls the offscreen player made without a token: it ran, but as a signed-out visitor. */
+        val anonymousCalls: Int = 0,
+    ) {
         /** The access token lives inside the authentication header the player builds. */
         val signedIn: Boolean
             get() = (parseJson(headers["x-amzn-authentication"] ?: "{}") as? JsonObject)["accessToken"].str?.isNotBlank() == true
@@ -124,6 +128,7 @@ object AmazonBridge {
         val lastUrl = AtomicReference("")
         val problem = AtomicReference<String?>(null)
         val calls = AtomicInteger(0)
+        val anonymous = AtomicInteger(0)
         var web: WebView? = null
         val main = Handler(Looper.getMainLooper())
 
@@ -131,7 +136,7 @@ object AmazonBridge {
             @JavascriptInterface
             fun headers(json: String, ua: String?, host: String?) {
                 calls.incrementAndGet()
-                val map = headersOf(json) ?: return
+                val map = headersOf(json) ?: run { anonymous.incrementAndGet(); return }
                 AmazonSession.saveHeaders(app, json, ua, host)
                 headers.set(map)
                 userAgent.set(ua)
@@ -201,7 +206,7 @@ object AmazonBridge {
                 (problem.get()?.let { ", $it" } ?: "") + "]." +
                 " Open Songport Bridge, tap Capture traffic and let the player load once, then try again.",
         )
-        return Player(h ?: emptyMap(), c, userAgent.get(), System.currentTimeMillis())
+        return Player(h ?: emptyMap(), c, userAgent.get(), System.currentTimeMillis(), anonymous.get())
     }
 
     private const val VIEW_W = 1280

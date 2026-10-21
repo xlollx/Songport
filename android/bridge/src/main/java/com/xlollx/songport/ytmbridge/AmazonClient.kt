@@ -215,8 +215,15 @@ class AmazonClient(private val ctx: Context) {
         if (player.headers.isNotEmpty()) return player.headers + fresh
         val c = Config(player.config ?: JsonObject(emptyMap()), sessionCookie(cookies()))
         if (!c.signedIn) throw BridgeException(
-            "the Amazon Music player did not hand out an access token: sign in to Amazon again in Songport Bridge. " +
-                "Fields: " + c.fields.joinToString(", ").take(200).ifBlank { "none" },
+            // The player ran but called its API as a visitor, or its configuration names no customer:
+            // the stored session has expired. Otherwise it loaded and stayed idle, which a visible
+            // load usually unblocks.
+            if (player.anonymousCalls > 0 || c.customerId.isNullOrBlank()) {
+                "Amazon Music opened as a signed-out visitor (${player.anonymousCalls} calls without a token): the Amazon session has expired. " +
+                    "Accounts, Amazon Music: disconnect and connect again."
+            } else {
+                "the Amazon Music player loaded but made no calls of its own within 50 s. Accounts, Amazon Music: connect again, letting the player load in the sign-in screen, then try again."
+            },
         )
         return xAmznHeaders(c, domain, pageUrl) + fresh
     }
