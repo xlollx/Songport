@@ -27,7 +27,8 @@ import kotlinx.serialization.json.JsonElement
  */
 class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     // Renaming and deleting were mapped from the desktop player's own calls; an older plugin lacks them.
-    override val canRenamePlaylists: Boolean get() = BridgePlugin.builtIn
+    // The GraphQL player (October 2026) has no rename or visibility call we have seen yet.
+    override val canRenamePlaylists: Boolean get() = false
     override val canDeletePlaylists: Boolean get() = BridgePlugin.builtIn
     override val serviceId = SERVICE
     override val displayName = "Amazon Music"
@@ -89,7 +90,7 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
         withContext(Dispatchers.IO) { call(ctx, "amazon.rename", playlistId, Bundle().apply { putString("name", name) }) }
     }
 
-    override val canSetVisibility: Boolean get() = BridgePlugin.builtIn
+    override val canSetVisibility: Boolean get() = false
     override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
         withContext(Dispatchers.IO) { call(ctx, "amazon.visibility", playlistId, Bundle().apply { putBoolean("public", public) }) }
     }

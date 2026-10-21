@@ -20,11 +20,10 @@ import java.util.concurrent.atomic.AtomicReference
 /**
  * The credentials of the Amazon Music web player, taken from the player itself.
  *
- * Amazon hands out an access token only to the running player: `config.json` is served anonymously
- * and the page carries an empty `accessToken`. So the Bridge mirrors the `x-amzn-*` headers the
- * player puts in its own API calls (they travel inside the request body, under `headers`). What
- * Songport then sends is exactly what the player sends: no guessing of device types, feature flags
- * or CSRF values, and it keeps working when Amazon changes them.
+ * Since October 2026 the player talks GraphQL to `gql.music.amazon.<tld>`, authenticated by its
+ * cookies and a few HTTP headers (CSRF triple, device and session ids). [AmazonClient] rebuilds
+ * those from the page configuration; when Amazon refuses them, the ones mirrored here from the real
+ * player are used: exactly what the player sends, with no guessing.
  *
  * Two chances to see them, because a player that nobody is looking at does not always start:
  * the sign-in and traffic-capture screens install [HOOK] in their own visible WebView and store
@@ -42,9 +41,8 @@ object AmazonBridge {
         /** Where its other requests went (host and path), for the error when no API call was seen. */
         val otherRequests: List<String> = emptyList(),
     ) {
-        /** The access token lives inside the authentication header the player builds. */
-        val signedIn: Boolean
-            get() = (parseJson(headers["x-amzn-authentication"] ?: "{}") as? JsonObject)["accessToken"].str?.isNotBlank() == true
+        /** The GraphQL player authenticates with its cookies and a CSRF triple: a mirrored set carries it. */
+        val signedIn: Boolean get() = headers["csrf-token"]?.isNotBlank() == true
     }
 
     /** An access token lasts about an hour; well before that the headers are captured again. */
@@ -112,13 +110,15 @@ object AmazonBridge {
         return Player(map, null, AmazonSession.headersUserAgent(app), at)
     }
 
-    /** Parses a captured `headers` object, keeping it only when it really carries a token. */
+    /** Parses a mirrored set of the player's GraphQL headers, keeping it only when it carries the CSRF token. */
     private fun headersOf(json: String): Map<String, String>? {
         val j = parseJson(json) as? JsonObject ?: return null
-        val map = j.mapNotNull { (k, v) -> v.str?.let { k to it } }.toMap()
-        val token = (parseJson(map["x-amzn-authentication"] ?: "{}") as? JsonObject)["accessToken"].str
-        return if (token.isNullOrBlank()) null else map
+        val map = j.mapNotNull { (k, v) -> v.str?.let { k.lowercase() to it } }.toMap()
+        return if (map["csrf-token"].isNullOrBlank()) null else map
     }
+
+    /** The user agent the player ran with when its headers were mirrored. */
+    fun storedUserAgent(ctx: Context): String? = AmazonSession.headersUserAgent(ctx.applicationContext)
 
     @SuppressLint("SetJavaScriptEnabled", "AddJavascriptInterface")
     private fun capture(app: Context, domain: String): Player {
@@ -231,8 +231,8 @@ object AmazonBridge {
     private const val SIGN_IN_AGAIN = "sign-in page"
 
     /**
-     * Mirrors the `x-amzn-*` headers of the player's own API calls. They are not HTTP headers: the
-     * player serialises them as a JSON string inside the request body, under `headers`.
+     * Mirrors the HTTP headers of the player's own GraphQL calls (CSRF triple, device and session
+     * ids), and meets the desktop player's browser checks so that it starts at all.
      */
     val HOOK = """
         (function(){
@@ -267,29 +267,35 @@ object AmazonBridge {
             } catch(e){}
           };
           setTimeout(probe, 8000); setTimeout(probe, 20000);
-          var match = function(u){ return /skill\.music\.a2z\.com\/api\/|music\.amazon\.[a-z.]+\/(?:[A-Z]{2}\/)?api\//.test(String(u||'')); };
-          var grab = function(b){
-            if (b == null) return;
+          // The GraphQL endpoint the player has used since October 2026: its HTTP headers (CSRF triple,
+          // device and session ids) are what a request needs besides the cookies.
+          var isGql = function(u){ try { return /^gql\.music\.amazon\./.test(new URL(String(u||''), location.href).host); } catch(e) { return false; } };
+          var plain = function(h){
+            var out = {};
             try {
-              if (typeof b !== 'string') b = String(b);
-              var j = JSON.parse(b);
-              if (!j || !j.headers) return;
-              var h = (typeof j.headers === 'string') ? j.headers : JSON.stringify(j.headers);
-              AmzBridge.headers(h, navigator.userAgent, location.host);
+              if (!h) return out;
+              if (typeof h.forEach === 'function' && !(h instanceof Array)) h.forEach(function(v, k){ out[k] = String(v); });
+              else if (h instanceof Array) h.forEach(function(p){ out[p[0]] = String(p[1]); });
+              else Object.keys(h).forEach(function(k){ out[k] = String(h[k]); });
             } catch(e){}
+            return out;
           };
-          // Where the player's other requests go (host and path only): if Amazon moves its API, the
-          // error says where to, instead of "no calls".
+          var grab = function(h){
+            try { var o = plain(h); if (o['csrf-token']) AmzBridge.headers(JSON.stringify(o), navigator.userAgent, location.host); } catch(e){}
+          };
+          // Where the player's other requests go (host and path only): if Amazon moves its API again,
+          // the error says where to, instead of "no calls".
           var other = function(u){ try { if (!AmzBridge.other) return; var x = new URL(String(u), location.href); AmzBridge.other(x.host + x.pathname.split('/').slice(0, 3).join('/')); } catch(e){} };
           var of = window.fetch;
           if (of) window.fetch = function(input, init){
             var url = (typeof input === 'string') ? input : (input && input.url) || '';
-            if (match(url) && init && init.body) grab(init.body); else other(url);
+            if (isGql(url)) grab((init && init.headers) || (input && input.headers)); else other(url);
             return of.apply(this, arguments);
           };
-          var oo = XMLHttpRequest.prototype.open, os = XMLHttpRequest.prototype.send;
+          var oo = XMLHttpRequest.prototype.open, os = XMLHttpRequest.prototype.send, osh = XMLHttpRequest.prototype.setRequestHeader;
+          XMLHttpRequest.prototype.setRequestHeader = function(k, v){ (this.__h = this.__h || []).push([k, v]); return osh.apply(this, arguments); };
           XMLHttpRequest.prototype.open = function(m, u){ this.__u = u; return oo.apply(this, arguments); };
-          XMLHttpRequest.prototype.send = function(b){ if (match(this.__u)) grab(b); else other(this.__u); return os.apply(this, arguments); };
+          XMLHttpRequest.prototype.send = function(b){ if (isGql(this.__u)) grab(this.__h); else other(this.__u); return os.apply(this, arguments); };
         })();
     """.trimIndent()
 

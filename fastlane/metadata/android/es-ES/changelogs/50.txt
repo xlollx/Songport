@@ -1,0 +1,1 @@
+Amazon Music vuelve a funcionar: el conector usa la nueva interfaz del reproductor web de Amazon (playlists, búsqueda, crear, añadir, quitar, eliminar). Renombrar y cambiar la visibilidad de las playlists de Amazon no está disponible por ahora.

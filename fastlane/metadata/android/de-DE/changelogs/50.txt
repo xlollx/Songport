@@ -1,0 +1,1 @@
+Amazon Music funktioniert wieder: Der Connector nutzt die neue Schnittstelle des Amazon-Web-Players (Playlists, Suche, Erstellen, Hinzufügen, Entfernen, Löschen). Umbenennen und Sichtbarkeit von Amazon-Playlists sind vorerst nicht verfügbar.

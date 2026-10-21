@@ -1,7 +1,6 @@
 package com.xlollx.songport.ytmbridge
 
 import android.content.Context
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -10,46 +9,40 @@ import okhttp3.OkHttpClient
 import com.xlollx.songport.ytmbridge.BridgeNet.withHook
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 /**
- * Talks to the endpoints the Amazon Music web player uses ("skyfire" templates on
- * *.web.skill.music.a2z.com/api/<method>). Like the YouTube Music client this is not a public API.
+ * Talks to the GraphQL endpoint of the Amazon Music web player (`gql.music.amazon.<tld>`), which
+ * replaced the old "skyfire" skill API in October 2026. Like the YouTube Music client this is not
+ * a public API: operations and their persisted-query hashes were taken from the player's own
+ * traffic, captured with the Bridge's "Capture traffic" screen.
  *
- * Credentials come from [AmazonBridge], which runs the real player in a hidden WebView and mirrors
- * the `x-amzn-*` headers it builds for its own calls: Amazon issues an access token only to the
- * running player, so neither `config.json` nor the served page carries one. Those headers travel
- * inside the JSON body, under `headers`, not as HTTP headers.
- *
- * Methods and payloads were taken from traffic captured with the app's own "Capture traffic"
- * screen: showLibraryPlaylists, showLibraryPlaylist, createPlaylist, addTrackToPlaylist,
- * removeTrackFromPlaylist, searchCatalogTracks.
+ * Authentication is the session's cookies plus the CSRF triple, device and session ids the player
+ * sends as HTTP headers. Those values are in the configuration the signed-in page inlines
+ * (`amznMusic.appConfig`), so they are read with a plain request; when Amazon refuses them, the
+ * headers the real player sent (mirrored by [AmazonBridge] from a WebView) are used instead.
  */
 class AmazonClient(private val ctx: Context) {
 
     /**
-     * The player's configuration. Two sources carry it and name the fields differently: the page of
-     * the signed-in player (`amznMusic.appConfig = {...}`, the only one that carries the customer's
-     * access token) and `/config.json` (served anonymously, enough to browse the catalogue but
-     * without a token). Fields are therefore looked up under every name seen so far, and
-     * [sessionCookie] fills the session id from the `session-id` cookie, which is where the web
-     * player itself takes it from.
+     * The player's configuration, from the signed-in page (`amznMusic.appConfig = {...}`) or from
+     * `/config.json`. Fields are looked up under every name seen so far; [sessionCookie] fills the
+     * session id from the `session-id` cookie, which is where the player itself takes it from.
      */
     class Config(val raw: JsonObject, private val sessionCookie: String? = null) {
         val accessToken get() = (raw["accessToken"].str ?: raw["tokens"]["accessToken"].str ?: raw["access_token"].str).orEmpty()
         val deviceId get() = (raw["deviceId"].str ?: raw["deviceID"].str).orEmpty()
+        val deviceType get() = (raw["deviceType"].str ?: raw["deviceTypeId"].str).orEmpty()
         val sessionId get() = (raw["sessionId"].str ?: raw["sessionID"].str ?: sessionCookie).orEmpty()
-        val version get() = (raw["version"].str ?: raw["clientVersion"].str ?: raw["serverInfo"]["version"].str).orEmpty()
         val csrfToken get() = (raw["csrf"]["token"].str ?: raw["CSRFTokenConfig"]["csrf_token"].str).orEmpty()
         val csrfTs get() = (raw["csrf"]["ts"] ?: raw["CSRFTokenConfig"]["csrf_ts"]).asText()
         val csrfRnd get() = (raw["csrf"]["rnd"] ?: raw["CSRFTokenConfig"]["csrf_rnd"]).asText()
         val customerId get() = raw["customerId"].str
         val customerName get() = raw["customerName"].str ?: raw["displayName"].str ?: raw["customerDisplayName"].str
             ?: raw["customer"]["name"].str ?: raw["userName"].str
-        /** The player hands out an access token only to a signed-in session. */
-        val signedIn get() = accessToken.isNotBlank()
-        /** Names of the fields found, for the connection test: never a value, only what is there. */
+        /** A customer in the configuration: the page was served to a signed-in session. */
+        val signedIn get() = accessToken.isNotBlank() || !customerId.isNullOrBlank()
+        /** Names of the fields found, for diagnostics: never a value, only what is there. */
         val fields: List<String> get() = raw.keys.sorted()
     }
 
@@ -61,11 +54,7 @@ class AmazonClient(private val ctx: Context) {
     private fun domain(): String = AmazonSession.domain(ctx) ?: throw BridgeException("not connected")
     private fun cookies(): String = AmazonSession.cookies(ctx) ?: throw BridgeException("not connected")
 
-    /**
-     * The player configuration for the stored session. The page of the signed-in player is the only
-     * source that carries the access token, so it comes first; `/config.json` is the fallback and is
-     * enough for the anonymous parts. Cached for ten minutes.
-     */
+    /** The player configuration for the stored session, cached for ten minutes. */
     fun config(domain: String = domain(), cookies: String = cookies()): Config {
         cachedConfig?.let { (at, c) -> if (System.currentTimeMillis() - at < 600_000 && c.signedIn) return c }
         val page = runCatching { pageConfig(domain, cookies) }.getOrNull()
@@ -77,10 +66,8 @@ class AmazonClient(private val ctx: Context) {
         return c
     }
 
-    /** Display name of the signed-in customer, best effort: the player's configuration knows it. */
-    fun accountName(): String? =
-        runCatching { AmazonBridge.player(ctx, domain()).config?.let { Config(it, sessionCookie(cookies())).customerName } }.getOrNull()
-            ?: runCatching { config().customerName }.getOrNull()
+    /** Display name of the signed-in customer, best effort. */
+    fun accountName(): String? = runCatching { config().customerName }.getOrNull()
 
     /** `amznMusic.appConfig = {...};` inlined in the page the player is served, read with the session. */
     private fun pageConfig(domain: String, cookies: String): Config? {
@@ -159,293 +146,255 @@ class AmazonClient(private val ctx: Context) {
         }
     }
 
-    private fun skillEndpoint(domain: String): String =
-        "https://${(DOMAINS[domain]?.region ?: "EU").lowercase()}.web.skill.music.a2z.com"
+    // ------------------------------------------------------------------ GraphQL
 
-    private fun xAmznHeaders(cfg: Config, domain: String, pageUrl: String): Map<String, String> {
-        val reg = DOMAINS[domain]
-        return linkedMapOf(
-            "x-amzn-authentication" to jsonObj("interface" to "ClientAuthenticationInterface.v1_0.ClientTokenElement", "accessToken" to cfg.accessToken).toString(),
-            "x-amzn-device-model" to "WEBPLAYER",
-            "x-amzn-device-width" to "1920",
-            "x-amzn-device-family" to "WebPlayer",
-            "x-amzn-device-id" to cfg.deviceId,
-            "x-amzn-user-agent" to BridgeUa.desktop(ctx),
-            "x-amzn-session-id" to cfg.sessionId,
-            "x-amzn-device-height" to "1080",
-            "x-amzn-request-id" to java.util.UUID.randomUUID().toString().replace("-", "").take(13),
-            "x-amzn-device-language" to (reg?.language ?: "en_US"),
-            "x-amzn-currency-of-preference" to (reg?.currency ?: "USD"),
-            "x-amzn-os-version" to "1.0",
-            "x-amzn-application-version" to cfg.version,
-            "x-amzn-device-time-zone" to TimeZone.getDefault().id,
-            "x-amzn-timestamp" to System.currentTimeMillis().toString(),
-            "x-amzn-csrf" to jsonObj("interface" to "CSRFInterface.v1_0.CSRFHeaderElement", "token" to cfg.csrfToken, "timestamp" to cfg.csrfTs, "rndNonce" to cfg.csrfRnd).toString(),
-            "x-amzn-music-domain" to domain,
-            "x-amzn-referer" to domain,
-            "x-amzn-affiliate-tags" to "",
-            "x-amzn-ref-marker" to "",
-            "x-amzn-page-url" to pageUrl,
-            "x-amzn-weblab-id-overrides" to "",
-            "x-amzn-video-player-token" to "",
-            "x-amzn-feature-flags" to (reg?.featureFlags ?: ""),
-            "x-amzn-has-profile-id" to "",
-            "x-amzn-age-band" to "",
+    /** One answer: its data, and the error codes GraphQL returned next to it (DUPLICATE_TRACK...). */
+    private class Answer(val data: JsonElement?, val codes: List<String>, val messages: List<String>)
+
+    /** The HTTP headers the player sends, rebuilt from the page configuration. */
+    private fun headersFromConfig(domain: String): Map<String, String> {
+        val c = config(domain)
+        if (!c.signedIn) throw BridgeException(
+            "Amazon Music served the player to a signed-out visitor: the Amazon session has expired. Accounts, Amazon Music: disconnect and connect again.",
         )
+        val lang = (DOMAINS[domain]?.language ?: "en_US").replace('_', '-')
+        return mapOf(
+            "x-api-key" to API_KEY,
+            "x-amzn-device-id" to c.deviceId,
+            "x-amzn-device-type" to c.deviceType,
+            "x-amzn-session-id" to c.sessionId,
+            "csrf-token" to c.csrfToken,
+            "csrf-rnd" to c.csrfRnd,
+            "csrf-ts" to c.csrfTs,
+            "music-territory" to territory(domain),
+            "x-amzn-feature-flags" to FEATURE_FLAGS,
+            "content-language" to lang,
+            "accept-language" to lang,
+        ).filterValues { it.isNotBlank() }
     }
-
-    /** One call to `/api/<method>`; [params] are the method arguments (`id`, `keyword`, ...). */
-    fun call(method: String, params: Map<String, Any?>, pageUrl: String = ""): JsonElement =
-        callUrl("${skillEndpoint(domain())}/api/$method", params, pageUrl)
 
     /**
-     * The `x-amzn-*` set for one call: the player's own, captured from its traffic, with the values
-     * that change on every request refreshed here. Falling back to a set built from the player's
-     * configuration keeps things working if Amazon stops making calls we can see.
+     * Runs a persisted query. Headers come from the page configuration; if Amazon refuses them
+     * (401/403, or an authentication error), the ones the real player sent are captured from a
+     * WebView and the call is made once more with those.
      */
-    private fun apiHeaders(domain: String, pageUrl: String): Map<String, String> {
+    private fun gql(operation: String, variables: JsonObject): Answer {
+        val domain = domain()
+        val first = runCatching { gqlWith(domain, operation, variables, headersFromConfig(domain)) }
+        val answer = first.getOrNull()
+        if (answer != null && !answer.codes.any { it in AUTH_CODES }) return answer
+        val reason = first.exceptionOrNull()?.message ?: answer?.codes?.joinToString()
         val player = AmazonBridge.player(ctx, domain)
-        val fresh = mapOf(
-            "x-amzn-timestamp" to System.currentTimeMillis().toString(),
-            "x-amzn-request-id" to java.util.UUID.randomUUID().toString().replace("-", "").take(13),
-            "x-amzn-page-url" to pageUrl,
-            "x-amzn-music-domain" to domain,
-            "x-amzn-referer" to domain,
+        if (!player.signedIn) throw BridgeException(
+            "Amazon Music refused the session ($reason) and the player did not hand over its own headers. Accounts, Amazon Music: disconnect and connect again.",
         )
-        if (player.headers.isNotEmpty()) return player.headers + fresh
-        val c = Config(player.config ?: JsonObject(emptyMap()), sessionCookie(cookies()))
-        if (!c.signedIn) throw BridgeException(
-            // The player ran but called its API as a visitor, or its configuration names no customer:
-            // the stored session has expired. Otherwise it loaded and stayed idle, which a visible
-            // load usually unblocks.
-            if (player.anonymousCalls > 0 || c.customerId.isNullOrBlank()) {
-                "Amazon Music opened as a signed-out visitor (${player.anonymousCalls} calls without a token): the Amazon session has expired. " +
-                    "Accounts, Amazon Music: disconnect and connect again."
-            } else if (player.otherRequests.any { it.startsWith("gql.music.amazon.") }) {
-                "Amazon Music moved its web player to a new interface (GraphQL), which this version does not speak yet. A connector update is being prepared; Amazon Music syncs cannot run until then."
-            } else {
-                "the Amazon Music player loaded but made no calls of its own within 50 s. Accounts, Amazon Music: connect again, letting the player load in the sign-in screen, then try again." +
-                    " [requests: " + player.otherRequests.joinToString(", ").ifBlank { "none" } + "]"
-            },
-        )
-        return xAmznHeaders(c, domain, pageUrl) + fresh
+        val again = gqlWith(domain, operation, variables, player.headers.filterKeys { it.lowercase() !in SKIPPED_HEADERS })
+        if (again.codes.any { it in AUTH_CODES }) {
+            AmazonBridge.forget()
+            throw BridgeException("Amazon Music refused the session (${again.codes.joinToString()}): Accounts, Amazon Music: disconnect and connect again.")
+        }
+        return again
     }
 
-    /** A call to an absolute skill URL (also the ones the responses hand back for the next page). */
-    private fun callUrl(url: String, params: Map<String, Any?>, pageUrl: String = ""): JsonElement {
-        val domain = domain()
+    private fun gqlWith(domain: String, operation: String, variables: JsonObject, headers: Map<String, String>): Answer {
+        val hash = HASHES[operation] ?: throw BridgeException("Amazon Music: unknown operation $operation")
         val body = jsonObj(
-            *params.toList().toTypedArray(),
-            "userHash" to jsonObj("level" to USER_LEVEL).toString(),
-            "headers" to JsonObject(apiHeaders(domain, pageUrl).mapValues { JsonPrimitive(it.value) }).toString(),
+            "operationName" to operation,
+            "variables" to variables,
+            "extensions" to jsonObj("persistedQuery" to jsonObj("version" to 1, "sha256Hash" to hash)),
         )
-        val req = Request.Builder()
-            .url(url)
-            .post(body.toString().toRequestBody(TEXT_TYPE))
+        val b = Request.Builder()
+            .url("https://gql.$domain/")
+            .post(body.toString().toRequestBody(JSON))
+            .header("Cookie", cookies())
             .header("Origin", "https://$domain")
             .header("Referer", "https://$domain/")
-            // The same user agent the player used when it built those headers.
-            .header("User-Agent", AmazonBridge.player(ctx, domain).userAgent ?: BridgeUa.desktop(ctx))
-            .header("Accept", "*/*")
-            .header("Accept-Language", "en-US,en;q=0.9")
-            .build()
-        val (code, text) = send(req)
+            .header("User-Agent", AmazonBridge.storedUserAgent(ctx) ?: BridgeUa.desktop(ctx))
+            .header("Accept", "application/graphql-response+json, application/json")
+        headers.forEach { (k, v) -> b.header(k, v) }
+        val (code, text) = send(b.build())
         if (code == 401 || code == 403) {
             cachedConfig = null
-            AmazonBridge.forget()
-            throw BridgeException("Amazon Music rejected the session ($code): sign in again in Songport Bridge")
+            throw BridgeException("Amazon Music $code on $operation")
         }
-        if (code !in 200..299) throw BridgeException("Amazon Music $code: ${text.take(200)}")
-        return parseJson(text)
+        val j = runCatching { parseJson(text) }.getOrNull()
+            ?: throw BridgeException("Amazon Music $code on $operation: ${text.take(200)}")
+        val errors = j["errors"].arr
+        val codes = errors.mapNotNull { it["extensions"]["code"].str }
+        val messages = errors.mapNotNull { it["message"].str }
+        if (codes.any { it == "PERSISTED_QUERY_NOT_FOUND" } || messages.any { it.contains("PersistedQueryNotFound", true) }) {
+            throw BridgeException("Amazon Music updated its web player ($operation is no longer known): the connector needs an update.")
+        }
+        // 294 is how this endpoint answers "done with GraphQL errors"; anything else outside 2xx is a failure.
+        if (code !in 200..299 && errors.isEmpty()) throw BridgeException("Amazon Music $code on $operation: ${text.take(200)}")
+        return Answer(j["data"], codes, messages)
+    }
+
+    private fun Answer.orThrow(operation: String): JsonElement? {
+        if (data == null || (codes.isNotEmpty() && data.findFirst("id") == null)) {
+            throw BridgeException("Amazon Music $operation: ${(codes + messages).joinToString("; ").take(200).ifBlank { "no answer" }}")
+        }
+        return data
     }
 
     // ------------------------------------------------------------------ library
 
-    /** The user's playlists (library). */
+    /** The user's own playlists, as the "add to playlist" dialog lists them. */
     fun libraryPlaylists(): List<PlaylistDto> {
-        val j = call("showLibraryPlaylists", emptyMap(), "https://${domain()}/my/playlists")
-        val out = LinkedHashMap<String, PlaylistDto>()
-        for (item in allItems(j)) {
-            val link = item["primaryLink"]["deeplink"].str ?: continue
-            val id = link.substringAfter("/my/playlists/", "").substringBefore('?').substringBefore('/')
-            if (id.isEmpty()) continue
-            val name = item["primaryText"]["text"].str?.takeIf { it.isNotBlank() }
-                ?: item["primaryText"]["observer"]["defaultValue"]["text"].str
-                ?: item["primaryText"].str ?: id
-            out.putIfAbsent(id, PlaylistDto(id, name, -1))
+        val d = gql("AddToPlaylistModalUserPlaylists", jsonObj("firstLimit" to PLAYLISTS_LIMIT)).orThrow("playlists")
+        return d["user"]["playlists"]["edges"].arr.mapNotNull { e ->
+            val n = e["node"]
+            val id = n["id"].str ?: return@mapNotNull null
+            PlaylistDto(id, n["title"].str ?: id, n["trackCount"].long?.toInt() ?: -1)
         }
-        return out.values.toList()
     }
 
-    /** Tracks of a library playlist, following the "more" hook the player uses for long lists. */
+    /** Tracks of a playlist, page by page; the entry cursor ("index:uuid") is what removing takes. */
     fun playlistTracks(id: String): List<TrackDto> {
-        val domain = domain()
-        var j = call("showLibraryPlaylist", mapOf("id" to id), "https://$domain/my/playlists/$id")
-        val out = LinkedHashMap<String, TrackDto>()
+        val out = ArrayList<TrackDto>()
+        var after: String? = null
         var pages = 0
         while (true) {
-            for (t in parseItems(j)) out.putIfAbsent(t.setVideoId ?: t.id, t)
-            val next = j.findAll("onEndOfWidget").flatMap { (it as? JsonArray) ?: emptyList() }
-                .mapNotNull { it["url"].str }.firstOrNull { "/api/" in it } ?: break
-            if (++pages > 200) break
-            j = callUrl(next, emptyMap(), "https://$domain/my/playlists/$id")
-            if (parseItems(j).isEmpty()) break
-        }
-        return out.values.toList()
-    }
-
-    /** Catalog search, songs only. Track ids are ASINs. */
-    fun searchTracks(query: String): List<TrackDto> {
-        val domain = domain()
-        val j = call("searchCatalogTracks", mapOf("keyword" to query), "https://$domain/search/${enc(query)}/songs")
-        // Amazon lists the same recording once per edition (album, single, deluxe): one row per
-        // title and artist is enough, and a longer list lets the right artist show up further down.
-        val seen = HashSet<String>()
-        return parseItems(j).filter { seen.add(it.title.lowercase() + "\u0000" + it.artists.joinToString(",").lowercase()) }.take(25)
-    }
-
-    fun createPlaylist(name: String): PlaylistDto {
-        val info = jsonObj(
-            "interface" to "Web.TemplatesInterface.v1_0.Touch.PlaylistTemplateInterface.PlaylistClientInformation",
-            "name" to name,
-            "path" to "/my/playlists",
-        ).toString()
-        val j = call("createPlaylist", mapOf("playlistInfo" to info), "https://${domain()}/my/playlists")
-        // The answer is a chain of UI methods; the new id sits in the addTracksToPlaylist URL it proposes.
-        val id = Regex("""playlistId=([0-9a-fA-F-]{20,})""").find(j.toString())?.groupValues?.get(1)
-            ?: throw BridgeException("Amazon Music: playlist not created")
-        return PlaylistDto(id, name, 0)
-    }
-
-    fun addTrack(playlistId: String, playlistTitle: String, trackId: String, trackTitle: String) {
-        call(
-            "addTrackToPlaylist",
-            mapOf(
-                "isTrackInLibrary" to "false",
-                "playlistId" to playlistId,
-                "playlistTitle" to playlistTitle,
-                "rejectDuplicate" to "true",
-                "shouldReplaceAddedTrack" to "false",
-                "trackId" to trackId,
-                "trackTitle" to trackTitle,
-                "version" to "1",
-            ),
-            "https://${domain()}/my/playlists/$playlistId",
-        )
-    }
-
-    /** The dialog's "Save": the same client information the player sends, with the new name. */
-    fun renamePlaylist(playlistId: String, name: String) {
-        val info = jsonObj(
-            "interface" to "Web.TemplatesInterface.v1_0.Touch.PlaylistTemplateInterface.PlaylistClientInformation",
-            "name" to name,
-            "path" to "/my/playlists/$playlistId",
-        ).toString()
-        val j = call("renamePlaylist", mapOf("id" to playlistId, "playlistInfo" to info), "https://${domain()}/my/playlists/$playlistId")
-        // The answer stores the new name (PLAYLIST_NAME); an error dialog means it did not.
-        if (j.toString().contains("MessageTemplate") && !j.toString().contains("PLAYLIST_NAME")) throw BridgeException("Amazon Music did not rename the playlist")
-    }
-
-    /** The detail page's "Make public" / "Keep private": one call with the new visibility. */
-    fun setVisibility(playlistId: String, public: Boolean) {
-        val j = call(
-            "updatePlaylistVisibility",
-            mapOf("playlistId" to playlistId, "newVisibility" to if (public) "PUBLIC" else "PRIVATE", "refresh" to "true"),
-            "https://${domain()}/my/playlists/$playlistId",
-        )
-        if (j.toString().contains("MessageTemplate")) throw BridgeException("Amazon Music did not change the playlist's visibility")
-    }
-
-    /** The dialog's "Delete": the library state of the playlist becomes NOT_IN_LIBRARY. */
-    fun removePlaylist(playlistId: String) {
-        val j = call("removePlaylist", mapOf("id" to playlistId), "https://${domain()}/my/playlists/$playlistId")
-        if (j.toString().contains("MessageTemplate") && !j.toString().contains("NOT_IN_LIBRARY")) throw BridgeException("Amazon Music did not delete the playlist")
-    }
-
-    fun removeTrack(playlistId: String, trackEntryId: String, trackId: String) {
-        call(
-            "removeTrackFromPlaylist",
-            mapOf("playlistId" to playlistId, "trackEntryId" to trackEntryId, "trackId" to trackId),
-            "https://${domain()}/my/playlists/$playlistId",
-        )
-    }
-
-    // ------------------------------------------------------------------ parsing
-
-    private fun allItems(j: JsonElement): List<JsonElement> =
-        j.findAll("items").flatMap { (it as? JsonArray) ?: emptyList() }
-
-    /**
-     * Track rows of any template: library rows carry `primaryText` as a string, `secondaryText1..3`
-     * (artist, album, mm:ss), an `id` (the playlist entry, needed to remove) and a deeplink with
-     * `trackAsin=`; search rows carry `primaryText.text`, `secondaryText` and a storage key
-     * "album:track". Tolerant of both.
-     */
-    private fun parseItems(j: JsonElement): List<TrackDto> {
-        val out = ArrayList<TrackDto>()
-        for (item in allItems(j)) {
-            val link = item["primaryLink"]["deeplink"].str ?: ""
-            val fromLink = Regex("""[?&]trackAsin=([A-Z0-9]{10})""").find(link)?.groupValues?.get(1)
-                ?: link.substringAfter("/tracks/", "").substringBefore('/').substringBefore('?').takeIf { it.isNotEmpty() }
-            val storageKey = item["iconButton"]["observer"]["storageKey"].str ?: item.findFirst("storageKey").str
-            val fromKey = storageKey?.substringAfter(':', "")?.takeIf { it.length == 10 }
-            val id = fromLink ?: fromKey ?: continue
-            val title = item["primaryText"].str ?: item["primaryText"]["text"].str ?: continue
-            val artist = item["secondaryText1"].str ?: item["secondaryText"].str ?: item["secondaryText"]["text"].str ?: ""
-            val album = item["secondaryText2"].str ?: item["imageAltText"].str ?: ""
-            val dur = item["secondaryText3"].str
-            val entry = item["id"].str?.takeIf { it.length > 20 }
-            out += TrackDto(id, title, if (artist.isBlank()) emptyList() else listOf(artist), album, parseDuration(dur), entry)
+            val vars = jsonObj(
+                "id" to id, "firstLimit" to 100, "isAuthenticated" to true, "includeCollaborators" to false,
+                "afterCursor" to after,
+            )
+            val p = gql("playlistDetail", vars).orThrow("playlist")["playlist"]
+            val tracks = p["tracks"]
+            for (e in tracks["edges"].arr) trackOf(e["node"], e["cursor"].str)?.let { out += it }
+            val info = tracks["pageInfo"]
+            after = info["endCursor"].str
+            if (info["hasNextPage"].bool != true || after == null || ++pages > 400) break
         }
         return out
     }
 
-    private fun parseDuration(text: String?): Long {
-        if (text == null) return 0
-        val parts = text.trim().split(':').mapNotNull { it.toLongOrNull() }
-        if (parts.isEmpty() || parts.size > 3) return 0
-        return parts.fold(0L) { acc, p -> acc * 60 + p } * 1000
+    /** Catalogue search, songs only. Track ids are ASINs. */
+    fun searchTracks(query: String): List<TrackDto> {
+        val vars = jsonObj(
+            "searchText" to query,
+            "specifications" to listOf(mapOf("label" to SONGS_LABEL, "types" to listOf("track"), "limit" to 25)),
+            "isAuthenticated" to true, "audiobooksEnabled" to false, "merchEnabled" to false, "categoryInEntityUnionEnabled" to false,
+        )
+        val d = gql("SpecSearchPage", vars).orThrow("search")
+        val nodes = d["specificationSearch"]["result"].arr.flatMap { r -> r["edges"].arr.map { it["node"] } }
+            .filter { it["__typename"].str == "Track" }
+        // Amazon lists the same recording once per edition (album, single, deluxe): one row per
+        // title and artist is enough, and a longer list lets the right artist show up further down.
+        val seen = HashSet<String>()
+        return nodes.mapNotNull { trackOf(it, null) }
+            .filter { seen.add(it.title.lowercase() + "\u0000" + it.artists.joinToString(",").lowercase()) }
+            .take(25)
     }
 
-    private fun enc(s: String) = java.net.URLEncoder.encode(s, "UTF-8")
+    /** New playlists are private, as on every other service. */
+    fun createPlaylist(name: String): PlaylistDto {
+        val d = gql("CreatePlaylist", jsonObj("title" to name, "visibility" to "PRIVATE")).orThrow("create playlist")
+        val p = d["createPlaylist"]
+        val id = p["id"].str ?: throw BridgeException("Amazon Music: playlist not created")
+        return PlaylistDto(id, p["title"].str ?: name, 0)
+    }
 
-    class Region(val region: String, val language: String, val currency: String, val featureFlags: String)
+    /** Appends one track; a track already there is not a failure (the sync only adds what is missing). */
+    fun addTrack(playlistId: String, trackId: String) {
+        val a = gql("addTrackToPlaylist", jsonObj("id" to playlistId, "trackId" to trackId, "rejectDuplicateTracks" to true))
+        if (a.codes.any { it == "DUPLICATE_TRACK" }) return
+        if (a.data["appendTracks"]["id"].str == null) {
+            throw BridgeException("Amazon Music did not add $trackId: ${(a.codes + a.messages).joinToString("; ").take(160)}")
+        }
+    }
+
+    /** Removes one entry by its cursor ("index:uuid"), as read from [playlistTracks]. */
+    fun removeTrack(playlistId: String, cursor: String) {
+        val a = gql("removeTrackFromPlaylist", jsonObj("id" to playlistId, "cursor" to cursor))
+        if (a.data["removeTracks"]["id"].str == null) {
+            throw BridgeException("Amazon Music did not remove the track: ${(a.codes + a.messages).joinToString("; ").take(160)}")
+        }
+    }
+
+    fun removePlaylist(playlistId: String) {
+        val a = gql("deletePlaylist", jsonObj("id" to playlistId))
+        if (a.data["deletePlaylist"]["isDeleted"].bool != true) throw BridgeException("Amazon Music did not delete the playlist")
+    }
+
+    // ------------------------------------------------------------------ parsing
+
+    /** A Track node of playlistDetail or of the search. */
+    private fun trackOf(n: JsonElement?, cursor: String?): TrackDto? {
+        if (n == null) return null
+        val id = n["id"].str ?: return null
+        val title = n["shortTitle"].str ?: n["title"].str ?: return null
+        val edges = n["contributingArtists"]["edges"].arr
+        val artists = (edges.filter { it["role"].str == "PRIMARY" } + edges.filter { it["role"].str != "PRIMARY" })
+            .mapNotNull { it["node"]["name"].str }.distinct()
+        return TrackDto(
+            id = id, title = title, artists = artists,
+            album = n["album"]["shortTitle"].str ?: n["album"]["title"].str ?: "",
+            durationMs = (n["duration"].long ?: 0) * 1000,
+            setVideoId = cursor,
+            explicit = n["parentalSettings"]["hasExplicitLanguage"].bool,
+        )
+    }
+
+    class Region(val region: String, val language: String)
 
     companion object {
-        const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
-        /** Cache hint the player sends with every call; the token decides the actual rights. */
-        private const val USER_LEVEL = "LIBRARY_MEMBER"
-        private val TEXT_TYPE = "text/plain;charset=UTF-8".toMediaType()
-        private const val HD = "hd-supported,uhd-supported"
         /** Where the signed-in player inlines its configuration in the page. */
         private const val APP_CONFIG = "amznMusic.appConfig"
+        /** The web player's application key, sent with every GraphQL call (the same for every user). */
+        private const val API_KEY = "amzn1.application.4ff5579ca2e3407aba989a1f5dbdaf69"
+        private const val FEATURE_FLAGS = "api-cache,use-ups"
+        private const val SONGS_LABEL = "dmusic_find_song_results_label"
+        private const val PLAYLISTS_LIMIT = 500
+        private val JSON = "application/json".toMediaType()
+        /** GraphQL error codes that mean "these credentials are not accepted". */
+        private val AUTH_CODES = setOf("UNAUTHENTICATED", "UNAUTHORIZED", "FORBIDDEN", "INVALID_CSRF", "CSRF_VALIDATION_FAILED")
+        /** Mirrored headers the request sets itself. */
+        private val SKIPPED_HEADERS = setOf("cookie", "content-length", "host", "origin", "referer", "user-agent", "accept", "content-type")
+
+        /** Persisted queries of the web player (October 2026), by operation name. */
+        private val HASHES = mapOf(
+            "AddToPlaylistModalUserPlaylists" to "8a2d8eb88470373f0191fdac28083d74233a31c769cefb4c2da22ae8e9706cd9",
+            "playlistDetail" to "797157fe477bc056a1ee78bd0c505ae089ee358ca163df66d4f13825744cf109",
+            "SpecSearchPage" to "87bf53f123f26696e4db91cc88f2bcbd2ff941986db1506081a30e71155537cf",
+            "CreatePlaylist" to "5d91097d90465b2ca7b9ba52a96449ff1993750b76373a470663ce210ee1f829",
+            "addTrackToPlaylist" to "b812f642b8a343680492dca706aefa5bf9e4c82bb800bf7031e09c55495aef8e",
+            "removeTrackFromPlaylist" to "3c7d125e1c584c70c80d97367054aebff7f2866944297d54cc3dc9d4822e0d26",
+            "deletePlaylist" to "abb52606395c74450ce2db367b2c2bf5106ff6077a50f529ba46b8aee6ff6ce3",
+        )
+
         @Volatile private var cachedConfig: Pair<Long, Config>? = null
         fun forgetConfig() { cachedConfig = null }
 
-        /** Regional web player domains and the API region each one talks to. */
+        /** Regional web player domains, with the language the player sends. */
         val DOMAINS: Map<String, Region> = mapOf(
-            "music.amazon.com" to Region("NA", "en_US", "USD", ""),
-            "music.amazon.com.mx" to Region("NA", "es_MX", "MXN", ""),
-            "music.amazon.com.br" to Region("NA", "pt_BR", "BRL", ""),
-            "music.amazon.ca" to Region("NA", "en_CA", "CAD", ""),
-            "music.amazon.co.uk" to Region("EU", "en_GB", "GBP", HD),
-            "music.amazon.de" to Region("EU", "de_DE", "EUR", HD),
-            "music.amazon.fr" to Region("EU", "fr_FR", "EUR", HD),
-            "music.amazon.it" to Region("EU", "it_IT", "EUR", HD),
-            "music.amazon.es" to Region("EU", "es_ES", "EUR", HD),
-            "music.amazon.nl" to Region("EU", "nl_NL", "EUR", HD),
-            "music.amazon.se" to Region("EU", "sv_SE", "SEK", HD),
-            "music.amazon.pl" to Region("EU", "pl_PL", "PLN", HD),
-            "music.amazon.in" to Region("EU", "en_IN", "INR", HD),
-            "music.amazon.sa" to Region("EU", "ar_SA", "SAR", ""),
-            "music.amazon.ae" to Region("EU", "ar_AE", "AED", ""),
-            "music.amazon.co.jp" to Region("FE", "ja_JP", "JPY", HD),
-            "music.amazon.com.au" to Region("FE", "en_AU", "AUD", HD),
+            "music.amazon.com" to Region("NA", "en_US"),
+            "music.amazon.com.mx" to Region("NA", "es_MX"),
+            "music.amazon.com.br" to Region("NA", "pt_BR"),
+            "music.amazon.ca" to Region("NA", "en_CA"),
+            "music.amazon.co.uk" to Region("EU", "en_GB"),
+            "music.amazon.de" to Region("EU", "de_DE"),
+            "music.amazon.fr" to Region("EU", "fr_FR"),
+            "music.amazon.it" to Region("EU", "it_IT"),
+            "music.amazon.es" to Region("EU", "es_ES"),
+            "music.amazon.nl" to Region("EU", "nl_NL"),
+            "music.amazon.se" to Region("EU", "sv_SE"),
+            "music.amazon.pl" to Region("EU", "pl_PL"),
+            "music.amazon.in" to Region("EU", "en_IN"),
+            "music.amazon.sa" to Region("EU", "ar_SA"),
+            "music.amazon.ae" to Region("EU", "ar_AE"),
+            "music.amazon.co.jp" to Region("FE", "ja_JP"),
+            "music.amazon.com.au" to Region("FE", "en_AU"),
         )
+
+        /** The territory header ("IT", "GB"...): the country part of the domain's language. */
+        fun territory(domain: String): String = DOMAINS[domain]?.language?.substringAfter('_') ?: "US"
 
         fun isMusicDomain(host: String?): Boolean = host != null && (host in DOMAINS || host.startsWith("music.amazon."))
     }
 }
+
+private val JsonElement?.bool: Boolean? get() = (this as? JsonPrimitive)?.content?.toBooleanStrictOrNull()
 
 private fun JsonElement?.asText(): String = when (this) {
     is JsonPrimitive -> content

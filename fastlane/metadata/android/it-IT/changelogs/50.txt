@@ -1,0 +1,1 @@
+Amazon Music torna a funzionare: il connettore ora usa la nuova interfaccia del player web di Amazon (playlist, ricerca, creazione, aggiunta, rimozione, eliminazione). Rinomina e visibilità delle playlist Amazon per ora non sono disponibili.

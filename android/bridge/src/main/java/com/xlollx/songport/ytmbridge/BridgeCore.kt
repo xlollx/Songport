@@ -96,26 +96,26 @@ object BridgeCore {
                 "amazon.add" -> {
                     val pid = arg ?: return err("missing playlist id")
                     val ids = extras?.getStringArray("ids") ?: emptyArray()
-                    val titles = extras?.getStringArray("titles") ?: emptyArray()
-                    val pname = extras?.getString("playlistName") ?: ""
                     val c = AmazonClient(ctx)
-                    ids.forEachIndexed { i, id -> c.addTrack(pid, pname, id, titles.getOrNull(i) ?: ""); Thread.sleep(300) }
+                    ids.forEach { id -> c.addTrack(pid, id); Thread.sleep(150) }
                     Bundle()
                 }
-                "amazon.rename" -> { AmazonClient(ctx).renamePlaylist(arg ?: return err("missing playlist id"), extras?.getString("name") ?: ""); Bundle() }
+                "amazon.rename" -> err("Amazon Music: renaming is not available in the current web player")
                 "amazon.delete" -> { AmazonClient(ctx).removePlaylist(arg ?: return err("missing playlist id")); Bundle() }
-                "amazon.visibility" -> { AmazonClient(ctx).setVisibility(arg ?: return err("missing playlist id"), extras?.getBoolean("public") ?: false); Bundle() }
+                "amazon.visibility" -> err("Amazon Music: visibility cannot be changed from the current web player")
                 "amazon.remove" -> {
                     val pid = arg ?: return err("missing playlist id")
                     val ids = extras?.getStringArray("ids") ?: emptyArray()
                     val entries = extras?.getStringArray("entryIds") ?: emptyArray()
                     val c = AmazonClient(ctx)
-                    // Entry ids missing (e.g. old cache): look them up from the playlist itself.
-                    val byTrack = if (entries.any { it.isEmpty() }) c.playlistTracks(pid).associate { it.id to (it.setVideoId ?: "") } else emptyMap()
-                    ids.forEachIndexed { i, id ->
-                        val entry = entries.getOrNull(i)?.takeIf { it.isNotEmpty() } ?: byTrack[id] ?: return@forEachIndexed
-                        c.removeTrack(pid, entry, id); Thread.sleep(300)
-                    }
+                    // Entries are removed by cursor ("index:uuid"). Missing ones (an old cache, or a
+                    // cursor from before the GraphQL player) are looked up in the playlist itself.
+                    val fresh = entries.any { !it.contains(':') }
+                    val byTrack = if (fresh) c.playlistTracks(pid).associate { it.id to (it.setVideoId ?: "") } else emptyMap()
+                    val cursors = ids.mapIndexedNotNull { i, id -> entries.getOrNull(i)?.takeIf { it.contains(':') } ?: byTrack[id]?.takeIf { it.isNotEmpty() } }
+                    // Highest index first: an entry's position must not shift before it is removed.
+                    cursors.sortedByDescending { it.substringBefore(':').toIntOrNull() ?: 0 }
+                        .forEach { c.removeTrack(pid, it); Thread.sleep(150) }
                     Bundle()
                 }
                 // ---- Spotify web session: Songport gets a short-lived Web API token, never the cookies.
