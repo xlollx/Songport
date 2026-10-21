@@ -1,0 +1,67 @@
+// Songport without a phone: the engine of :core behind a small web page and a scheduler, for a
+// server or a NAS (see docs/guide/docker.md). Same Kotlin as the app (android/build.gradle).
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '2.1.21'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.21' apply false
+    id 'application'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
+
+application {
+    mainClass = 'com.xlollx.songport.server.MainKt'
+    applicationName = 'songport-server'
+}
+
+dependencies {
+    implementation project(':core')
+    testImplementation 'junit:junit:4.13.2'
+}
+
+// The app's texts, in every language it has: the engine names them, the server reads them as the
+// app does (res/values*/strings.xml), so nothing is translated twice.
+def appStrings = tasks.register('appStrings', Copy) {
+    from(file('../android/app/src/main/res')) {
+        include 'values*/strings.xml'
+        exclude 'values-night/**'
+    }
+    into(layout.buildDirectory.dir('generated/appStrings/res'))
+}
+sourceSets.main.resources.srcDir(layout.buildDirectory.dir('generated/appStrings'))
+tasks.named('processResources') { dependsOn appStrings }
+
+// The app's version, shown in the page footer and used as the image tag.
+def appVersion = {
+    def m = file('../android/app/build.gradle').text =~ /versionName\s+"([^"]+)"/
+    m.find() ? m.group(1) : 'dev'
+}()
+version = appVersion
+def versionFile = tasks.register('versionFile') {
+    def out = layout.buildDirectory.file('generated/version/songport-version.txt')
+    inputs.property('version', appVersion)
+    outputs.file(out)
+    doLast { out.get().asFile.text = appVersion }
+}
+sourceSets.main.resources.srcDir(layout.buildDirectory.dir('generated/version'))
+tasks.named('processResources') { dependsOn versionFile }
+
+tasks.register('printVersion') { doLast { println appVersion } }
+
+test {
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+        showExceptions true
+        showCauses true
+        showStackTraces false
+    }
+}

@@ -46,6 +46,9 @@ move. Songport is for keeping playlists in step over time, without handing your 
 - **[Obtainium](https://github.com/ImranR98/Obtainium)**: add `https://github.com/xlollx/Songport` and
   each release reaches the phone by itself.
 - **[Releases](https://github.com/xlollx/Songport/releases/latest)**: the signed APK of every version.
+- **Server (Docker, beta)**: the same engine on a home server or a NAS, with a web page and
+  scheduled syncs: `docker run -p 8080:8080 -v songport-data:/data ghcr.io/xlollx/songport`. Official
+  APIs and personal servers only; see the [Docker guide](https://xlollx.github.io/Songport/guide/docker).
 
 Android 8.0 or newer. Languages: English, Italian, French, German, Spanish, Portuguese (Brazil), Polish,
 Russian, Turkish, Chinese, Japanese, Korean.
@@ -287,7 +290,9 @@ Songport/
 │   ├── play-store-listing.md      # store texts, Data safety answers, release checklist
 │   ├── deezer-redirect.html       # https page → songport://callback
 │   ├── google-shared-client.md    # shipping a shared Google client: verification and quota
+│   ├── guide/                     # the guide on the site (getting started, troubleshooting, Docker…)
 │   └── store/                     # 512×512 icon and 1024×500 feature graphic (en/it)
+├── server/                        # Songport on a server: JVM build on android/core, web page, Dockerfile
 └── android/
     ├── build.gradle, settings.gradle, gradle.properties
     └── app/
