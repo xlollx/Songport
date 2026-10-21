@@ -263,12 +263,36 @@ class AmazonClient(private val ctx: Context) {
             }
             pageSaid = "the player's own call: " + (viaPage.exceptionOrNull()?.message ?: viaPage.getOrNull()?.codes?.joinToString()).orEmpty().take(120)
         }
+        // Refused for the whole account, or only for this playlist? The library says which.
+        val playlistId = variables["id"].str
+        val library = if (player?.signedIn == true && playlistId != null) libraryInPage(domain) else null
+        if (library != null) {
+            val (count, ids) = library
+            if (playlistId !in ids) throw BridgeException(
+                "Amazon Music: this playlist is no longer in your library (the session works: $count playlists listed). " +
+                    "It was deleted, or it belongs to someone else: edit the sync and pick another destination.",
+            )
+            throw BridgeException(
+                "Amazon Music accepts the session (library: $count playlists, this one included) but refuses to open this playlist ($reason). " +
+                    "Open it once in the Amazon Music app; if it still fails, send a diagnostics report.",
+            )
+        }
         AmazonBridge.forget()
         throw BridgeException(
-            "Amazon Music no longer accepts the session ($reason; again after renewing it; $pageSaid). " +
+            "Amazon Music no longer accepts the session ($reason; again after renewing it; $pageSaid" +
+                (if (player?.signedIn == true && playlistId != null) "; library refused too" else "") + "). " +
                 "Accounts, Amazon Music: disconnect and connect again.",
         )
     }
+
+    /** Playlist count and ids of the library, asked through the player page; null when refused. */
+    private fun libraryInPage(domain: String): Pair<Int, Set<String>>? = runCatching {
+        val (code, text) = AmazonBridge.gqlInPage(ctx, domain, body("AddToPlaylistModalUserPlaylists", jsonObj("firstLimit" to PLAYLISTS_LIMIT)))
+        val a = parse(code, text, "playlists")
+        if (a.codes.any { it in AUTH_CODES }) return@runCatching null
+        val ids = a.data["user"]["playlists"]["edges"].arr.mapNotNull { it["node"]["id"].str }.toSet()
+        if (a.data["user"] == null) null else ids.size to ids
+    }.getOrNull()
 
     /** One call through the open player page; null when the page refused it (the caller starts over). */
     private fun inPage(domain: String, operation: String, variables: JsonObject): Answer? {

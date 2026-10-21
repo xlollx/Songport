@@ -1,0 +1,1 @@
+Amazon Music: gdy Amazon odrzuca playlistę, Songport sprawdza teraz bibliotekę, aby odróżnić wygasłą sesję od playlisty usuniętej lub już nie twojej, i mówi, co się stało.
