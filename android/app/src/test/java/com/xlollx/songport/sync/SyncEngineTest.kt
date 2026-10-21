@@ -1,7 +1,7 @@
 package com.xlollx.songport.sync
 
 import com.xlollx.songport.providers.*
-import com.xlollx.songport.R
+import com.xlollx.songport.platform.env
 import com.xlollx.songport.data.Store
 import com.xlollx.songport.model.PlaylistRef
 import com.xlollx.songport.model.SyncJob
@@ -17,7 +17,7 @@ import java.util.UUID
 
 /**
  * The sync engine against two in-memory services: what gets added, removed, skipped and reordered.
- * Resource strings come back as "s<id>" so notes can be checked by id.
+ * Texts come back as "s:<name>" so notes can be checked by name.
  */
 class SyncEngineTest {
     private val ctx = FakeContext()
@@ -36,7 +36,7 @@ class SyncEngineTest {
         src = FakeProvider("fsrc")
         dst = FakeProvider("fdst")
         Providers.testDoubles = listOf(src, dst)
-        engine = SyncEngine(ctx) { id, args -> "s$id" + (if (args.isEmpty()) "" else args.joinToString(",", "(", ")")) }
+        engine = SyncEngine(ctx.env) { name, args -> "s:$name" + (if (args.isEmpty()) "" else args.joinToString(",", "(", ")")) }
     }
 
     @After fun tearDown() { Providers.testDoubles = emptyList() }
@@ -75,7 +75,7 @@ class SyncEngineTest {
         assertEquals(1, dst.lists["t"]!!.size)
         val saved = Store.get(ctx).job(j.id)!!
         val skipped = engine.run(saved, unattended = true)
-        assertTrue("versions=${saved.sourceVersion}/${saved.targetVersion} notes=${skipped.notes} error=${skipped.error}", skipped.notes.any { it == "s${R.string.note_unchanged}" })
+        assertTrue("versions=${saved.sourceVersion}/${saved.targetVersion} notes=${skipped.notes} error=${skipped.error}", skipped.notes.any { it == "s:note_unchanged" })
         assertEquals("searches=${dst.searches}", 1, dst.searches.size)
     }
 
@@ -97,7 +97,7 @@ class SyncEngineTest {
         val r = engine.run(j)
         assertEquals("error=${r.error} notes=${r.notes}", 0, r.removed)
         assertEquals(20, dst.lists["t"]!!.size)
-        assertTrue(r.notes.toString(), r.notes.any { it == "s${R.string.note_removals_capped}(18,20)" })
+        assertTrue(r.notes.toString(), r.notes.any { it == "s:note_removals_capped(18,20)" })
         assertEquals(20, r.targetCount)
         // The preview shows them all; applying it is the confirmation.
         val plan = engine.plan(j, createTarget = false, interactive = true)
@@ -129,7 +129,7 @@ class SyncEngineTest {
         val r = engine.run(job(keepOrder = true))
         assertEquals(0, r.added)
         assertEquals(listOf(listOf(sid("da"), sid("db"), sid("dc"))), dst.reorders)
-        assertTrue(r.notes.any { it == "s${R.string.note_order_aligned}" })
+        assertTrue(r.notes.any { it == "s:note_order_aligned" })
     }
 
     @Test fun keepOrderDoesNothingWhenAlreadyInOrder() = runBlocking {

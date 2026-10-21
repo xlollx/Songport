@@ -3,6 +3,8 @@ package com.xlollx.songport.platform
 import com.xlollx.songport.providers.*
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.xlollx.songport.BuildConfig
 import com.xlollx.songport.auth.AppleAuthActivity
 import com.xlollx.songport.auth.AuthFlow
@@ -16,6 +18,7 @@ import com.xlollx.songport.data.TokenVault
 import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.OAuthProvider
 import com.xlollx.songport.ui.AppLocale
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -53,6 +56,29 @@ class AndroidEnv private constructor(val context: Context) : Env {
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             )
         }
+    }
+
+    override fun keyValues(name: String): KeyValues {
+        val prefs = context.getSharedPreferences(name, Context.MODE_PRIVATE)
+        return object : KeyValues {
+            override fun get(key: String): String? = prefs.getString(key, null)
+            override fun set(key: String, value: String) = prefs.edit().putString(key, value).apply()
+            override val size: Int get() = prefs.all.size
+            override fun clear() = prefs.edit().clear().apply()
+        }
+    }
+
+    override fun shrinkJpeg(raw: ByteArray, maxSide: Int, maxBytes: Int): ByteArray? {
+        val src = BitmapFactory.decodeByteArray(raw, 0, raw.size) ?: return null
+        val scale = minOf(1f, maxSide.toFloat() / maxOf(src.width, src.height))
+        val bmp = if (scale < 1f) Bitmap.createScaledBitmap(src, (src.width * scale).toInt(), (src.height * scale).toInt(), true) else src
+        // Quality steps down until the bytes fit; a cover that never fits is not sent.
+        for (q in intArrayOf(85, 70, 55, 40)) {
+            val out = ByteArrayOutputStream()
+            bmp.compress(Bitmap.CompressFormat.JPEG, q, out)
+            if (out.size() <= maxBytes) return out.toByteArray()
+        }
+        return null
     }
 
     companion object {

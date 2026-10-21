@@ -1,8 +1,5 @@
 package com.xlollx.songport.sync
 
-import com.xlollx.songport.providers.*
-import android.content.Context
-import com.xlollx.songport.data.Diagnostics
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.net.Http
 import com.xlollx.songport.net.arr
@@ -10,6 +7,7 @@ import com.xlollx.songport.net.get
 import com.xlollx.songport.net.long
 import com.xlollx.songport.net.parseJson
 import com.xlollx.songport.net.str
+import com.xlollx.songport.platform.Env
 
 /**
  * L'ISRC di un brano che non ce l'ha, chiesto al catalogo pubblico di Deezer (nessuna chiave,
@@ -33,22 +31,22 @@ object IsrcOracle {
     private fun key(t: Track): String = (Matcher.searchArtist(t.artists.firstOrNull() ?: "") + "|" + Matcher.searchTitle(t.title)).lowercase()
 
     /** L'ISRC, o null quando il catalogo non ha nulla di abbastanza vicino. Mai un'eccezione: e' un aiuto, non un passaggio. */
-    suspend fun find(ctx: Context, t: Track): String? {
+    suspend fun find(env: Env, t: Track): String? {
         if (t.title.isBlank() || t.kind.isNotEmpty()) return null
         val k = key(t)
         synchronized(memory) { memory[k] }?.let { return it.ifEmpty { null } }
-        val prefs = ctx.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        prefs.getString(k, null)?.let { saved ->
+        val prefs = env.keyValues(PREFS)
+        prefs[k]?.let { saved ->
             val (isrc, at) = saved.substringBefore('|') to (saved.substringAfter('|', "0").toLongOrNull() ?: 0)
             if (System.currentTimeMillis() - at < TTL_MS) { synchronized(memory) { memory[k] = isrc }; return isrc.ifEmpty { null } }
         }
         val isrc = runCatching { lookup(t) }.getOrElse { e ->
-            Diagnostics.log(ctx, "isrc", "lookup failed for ${t.title.take(40)}: ${e.message?.take(80)}")
+            env.log("isrc", "lookup failed for ${t.title.take(40)}: ${e.message?.take(80)}")
             return null // Not remembered: a network hiccup is not "no ISRC".
         } ?: ""
         synchronized(memory) { memory[k] = isrc }
-        if (prefs.all.size >= MAX) prefs.edit().clear().apply()
-        prefs.edit().putString(k, "$isrc|${System.currentTimeMillis()}").apply()
+        if (prefs.size >= MAX) prefs.clear()
+        prefs[k] = "$isrc|${System.currentTimeMillis()}"
         return isrc.ifEmpty { null }
     }
 

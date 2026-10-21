@@ -1,10 +1,8 @@
 package com.xlollx.songport.sync
 
 import com.xlollx.songport.providers.*
-import android.content.Context
-import com.xlollx.songport.R
-import com.xlollx.songport.data.Diagnostics
-import com.xlollx.songport.data.Store
+import com.xlollx.songport.data.FileStore
+import com.xlollx.songport.platform.Env
 import kotlinx.coroutines.sync.withPermit
 import com.xlollx.songport.model.MatchPolicy
 import com.xlollx.songport.model.MatchReview
@@ -55,7 +53,7 @@ private const val MISS_SCORE = -1.0
 private val NETWORK_RETRY_SECONDS = intArrayOf(5, 15, 30, 60, 120)
 
 /** Errori di trasporto che passano da soli: risoluzione del nome, connessione rifiutata o caduta, timeout. */
-internal fun isTransientNetwork(msg: String?): Boolean {
+fun isTransientNetwork(msg: String?): Boolean {
     val m = msg ?: return false
     return m.contains("Unable to resolve host", true) || m.contains("unreachable", true) || m.contains("Failed to connect", true) ||
         m.contains("timeout", true) || m.contains("timed out", true) || m.contains("connection abort", true) || m.contains("reset by peer", true)
@@ -69,12 +67,12 @@ private const val MAX_REORDER = 1500
 private val SHORT_LINK_HOSTS = setOf("amzn.to", "amzn.eu", "a.co", "spotify.link", "spoti.fi", "apple.co", "deezer.page.link", "link.deezer.com", "tidal.link")
 
 class SyncEngine(
-    private val ctx: Context,
-    /** Resource strings; replaced in JVM tests, where there are no resources. */
-    private val texts: (Int, Array<out Any>) -> String = { id, args -> if (args.isEmpty()) ctx.getString(id) else ctx.getString(id, *args) },
+    private val env: Env,
+    /** User-facing texts by their strings.xml name; replaced in tests, which check the names. */
+    private val texts: (String, Array<out Any>) -> String = { name, args -> env.text(name, *args) },
 ) {
-    private val store = Store.get(ctx)
-    private fun str(id: Int, vararg args: Any): String = texts(id, args)
+    private val store = env.store
+    private fun str(name: String, vararg args: Any): String = texts(name, args)
     /** Best candidate under the threshold per source track searched in this run: the review's proposals. */
     private val hints = java.util.concurrent.ConcurrentHashMap<String, Track>()
     /** Source ids whose searches on the target returned nothing at all: not there, nothing to review. */
@@ -85,12 +83,12 @@ class SyncEngine(
         val reportId = UUID.randomUUID().toString()
         // The source's version before anything is read: a change during the run is seen next time.
         val (src0, dst0) = runCatching { providers(job) }.getOrNull() ?: (null to null)
-        val sourceVersion = job.source.playlistId?.let { id -> src0?.let { runCatching { it.playlistVersion(ctx, id) }.getOrNull() } }
+        val sourceVersion = job.source.playlistId?.let { id -> src0?.let { runCatching { it.playlistVersion(env, id) }.getOrNull() } }
         if (unattended && sourceVersion != null && sourceVersion == job.sourceVersion && job.targetVersion != null) {
-            val targetVersion = job.target.playlistId?.let { id -> dst0?.let { runCatching { it.playlistVersion(ctx, id) }.getOrNull() } }
+            val targetVersion = job.target.playlistId?.let { id -> dst0?.let { runCatching { it.playlistVersion(env, id) }.getOrNull() } }
             if (targetVersion == job.targetVersion) {
-                Diagnostics.log(ctx, "engine", "${job.name}: unchanged on both sides, skipped")
-                val report = SyncReport(reportId, job.id, job.name, started, System.currentTimeMillis() - started, notes = listOf(str(R.string.note_unchanged)))
+                env.log("engine", "${job.name}: unchanged on both sides, skipped")
+                val report = SyncReport(reportId, job.id, job.name, started, System.currentTimeMillis() - started, notes = listOf(str("note_unchanged")))
                 store.addReport(report)
                 return report
             }
@@ -115,7 +113,7 @@ class SyncEngine(
             // WorkManager la fara' ripartire; gli abbinamenti fatti finora sono gia' in cache.
             throw e
         } catch (e: Exception) {
-            Diagnostics.log(ctx, "engine", "${job.name}: ${e.javaClass.simpleName}: ${e.message}")
+            env.log("engine", "${job.name}: ${e.javaClass.simpleName}: ${e.message}")
             SyncReport(reportId, job.id, job.name, started, System.currentTimeMillis() - started,
                 error = e.message ?: e.javaClass.simpleName)
         }
@@ -123,7 +121,7 @@ class SyncEngine(
         if (report.error == null && dst0 != null) {
             // The target's version after our own writes: the next scheduled run compares against it.
             val latest = store.job(job.id) ?: job
-            val targetVersion = latest.target.playlistId?.let { id -> runCatching { dst0.playlistVersion(ctx, id) }.getOrNull() }
+            val targetVersion = latest.target.playlistId?.let { id -> runCatching { dst0.playlistVersion(env, id) }.getOrNull() }
             if (sourceVersion != latest.sourceVersion || targetVersion != latest.targetVersion) store.upsertJob(latest.copy(sourceVersion = sourceVersion, targetVersion = targetVersion))
         }
         return report
@@ -136,10 +134,10 @@ class SyncEngine(
      */
     private suspend fun checkStillThere(p: MusicProvider, playlistId: String, name: String, isSource: Boolean) {
         if (MusicProvider.isLibrary(playlistId) || !p.requiresAuth) return
-        val listed = runCatching { p.playlists(ctx).any { it.id == playlistId } }.getOrDefault(true)
+        val listed = runCatching { p.playlists(env).any { it.id == playlistId } }.getOrDefault(true)
         if (listed) return
-        if (isSource && runCatching { p.playlistInfo(ctx, playlistId) }.isSuccess) return
-        throw ProviderException(str(if (isSource) R.string.error_source_gone else R.string.error_target_gone, name.ifBlank { playlistId }, p.label(ctx)))
+        if (isSource && runCatching { p.playlistInfo(env, playlistId) }.isSuccess) return
+        throw ProviderException(str(if (isSource) "error_source_gone" else "error_target_gone", name.ifBlank { playlistId }, p.label(env)))
     }
 
     /** Below this many removals a scheduled run proceeds whatever the share of the target they are. */
@@ -162,8 +160,8 @@ class SyncEngine(
         val (src, dst) = providers(job)
         val srcPlaylistId = job.source.playlistId ?: throw ProviderException("No source playlist selected")
         // L'origine puo' essere una playlist pubblica leggibile senza login (catalogo Apple Music).
-        if (!src.canRead(ctx, srcPlaylistId)) throw ProviderException(str(R.string.error_not_connected, src.displayName))
-        if (!dst.isConnected(ctx)) throw ProviderException(str(R.string.error_not_connected, dst.displayName))
+        if (!src.canRead(env, srcPlaylistId)) throw ProviderException(str("error_not_connected", src.displayName))
+        if (!dst.isConnected(env)) throw ProviderException(str("error_not_connected", dst.displayName))
 
         val notes = ArrayList<String>()
 
@@ -172,7 +170,7 @@ class SyncEngine(
         // it) must stop the sync with its name, not feed a ghost. One list call per side, per run.
         checkStillThere(src, srcPlaylistId, job.source.playlistName, isSource = true)
         job.target.playlistId?.let { checkStillThere(dst, it, job.target.playlistName, isSource = false) }
-        val allSource = patient(onProgress) { src.tracks(ctx, srcPlaylistId) }
+        val allSource = patient(onProgress) { src.tracks(env, srcPlaylistId) }
         // Ignored in this sync, or declared absent from this destination service by any sync.
         val ignoredIds = job.ignoredSourceIds.toHashSet()
         // Verso "album salvati" o "artisti seguiti" (anche da un file) si cercano album o artisti, non brani.
@@ -190,13 +188,13 @@ class SyncEngine(
             }
             onProgress(Progress(Progress.Step.CREATE_TARGET))
             // The source's own name, description and cover travel with the playlist, where the source has them to give.
-            val info = if (MusicProvider.isLibrary(srcPlaylistId)) null else runCatching { src.playlistInfo(ctx, srcPlaylistId) }.getOrNull()
+            val info = if (MusicProvider.isLibrary(srcPlaylistId)) null else runCatching { src.playlistInfo(env, srcPlaylistId) }.getOrNull()
             val srcName = job.source.playlistName.ifBlank { info?.name.orEmpty() }
             // No name given for the new playlist: the shared one's own name, read now (a link pasted
             // without a name resolves here), then whatever the sync is called.
             val name = job.target.playlistName.ifBlank { info?.name?.takeIf { it.isNotBlank() } ?: srcName.ifBlank { job.name } }
             val description = info?.description.orEmpty().trim().take(300)
-            val created = patient(onProgress) { dst.createPlaylist(ctx, name, description.ifBlank { MusicProvider.description(str(R.string.app_name)) }) }
+            val created = patient(onProgress) { dst.createPlaylist(env, name, description.ifBlank { MusicProvider.description(str("app_name")) }) }
             targetId = created.id
             targetCreated = true
             store.upsertJob(job.copy(
@@ -204,17 +202,17 @@ class SyncEngine(
                 source = job.source.copy(playlistName = srcName),
                 target = job.target.copy(playlistId = created.id, playlistName = created.name),
             ))
-            val cover = info?.imageUrl ?: (if (dst.canSetCover) runCatching { src.playlists(ctx).firstOrNull { it.id == srcPlaylistId }?.imageUrl }.getOrNull() else null)
-            if (dst.canSetCover && cover != null) runCatching { Covers.fetchJpeg(cover)?.let { dst.setPlaylistCover(ctx, created.id, it) } }
-                .onFailure { Diagnostics.log(ctx, "engine", "cover not set: ${it.message?.take(120)}") }
+            val cover = info?.imageUrl ?: (if (dst.canSetCover) runCatching { src.playlists(env).firstOrNull { it.id == srcPlaylistId }?.imageUrl }.getOrNull() else null)
+            if (dst.canSetCover && cover != null) runCatching { Covers.fetchJpeg(env, cover)?.let { dst.setPlaylistCover(env, created.id, it) } }
+                .onFailure { env.log("engine", "cover not set: ${it.message?.take(120)}") }
         }
 
-        if (dst.serviceId == LocalFilesProvider.serviceId) notes += str(R.string.note_file_target)
+        if (dst.serviceId == LocalFilesProvider.serviceId) notes += str("note_file_target")
 
         onProgress(Progress(Progress.Step.FETCH_TARGET))
         // A playlist created a moment ago is empty: skip the fetch (saves quota, and YouTube's Data API
         // may not even know the playlist yet).
-        val dstTracks = if (targetCreated) emptyList() else patient(onProgress) { dst.tracks(ctx, targetId) }
+        val dstTracks = if (targetCreated) emptyList() else patient(onProgress) { dst.tracks(env, targetId) }
         val dstById = dstTracks.associateBy { it.id }
         val index = Matcher.TrackIndex(dstTracks)
 
@@ -224,7 +222,7 @@ class SyncEngine(
 
         // 1) brani gia' presenti nella destinazione
         for (s in srcTracks) {
-            val key = Store.cacheKey(src.id, s.id, dst.id)
+            val key = FileStore.cacheKey(src.id, s.id, dst.id)
             val found = store.cachedMatch(src.id, s.id, dst.id)?.let { dstById[it] } ?: index.best(s, policy = job.policy)
             if (found != null) {
                 matchedDstIds += found.id
@@ -258,7 +256,7 @@ class SyncEngine(
                 val target = present ?: found
                 if (present == null) toAdd[found.id] = found
                 matchedDstIds += target.id
-                newCache[Store.cacheKey(src.id, s.id, dst.id)] = target.id
+                newCache[FileStore.cacheKey(src.id, s.id, dst.id)] = target.id
                 if (score != null && score < job.policy.reviewThreshold) uncertain += MatchReview(s, found, score)
                 // Salvataggio progressivo: un errore a meta' strada non butta via le ricerche fatte.
                 if (newCache.size % 100 == 0) store.putMatches(newCache)
@@ -266,7 +264,7 @@ class SyncEngine(
         }
         // Il servizio ha smesso di rispondere (limiti, sessione): si applica quanto trovato finora e
         // la prossima esecuzione riparte dalla cache, senza rifare le ricerche.
-        if (interrupted != null) notes += str(R.string.note_search_interrupted, searched, toSearch.size, interrupted)
+        if (interrupted != null) notes += str("note_search_interrupted", searched, toSearch.size, interrupted)
 
         // 3) rimozioni: solo cio' che nella destinazione non corrisponde a nulla dell'origine
         var toRemove: List<Track> = emptyList()
@@ -275,15 +273,15 @@ class SyncEngine(
             when {
                 // Ricerca non completata: un brano della destinazione puo' corrispondere a uno
                 // dell'origine non ancora cercato. Nulla si toglie finche' non si sa.
-                interrupted != null -> if (extra.isNotEmpty()) notes += str(R.string.note_removals_deferred, extra.size)
-                !dst.canRemoveTracks -> if (extra.isNotEmpty()) notes += str(R.string.note_no_removals, dst.displayName, extra.size)
+                interrupted != null -> if (extra.isNotEmpty()) notes += str("note_removals_deferred", extra.size)
+                !dst.canRemoveTracks -> if (extra.isNotEmpty()) notes += str("note_no_removals", dst.displayName, extra.size)
                 // Origine vuota: quasi certamente un errore, non svuotiamo la destinazione.
-                srcTracks.isEmpty() -> notes += str(R.string.error_source_empty)
+                srcTracks.isEmpty() -> notes += str("error_source_empty")
                 // Toglierebbe un quarto o piu' della destinazione (playlist svuotata per sbaglio, account
                 // cambiato, o un elenco letto a meta' dal servizio): senza l'anteprima non si tocca nulla.
                 !interactive && extra.size > REMOVAL_CAP_MIN && extra.size * 4 > dstTracks.size -> {
-                    notes += str(R.string.note_removals_capped, extra.size, dstTracks.size)
-                    Diagnostics.log(ctx, "engine", "${job.name}: removals held back, ${extra.size} of ${dstTracks.size} in the target matched none of the ${srcTracks.size} source tracks")
+                    notes += str("note_removals_capped", extra.size, dstTracks.size)
+                    env.log("engine", "${job.name}: removals held back, ${extra.size} of ${dstTracks.size} in the target matched none of the ${srcTracks.size} source tracks")
                 }
                 else -> toRemove = extra
             }
@@ -321,7 +319,7 @@ class SyncEngine(
         searchMissing(src, dst, srcTracks, job.policy, onProgress) { s, found, score ->
             if (found != null) {
                 toAdd[found.id] = found
-                newCache[Store.cacheKey(src.id, s.id, dst.id)] = found.id
+                newCache[FileStore.cacheKey(src.id, s.id, dst.id)] = found.id
                 if (score != null && score < job.policy.reviewThreshold) uncertain += MatchReview(s, found, score)
             } else unmatched += s
         }
@@ -396,13 +394,13 @@ class SyncEngine(
             val asked = declaredWait(throttled?.message)
             if (throttled != null && asked != null && blockWaits < MAX_BLOCK_WAITS) {
                 blockWaits++
-                Diagnostics.log(ctx, "engine", "${dst.displayName} is blocked: ${throttled.message?.take(200)}; waiting ${asked}s")
+                env.log("engine", "${dst.displayName} is blocked: ${throttled.message?.take(200)}; waiting ${asked}s")
                 waitVisible(asked, onProgress)
                 continue
             }
             if (throttled != null && asked == null && waits < WAIT_SECONDS.size) {
                 val seconds = WAIT_SECONDS[waits++]
-                Diagnostics.log(ctx, "engine", "${dst.displayName} is throttling: ${throttled.message?.take(200)}; waiting ${seconds}s")
+                env.log("engine", "${dst.displayName} is throttling: ${throttled.message?.take(200)}; waiting ${seconds}s")
                 sinceWait = 0
                 for (s in 1..seconds) {
                     onProgress(Progress(Progress.Step.WAITING, s, seconds))
@@ -435,7 +433,7 @@ class SyncEngine(
                     consecutiveErrors = 0
                     val (found, score) = r.getOrThrow()
                     if (score != MISS_SCORE && store.cachedMatch(src.id, s.id, dst.id) == null) searched++
-                    if (found == null && score != MISS_SCORE) misses += Store.cacheKey(src.id, s.id, dst.id)
+                    if (found == null && score != MISS_SCORE) misses += FileStore.cacheKey(src.id, s.id, dst.id)
                     if (misses.size >= 50) saveMisses()
                     onResult(s, found, if (score == MISS_SCORE) null else score)
                 }
@@ -444,7 +442,7 @@ class SyncEngine(
         saveMisses()
         if (searched > 0) {
             val secs = (System.currentTimeMillis() - startedAt) / 1000
-            Diagnostics.log(ctx, "engine", "${dst.displayName}: $searched searches in ${secs}s (${if (searched > 0) secs * 1000 / searched else 0} ms each), $waits waits")
+            env.log("engine", "${dst.displayName}: $searched searches in ${secs}s (${if (searched > 0) secs * 1000 / searched else 0} ms each), $waits waits")
         }
         return null
     }
@@ -463,8 +461,8 @@ class SyncEngine(
     private suspend fun alignOrder(src: MusicProvider, dst: MusicProvider, targetId: String, sourceOrder: List<String>, notes: MutableList<String>, onProgress: (Progress) -> Unit) {
         try {
             onProgress(Progress(Progress.Step.FETCH_TARGET))
-            val current = dst.tracks(ctx, targetId)
-            if (current.size > MAX_REORDER) { notes += str(R.string.note_order_failed, "${current.size} > $MAX_REORDER"); return }
+            val current = dst.tracks(env, targetId)
+            if (current.size > MAX_REORDER) { notes += str("note_order_failed", "${current.size} > $MAX_REORDER"); return }
             val byId = current.groupBy { it.id }
             val seen = HashSet<String>()
             val wanted = ArrayList<Track>()
@@ -476,10 +474,10 @@ class SyncEngine(
             wanted += current.filter { it.id !in seen }
             if (wanted.size != current.size) return
             if (wanted.map { it.id } == current.map { it.id }) return
-            dst.reorderTracks(ctx, targetId, current, wanted)
-            notes += str(R.string.note_order_aligned)
+            dst.reorderTracks(env, targetId, current, wanted)
+            notes += str("note_order_aligned")
         } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
-            notes += str(R.string.note_order_failed, e.message ?: e.javaClass.simpleName)
+            notes += str("note_order_failed", e.message ?: e.javaClass.simpleName)
         }
     }
 
@@ -497,8 +495,8 @@ class SyncEngine(
             // No ISRC on the source (web routes, files) but a target that searches by it: ask the
             // catalogue oracle once, and the first search asks for the exact recording.
             val withIsrc = if (s.isrc == null && s.kind.isEmpty() && dst.searchesByIsrc && dst.serviceId != "deezer" && store.data.settings.isrcLookup)
-                IsrcOracle.find(ctx, s)?.let { s.copy(isrc = it) } ?: s else s
-            consider(dst.search(ctx, withIsrc))?.let { return it }
+                IsrcOracle.find(env, s)?.let { s.copy(isrc = it) } ?: s else s
+            consider(dst.search(env, withIsrc))?.let { return it }
             val tried = hashSetOf(query(s))
             val title = Matcher.searchTitle(s.title)
             val first = s.artists.firstOrNull()?.let { Matcher.searchArtist(it) }?.takeIf { it.isNotBlank() }
@@ -508,10 +506,10 @@ class SyncEngine(
             )
             for (v in variants) {
                 if (!tried.add(query(v))) continue
-                consider(dst.search(ctx, v))?.let { return it }
+                consider(dst.search(env, v))?.let { return it }
             }
             // Last resort, where the service has one: a wider catalogue (YouTube videos for YouTube Music).
-            if (s.kind.isEmpty()) consider(dst.searchWide(ctx, s))?.let { return it }
+            if (s.kind.isEmpty()) consider(dst.searchWide(env, s))?.let { return it }
             return null
         } finally {
             // Not found, but something came close: the review offers it as a one-tap proposal.
@@ -542,14 +540,14 @@ class SyncEngine(
                 when {
                     asked != null && blockWaits < MAX_BLOCK_WAITS -> {
                         blockWaits++
-                        Diagnostics.log(ctx, "engine", "blocked: ${e.message?.take(160)}; waiting ${asked}s")
+                        env.log("engine", "blocked: ${e.message?.take(160)}; waiting ${asked}s")
                         waitVisible(asked, onProgress)
                     }
                     // Rete assente per un attimo (risveglio programmato, cambio Wi-Fi/dati): non e' il
                     // servizio, si riprova con attese crescenti.
                     isTransientNetwork(e.message) && networkRetries < NETWORK_RETRY_SECONDS.size -> {
                         val seconds = NETWORK_RETRY_SECONDS[networkRetries++]
-                        Diagnostics.log(ctx, "engine", "network hiccup: ${e.message?.take(120)}; retrying in ${seconds}s")
+                        env.log("engine", "network hiccup: ${e.message?.take(120)}; retrying in ${seconds}s")
                         waitVisible(seconds, onProgress)
                     }
                     else -> throw e
@@ -604,7 +602,7 @@ class SyncEngine(
                 onProgress(Progress(Progress.Step.ADDING, added, plan.toAdd.size, chunk.first().live()))
                 while (true) {
                     try {
-                        dst.addTracks(ctx, targetId, chunk)
+                        dst.addTracks(env, targetId, chunk)
                         added += chunk.size
                         chunk.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.ADDED)) }
                         break
@@ -614,14 +612,14 @@ class SyncEngine(
                         val asked = declaredWait(e.message)
                         if (asked != null && blockWaits < MAX_BLOCK_WAITS) {
                             blockWaits++
-                            Diagnostics.log(ctx, "engine", "${dst.displayName} is blocked while adding: ${e.message?.take(160)}; waiting ${asked}s")
+                            env.log("engine", "${dst.displayName} is blocked while adding: ${e.message?.take(160)}; waiting ${asked}s")
                             waitVisible(asked, onProgress)
                             continue
                         }
                         // Un blocco fallito (id non piu' valido, ecc.): riprova brano per brano.
                         for (t in chunk) {
                             try {
-                                dst.addTracks(ctx, targetId, listOf(t)); added++
+                                dst.addTracks(env, targetId, listOf(t)); added++
                                 SyncState.item(job.id, SyncState.LiveItem(t.live(), null, SyncState.Outcome.ADDED))
                             } catch (e2: Exception) {
                                 failed += "$t (${e2.message})"
@@ -641,7 +639,7 @@ class SyncEngine(
             var blockWaits = 0
             while (true) {
                 try {
-                    dst.removeTracks(ctx, targetId, plan.toRemove)
+                    dst.removeTracks(env, targetId, plan.toRemove)
                     plan.toRemove.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.REMOVED)) }
                     break
                 }
@@ -696,18 +694,18 @@ class SyncEngine(
         val targetId = job.target.playlistId ?: throw ProviderException("No target playlist")
         if (dst.canRemoveTracks) {
             // Il brano errato letto dalla ricerca non ha l'itemId di playlist: lo si ripesca dalla destinazione.
-            val present = dst.tracks(ctx, targetId).firstOrNull { it.id == review.chosen.id }
-            if (present != null) dst.removeTracks(ctx, targetId, listOf(present))
+            val present = dst.tracks(env, targetId).firstOrNull { it.id == review.chosen.id }
+            if (present != null) dst.removeTracks(env, targetId, listOf(present))
         }
-        dst.addTracks(ctx, targetId, listOf(chosen))
-        store.putMatches(mapOf(Store.cacheKey(src.id, review.source.id, dst.id) to chosen.id))
+        dst.addTracks(env, targetId, listOf(chosen))
+        store.putMatches(mapOf(FileStore.cacheKey(src.id, review.source.id, dst.id) to chosen.id))
         if (reportId != null) confirmMatch(reportId, review)
     }
 
     /** In anteprima non e' stato ancora scritto nulla: basta correggere la cache. */
     fun rematchInPlan(job: SyncJob, review: MatchReview, chosen: Track) {
         val (src, dst) = providers(job)
-        store.putMatches(mapOf(Store.cacheKey(src.id, review.source.id, dst.id) to chosen.id))
+        store.putMatches(mapOf(FileStore.cacheKey(src.id, review.source.id, dst.id) to chosen.id))
     }
 
     /** Rimette nella destinazione i brani tolti da una sync a specchio. */
@@ -715,9 +713,9 @@ class SyncEngine(
         val (_, dst) = providers(job)
         val targetId = job.target.playlistId ?: throw ProviderException("No target playlist")
         if (report.removedTracks.isEmpty()) return
-        dst.addTracks(ctx, targetId, report.removedTracks)
+        dst.addTracks(env, targetId, report.removedTracks)
         store.updateReport(report.id) { r ->
-            r.copy(removedTracks = emptyList(), notes = r.notes + str(R.string.restored_note, report.removedTracks.size))
+            r.copy(removedTracks = emptyList(), notes = r.notes + str("restored_note", report.removedTracks.size))
         }
     }
 
@@ -740,18 +738,18 @@ class SyncEngine(
             // A link from another service: song.link knows the same recording on the target service.
             val ref = if (TrackLinks.matches(ref0.service, dst.serviceId)) ref0
                 else TrackLinks.viaOdesli(query, dst.serviceId)
-                    ?: throw ProviderException(str(R.string.link_other_service, dst.label(ctx)))
-            val t = runCatching { dst.track(ctx, ref.trackId) }.getOrNull()
-            return TargetSearch(listOf(hit(t ?: dst.rehydrate(Track(id = ref.trackId, title = str(R.string.link_track_unknown), album = ref.trackId)), TargetSearch.Kind.SONG)))
+                    ?: throw ProviderException(str("link_other_service", dst.label(env)))
+            val t = runCatching { dst.track(env, ref.trackId) }.getOrNull()
+            return TargetSearch(listOf(hit(t ?: dst.rehydrate(Track(id = ref.trackId, title = str("link_track_unknown"), album = ref.trackId)), TargetSearch.Kind.SONG)))
         }
         val kind = source?.kind?.ifEmpty { null } ?: MusicProvider.libraryKind(job.target.playlistId).orEmpty()
         // An artist is searched by name alone: "Artist - Title" splitting would cut a name with a dash.
         val (artists, title) = if (kind == Track.KIND_ARTIST) emptyList<String>() to query.trim() else PlaylistFiles.splitArtistTitle(query)
-        var songs = dst.search(ctx, Track(id = "", title = title, artists = artists, kind = kind))
+        var songs = dst.search(env, Track(id = "", title = title, artists = artists, kind = kind))
         // "Artista - Titolo" senza un candidato convincente: il solo titolo a volte lo trova.
         fun convincing() = source == null || Matcher.bestScored(source, songs, policy = job.policy) != null
         if (artists.isNotEmpty() && (songs.isEmpty() || !convincing())) {
-            songs = (songs + dst.search(ctx, Track(id = "", title = title, kind = kind))).distinctBy { it.id }
+            songs = (songs + dst.search(env, Track(id = "", title = title, kind = kind))).distinctBy { it.id }
         }
         val hits = ArrayList<TargetSearch.Hit>()
         val seen = HashSet<String>()
@@ -760,7 +758,7 @@ class SyncEngine(
         var albumFound: Boolean? = null
         if (source != null && kind.isEmpty()) {
             source.album.trim().takeIf { it.isNotEmpty() }?.let { name ->
-                val byAlbum = runCatching { dst.search(ctx, Track(id = "", title = name, artists = source.artists.take(1))) }.getOrDefault(emptyList())
+                val byAlbum = runCatching { dst.search(env, Track(id = "", title = name, artists = source.artists.take(1))) }.getOrDefault(emptyList())
                 // Un servizio che non riporta l'album nei risultati non permette di dire se il disco c'e'.
                 if ((byAlbum + songs).any { it.album.isNotBlank() }) {
                     val wanted = Matcher.normalizeTitle(name)
@@ -776,7 +774,7 @@ class SyncEngine(
         }
         add(songs, TargetSearch.Kind.SONG)
         if (source != null && kind.isEmpty() && !convincing()) {
-            val wide = runCatching { dst.searchWide(ctx, source.copy(title = title, artists = artists.ifEmpty { source.artists })) }.getOrDefault(emptyList())
+            val wide = runCatching { dst.searchWide(env, source.copy(title = title, artists = artists.ifEmpty { source.artists })) }.getOrDefault(emptyList())
             add(wide, TargetSearch.Kind.VIDEO)
         }
         return TargetSearch(if (source != null) hits.sortedByDescending { it.score } else hits, album, albumFound)
@@ -808,8 +806,8 @@ class SyncEngine(
     suspend fun resolveManually(job: SyncJob, reportId: String, sourceTrack: Track, chosen: Track) {
         val (src, dst) = providers(job)
         val targetId = job.target.playlistId ?: throw ProviderException("No target playlist")
-        dst.addTracks(ctx, targetId, listOf(chosen))
-        store.putMatches(mapOf(Store.cacheKey(src.id, sourceTrack.id, dst.id) to chosen.id))
+        dst.addTracks(env, targetId, listOf(chosen))
+        store.putMatches(mapOf(FileStore.cacheKey(src.id, sourceTrack.id, dst.id) to chosen.id))
         dropUnmatched(reportId, sourceTrack)
     }
 

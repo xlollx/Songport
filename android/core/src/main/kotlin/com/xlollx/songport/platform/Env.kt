@@ -32,6 +32,15 @@ interface Env {
     /** Starts the sign-in of [provider] the way [mode] says (browser, credentials form...). */
     fun startAuth(provider: MusicProvider, mode: AuthMode)
 
+    /** A small persistent string map, by name: caches that outlive the process (the ISRC answers...). */
+    fun keyValues(name: String): KeyValues
+
+    /**
+     * [raw] image bytes as a JPEG of at most [maxSide] px and [maxBytes] bytes, or null when the
+     * image can't be decoded or never fits.
+     */
+    fun shrinkJpeg(raw: ByteArray, maxSide: Int, maxBytes: Int): ByteArray?
+
     companion object {
         /** The redirect of the Android app, also the one shown in the setup guides. */
         const val APP_REDIRECT_URI = "songport://callback"
@@ -57,4 +66,12 @@ enum class AuthMode {
 object BuildDefaults {
     @Volatile var values: Map<String, String> = emptyMap()
     operator fun get(key: String): String = values[key].orEmpty()
+}
+
+/** A persistent string map; writes may be applied in the background. */
+interface KeyValues {
+    operator fun get(key: String): String?
+    operator fun set(key: String, value: String)
+    val size: Int
+    fun clear()
 }
