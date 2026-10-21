@@ -19,13 +19,13 @@ object HostLog {
 
     data class Entry(val host: String, val count: Long, val lastAt: Long)
 
-    fun init(ctx: Context) { prefs = ctx.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE) }
+    fun init(ctx: Context) {
+        prefs = ctx.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        Http.onRequest = { record(it) }
+    }
 
     /** Da aggiungere a ogni OkHttpClient dell'app: conta la richiesta e passa oltre. */
-    val interceptor = Interceptor { chain ->
-        record(chain.request().url.host)
-        chain.proceed(chain.request())
-    }
+    val interceptor: Interceptor get() = Http.hostInterceptor
 
     fun record(host: String) {
         val p = prefs ?: return

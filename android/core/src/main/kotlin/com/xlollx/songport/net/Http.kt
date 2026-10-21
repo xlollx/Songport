@@ -20,6 +20,18 @@ class HttpResponse(val code: Int, val body: String, val headers: Headers) {
 
 /** Client HTTP condiviso. Gestisce da solo i 429 (rate limit) con attesa e ripetizione. */
 object Http {
+    /**
+     * Called with the host of every request this client makes. The Android app records it in its
+     * connections log (HostLog); elsewhere it stays a no-op.
+     */
+    @Volatile var onRequest: (host: String) -> Unit = {}
+
+    /** The interceptor that reports each request to [onRequest]: for every OkHttp client of the app. */
+    val hostInterceptor = okhttp3.Interceptor { chain ->
+        onRequest(chain.request().url.host)
+        chain.proceed(chain.request())
+    }
+
     /** Longest Retry-After (seconds) honoured silently inside [send]; anything longer is returned as is. */
     const val MAX_SILENT_WAIT_S = 15L
     val client: OkHttpClient = OkHttpClient.Builder()
@@ -27,7 +39,7 @@ object Http {
         .readTimeout(40, TimeUnit.SECONDS)
         .writeTimeout(40, TimeUnit.SECONDS)
         .retryOnConnectionFailure(true)
-        .addInterceptor(HostLog.interceptor)
+        .addInterceptor(hostInterceptor)
         .build()
 
     class Landing(val url: String, val code: Int, val page: String)
