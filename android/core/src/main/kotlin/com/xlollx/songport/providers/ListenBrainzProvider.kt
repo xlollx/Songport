@@ -1,7 +1,6 @@
 package com.xlollx.songport.providers
 
-import android.content.Context
-import com.xlollx.songport.R
+import com.xlollx.songport.platform.Env
 import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
@@ -25,7 +24,7 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
     override val serviceId = SERVICE
     override val displayName = "ListenBrainz"
     override val brandColor = 0xFFEB743B
-    override val noteRes = R.string.provider_note_listenbrainz
+    override val noteName = "provider_note_listenbrainz"
     override val beta = true
     /** Writes reach only the loved tracks, and only with the user token; playlists stay read-only. */
     override val canWrite = true
@@ -34,11 +33,11 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
     override val supportsLikedTarget = true
     override val supportsRecent = true
     override val loginForm = LoginForm(
-        needsUrl = false, needsUser = true, needsSecret = true, secretLabelRes = R.string.login_token_optional,
-        hintRes = R.string.login_hint_listenbrainz, secretOptional = true,
+        needsUrl = false, needsUser = true, needsSecret = true, secretLabelName = "login_token_optional",
+        hintName = "login_hint_listenbrainz", secretOptional = true,
     )
 
-    private suspend fun api(ctx: Context, path: String, method: String = "GET", body: JsonElement? = null, token: String? = null): JsonElement {
+    private suspend fun api(ctx: Env, path: String, method: String = "GET", body: JsonElement? = null, token: String? = null): JsonElement {
         val headers = HashMap<String, String>()
         headers["Accept"] = "application/json"
         token?.let { headers["Authorization"] = "Token $it" }
@@ -47,22 +46,22 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
         return parseJson(resp.body)
     }
 
-    private fun token(ctx: Context): String? = creds(ctx).extra["token"]?.takeIf { it.isNotBlank() }
+    private fun token(ctx: Env): String? = creds(ctx).extra["token"]?.takeIf { it.isNotBlank() }
 
-    override suspend fun login(ctx: Context, url: String, user: String, secret: String) {
+    override suspend fun login(ctx: Env, url: String, user: String, secret: String) {
         val name = user.trim()
         api(ctx, "/1/user/${Http.enc(name)}/playlists?count=1")
         val token = secret.trim()
         if (token.isNotEmpty()) {
             val v = api(ctx, "/1/validate-token", token = token)
-            if (v["valid"].bool != true) throw ProviderException(ctx.getString(R.string.listenbrainz_token_invalid))
+            if (v["valid"].bool != true) throw ProviderException(ctx.text("listenbrainz_token_invalid"))
         }
         save(ctx, Tokens(accessToken = name, userName = name, extra = if (token.isEmpty()) emptyMap() else mapOf("token" to token)))
     }
 
     private fun mbidOf(identifier: String?): String? = identifier?.trimEnd('/')?.substringAfterLast('/')?.takeIf { it.isNotBlank() }
 
-    override suspend fun playlists(ctx: Context): List<Playlist> {
+    override suspend fun playlists(ctx: Env): List<Playlist> {
         val user = Http.enc(creds(ctx).userName)
         val out = ArrayList<Playlist>()
         var offset = 0
@@ -80,7 +79,7 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
         return out
     }
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> {
         if (playlistId == MusicProvider.RECENT_ID) {
             val user = Http.enc(creds(ctx).userName)
             val j = api(ctx, "/1/user/$user/listens?count=100")
@@ -133,7 +132,7 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
     }
 
     /** MusicBrainz knows the recording: its MBID is what feedback is written against. */
-    override suspend fun search(ctx: Context, track: Track): List<Track> {
+    override suspend fun search(ctx: Env, track: Track): List<Track> {
         val artist = track.artists.firstOrNull() ?: return emptyList()
         val j = api(ctx, "/1/metadata/lookup?artist_name=${Http.enc(artist)}&recording_name=${Http.enc(track.title)}")
         val mbid = j["recording_mbid"].str ?: return emptyList()
@@ -143,22 +142,22 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
         ))
     }
 
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist = unsupported(ctx)
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist = unsupported(ctx)
 
-    private suspend fun feedback(ctx: Context, tracks: List<Track>, score: Int) {
-        val token = token(ctx) ?: throw ProviderException(ctx.getString(R.string.listenbrainz_token_needed))
+    private suspend fun feedback(ctx: Env, tracks: List<Track>, score: Int) {
+        val token = token(ctx) ?: throw ProviderException(ctx.text("listenbrainz_token_needed"))
         for (t in tracks) {
             if (!MBID.matches(t.id)) continue
             api(ctx, "/1/feedback/recording-feedback", "POST", jsonObj("recording_mbid" to t.id, "score" to score), token)
         }
     }
 
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (playlistId != MusicProvider.LIKED_ID) unsupported(ctx)
         feedback(ctx, tracks, 1)
     }
 
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (playlistId != MusicProvider.LIKED_ID) unsupported(ctx)
         feedback(ctx, tracks, 0)
     }

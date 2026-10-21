@@ -1,6 +1,8 @@
 package com.xlollx.songport.providers
 
 import android.content.Context
+import com.xlollx.songport.platform.Env
+import com.xlollx.songport.platform.android
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -65,4 +67,10 @@ object BridgePlugin {
         val intent = BuiltIn.loginIntent(ctx, action) ?: Intent(action).setPackage(packageName(ctx) ?: return)
         ctx.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
+
+    // The same, from the engine's Env (the web connectors implement the engine's MusicProvider).
+    fun installed(env: Env): Boolean = installed(env.android)
+    fun packageName(env: Env): String? = packageName(env.android)
+    fun call(env: Env, method: String, arg: String? = null, extras: Bundle? = null): Bundle? = call(env.android, method, arg, extras)
+    fun startLogin(env: Env, action: String) = startLogin(env.android, action)
 }

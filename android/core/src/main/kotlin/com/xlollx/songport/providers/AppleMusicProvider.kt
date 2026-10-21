@@ -1,12 +1,8 @@
 package com.xlollx.songport.providers
 
-import android.content.Context
-import android.content.Intent
-import com.xlollx.songport.BuildConfig
-import com.xlollx.songport.R
-import com.xlollx.songport.auth.AppleAuthActivity
-import com.xlollx.songport.data.Store
-import com.xlollx.songport.data.TokenStore
+import com.xlollx.songport.platform.AuthMode
+import com.xlollx.songport.platform.Env
+import com.xlollx.songport.platform.BuildDefaults
 import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
@@ -45,10 +41,10 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     override val revokeUrl = "https://appleid.apple.com/account/manage"
     override val displayName = "Apple Music"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.OFFICIAL
-    override val routeNoteRes: Int? get() = R.string.route_note_apple_api
+    override val routeNoteName: String? get() = "route_note_apple_api"
     override val familyName: String get() = "Apple Music"
     override val brandColor = 0xFFFA243C
-    override val noteRes = R.string.provider_note_apple
+    override val noteName = "provider_note_apple"
     override val beta = true
     override val searchesByIsrc: Boolean get() = true
     override val canRemoveTracks: Boolean get() = false
@@ -61,41 +57,37 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     override val setupGuide: SetupGuide? = SetupGuide(
         dashboardUrl = "https://developer.apple.com/account/resources/authkeys/list",
         stepUrls = listOf("https://developer.apple.com/programs/enroll/", "https://developer.apple.com/account/resources/identifiers/list/musicId", "https://developer.apple.com/account/resources/authkeys/add", "https://github.com/xlollx/Songport#api-configuration", null),
-        whyRes = R.string.setup_why_apple,
-        stepsArrayRes = R.array.setup_steps_apple,
-        fieldLabelRes = R.string.setup_field_apple_token,
+        whyName = "setup_why_apple",
+        stepsArrayName = "setup_steps_apple",
+        fieldLabelName = "setup_field_apple_token",
         multiline = true,
     )
 
-    override fun usesOwnCredentials(ctx: Context): Boolean =
-        !Store.get(ctx).data.settings.clientIds[serviceId].isNullOrBlank()
+    override fun usesOwnCredentials(ctx: Env): Boolean =
+        !ctx.store.data.settings.clientIds[serviceId].isNullOrBlank()
 
-    open fun developerToken(ctx: Context): String =
-        Store.get(ctx).data.settings.clientIds[serviceId]?.trim()?.takeIf { it.isNotEmpty() } ?: BuildConfig.APPLE_DEVELOPER_TOKEN
+    open fun developerToken(ctx: Env): String =
+        ctx.store.data.settings.clientIds[serviceId]?.trim()?.takeIf { it.isNotEmpty() } ?: BuildDefaults["APPLE_DEVELOPER_TOKEN"]
 
     /** Il music user token della libreria dell'utente (null = non collegato). */
-    protected open fun userToken(ctx: Context): String? = TokenStore(ctx).get(id)?.accessToken
+    protected open fun userToken(ctx: Env): String? = ctx.tokens.get(id)?.accessToken
 
-    override fun isConfigured(ctx: Context) = developerToken(ctx).isNotBlank()
-    override fun isConnected(ctx: Context) = TokenStore(ctx).get(id) != null
-    override fun accountName(ctx: Context): String? =
-        TokenStore(ctx).get(id)?.let { t -> t.extra["storefront"]?.uppercase()?.let { "Apple Music ($it)" } ?: displayName }
+    override fun isConfigured(ctx: Env) = developerToken(ctx).isNotBlank()
+    override fun isConnected(ctx: Env) = ctx.tokens.get(id) != null
+    override fun accountName(ctx: Env): String? =
+        ctx.tokens.get(id)?.let { t -> t.extra["storefront"]?.uppercase()?.let { "Apple Music ($it)" } ?: displayName }
 
-    override fun canRead(ctx: Context, playlistId: String): Boolean =
+    override fun canRead(ctx: Env, playlistId: String): Boolean =
         if (playlistId.startsWith(CATALOG_PREFIX)) isConfigured(ctx) else isConnected(ctx)
 
-    override fun startAuth(ctx: Context) {
-        ctx.startActivity(
-            Intent(ctx, AppleAuthActivity::class.java)
-                .putExtra(AppleAuthActivity.EXTRA_PROVIDER, id)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        )
+    override fun startAuth(ctx: Env) {
+        ctx.startAuth(this, AuthMode.MUSICKIT)
     }
 
     /** Chiamata da AppleAuthActivity con il music user token ottenuto da MusicKit JS. */
-    override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) {
+    override suspend fun completeAuth(ctx: Env, params: Map<String, String>, verifier: String) {
         val mut = params["music_user_token"] ?: throw ProviderException("Apple Music: no user token")
-        val store = TokenStore(ctx)
+        val store = ctx.tokens
         store.set(id, Tokens(accessToken = mut, userName = displayName))
         val sf = try {
             api(ctx, "GET", "$API/v1/me/storefront")["data"][0]["id"].str ?: defaultStorefront()
@@ -105,13 +97,13 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
         store.set(id, Tokens(accessToken = mut, userName = displayName, extra = mapOf("storefront" to sf)))
     }
 
-    override fun disconnect(ctx: Context) = TokenStore(ctx).clear(id)
+    override fun disconnect(ctx: Env) = ctx.tokens.clear(id)
 
     private fun defaultStorefront(): String =
         Locale.getDefault().country.lowercase().takeIf { it.length == 2 } ?: "us"
 
-    protected open fun storefront(ctx: Context): String =
-        TokenStore(ctx).get(id)?.extra?.get("storefront") ?: defaultStorefront()
+    protected open fun storefront(ctx: Env): String =
+        ctx.tokens.get(id)?.extra?.get("storefront") ?: defaultStorefront()
 
     /**
      * Richiesta all'API. Il developer token basta per il catalogo; il music user token serve
@@ -119,19 +111,19 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
      */
     /** The web route sends every call to the player's own backend, with the player's headers. */
     protected open fun apiUrl(url: String): String = url
-    protected open fun apiHeaders(ctx: Context): Map<String, String> = emptyMap()
+    protected open fun apiHeaders(ctx: Env): Map<String, String> = emptyMap()
 
-    private suspend fun api(ctx: Context, method: String, url: String, body: JsonElement? = null): JsonElement {
+    private suspend fun api(ctx: Env, method: String, url: String, body: JsonElement? = null): JsonElement {
         // The web route fetches its tokens over the network: never on the caller's (main) thread.
         val dev = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { developerToken(ctx) }
-        if (dev.isBlank()) throw ProviderException(ctx.getString(R.string.apple_token_missing))
+        if (dev.isBlank()) throw ProviderException(ctx.text("apple_token_missing"))
         val headers = HashMap<String, String>()
         headers["Authorization"] = "Bearer $dev"
         headers["Accept"] = "application/json"
         val needsUser = "/v1/me/" in url
         if (needsUser) {
             val mut = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { userToken(ctx) }
-                ?: throw ProviderException(ctx.getString(R.string.error_not_connected, displayName))
+                ?: throw ProviderException(ctx.text("error_not_connected", displayName))
             headers["Music-User-Token"] = mut
         }
         headers.putAll(apiHeaders(ctx))
@@ -139,11 +131,11 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
         if (!resp.ok) {
             val detail = parseJson(resp.body)["errors"][0]["detail"].str ?: resp.body.take(200).ifBlank { "no detail" }
             // 401 sul developer token = scaduto; 403 con user token = sessione da rifare.
-            if (resp.code == 401 && needsUser) TokenStore(ctx).clear(id)
+            if (resp.code == 401 && needsUser) ctx.tokens.clear(id)
             // An Apple ID without an Apple Music subscription: 403 from the public API, or a 400 saying
             // "User's subscription tier does not have access to privilege: CloudLibrary" from the player's.
             if (needsUser && (resp.code == 403 || detail.contains("subscription tier", ignoreCase = true) || detail.contains("CloudLibrary")))
-                throw ProviderException(ctx.getString(R.string.apple_subscription_needed, displayName, detail))
+                throw ProviderException(ctx.text("apple_subscription_needed", displayName, detail))
             throw ProviderException("$displayName API ${resp.code}: $detail")
         }
         return parseJson(resp.body)
@@ -153,7 +145,7 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     private fun nextUrl(j: JsonElement?): String? =
         j["next"].str?.let { if (it.startsWith("http")) it else API + it }
 
-    override suspend fun playlists(ctx: Context): List<Playlist> {
+    override suspend fun playlists(ctx: Env): List<Playlist> {
         val out = ArrayList<Playlist>()
         var url: String? = "$API/v1/me/library/playlists?limit=100"
         while (url != null) {
@@ -173,13 +165,13 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
         return out
     }
 
-    override suspend fun playlistVersion(ctx: Context, playlistId: String): String? {
+    override suspend fun playlistVersion(ctx: Env, playlistId: String): String? {
         if (MusicProvider.isLibrary(playlistId) || playlistId.startsWith(CATALOG_PREFIX)) return null
         val a = api(ctx, "GET", "$API/v1/me/library/playlists/$playlistId")["data"][0]["attributes"]
         return a["lastModifiedDate"].str ?: a["dateModified"].str
     }
 
-    override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
+    override suspend fun playlistInfo(ctx: Env, playlistId: String): Playlist {
         val url = if (playlistId.startsWith(CATALOG_PREFIX)) "$API/v1/catalog/${storefront(ctx)}/playlists/$playlistId"
         else "$API/v1/me/library/playlists/$playlistId"
         val d = api(ctx, "GET", url)["data"][0]
@@ -229,7 +221,7 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
         s?.split(Regex("""\s*(,|&|feat\.|ft\.|featuring)\s*""", RegexOption.IGNORE_CASE))
             ?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> {
         if (playlistId == MusicProvider.ALBUMS_ID) {
             val out = ArrayList<Track>()
             var url: String? = "$API/v1/me/library/albums?limit=100"
@@ -260,12 +252,12 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
         return out
     }
 
-    override suspend fun track(ctx: Context, trackId: String): Track? =
+    override suspend fun track(ctx: Env, trackId: String): Track? =
         catalogTrack(api(ctx, "GET", "$API/v1/catalog/${storefront(ctx)}/songs/${Http.enc(trackId)}")["data"].arr.firstOrNull())
 
-    override fun webSearchUrl(ctx: Context, query: String): String = "https://music.apple.com/search?term=" + android.net.Uri.encode(query)
+    override fun webSearchUrl(ctx: Env, query: String): String = "https://music.apple.com/search?term=" + Http.enc(query)
 
-    override suspend fun search(ctx: Context, track: Track): List<Track> {
+    override suspend fun search(ctx: Env, track: Track): List<Track> {
         val sf = storefront(ctx)
         if (track.kind == Track.KIND_ALBUM) {
             track.isrcNorm?.let { upc ->
@@ -289,14 +281,14 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
         return j["results"]["songs"]["data"].arr.mapNotNull { catalogTrack(it) }
     }
 
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist {
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist {
         val j = api(ctx, "POST", "$API/v1/me/library/playlists",
             jsonObj("attributes" to mapOf("name" to name, "description" to description)))
         val pid = j["data"][0]["id"].str ?: throw ProviderException("Apple Music: playlist not created")
         return Playlist(pid, name, 0)
     }
 
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.ALBUMS_ID) {
             tracks.chunked(25).forEach { chunk -> api(ctx, "POST", "$API/v1/me/library?ids[albums]=${chunk.joinToString(",") { it.id }}") }
             return
@@ -309,8 +301,8 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
     }
 
     /** L'API Apple Music non espone la rimozione di brani da una playlist (vedi canRemoveTracks). */
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
-        throw ProviderException(ctx.getString(R.string.error_no_removals, displayName))
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
+        throw ProviderException(ctx.text("error_no_removals", displayName))
     }
 
     companion object {

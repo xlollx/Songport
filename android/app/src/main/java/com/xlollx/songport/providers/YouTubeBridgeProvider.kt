@@ -1,6 +1,8 @@
 package com.xlollx.songport.providers
 
 import android.content.Context
+import com.xlollx.songport.platform.Env
+import com.xlollx.songport.platform.android
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -33,10 +35,10 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     override val serviceId = SERVICE
     override val displayName = "YouTube Music"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.EASY
-    override val routeNoteRes: Int? get() = R.string.route_note_web
+    override val routeNoteName: String? get() = "route_note_web"
     override val familyName: String get() = "YouTube Music"
     override val brandColor = 0xFFFF0000
-    override val noteRes = R.string.provider_note_ytm
+    override val noteName = "provider_note_ytm"
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
     /** Saved albums and subscribed artists: the built-in connectors know them, an old plugin may not. */
@@ -47,7 +49,7 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     override val authDomain = "accounts.google.com"
     override val revokeUrl = "https://myaccount.google.com/device-activity"
     override val installUrl = BridgePlugin.installUrl
-    override val notConfiguredRes = R.string.ytm_not_installed_hint
+    override val notConfiguredName: String? = "ytm_not_installed_hint"
     override val pluginBased = true
     // The web interface answers 403 to bursts of searches: one at a time, paced by the Bridge.
     // Due alla volta: Google segna l'indirizzo quando il ritmo non e' quello di una persona, e il
@@ -55,39 +57,39 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     override val searchParallelism = 2
 
     /** "Configured" here means the Bridge app is installed. */
-    override fun isConfigured(ctx: Context): Boolean = installed(ctx)
+    override fun isConfigured(ctx: Env): Boolean = installed(ctx)
 
-    override fun isConnected(ctx: Context): Boolean =
+    override fun isConnected(ctx: Env): Boolean =
         installed(ctx) && runCatching { call(ctx, "status").getBoolean("connected", false) }.getOrDefault(false)
 
-    override fun accountName(ctx: Context): String? =
+    override fun accountName(ctx: Env): String? =
         runCatching { call(ctx, "status").getString("account") }.getOrNull()
 
-    override fun startAuth(ctx: Context) {
+    override fun startAuth(ctx: Env) {
         val pkg = BridgePlugin.packageName(ctx)
         if (pkg == null) {
-            installUrl?.let { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+            installUrl?.let { ctx.android.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
             return
         }
         BridgePlugin.startLogin(ctx, LOGIN_ACTION)
     }
 
-    override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
+    override suspend fun completeAuth(ctx: Env, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
 
-    override fun disconnect(ctx: Context) { runCatching { call(ctx, "disconnect") } }
+    override fun disconnect(ctx: Env) { runCatching { call(ctx, "disconnect") } }
 
-    override suspend fun playlists(ctx: Context): List<Playlist> = io(ctx, "playlists") { j ->
+    override suspend fun playlists(ctx: Env): List<Playlist> = io(ctx, "playlists") { j ->
         j.arr.mapNotNull { p ->
             val id = p["id"].str ?: return@mapNotNull null
             Playlist(id, p["name"].str ?: id, p["count"].int ?: -1)
         }
     }
 
-    override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist = io(ctx, "playlistInfo", playlistId) { j ->
+    override suspend fun playlistInfo(ctx: Env, playlistId: String): Playlist = io(ctx, "playlistInfo", playlistId) { j ->
         Playlist(playlistId, j["name"].str ?: playlistId, j["count"].int ?: -1, ownedByMe = false)
     }
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> = withContext(Dispatchers.IO) {
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> = withContext(Dispatchers.IO) {
         val out = ArrayList<Track>()
         var offset: Int? = 0
         while (offset != null) {
@@ -98,22 +100,22 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         out
     }
 
-    override fun webSearchUrl(ctx: Context, query: String): String = "https://music.youtube.com/search?q=" + android.net.Uri.encode(query)
+    override fun webSearchUrl(ctx: Env, query: String): String = "https://music.youtube.com/search?q=" + android.net.Uri.encode(query)
 
-    override suspend fun search(ctx: Context, track: Track): List<Track> {
+    override suspend fun search(ctx: Env, track: Track): List<Track> {
         val kind = when (track.kind) { Track.KIND_ALBUM -> "album"; Track.KIND_ARTIST -> "artist"; Track.KIND_PODCAST -> return emptyList(); else -> null }
         val q = if (kind == "artist") track.title else (track.artists.take(2) + track.title).joinToString(" ")
         return io(ctx, "search", q, Bundle().apply { kind?.let { putString("kind", it) } }) { j -> j.arr.mapNotNull { toTrack(it) } }
     }
 
     /** YouTube videos, for a song the music catalogue does not have (an old Bridge ignores the flag and repeats the songs). */
-    override suspend fun searchWide(ctx: Context, track: Track): List<Track> {
+    override suspend fun searchWide(ctx: Env, track: Track): List<Track> {
         val q = (track.artists.take(2) + track.title).joinToString(" ")
         return io(ctx, "search", q, Bundle().apply { putBoolean("videos", true) }) { j -> j.arr.mapNotNull { toTrack(it) } }
     }
 
     /** Titolo e canale da oEmbed di YouTube: pubblico, senza quota e senza passare dal Bridge. */
-    override suspend fun track(ctx: Context, trackId: String): Track? {
+    override suspend fun track(ctx: Env, trackId: String): Track? {
         val r = com.xlollx.songport.net.Http.send("GET", "https://www.youtube.com/oembed?format=json&url=" +
             com.xlollx.songport.net.Http.enc("https://www.youtube.com/watch?v=$trackId"))
         if (!r.ok) return null
@@ -122,17 +124,17 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         return Track(id = trackId, title = title, artists = artists)
     }
 
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist =
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist =
         io(ctx, "create", null, Bundle().apply { putString("name", name); putString("description", description) }) { j ->
             Playlist(j["id"].str ?: throw ProviderException("YouTube Music: playlist not created"), name, 0)
         }
 
-    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+    override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         withContext(Dispatchers.IO) { call(ctx, "rename", playlistId, Bundle().apply { putString("name", name) }) }
     }
 
     override val canReorder: Boolean get() = BridgePlugin.builtIn
-    override suspend fun reorderTracks(ctx: Context, playlistId: String, current: List<Track>, ordered: List<Track>) {
+    override suspend fun reorderTracks(ctx: Env, playlistId: String, current: List<Track>, ordered: List<Track>) {
         // Entries move by their set id; a listing without them cannot be reordered.
         if (current.any { it.itemId.isNullOrEmpty() }) return
         val steps = com.xlollx.songport.sync.Reorder.before(current.map { it.itemId!! }, ordered.map { it.itemId!! })
@@ -146,15 +148,15 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     }
 
     override val canSetVisibility: Boolean get() = BridgePlugin.builtIn
-    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+    override suspend fun setPlaylistVisibility(ctx: Env, playlistId: String, public: Boolean) {
         withContext(Dispatchers.IO) { call(ctx, "visibility", playlistId, Bundle().apply { putBoolean("public", public) }) }
     }
 
-    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+    override suspend fun deletePlaylist(ctx: Env, playlistId: String) {
         withContext(Dispatchers.IO) { call(ctx, "delete", playlistId) }
     }
 
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return
         withContext(Dispatchers.IO) {
             call(ctx, "add", playlistId, Bundle().apply {
@@ -165,7 +167,7 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         }
     }
 
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return
         if (playlistId == MusicProvider.ALBUMS_ID || playlistId == MusicProvider.ARTISTS_ID) {
             withContext(Dispatchers.IO) {
@@ -199,11 +201,11 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         )
     }
 
-    private suspend fun <T> io(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null, map: (JsonElement?) -> T): T =
+    private suspend fun <T> io(ctx: Env, method: String, arg: String? = null, extras: Bundle? = null, map: (JsonElement?) -> T): T =
         withContext(Dispatchers.IO) { map(parseJson(call(ctx, method, arg, extras).getString("json") ?: "")) }
 
-    private fun call(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
-        if (!installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))
+    private fun call(ctx: Env, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
+        if (!installed(ctx)) throw ProviderException(ctx.text("ytm_not_installed"))
         val b = try {
             BridgePlugin.call(ctx, method, arg, extras)
         } catch (e: Exception) {
@@ -219,6 +221,6 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         const val SERVICE = "ytm"
         const val PACKAGE = "com.xlollx.songport.ytmbridge"
         const val LOGIN_ACTION = "com.xlollx.songport.ytmbridge.LOGIN"
-        fun installed(ctx: Context): Boolean = BridgePlugin.installed(ctx)
+        fun installed(ctx: Env): Boolean = BridgePlugin.installed(ctx)
     }
 }

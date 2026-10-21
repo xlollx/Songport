@@ -1,12 +1,12 @@
 package com.xlollx.songport.providers
 
-import android.content.Context
+import com.xlollx.songport.platform.Env
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.Track
 
 /**
- * Un servizio musicale. Tutte le operazioni ricevono il Context per leggere token e impostazioni.
- * Le implementazioni sono `object` senza stato: lo stato vive in TokenStore/Store.
+ * Un servizio musicale. Tutte le operazioni ricevono l'Env della piattaforma (Android o server)
+ * per leggere token e impostazioni. Le implementazioni non hanno stato: lo stato vive nell'Env.
  */
 interface MusicProvider {
     /** Servizio ("spotify"): le credenziali dell'app e le impostazioni sono per servizio. */
@@ -18,8 +18,8 @@ interface MusicProvider {
     val displayName: String
     /** Colore ARGB per la UI (chip/badge). */
     val brandColor: Long
-    /** Risorsa stringa con una breve nota mostrata nella scheda Account. */
-    val noteRes: Int
+    /** Nome della stringa con una breve nota mostrata nella scheda Account. */
+    val noteName: String
     /** Se il servizio espone i "brani preferiti" come origine (id speciale LIKED_ID). */
     val supportsLikedSongs: Boolean get() = false
     /** Se si puo' anche scrivere nei "brani preferiti" (sync preferiti -> preferiti). */
@@ -43,12 +43,12 @@ interface MusicProvider {
     }
 
     /** Le voci speciali da mostrare accanto alle playlist. */
-    fun libraryEntries(ctx: Context, asTarget: Boolean): List<Playlist> = listOfNotNull(
-        Playlist(LIKED_ID, ctx.getString(com.xlollx.songport.R.string.liked_songs)).takeIf { supportsLibrary(LIKED_ID, asTarget) },
-        Playlist(ALBUMS_ID, ctx.getString(com.xlollx.songport.R.string.saved_albums)).takeIf { supportsAlbums },
-        Playlist(ARTISTS_ID, ctx.getString(com.xlollx.songport.R.string.followed_artists)).takeIf { supportsArtists },
-        Playlist(PODCASTS_ID, ctx.getString(com.xlollx.songport.R.string.followed_podcasts)).takeIf { supportsPodcasts },
-        Playlist(RECENT_ID, ctx.getString(com.xlollx.songport.R.string.recently_played)).takeIf { !asTarget && supportsRecent },
+    fun libraryEntries(ctx: Env, asTarget: Boolean): List<Playlist> = listOfNotNull(
+        Playlist(LIKED_ID, ctx.text("liked_songs")).takeIf { supportsLibrary(LIKED_ID, asTarget) },
+        Playlist(ALBUMS_ID, ctx.text("saved_albums")).takeIf { supportsAlbums },
+        Playlist(ARTISTS_ID, ctx.text("followed_artists")).takeIf { supportsArtists },
+        Playlist(PODCASTS_ID, ctx.text("followed_podcasts")).takeIf { supportsPodcasts },
+        Playlist(RECENT_ID, ctx.text("recently_played")).takeIf { !asTarget && supportsRecent },
     )
     /** False per sorgenti locali (file) che non richiedono login. */
     val requiresAuth: Boolean get() = true
@@ -66,7 +66,7 @@ interface MusicProvider {
      */
     val route: Route? get() = null
     /** Una riga che spiega la strada, mostrata nella scelta del servizio. */
-    val routeNoteRes: Int? get() = null
+    val routeNoteName: String? get() = null
     /** Le varianti dello stesso servizio (API e web) si raggruppano sotto questo nome. */
     val familyName: String get() = displayName
 
@@ -93,12 +93,12 @@ interface MusicProvider {
     /** Putting a playlist's tracks in a given order, where the API has a move: Spotify, YouTube Music, Deezer. */
     val canReorder: Boolean get() = false
     /** [current] as the playlist lists it now, [ordered] the same tracks in the wanted order (ids and item ids as listed). */
-    suspend fun reorderTracks(ctx: Context, playlistId: String, current: List<Track>, ordered: List<Track>) {}
+    suspend fun reorderTracks(ctx: Env, playlistId: String, current: List<Track>, ordered: List<Track>) {}
 
     /** Mettere una copertina a una playlist propria: solo dove l'API lo permette (Spotify). */
     val canSetCover: Boolean get() = false
     /** [jpeg]: at most 256 KB, as Spotify wants it. */
-    suspend fun setPlaylistCover(ctx: Context, playlistId: String, jpeg: ByteArray) {}
+    suspend fun setPlaylistCover(ctx: Env, playlistId: String, jpeg: ByteArray) {}
 
     /** Rinominare ed eliminare le proprie playlist: dove l'API lo permette (Apple Music e Amazon no). */
     val canRenamePlaylists: Boolean get() = canWrite && canCreatePlaylists
@@ -115,7 +115,7 @@ interface MusicProvider {
     /** Servizi che passano da un'app compagna: dove scaricarla quando manca (null = non applicabile). */
     val installUrl: String? get() = null
     /** Testo mostrato al posto del generico "serve una chiave" quando il servizio non e' configurato. */
-    val notConfiguredRes: Int? get() = null
+    val notConfiguredName: String? get() = null
     /** True se [search] usa l'ISRC del brano quando c'e' (Spotify, Apple Music, TIDAL, Deezer): vale la pena procurarglielo. */
     val searchesByIsrc: Boolean get() = false
     /** Ricerche in parallelo tollerate dal servizio (1 per le interfacce web non ufficiali, che bloccano le raffiche). */
@@ -124,41 +124,41 @@ interface MusicProvider {
     val pluginBased: Boolean get() = false
 
     /** True se questa build (o le impostazioni utente) hanno le credenziali per il servizio. */
-    fun isConfigured(ctx: Context): Boolean
+    fun isConfigured(ctx: Env): Boolean
 
     /** True se le credenziali in uso sono quelle inserite dall'utente e non quelle della build. */
-    fun usesOwnCredentials(ctx: Context): Boolean = false
-    fun isConnected(ctx: Context): Boolean
-    fun accountName(ctx: Context): String?
+    fun usesOwnCredentials(ctx: Env): Boolean = false
+    fun isConnected(ctx: Env): Boolean
+    fun accountName(ctx: Env): String?
 
     /** Nome da mostrare: quello scelto dall'utente per il connettore, altrimenti il servizio (e l'account). */
-    fun label(ctx: Context): String =
+    fun label(ctx: Env): String =
         Providers.customName(id) ?: if (slot.isEmpty()) displayName else "$displayName · ${accountName(ctx) ?: slot}"
 
     /**
      * Avvia il login. Default: OAuth nel browser (vedi OAuthProvider); Apple Music usa una
      * schermata dedicata con MusicKit JS.
      */
-    fun startAuth(ctx: Context)
+    fun startAuth(ctx: Env)
     /** Completa il login con i parametri del redirect (query + fragment). Solo per i flussi browser. */
-    suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String)
-    fun disconnect(ctx: Context)
+    suspend fun completeAuth(ctx: Env, params: Map<String, String>, verifier: String)
+    fun disconnect(ctx: Env)
 
-    suspend fun playlists(ctx: Context): List<Playlist>
-    suspend fun tracks(ctx: Context, playlistId: String): List<Track>
+    suspend fun playlists(ctx: Env): List<Playlist>
+    suspend fun tracks(ctx: Env, playlistId: String): List<Track>
     /** Candidati per un brano di un altro servizio: prima per ISRC (se supportato), poi per testo. */
-    suspend fun search(ctx: Context, track: Track): List<Track>
-    suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist
-    suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>)
-    suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>)
-    suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
-        throw com.xlollx.songport.model.ProviderException(ctx.getString(com.xlollx.songport.R.string.error_manage_unsupported, displayName))
+    suspend fun search(ctx: Env, track: Track): List<Track>
+    suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist
+    suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>)
+    suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>)
+    suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
+        throw com.xlollx.songport.model.ProviderException(ctx.text("error_manage_unsupported", displayName))
     }
-    suspend fun deletePlaylist(ctx: Context, playlistId: String) {
-        throw com.xlollx.songport.model.ProviderException(ctx.getString(com.xlollx.songport.R.string.error_manage_unsupported, displayName))
+    suspend fun deletePlaylist(ctx: Env, playlistId: String) {
+        throw com.xlollx.songport.model.ProviderException(ctx.text("error_manage_unsupported", displayName))
     }
-    suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
-        throw com.xlollx.songport.model.ProviderException(ctx.getString(com.xlollx.songport.R.string.error_manage_unsupported, displayName))
+    suspend fun setPlaylistVisibility(ctx: Env, playlistId: String, public: Boolean) {
+        throw com.xlollx.songport.model.ProviderException(ctx.text("error_manage_unsupported", displayName))
     }
 
     /**
@@ -166,24 +166,24 @@ interface MusicProvider {
      * nell'app quando e' installata): dalla revisione l'utente cerca il brano li', ne copia il link e
      * lo incolla. Null per i servizi senza una ricerca pubblica (server personali, file).
      */
-    fun webSearchUrl(ctx: Context, query: String): String? = null
+    fun webSearchUrl(ctx: Env, query: String): String? = null
 
     /**
      * Ricerca su un catalogo piu' largo del servizio (per YouTube Music i video di YouTube, che una
      * playlist accetta comunque). Usata solo quando [search] non ha dato nulla di accettabile; vuota
      * per i servizi che non hanno un catalogo del genere.
      */
-    suspend fun searchWide(ctx: Context, track: Track): List<Track> = emptyList()
+    suspend fun searchWide(ctx: Env, track: Track): List<Track> = emptyList()
 
     /**
      * Un brano di cui si conosce solo l'id (da un link incollato nella revisione), con titolo e
      * artisti se il servizio permette di leggerli; null quando non li puo' leggere: il brano si
      * aggiunge comunque, e' l'id che serve.
      */
-    suspend fun track(ctx: Context, trackId: String): Track? = null
+    suspend fun track(ctx: Env, trackId: String): Track? = null
 
     /** Nome (e conteggio) di una playlist di cui si conosce solo l'id, es. da un link incollato. */
-    suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist = Playlist(playlistId, playlistId)
+    suspend fun playlistInfo(ctx: Env, playlistId: String): Playlist = Playlist(playlistId, playlistId)
 
     /**
      * Un segno che cambia quando cambia il contenuto (lo snapshot id di Spotify, il checksum di
@@ -191,13 +191,13 @@ interface MusicProvider {
      * servizio non ne offre uno affidabile. Le sync programmate saltano il giro quando nessuno dei
      * due lati e' cambiato dall'ultima volta: una chiamata al posto di decine.
      */
-    suspend fun playlistVersion(ctx: Context, playlistId: String): String? = null
+    suspend fun playlistVersion(ctx: Env, playlistId: String): String? = null
 
     /**
      * True se questa playlist e' leggibile adesso. Di default richiede l'account collegato;
      * le playlist pubbliche del catalogo Apple Music si leggono anche senza login.
      */
-    fun canRead(ctx: Context, playlistId: String): Boolean = isConnected(ctx)
+    fun canRead(ctx: Env, playlistId: String): Boolean = isConnected(ctx)
 
     /** Ricostruisce i campi nativi (es. URI) di un brano noto solo per id (dalla cache abbinamenti). */
     fun rehydrate(track: Track): Track = track
@@ -228,7 +228,37 @@ object Providers {
     @Volatile private var extraAccounts: Map<String, List<String>> = emptyMap()
     @Volatile private var names: Map<String, String> = emptyMap()
     @Volatile private var connectorIds: List<String> = emptyList()
-    @Volatile private var cached: List<MusicProvider> = build()
+    @Volatile private var cached: List<MusicProvider> = emptyList()
+
+    /** One entry per service, in display order: its id and how to build an account of it ("" = main). */
+    class Factory(val service: String, val create: (slot: String) -> MusicProvider)
+
+    @Volatile private var factories: List<Factory> = emptyList()
+    @Volatile private var singletons: List<MusicProvider> = emptyList()
+
+    /**
+     * The connectors this build offers, in display order: the platform installs them at start (the
+     * Android app adds its web connectors to the ones of the engine, the server only these).
+     */
+    fun install(factories: List<Factory>, singletons: List<MusicProvider> = listOf(LocalFilesProvider)) {
+        this.factories = factories
+        this.singletons = singletons
+        cached = build()
+    }
+
+    /** The connectors of the engine, without any web connector: what a platform without a browser offers. */
+    fun engineFactories(): List<Factory> = listOf(
+        Factory(SpotifyProvider.SERVICE) { SpotifyProvider(it) },
+        Factory(AppleMusicProvider.SERVICE) { AppleMusicProvider(it) },
+        Factory(YouTubeProvider.SERVICE) { YouTubeProvider(it) },
+        Factory(TidalProvider.SERVICE) { TidalProvider(it) },
+        Factory(DeezerProvider.SERVICE) { DeezerProvider(it) },
+        Factory(SubsonicProvider.SERVICE) { SubsonicProvider(it) },
+        Factory(JellyfinProvider.SERVICE) { JellyfinProvider(it) },
+        Factory(PlexProvider.SERVICE) { PlexProvider(it) },
+        Factory(LastFmProvider.SERVICE) { LastFmProvider(it) },
+        Factory(ListenBrainzProvider.SERVICE) { ListenBrainzProvider(it) },
+    )
 
     /** Chiamato dallo Store quando cambiano i connettori scelti, gli account aggiuntivi o i loro nomi. */
     fun configure(extra: Map<String, List<String>>, connectorNames: Map<String, String> = names, connectors: List<String> = connectorIds) {
@@ -245,25 +275,11 @@ object Providers {
 
     private fun build(): List<MusicProvider> {
         val out = ArrayList<MusicProvider>()
-        fun add(service: String, factory: (String) -> MusicProvider) {
-            out += factory("")
-            extraAccounts[service].orEmpty().forEach { out += factory(it) }
+        for (f in factories) {
+            out += f.create("")
+            extraAccounts[f.service].orEmpty().forEach { out += f.create(it) }
         }
-        add(SpotifyProvider.SERVICE) { SpotifyProvider(it) }
-        add(SpotifyBridgeProvider.SERVICE) { SpotifyBridgeProvider(it) }
-        add(AppleMusicProvider.SERVICE) { AppleMusicProvider(it) }
-        add(AppleBridgeProvider.SERVICE) { AppleBridgeProvider(it) }
-        add(YouTubeBridgeProvider.SERVICE) { YouTubeBridgeProvider(it) }
-        add(YouTubeProvider.SERVICE) { YouTubeProvider(it) }
-        add(AmazonBridgeProvider.SERVICE) { AmazonBridgeProvider(it) }
-        add(TidalProvider.SERVICE) { TidalProvider(it) }
-        add(DeezerProvider.SERVICE) { DeezerProvider(it) }
-        add(SubsonicProvider.SERVICE) { SubsonicProvider(it) }
-        add(JellyfinProvider.SERVICE) { JellyfinProvider(it) }
-        add(PlexProvider.SERVICE) { PlexProvider(it) }
-        add(LastFmProvider.SERVICE) { LastFmProvider(it) }
-        add(ListenBrainzProvider.SERVICE) { ListenBrainzProvider(it) }
-        out += LocalFilesProvider
+        out += singletons
         return out
     }
 

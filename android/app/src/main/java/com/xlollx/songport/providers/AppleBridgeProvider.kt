@@ -1,6 +1,8 @@
 package com.xlollx.songport.providers
 
 import android.content.Context
+import com.xlollx.songport.platform.Env
+import com.xlollx.songport.platform.android
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -25,19 +27,19 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     override val serviceId = SERVICE
     override val displayName = if (BridgePlugin.builtIn) "Apple Music (web)" else "Apple Music (plugin)"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.EASY
-    override val routeNoteRes: Int? get() = R.string.route_note_web
+    override val routeNoteName: String? get() = "route_note_web"
     override val familyName: String get() = "Apple Music"
-    override val noteRes = R.string.provider_note_apple_bridge
+    override val noteName = "provider_note_apple_bridge"
     override val supportsMultipleAccounts = false
     override val pluginBased = true
     override val setupGuide: SetupGuide? = null
     override val installUrl = BridgePlugin.installUrl
-    override val notConfiguredRes = R.string.bridge_needed_hint
+    override val notConfiguredName: String? = "bridge_needed_hint"
 
     // Tokens come from the Bridge; cached briefly so a playlist listing does not call it per request.
     @Volatile private var cache: Pair<Long, Bundle>? = null
 
-    private fun tokens(ctx: Context): Bundle {
+    private fun tokens(ctx: Env): Bundle {
         val now = System.currentTimeMillis()
         cache?.let { (at, b) -> if (now - at < 5 * 60_000) return b }
         // Built in, the Bridge may fetch the token from the player, even through a WebView on the
@@ -48,27 +50,27 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
         return b
     }
 
-    override fun usesOwnCredentials(ctx: Context) = false
+    override fun usesOwnCredentials(ctx: Env) = false
     // The Bridge's own reason (not signed in, token not found) is more useful than "no developer token".
-    override fun developerToken(ctx: Context): String =
+    override fun developerToken(ctx: Env): String =
         runCatching { tokens(ctx) }.getOrElse { throw ProviderException(it.message ?: "$displayName: no tokens") }.getString("developerToken") ?: ""
-    override fun userToken(ctx: Context): String? = runCatching { tokens(ctx).getString("userToken") }.getOrNull()
+    override fun userToken(ctx: Env): String? = runCatching { tokens(ctx).getString("userToken") }.getOrNull()
     // The storefront goes into URLs built on the caller's thread: the cache a token read filled
     // serves it there; failing that, the default one, rather than a network call on the main thread.
-    override fun storefront(ctx: Context): String =
+    override fun storefront(ctx: Env): String =
         cache?.second?.getString("storefront") ?: runCatching { tokens(ctx).getString("storefront") }.getOrNull() ?: super.storefront(ctx)
 
-    override fun isConfigured(ctx: Context): Boolean =
+    override fun isConfigured(ctx: Env): Boolean =
         BridgePlugin.installed(ctx) && runCatching { call(ctx, "apple.status").containsKey("connected") }.getOrDefault(false)
-    override fun isConnected(ctx: Context): Boolean =
+    override fun isConnected(ctx: Env): Boolean =
         BridgePlugin.installed(ctx) && runCatching { call(ctx, "apple.status").getBoolean("connected", false) }.getOrDefault(false)
-    override fun accountName(ctx: Context): String? = runCatching { call(ctx, "apple.status").getString("account") }.getOrNull()
-    override fun canRead(ctx: Context, playlistId: String): Boolean = isConnected(ctx)
+    override fun accountName(ctx: Env): String? = runCatching { call(ctx, "apple.status").getString("account") }.getOrNull()
+    override fun canRead(ctx: Env, playlistId: String): Boolean = isConnected(ctx)
 
     // The player's token is bound to its origin: api.music.apple.com answers it with a bare 401. Every
     // call goes to the player's own backend instead, with the headers the player sends.
     override fun apiUrl(url: String): String = url.replace("https://api.music.apple.com", AMP)
-    override fun apiHeaders(ctx: Context): Map<String, String> = mapOf(
+    override fun apiHeaders(ctx: Env): Map<String, String> = mapOf(
         "Origin" to "https://music.apple.com", "Referer" to "https://music.apple.com/",
         "media-user-token" to (runCatching { userToken(ctx) }.getOrNull() ?: ""),
     ).filterValues { it.isNotEmpty() }
@@ -79,9 +81,9 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
     override val canRenamePlaylists: Boolean get() = true
     override val canDeletePlaylists: Boolean get() = true
 
-    private suspend fun amp(ctx: Context, method: String, path: String, body: kotlinx.serialization.json.JsonElement? = null) {
+    private suspend fun amp(ctx: Env, method: String, path: String, body: kotlinx.serialization.json.JsonElement? = null) {
         val (dev, user) = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { developerToken(ctx) to userToken(ctx) }
-        if (dev.isBlank() || user == null) throw ProviderException(ctx.getString(R.string.error_not_connected, displayName))
+        if (dev.isBlank() || user == null) throw ProviderException(ctx.text("error_not_connected", displayName))
         val headers = mapOf(
             "Authorization" to "Bearer $dev", "Music-User-Token" to user, "media-user-token" to user, "Accept" to "application/json",
             "Origin" to "https://music.apple.com", "Referer" to "https://music.apple.com/",
@@ -90,26 +92,26 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
         if (!resp.ok) {
             val detail = com.xlollx.songport.net.parseJson(resp.body)["errors"][0]["detail"].str ?: resp.body.take(200)
             if (resp.code == 403 || detail.contains("subscription tier", ignoreCase = true) || detail.contains("CloudLibrary"))
-                throw ProviderException(ctx.getString(R.string.apple_subscription_needed, displayName, detail))
+                throw ProviderException(ctx.text("apple_subscription_needed", displayName, detail))
             throw ProviderException("$displayName ${resp.code}: $detail")
         }
     }
 
-    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+    override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         amp(ctx, "PATCH", "/v1/me/library/playlists/$playlistId", com.xlollx.songport.net.jsonObj("attributes" to mapOf("name" to name)))
     }
 
     override val canSetVisibility: Boolean get() = true
-    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+    override suspend fun setPlaylistVisibility(ctx: Env, playlistId: String, public: Boolean) {
         amp(ctx, "PATCH", "/v1/me/library/playlists/$playlistId", com.xlollx.songport.net.jsonObj("attributes" to mapOf("isPublic" to public)))
     }
 
-    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+    override suspend fun deletePlaylist(ctx: Env, playlistId: String) {
         amp(ctx, "DELETE", "/v1/me/library/playlists/$playlistId")
     }
 
     /** Entries go by their library id (i.xxx), which the playlist listing carries as itemId. */
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return
         val missing = tracks.filter { it.itemId == null }.map { it.id }.toSet()
         val byCatalog = if (missing.isNotEmpty()) tracks(ctx, playlistId).filter { it.id in missing }.groupBy { it.id } else emptyMap()
@@ -117,20 +119,20 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
         for (lib in libIds) amp(ctx, "DELETE", "/v1/me/library/playlists/$playlistId/tracks?ids[library-songs]=${Http.enc(lib)}&mode=all")
     }
 
-    override fun startAuth(ctx: Context) {
+    override fun startAuth(ctx: Env) {
         val pkg = BridgePlugin.packageName(ctx)
         if (pkg == null) {
-            installUrl?.let { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+            installUrl?.let { ctx.android.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
             return
         }
         BridgePlugin.startLogin(ctx, LOGIN_ACTION)
     }
 
-    override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
-    override fun disconnect(ctx: Context) { cache = null; runCatching { call(ctx, "apple.disconnect") } }
+    override suspend fun completeAuth(ctx: Env, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
+    override fun disconnect(ctx: Env) { cache = null; runCatching { call(ctx, "apple.disconnect") } }
 
-    private fun call(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
-        if (!BridgePlugin.installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))
+    private fun call(ctx: Env, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
+        if (!BridgePlugin.installed(ctx)) throw ProviderException(ctx.text("ytm_not_installed"))
         val b = try {
             BridgePlugin.call(ctx, method, arg, extras)
         } catch (e: Exception) {

@@ -1,6 +1,8 @@
 package com.xlollx.songport.providers
 
 import android.content.Context
+import com.xlollx.songport.platform.Env
+import com.xlollx.songport.platform.android
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -33,78 +35,78 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     override val serviceId = SERVICE
     override val displayName = "Amazon Music"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.EASY
-    override val routeNoteRes: Int? get() = R.string.route_note_web_only
+    override val routeNoteName: String? get() = "route_note_web_only"
     override val brandColor = 0xFF1AB0D6
-    override val noteRes = R.string.provider_note_amazon
+    override val noteName = "provider_note_amazon"
     override val supportsMultipleAccounts = false
     override val authDomain = "amazon.com"
     override val installUrl = BridgePlugin.installUrl
-    override val notConfiguredRes = R.string.amazon_not_installed_hint
+    override val notConfiguredName: String? = "amazon_not_installed_hint"
     override val searchParallelism = 1
     override val pluginBased = true
 
     /** "Configured" means a Bridge new enough to know Amazon Music is installed. */
-    override fun isConfigured(ctx: Context): Boolean =
+    override fun isConfigured(ctx: Env): Boolean =
         BridgePlugin.installed(ctx) && runCatching { call(ctx, "amazon.status").containsKey("connected") }.getOrDefault(false)
 
-    override fun isConnected(ctx: Context): Boolean =
+    override fun isConnected(ctx: Env): Boolean =
         BridgePlugin.installed(ctx) && runCatching { call(ctx, "amazon.status").getBoolean("connected", false) }.getOrDefault(false)
 
-    override fun accountName(ctx: Context): String? =
+    override fun accountName(ctx: Env): String? =
         runCatching { call(ctx, "amazon.status").getString("account") }.getOrNull()
 
-    override fun startAuth(ctx: Context) {
+    override fun startAuth(ctx: Env) {
         val pkg = BridgePlugin.packageName(ctx)
         if (pkg == null) {
-            installUrl?.let { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+            installUrl?.let { ctx.android.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
             return
         }
         BridgePlugin.startLogin(ctx, LOGIN_ACTION)
     }
 
-    override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
+    override suspend fun completeAuth(ctx: Env, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
 
-    override fun disconnect(ctx: Context) { runCatching { call(ctx, "amazon.disconnect") } }
+    override fun disconnect(ctx: Env) { runCatching { call(ctx, "amazon.disconnect") } }
 
-    override suspend fun playlists(ctx: Context): List<Playlist> = io(ctx, "amazon.playlists") { j ->
+    override suspend fun playlists(ctx: Env): List<Playlist> = io(ctx, "amazon.playlists") { j ->
         j.arr.mapNotNull { p -> Playlist(p["id"].str ?: return@mapNotNull null, p["name"].str ?: "", p["count"]?.long?.toInt() ?: -1) }
     }
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> =
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> =
         io(ctx, "amazon.tracks", playlistId) { j -> j.arr.mapNotNull { toTrack(it) } }
 
     /** On the regional site the account signed in to (music.amazon.it...), where the links then work. */
-    override fun webSearchUrl(ctx: Context, query: String): String {
+    override fun webSearchUrl(ctx: Env, query: String): String {
         val domain = runCatching { call(ctx, "amazon.status").getString("domain") }.getOrNull()?.takeIf { it.startsWith("music.amazon.") } ?: "music.amazon.com"
         // A slash in a title ("n/A") would read as a path separator and land on "page not found".
         val q = query.replace(Regex("""[/\\]+"""), " ").replace(Regex("""\s+"""), " ").trim()
         return "https://$domain/search/" + android.net.Uri.encode(q)
     }
 
-    override suspend fun search(ctx: Context, track: Track): List<Track> {
+    override suspend fun search(ctx: Env, track: Track): List<Track> {
         val q = (track.artists.take(2) + track.title).joinToString(" ")
         return io(ctx, "amazon.search", q) { j -> j.arr.mapNotNull { toTrack(it) } }
     }
 
-    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+    override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         withContext(Dispatchers.IO) { call(ctx, "amazon.rename", playlistId, Bundle().apply { putString("name", name) }) }
     }
 
     override val canSetVisibility: Boolean get() = false
-    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+    override suspend fun setPlaylistVisibility(ctx: Env, playlistId: String, public: Boolean) {
         withContext(Dispatchers.IO) { call(ctx, "amazon.visibility", playlistId, Bundle().apply { putBoolean("public", public) }) }
     }
 
-    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+    override suspend fun deletePlaylist(ctx: Env, playlistId: String) {
         withContext(Dispatchers.IO) { call(ctx, "amazon.delete", playlistId) }
     }
 
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist =
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist =
         io(ctx, "amazon.create", null, Bundle().apply { putString("name", name) }) { j ->
             Playlist(j["id"].str ?: throw ProviderException("Amazon Music: playlist not created"), name, 0)
         }
 
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return
         withContext(Dispatchers.IO) {
             // One web call per track: keep the batches small so a failure is reported precisely.
@@ -117,7 +119,7 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
         }
     }
 
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return
         withContext(Dispatchers.IO) {
             call(ctx, "amazon.remove", playlistId, Bundle().apply {
@@ -139,11 +141,11 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
         )
     }
 
-    private suspend fun <T> io(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null, map: (JsonElement?) -> T): T =
+    private suspend fun <T> io(ctx: Env, method: String, arg: String? = null, extras: Bundle? = null, map: (JsonElement?) -> T): T =
         withContext(Dispatchers.IO) { map(parseJson(call(ctx, method, arg, extras).getString("json") ?: "")) }
 
-    private fun call(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
-        if (!BridgePlugin.installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))
+    private fun call(ctx: Env, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
+        if (!BridgePlugin.installed(ctx)) throw ProviderException(ctx.text("ytm_not_installed"))
         val b = try {
             BridgePlugin.call(ctx, method, arg, extras)
         } catch (e: Exception) {

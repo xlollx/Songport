@@ -1,7 +1,6 @@
 package com.xlollx.songport.providers
 
-import android.content.Context
-import com.xlollx.songport.R
+import com.xlollx.songport.platform.Env
 import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
@@ -27,17 +26,17 @@ import java.security.SecureRandom
 class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
     override val serviceId = SERVICE
     override val displayName = "Subsonic / Navidrome"
-    override val routeNoteRes: Int? get() = R.string.route_note_server
+    override val routeNoteName: String? get() = "route_note_server"
     override val brandColor = 0xFF2E7D32
-    override val noteRes = R.string.provider_note_subsonic
+    override val noteName = "provider_note_subsonic"
     override val beta = true
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
     override val supportsAlbums = true
     override val supportsArtists = true
-    override val loginForm = LoginForm(needsUrl = true, needsUser = true, needsSecret = true, hintRes = R.string.login_hint_subsonic)
+    override val loginForm = LoginForm(needsUrl = true, needsUser = true, needsSecret = true, hintName = "login_hint_subsonic")
 
-    override suspend fun login(ctx: Context, url: String, user: String, secret: String) {
+    override suspend fun login(ctx: Env, url: String, user: String, secret: String) {
         val base = normalizeUrl(url)
         val t = Tokens(accessToken = secret, userName = user.trim(), extra = mapOf("url" to base))
         call(ctx, "ping", emptyList(), t)
@@ -48,7 +47,7 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
         MessageDigest.getInstance("MD5").digest(s.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
 
     /** Chiamata REST Subsonic; i parametri ripetibili (songIdToAdd…) passano come lista di coppie. */
-    private suspend fun call(ctx: Context, method: String, params: List<Pair<String, String>>, t: Tokens = creds(ctx)): JsonElement {
+    private suspend fun call(ctx: Env, method: String, params: List<Pair<String, String>>, t: Tokens = creds(ctx)): JsonElement {
         val salt = ByteArray(8).also { SecureRandom().nextBytes(it) }.joinToString("") { "%02x".format(it) }
         val common = listOf(
             "u" to t.userName, "t" to md5(t.accessToken + salt), "s" to salt,
@@ -78,14 +77,14 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
         )
     }
 
-    override suspend fun playlists(ctx: Context): List<Playlist> {
+    override suspend fun playlists(ctx: Env): List<Playlist> {
         val me = creds(ctx).userName
         return call(ctx, "getPlaylists", emptyList())["playlists"]["playlist"].arr.mapNotNull { p ->
             Playlist(p["id"].str ?: return@mapNotNull null, p["name"].str ?: "", p["songCount"].int ?: -1, ownedByMe = (p["owner"].str ?: me) == me, isPublic = p["public"].bool)
         }
     }
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> =
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> =
         if (playlistId == MusicProvider.LIKED_ID) {
             call(ctx, "getStarred2", emptyList())["starred2"]["song"].arr.mapNotNull { toTrack(it) }
         } else if (playlistId == MusicProvider.ALBUMS_ID) {
@@ -97,7 +96,7 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
                 .mapIndexedNotNull { i, s -> toTrack(s, i) }
         }
 
-    override suspend fun search(ctx: Context, track: Track): List<Track> {
+    override suspend fun search(ctx: Env, track: Track): List<Track> {
         when (track.kind) {
             Track.KIND_ALBUM -> {
                 val q = (listOfNotNull(track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }) + Matcher.searchTitle(track.title)).joinToString(" ")
@@ -123,7 +122,7 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
         return Track(id = id, title = name, artists = listOf(name), kind = Track.KIND_ARTIST)
     }
 
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist {
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist {
         val r = call(ctx, "createPlaylist", listOf("name" to name))
         val id = r["playlist"]["id"].str
             ?: call(ctx, "getPlaylists", emptyList())["playlists"]["playlist"].arr.lastOrNull { it["name"].str == name }?.get("id").str
@@ -131,7 +130,7 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
         return Playlist(id, name, 0)
     }
 
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.chunked(50).forEach { chunk -> call(ctx, "star", chunk.map { "id" to it.id }) }
             return
@@ -149,20 +148,20 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
         }
     }
 
-    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+    override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         call(ctx, "updatePlaylist", listOf("playlistId" to playlistId, "name" to name))
     }
 
     override val canSetVisibility: Boolean get() = true
-    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+    override suspend fun setPlaylistVisibility(ctx: Env, playlistId: String, public: Boolean) {
         call(ctx, "updatePlaylist", listOf("playlistId" to playlistId, "public" to public.toString()))
     }
 
-    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+    override suspend fun deletePlaylist(ctx: Env, playlistId: String) {
         call(ctx, "deletePlaylist", listOf("id" to playlistId))
     }
 
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.chunked(50).forEach { chunk -> call(ctx, "unstar", chunk.map { "id" to it.id }) }
             return

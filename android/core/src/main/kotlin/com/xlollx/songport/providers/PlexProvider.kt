@@ -1,7 +1,6 @@
 package com.xlollx.songport.providers
 
-import android.content.Context
-import com.xlollx.songport.R
+import com.xlollx.songport.platform.Env
 import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
@@ -24,16 +23,16 @@ import kotlinx.serialization.json.JsonElement
 class PlexProvider(override val slot: String = "") : CredentialsProvider() {
     override val serviceId = SERVICE
     override val displayName = "Plex"
-    override val routeNoteRes: Int? get() = R.string.route_note_server
+    override val routeNoteName: String? get() = "route_note_server"
     override val brandColor = 0xFFE5A00D
-    override val noteRes = R.string.provider_note_plex
+    override val noteName = "provider_note_plex"
     override val beta = true
     override val canCreatePlaylists = false
     override val canRenamePlaylists: Boolean get() = true
     override val canDeletePlaylists: Boolean get() = true
-    override val loginForm = LoginForm(needsUrl = true, needsUser = false, needsSecret = true, secretLabelRes = R.string.login_token, hintRes = R.string.login_hint_plex)
+    override val loginForm = LoginForm(needsUrl = true, needsUser = false, needsSecret = true, secretLabelName = "login_token", hintName = "login_hint_plex")
 
-    override suspend fun login(ctx: Context, url: String, user: String, secret: String) {
+    override suspend fun login(ctx: Env, url: String, user: String, secret: String) {
         val base = normalizeUrl(url)
         val t = Tokens(accessToken = secret.trim(), extra = mapOf("url" to base))
         val id = api(ctx, "GET", "/identity", t)["MediaContainer"]["machineIdentifier"].str
@@ -41,7 +40,7 @@ class PlexProvider(override val slot: String = "") : CredentialsProvider() {
         save(ctx, t.copy(extra = mapOf("url" to base, "machine" to id), userName = base.removePrefix("https://").removePrefix("http://")))
     }
 
-    private suspend fun api(ctx: Context, method: String, path: String, t: Tokens = creds(ctx)): JsonElement {
+    private suspend fun api(ctx: Env, method: String, path: String, t: Tokens = creds(ctx)): JsonElement {
         val resp = Http.send(method, "${t.extra["url"]}$path", mapOf("X-Plex-Token" to t.accessToken, "Accept" to "application/json"))
         if (!resp.ok) throw ProviderException("$displayName API ${resp.code}: ${resp.body.take(200)}")
         return parseJson(resp.body)
@@ -59,32 +58,32 @@ class PlexProvider(override val slot: String = "") : CredentialsProvider() {
         )
     }
 
-    override suspend fun playlists(ctx: Context): List<Playlist> =
+    override suspend fun playlists(ctx: Env): List<Playlist> =
         api(ctx, "GET", "/playlists?playlistType=audio")["MediaContainer"]["Metadata"].arr.mapNotNull { p ->
             Playlist(p["ratingKey"].str ?: return@mapNotNull null, p["title"].str ?: "", p["leafCount"].int ?: -1)
         }
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> =
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> =
         api(ctx, "GET", "/playlists/$playlistId/items")["MediaContainer"]["Metadata"].arr.mapNotNull { toTrack(it) }
 
-    override suspend fun search(ctx: Context, track: Track): List<Track> {
+    override suspend fun search(ctx: Env, track: Track): List<Track> {
         val q = (listOfNotNull(track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }) + Matcher.searchTitle(track.title)).joinToString(" ")
         val hubs = api(ctx, "GET", "/hubs/search?query=${Http.enc(q)}&limit=5")["MediaContainer"]["Hub"].arr
         return hubs.filter { it["type"].str == "track" }.flatMap { it["Metadata"].arr }.mapNotNull { toTrack(it) }.take(5)
     }
 
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist =
-        throw ProviderException(ctx.getString(R.string.error_create_unsupported, displayName))
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist =
+        throw ProviderException(ctx.text("error_create_unsupported", displayName))
 
-    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+    override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         api(ctx, "PUT", "/playlists/$playlistId?title=${Http.enc(name)}")
     }
 
-    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+    override suspend fun deletePlaylist(ctx: Env, playlistId: String) {
         api(ctx, "DELETE", "/playlists/$playlistId")
     }
 
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         val machine = creds(ctx).extra["machine"] ?: throw ProviderException("$displayName: reconnect")
         tracks.chunked(50).forEach { chunk ->
             val uri = "server://$machine/com.plexapp.plugins.library/library/metadata/${chunk.joinToString(",") { it.id }}"
@@ -92,7 +91,7 @@ class PlexProvider(override val slot: String = "") : CredentialsProvider() {
         }
     }
 
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         tracks.mapNotNull { it.itemId }.forEach { api(ctx, "DELETE", "/playlists/$playlistId/items/$it") }
     }
 

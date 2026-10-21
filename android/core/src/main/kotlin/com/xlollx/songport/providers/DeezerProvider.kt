@@ -1,10 +1,7 @@
 package com.xlollx.songport.providers
 
-import android.content.Context
-import com.xlollx.songport.BuildConfig
-import com.xlollx.songport.R
-import com.xlollx.songport.data.Store
-import com.xlollx.songport.data.TokenStore
+import com.xlollx.songport.platform.Env
+import com.xlollx.songport.platform.BuildDefaults
 import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
@@ -34,9 +31,9 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
     override val revokeUrl = "https://www.deezer.com/account/apps"
     override val displayName = "Deezer"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.OFFICIAL
-    override val routeNoteRes: Int? get() = R.string.route_note_api
+    override val routeNoteName: String? get() = "route_note_api"
     override val brandColor = 0xFFA238FF
-    override val noteRes = R.string.provider_note_deezer
+    override val noteName = "provider_note_deezer"
     override val beta = true
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
@@ -47,24 +44,24 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://developers.deezer.com/myapps",
         stepUrls = listOf("https://developers.deezer.com/myapps", "https://developers.deezer.com/myapps/create", null, "https://developers.deezer.com/myapps"),
-        whyRes = R.string.setup_why_deezer,
-        stepsArrayRes = R.array.setup_steps_deezer,
-        fieldLabelRes = R.string.setup_field_app_id,
+        whyName = "setup_why_deezer",
+        stepsArrayName = "setup_steps_deezer",
+        fieldLabelName = "setup_field_app_id",
         needsRedirectUrl = true,
     )
 
-    override val defaultClientId: String get() = BuildConfig.DEEZER_APP_ID
+    override val defaultClientId: String get() = BuildDefaults["DEEZER_APP_ID"]
     override val authorizeEndpoint = "https://connect.deezer.com/oauth/auth.php"
     override val tokenEndpoint = "" // non usato: flusso implicito
     override val scopes = "basic_access,manage_library,delete_library,offline_access"
 
 
-    override fun redirectUri(ctx: Context): String =
-        Store.get(ctx).data.settings.deezerRedirectUrl.trim().ifEmpty { BuildConfig.DEEZER_REDIRECT_URL }
+    override fun redirectUri(ctx: Env): String =
+        ctx.store.data.settings.deezerRedirectUrl.trim().ifEmpty { BuildDefaults["DEEZER_REDIRECT_URL"] }
 
-    override fun isConfigured(ctx: Context) = clientId(ctx).isNotBlank() && redirectUri(ctx).startsWith("https://")
+    override fun isConfigured(ctx: Env) = clientId(ctx).isNotBlank() && redirectUri(ctx).startsWith("https://")
 
-    override fun authUrl(ctx: Context, state: String, codeChallenge: String): String =
+    override fun authUrl(ctx: Env, state: String, codeChallenge: String): String =
         authorizeEndpoint + "?" + Http.query(
             mapOf(
                 "app_id" to clientId(ctx),
@@ -75,24 +72,24 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
             )
         )
 
-    override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) {
+    override suspend fun completeAuth(ctx: Env, params: Map<String, String>, verifier: String) {
         val token = params["access_token"] ?: throw ProviderException("Deezer: no access_token in redirect")
         val expires = params["expires"]?.toLongOrNull() ?: 0L
         var t = Tokens(accessToken = token, expiresAt = if (expires > 0) System.currentTimeMillis() + expires * 1000 else 0)
-        val store = TokenStore(ctx)
+        val store = ctx.tokens
         store.set(id, t)
         val me = dz(ctx, "GET", "/user/me")
         t = t.copy(userId = me["id"].long?.toString() ?: "", userName = me["name"].str ?: "")
         store.set(id, t)
     }
 
-    override suspend fun refresh(ctx: Context, t: Tokens): Tokens {
-        TokenStore(ctx).clear(id)
+    override suspend fun refresh(ctx: Env, t: Tokens): Tokens {
+        ctx.tokens.clear(id)
         throw ProviderException("Deezer: session expired, please reconnect")
     }
 
     /** Chiamata Deezer: token come parametro di query; gli errori arrivano come JSON `error` con HTTP 200. */
-    private suspend fun dz(ctx: Context, method: String, path: String, params: Map<String, String?> = emptyMap(), allowNoData: Boolean = false): JsonElement {
+    private suspend fun dz(ctx: Env, method: String, path: String, params: Map<String, String?> = emptyMap(), allowNoData: Boolean = false): JsonElement {
         val t = tokens(ctx)
         val url = if (path.startsWith("http")) path + (if ('?' in path) "&" else "?") + "access_token=${Http.enc(t.accessToken)}"
         else "$API$path?" + Http.query(params + ("access_token" to t.accessToken))
@@ -103,13 +100,13 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
         if (!err.isNullish) {
             val code = err["code"].int ?: 0
             if (allowNoData && code == 800) return JsonNull
-            if (code == 300 || code == 200) TokenStore(ctx).clear(id) // token non valido / permesso mancante
+            if (code == 300 || code == 200) ctx.tokens.clear(id) // token non valido / permesso mancante
             throw ProviderException("Deezer: ${err["message"].str ?: err.toString()}")
         }
         return j
     }
 
-    override suspend fun playlists(ctx: Context): List<Playlist> {
+    override suspend fun playlists(ctx: Env): List<Playlist> {
         val me = tokens(ctx).userId
         val out = ArrayList<Playlist>()
         var url: String? = "$API/user/me/playlists?limit=100"
@@ -144,18 +141,18 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
         )
     }
 
-    override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
+    override suspend fun playlistInfo(ctx: Env, playlistId: String): Playlist {
         val j = dz(ctx, "GET", "/playlist/$playlistId")
         return Playlist(playlistId, j["title"].str ?: playlistId, j["nb_tracks"].int ?: -1, ownedByMe = false, description = j["description"].str.orEmpty(), imageUrl = j["picture_xl"].str ?: j["picture_big"].str)
     }
 
-    override suspend fun playlistVersion(ctx: Context, playlistId: String): String? = when (playlistId) {
+    override suspend fun playlistVersion(ctx: Env, playlistId: String): String? = when (playlistId) {
         MusicProvider.LIKED_ID -> dz(ctx, "GET", "/user/me/tracks", mapOf("limit" to "1")).let { "${it["total"].int}|${it["data"][0]["id"].long}" }
         MusicProvider.ALBUMS_ID, MusicProvider.ARTISTS_ID, MusicProvider.PODCASTS_ID, MusicProvider.RECENT_ID -> null
         else -> dz(ctx, "GET", "/playlist/$playlistId")["checksum"].str
     }
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> {
         val out = ArrayList<Track>()
         var url: String? = when (playlistId) {
             MusicProvider.LIKED_ID -> "$API/user/me/tracks?limit=100"
@@ -195,11 +192,11 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
         return Track(id = id, title = name, artists = listOf(name), kind = Track.KIND_ARTIST)
     }
 
-    override suspend fun track(ctx: Context, trackId: String): Track? = toTrack(dz(ctx, "GET", "/track/$trackId", allowNoData = true))
+    override suspend fun track(ctx: Env, trackId: String): Track? = toTrack(dz(ctx, "GET", "/track/$trackId", allowNoData = true))
 
-    override fun webSearchUrl(ctx: Context, query: String): String = "https://www.deezer.com/search/" + android.net.Uri.encode(query)
+    override fun webSearchUrl(ctx: Env, query: String): String = "https://www.deezer.com/search/" + Http.enc(query)
 
-    override suspend fun search(ctx: Context, track: Track): List<Track> {
+    override suspend fun search(ctx: Env, track: Track): List<Track> {
         when (track.kind) {
             Track.KIND_ALBUM -> {
                 track.isrcNorm?.let { upc ->
@@ -243,31 +240,31 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
         return res
     }
 
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist {
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist {
         val j = dz(ctx, "POST", "/user/me/playlists", mapOf("title" to name))
         return Playlist(j["id"].long?.toString() ?: throw ProviderException("Deezer: playlist not created"), name, 0)
     }
 
-    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+    override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         dz(ctx, "POST", "/playlist/$playlistId", mapOf("title" to name))
     }
 
     /** Deezer takes the whole order in one call. */
     override val canReorder: Boolean get() = true
-    override suspend fun reorderTracks(ctx: Context, playlistId: String, current: List<Track>, ordered: List<Track>) {
+    override suspend fun reorderTracks(ctx: Env, playlistId: String, current: List<Track>, ordered: List<Track>) {
         dz(ctx, "POST", "/playlist/$playlistId/tracks", mapOf("order" to ordered.joinToString(",") { it.id }))
     }
 
     override val canSetVisibility: Boolean get() = true
-    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+    override suspend fun setPlaylistVisibility(ctx: Env, playlistId: String, public: Boolean) {
         dz(ctx, "POST", "/playlist/$playlistId", mapOf("public" to public.toString()))
     }
 
-    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+    override suspend fun deletePlaylist(ctx: Env, playlistId: String) {
         dz(ctx, "DELETE", "/playlist/$playlistId")
     }
 
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.forEach { dz(ctx, "POST", "/user/me/tracks", mapOf("track_id" to it.id)) }
             return
@@ -289,7 +286,7 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
         }
     }
 
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.forEach { dz(ctx, "DELETE", "/user/me/tracks", mapOf("track_id" to it.id)) }
             return
