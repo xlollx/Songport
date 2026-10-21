@@ -1,0 +1,1 @@
+Amazon Music nie zatrzymuje się już z błędem „401” kilka godzin po zalogowaniu: aplikacja śledzi odnawiane przez Amazon pliki cookie sesji i raz przeładowuje stronę odtwarzacza, zanim się podda.

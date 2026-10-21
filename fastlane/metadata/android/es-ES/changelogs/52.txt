@@ -1,0 +1,1 @@
+Amazon Music ya no se detiene con «401» unas horas después de iniciar sesión: la app sigue ahora las cookies de sesión que Amazon renueva y recarga una vez la página del reproductor antes de rendirse.

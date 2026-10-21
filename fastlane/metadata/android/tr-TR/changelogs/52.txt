@@ -1,0 +1,1 @@
+Amazon Music artık oturum açtıktan birkaç saat sonra "401" ile durmuyor: uygulama, Amazon'un yenilediği oturum çerezlerini takip ediyor ve vazgeçmeden önce oynatıcı sayfasını bir kez yeniden yüklüyor.

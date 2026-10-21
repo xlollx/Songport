@@ -1,0 +1,1 @@
+Amazon Music non si ferma più con "401" qualche ora dopo l'accesso: l'app ora segue i cookie di sessione che Amazon rinnova e ricarica una volta la pagina del player prima di arrendersi.

@@ -1,6 +1,7 @@
 package com.xlollx.songport.ytmbridge
 
 import android.content.Context
+import android.webkit.CookieManager
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -52,7 +53,20 @@ class AmazonClient(private val ctx: Context) {
         .withHook().build()
 
     private fun domain(): String = AmazonSession.domain(ctx) ?: throw BridgeException("not connected")
-    private fun cookies(): String = AmazonSession.cookies(ctx) ?: throw BridgeException("not connected")
+    /**
+     * The session's cookies as they are now. Amazon rotates its session cookies as the player is
+     * used, so the copy saved at sign-in goes stale within hours (401 on every call): the WebView's
+     * cookie jar, which [send] also keeps updated with what Amazon answers, is read first, and the
+     * saved copy follows it.
+     */
+    private fun cookies(): String {
+        val stored = AmazonSession.cookies(ctx) ?: throw BridgeException("not connected")
+        val domain = domain()
+        val live = runCatching { CookieManager.getInstance().getCookie("https://$domain") }.getOrNull()
+        if (live.isNullOrBlank() || !AmazonSession.looksSignedIn(live)) return stored
+        if (live != stored) AmazonSession.save(ctx, live, domain, null)
+        return live
+    }
 
     /** The player configuration for the stored session, cached for ten minutes. */
     fun config(domain: String = domain(), cookies: String = cookies()): Config {
@@ -137,12 +151,27 @@ class AmazonClient(private val ctx: Context) {
         var attempt = 0
         while (true) {
             try {
-                http.newCall(req).execute().use { resp -> return resp.code to (resp.body?.string() ?: "") }
+                http.newCall(req).execute().use { resp ->
+                    keepCookies(resp)
+                    return resp.code to (resp.body?.string() ?: "")
+                }
             } catch (e: java.io.IOException) {
                 if (attempt >= 2) throw BridgeException("Amazon Music unreachable: ${e.message ?: e.javaClass.simpleName}")
                 Thread.sleep(if (attempt == 0) 2_000 else 5_000)
                 attempt++
             }
+        }
+    }
+
+    /** What Amazon sets in a response goes into the shared cookie jar, as a browser would keep it. */
+    private fun keepCookies(resp: okhttp3.Response) {
+        val set = resp.headers("Set-Cookie")
+        if (set.isEmpty() || !resp.request.url.host.contains("amazon.")) return
+        runCatching {
+            val cm = CookieManager.getInstance()
+            val url = "https://" + resp.request.url.host
+            set.forEach { cm.setCookie(url, it) }
+            cm.flush()
         }
     }
 
@@ -180,7 +209,14 @@ class AmazonClient(private val ctx: Context) {
      */
     private fun gql(operation: String, variables: JsonObject): Answer {
         val domain = domain()
+        // A refused session is first refreshed the way a browser does it: the player page is loaded
+        // again (its answer renews the session cookies and the CSRF values), then the call is repeated.
         val first = runCatching { gqlWith(domain, operation, variables, headersFromConfig(domain)) }
+            .recoverCatching { e ->
+                if (e.message?.contains(" 401 ") != true && e.message?.contains(" 403 ") != true) throw e
+                cachedConfig = null
+                gqlWith(domain, operation, variables, headersFromConfig(domain))
+            }
         val answer = first.getOrNull()
         if (answer != null && !answer.codes.any { it in AUTH_CODES }) return answer
         val reason = first.exceptionOrNull()?.message ?: answer?.codes?.joinToString()

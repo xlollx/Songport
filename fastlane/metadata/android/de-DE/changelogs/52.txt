@@ -1,0 +1,1 @@
+Amazon Music bricht nicht mehr einige Stunden nach der Anmeldung mit „401“ ab: Die App folgt jetzt den von Amazon erneuerten Sitzungs-Cookies und lädt die Player-Seite einmal neu, bevor sie aufgibt.

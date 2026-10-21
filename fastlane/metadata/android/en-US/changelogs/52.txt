@@ -1,0 +1,1 @@
+Amazon Music no longer stops with "401" a few hours after signing in: the app now follows the session cookies Amazon renews, and reloads the player page once before giving up.
