@@ -1,0 +1,1 @@
+Amazon Music a déplacé son lecteur web vers une nouvelle interface : la capture du trafic (options développeur) l'enregistre désormais, pour que le connecteur puisse suivre. D'ici là, les syncs avec Amazon Music s'arrêtent avec une erreur qui le signale.

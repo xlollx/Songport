@@ -1,0 +1,1 @@
+Amazon Music moved its web player to a new interface: the traffic capture (developer options) now records it, so the connector can follow. Until then Amazon Music syncs stop with an error naming the change.

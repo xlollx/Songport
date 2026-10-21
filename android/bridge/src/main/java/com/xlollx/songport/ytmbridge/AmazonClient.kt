@@ -221,6 +221,8 @@ class AmazonClient(private val ctx: Context) {
             if (player.anonymousCalls > 0 || c.customerId.isNullOrBlank()) {
                 "Amazon Music opened as a signed-out visitor (${player.anonymousCalls} calls without a token): the Amazon session has expired. " +
                     "Accounts, Amazon Music: disconnect and connect again."
+            } else if (player.otherRequests.any { it.startsWith("gql.music.amazon.") }) {
+                "Amazon Music moved its web player to a new interface (GraphQL), which this version does not speak yet. A connector update is being prepared; Amazon Music syncs cannot run until then."
             } else {
                 "the Amazon Music player loaded but made no calls of its own within 50 s. Accounts, Amazon Music: connect again, letting the player load in the sign-in screen, then try again." +
                     " [requests: " + player.otherRequests.joinToString(", ").ifBlank { "none" } + "]"

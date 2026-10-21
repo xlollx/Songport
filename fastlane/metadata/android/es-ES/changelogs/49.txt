@@ -1,0 +1,1 @@
+Amazon Music ha movido su reproductor web a una nueva interfaz: la captura de tráfico (opciones de desarrollador) ahora la registra, para que el conector pueda seguirla. Hasta entonces, las syncs con Amazon Music se detienen con un error que lo indica.

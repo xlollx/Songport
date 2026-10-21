@@ -1,0 +1,1 @@
+Amazon Music hat seinen Web-Player auf eine neue Schnittstelle umgestellt: Die Traffic-Aufzeichnung (Entwickleroptionen) erfasst sie jetzt, damit der Connector folgen kann. Bis dahin stoppen Syncs mit Amazon Music mit einem Fehler, der die Änderung nennt.

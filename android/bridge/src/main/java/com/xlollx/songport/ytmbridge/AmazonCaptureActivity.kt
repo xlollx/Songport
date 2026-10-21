@@ -25,8 +25,9 @@ import java.io.File
  * the file so the connector can be completed against the real protocol.
  *
  * What is written: request bodies with the `headers` field removed (it carries the access token and
- * CSRF values), responses cut at 30 kB, and no cookies at all. Any `accessToken` left in a response
- * is blanked before writing.
+ * CSRF values), the request's own HTTP headers with every credential-looking value replaced by its
+ * length, responses cut at 30 kB, and no cookies at all. Access tokens, bearer tokens and JWTs left
+ * anywhere are blanked before writing.
  */
 class AmazonCaptureActivity : ComponentActivity() {
     private lateinit var web: WebView
@@ -100,7 +101,7 @@ class AmazonCaptureActivity : ComponentActivity() {
         @JavascriptInterface
         fun log(line: String) {
             if (file.exists() && file.length() > MAX_BYTES) return
-            val safe = TOKEN.replace(line, "\"accessToken\":\"[redacted]\"")
+            val safe = SECRETS.fold(TOKEN.replace(line, "\"accessToken\":\"[redacted]\"")) { s, r -> r.replace(s, "[redacted]") }
             synchronized(this) { file.appendText(safe.replace('\n', ' ') + "\n") }
             count++
             runOnUiThread { refresh() }
@@ -115,6 +116,13 @@ class AmazonCaptureActivity : ComponentActivity() {
     companion object {
         private const val MAX_BYTES = 6L * 1024 * 1024
         private val TOKEN = Regex("\"accessToken\"\\s*:\\s*\"[^\"]*\"")
+        /** Bearer tokens, JWTs and Amazon access tokens (Atna|…, Atza|…) wherever they appear. */
+        private val SECRETS = listOf(
+            Regex("Bearer\\s+[A-Za-z0-9._~+/=|-]+"),
+            Regex("eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]*"),
+            Regex("Atn[a-z]\\|[A-Za-z0-9._~+/=|-]+"),
+            Regex("Atz[a-z]\\|[A-Za-z0-9._~+/=|-]+"),
+        )
 
         // Mirrors fetch() and XMLHttpRequest calls towards the Amazon Music API into SpCapture.log.
         private val HOOK = """
@@ -168,7 +176,23 @@ class AmazonCaptureActivity : ComponentActivity() {
                 } catch(e){}
               };
               setTimeout(probe, 4000); setTimeout(probe, 12000);
-              var match = function(u){ return /skill\.music\.a2z\.com|music\.amazon\.[a-z.]+\/(?:[A-Z]{2}\/)?api\//.test(String(u||'')); };
+              // The old skill API, the music.amazon.* api paths, and since October 2026 the GraphQL
+              // endpoint (gql.music.amazon.<tld>) the desktop player moved to.
+              var abs = function(u){ try { return new URL(String(u||''), location.href).href; } catch(e) { return String(u||''); } };
+              var match = function(u){ return /skill\.music\.a2z\.com|gql\.music\.amazon\.|music\.amazon\.[a-z.]+\/(?:[A-Z]{2}\/)?api\//.test(abs(u)); };
+              // Request headers as sent: names and values, credentials replaced by their length.
+              var SECRET = /authori|token|cookie|csrf|session|signature|credential|x-amz-security/i;
+              var hdrs = function(h){
+                var out = {};
+                try {
+                  var each = function(v, k){ out[k] = SECRET.test(k) ? '[' + String(v).length + ' chars]' : String(v).slice(0, 300); };
+                  if (!h) return out;
+                  if (typeof h.forEach === 'function' && !(h instanceof Array)) h.forEach(each);
+                  else if (h instanceof Array) h.forEach(function(p){ each(p[1], p[0]); });
+                  else Object.keys(h).forEach(function(k){ each(h[k], k); });
+                } catch(e){}
+                return out;
+              };
               var send = function(o){ try { SpCapture.log(JSON.stringify(o)); } catch(e){} };
               var redact = function(b){
                 if (b == null) return null;
@@ -181,18 +205,21 @@ class AmazonCaptureActivity : ComponentActivity() {
                 var url = (typeof input === 'string') ? input : (input && input.url) || '';
                 var method = (init && init.method) || (input && input.method) || 'GET';
                 var body = init && init.body;
+                var reqHeaders = hdrs((init && init.headers) || (input && input.headers));
                 var p = of.apply(this, arguments);
                 if (match(url)) p.then(function(r){
-                  try { r.clone().text().then(function(t){ send({t: Date.now(), url: url, method: method, body: redact(body), status: r.status, response: t.slice(0, 30000)}); }); } catch(e){}
+                  try { r.clone().text().then(function(t){ send({t: Date.now(), url: abs(url), method: method, headers: reqHeaders, body: redact(body), status: r.status, response: t.slice(0, 30000)}); }); } catch(e){}
                 });
                 return p;
               };
               var oo = XMLHttpRequest.prototype.open, os = XMLHttpRequest.prototype.send;
+              var osh = XMLHttpRequest.prototype.setRequestHeader;
+              XMLHttpRequest.prototype.setRequestHeader = function(k, v){ (this.__h = this.__h || []).push([k, v]); return osh.apply(this, arguments); };
               XMLHttpRequest.prototype.open = function(m, u){ this.__m = m; this.__u = u; return oo.apply(this, arguments); };
               XMLHttpRequest.prototype.send = function(b){
                 var x = this;
                 if (match(x.__u)) x.addEventListener('loadend', function(){
-                  send({t: Date.now(), url: x.__u, method: x.__m, body: redact(b), status: x.status, response: String(x.responseText || '').slice(0, 30000)});
+                  send({t: Date.now(), url: abs(x.__u), method: x.__m, headers: hdrs(x.__h), body: redact(b), status: x.status, response: String(x.responseText || '').slice(0, 30000)});
                 });
                 return os.apply(this, arguments);
               };

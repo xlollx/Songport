@@ -1,0 +1,1 @@
+Amazon Music ha spostato il suo player web su una nuova interfaccia: la cattura del traffico (opzioni sviluppatore) ora la registra, così il connettore può seguirla. Fino ad allora le sync con Amazon Music si fermano con un errore che indica il cambiamento.
