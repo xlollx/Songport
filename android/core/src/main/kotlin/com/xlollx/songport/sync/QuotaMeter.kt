@@ -1,8 +1,7 @@
 package com.xlollx.songport.sync
 
-import android.content.Context
+import com.xlollx.songport.platform.Env
 import com.xlollx.songport.data.QuotaDay
-import com.xlollx.songport.data.Store
 import com.xlollx.songport.data.StoreData
 import java.time.LocalDate
 import java.time.ZoneId
@@ -22,9 +21,9 @@ object QuotaMeter {
 
     fun dayKey(): String = LocalDate.now(ZoneId.of("America/Los_Angeles")).toString()
 
-    fun add(ctx: Context, serviceId: String, units: Long) {
+    fun add(ctx: Env, serviceId: String, units: Long) {
         if (units <= 0) return
-        Store.get(ctx).update { d ->
+        ctx.store.update { d ->
             val today = dayKey()
             val base = d.quota[serviceId]?.takeIf { it.day == today }?.units ?: 0
             d.copy(quota = d.quota + (serviceId to QuotaDay(today, base + units)))

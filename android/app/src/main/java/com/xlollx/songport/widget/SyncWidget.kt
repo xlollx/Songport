@@ -1,5 +1,6 @@
 package com.xlollx.songport.widget
 
+import com.xlollx.songport.providers.*
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider

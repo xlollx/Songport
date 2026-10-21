@@ -1,7 +1,6 @@
 package com.xlollx.songport.providers
 
-import android.content.Context
-import com.xlollx.songport.R
+import com.xlollx.songport.platform.Env
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.sync.CsvCodec
@@ -22,33 +21,33 @@ object LocalFilesProvider : MusicProvider {
     override val supportsMultipleAccounts = false
     override val displayName = "File"
     override val brandColor = 0xFF607D8B
-    override val noteRes = R.string.provider_note_files
+    override val noteName = "provider_note_files"
     override val requiresAuth = false
 
-    fun dir(ctx: Context): File = File(ctx.filesDir, "csv").apply { mkdirs() }
-    private fun file(ctx: Context, id: String) = File(dir(ctx), "$id.csv")
+    fun dir(ctx: Env): File = File(ctx.dataDir, "csv").apply { mkdirs() }
+    private fun file(ctx: Env, id: String) = File(dir(ctx), "$id.csv")
 
-    override fun isConfigured(ctx: Context) = true
-    override fun isConnected(ctx: Context) = true
-    override fun accountName(ctx: Context): String? = null
-    override fun startAuth(ctx: Context) = Unit
-    override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) = Unit
-    override fun disconnect(ctx: Context) = Unit
+    override fun isConfigured(ctx: Env) = true
+    override fun isConnected(ctx: Env) = true
+    override fun accountName(ctx: Env): String? = null
+    override fun startAuth(ctx: Env) = Unit
+    override suspend fun completeAuth(ctx: Env, params: Map<String, String>, verifier: String) = Unit
+    override fun disconnect(ctx: Env) = Unit
 
-    override suspend fun playlists(ctx: Context): List<Playlist> =
+    override suspend fun playlists(ctx: Env): List<Playlist> =
         dir(ctx).listFiles { f -> f.extension == "csv" }.orEmpty().sortedBy { it.name.lowercase() }.map { f ->
             Playlist(id = f.nameWithoutExtension, name = f.nameWithoutExtension, trackCount = CsvCodec.parse(f.readText()).size)
         }
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> {
         val f = file(ctx, playlistId)
         return if (f.exists()) CsvCodec.parse(f.readText()) else emptyList()
     }
 
     /** Un file puo' "contenere" qualunque brano: il candidato e' il brano stesso con id stabile. */
-    override suspend fun search(ctx: Context, track: Track): List<Track> = listOf(CsvCodec.withStableId(track))
+    override suspend fun search(ctx: Env, track: Track): List<Track> = listOf(CsvCodec.withStableId(track))
 
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist {
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist {
         val base = CsvCodec.safeName(name)
         var candidate = base
         var n = 2
@@ -57,7 +56,7 @@ object LocalFilesProvider : MusicProvider {
         return Playlist(candidate, candidate, 0)
     }
 
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         val f = file(ctx, playlistId)
         val current = if (f.exists()) CsvCodec.parse(f.readText()) else emptyList()
         val ids = current.map { it.id }.toHashSet()
@@ -65,7 +64,7 @@ object LocalFilesProvider : MusicProvider {
         f.writeText(CsvCodec.encode(merged))
     }
 
-    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+    override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         val f = file(ctx, playlistId)
         if (!f.exists()) return
         val base = CsvCodec.safeName(name)
@@ -75,7 +74,7 @@ object LocalFilesProvider : MusicProvider {
         if (candidate == playlistId) return
         if (!f.renameTo(file(ctx, candidate))) throw com.xlollx.songport.model.ProviderException("$displayName: rename failed")
         // Syncs point at the file by name: follow it.
-        val store = com.xlollx.songport.data.Store.get(ctx)
+        val store = ctx.store
         store.data.jobs.filter { j -> (j.source.provider == id && j.source.playlistId == playlistId) || (j.target.provider == id && j.target.playlistId == playlistId) }
             .forEach { j ->
                 store.upsertJob(j.copy(
@@ -85,9 +84,9 @@ object LocalFilesProvider : MusicProvider {
             }
     }
 
-    override suspend fun deletePlaylist(ctx: Context, playlistId: String) { file(ctx, playlistId).delete() }
+    override suspend fun deletePlaylist(ctx: Env, playlistId: String) { file(ctx, playlistId).delete() }
 
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         val f = file(ctx, playlistId)
         if (!f.exists()) return
         val remove = tracks.map { it.id }.toHashSet()
@@ -97,7 +96,7 @@ object LocalFilesProvider : MusicProvider {
     // --- import/export per la UI (Storage Access Framework) ---
 
     /** Importa un file in qualsiasi formato riconosciuto. @return numero di brani importati. */
-    fun importFile(ctx: Context, fileName: String, text: String): Int {
+    fun importFile(ctx: Env, fileName: String, text: String): Int {
         val tracks = PlaylistFiles.parse(fileName, text)
         val base = CsvCodec.safeName(fileName.substringBeforeLast('.').ifBlank { "playlist" })
         var candidate = base
@@ -108,7 +107,7 @@ object LocalFilesProvider : MusicProvider {
     }
 
     /** Salva una lista di brani come nuovo file (nome reso unico). @return id della playlist creata. */
-    fun importTracks(ctx: Context, name: String, tracks: List<Track>): String {
+    fun importTracks(ctx: Env, name: String, tracks: List<Track>): String {
         val base = CsvCodec.safeName(name.ifBlank { "playlist" })
         var candidate = base
         var n = 2
@@ -135,12 +134,12 @@ object LocalFilesProvider : MusicProvider {
         }
     }
 
-    fun exportText(ctx: Context, playlistId: String, format: Export): String {
+    fun exportText(ctx: Env, playlistId: String, format: Export): String {
         val tracks = file(ctx, playlistId).takeIf { it.exists() }?.readText()?.let { CsvCodec.parse(it) } ?: emptyList()
         return format.encode(playlistId, tracks)
     }
 
-    fun delete(ctx: Context, playlistId: String) { file(ctx, playlistId).delete() }
+    fun delete(ctx: Env, playlistId: String) { file(ctx, playlistId).delete() }
 
     // --- backups: one version per run, dated, with retention ---
 
@@ -165,7 +164,7 @@ object LocalFilesProvider : MusicProvider {
     private val STAMP_TAIL = Regex(""" \((\d{4}-\d{2}-\d{2} \d{2}\.\d{2})\)$""")
     private val COPY_TAIL = Regex(""" \(\d+\)$""")
 
-    fun entries(ctx: Context): List<Entry> =
+    fun entries(ctx: Env): List<Entry> =
         dir(ctx).listFiles { f -> f.extension == "csv" }.orEmpty().map { f ->
             val name = f.nameWithoutExtension
             val tail = STAMP_TAIL.find(name)
@@ -185,7 +184,7 @@ object LocalFilesProvider : MusicProvider {
      * exactly these tracks, then trims that playlist's versions to [KEEP_VERSIONS]. Files a sync reads
      * or writes ([protectedIds]) are never removed, whatever their age.
      */
-    fun writeBackup(ctx: Context, service: String, playlistName: String, tracks: List<Track>, protectedIds: Set<String>, now: Long = System.currentTimeMillis()): BackupOutcome {
+    fun writeBackup(ctx: Env, service: String, playlistName: String, tracks: List<Track>, protectedIds: Set<String>, now: Long = System.currentTimeMillis()): BackupOutcome {
         val base = CsvCodec.safeName("$service - $playlistName")
         val versions = entries(ctx).filter { it.base == base && it.service != null }.sortedByDescending { it.writtenAt }
         val text = CsvCodec.encode(tracks)
@@ -200,8 +199,8 @@ object LocalFilesProvider : MusicProvider {
     }
 
     /** Ids of the file playlists some sync reads or writes: retention leaves them alone. */
-    fun protectedIds(ctx: Context): Set<String> =
-        com.xlollx.songport.data.Store.get(ctx).data.jobs.flatMap { j ->
+    fun protectedIds(ctx: Env): Set<String> =
+        ctx.store.data.jobs.flatMap { j ->
             listOfNotNull(j.source.takeIf { it.provider == serviceId }?.playlistId, j.target.takeIf { it.provider == serviceId }?.playlistId)
         }.toSet()
 }

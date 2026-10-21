@@ -1,6 +1,8 @@
 package com.xlollx.songport.providers
 
 import android.content.Context
+import com.xlollx.songport.platform.Env
+import com.xlollx.songport.platform.android
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -38,10 +40,10 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
     override val serviceId = SERVICE
     override val displayName = if (BridgePlugin.builtIn) "Spotify (web)" else "Spotify (plugin)"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.EASY
-    override val routeNoteRes: Int? get() = R.string.route_note_web
+    override val routeNoteName: String? get() = "route_note_web"
     override val familyName: String get() = "Spotify"
     override val brandColor = 0xFF1DB954
-    override val noteRes = R.string.provider_note_spotify_bridge
+    override val noteName = "provider_note_spotify_bridge"
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
     override val supportsAlbums = true
@@ -50,39 +52,39 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
     override val authDomain = "spotify.com"
     override val pluginBased = true
     override val installUrl = BridgePlugin.installUrl
-    override val notConfiguredRes = R.string.bridge_needed_hint
+    override val notConfiguredName: String? = "bridge_needed_hint"
     /** The player's gateway is quick to say 429 to bursts: two searches at a time. */
     override val searchParallelism = 2
 
-    override fun isConfigured(ctx: Context): Boolean =
+    override fun isConfigured(ctx: Env): Boolean =
         BridgePlugin.installed(ctx) && runCatching { call(ctx, "spotify.status").containsKey("connected") }.getOrDefault(false)
-    override fun isConnected(ctx: Context): Boolean =
+    override fun isConnected(ctx: Env): Boolean =
         BridgePlugin.installed(ctx) && runCatching { call(ctx, "spotify.status").getBoolean("connected", false) }.getOrDefault(false)
-    override fun accountName(ctx: Context): String? = runCatching { call(ctx, "spotify.status").getString("account") }.getOrNull()
+    override fun accountName(ctx: Env): String? = runCatching { call(ctx, "spotify.status").getString("account") }.getOrNull()
 
-    override fun startAuth(ctx: Context) {
+    override fun startAuth(ctx: Env) {
         val pkg = BridgePlugin.packageName(ctx)
         if (pkg == null) {
-            installUrl?.let { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+            installUrl?.let { ctx.android.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
             return
         }
         BridgePlugin.startLogin(ctx, LOGIN_ACTION)
     }
 
-    override suspend fun completeAuth(ctx: Context, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
-    override fun disconnect(ctx: Context) { runCatching { call(ctx, "spotify.disconnect") } }
+    override suspend fun completeAuth(ctx: Env, params: Map<String, String>, verifier: String) { /* the Bridge completes the login itself */ }
+    override fun disconnect(ctx: Env) { runCatching { call(ctx, "spotify.disconnect") } }
 
-    override suspend fun playlists(ctx: Context): List<Playlist> = io(ctx, "spotify.playlists") { j ->
+    override suspend fun playlists(ctx: Env): List<Playlist> = io(ctx, "spotify.playlists") { j ->
         j.arr.mapNotNull { p -> toPlaylist(p) }
     }
 
-    override suspend fun playlistVersion(ctx: Context, playlistId: String): String? =
+    override suspend fun playlistVersion(ctx: Env, playlistId: String): String? =
         withContext(Dispatchers.IO) { call(ctx, "spotify.version", playlistId).getString("version") }
 
-    override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist =
+    override suspend fun playlistInfo(ctx: Env, playlistId: String): Playlist =
         io(ctx, "spotify.playlistInfo", playlistId) { j -> toPlaylist(j) ?: Playlist(playlistId, playlistId) }
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> = withContext(Dispatchers.IO) {
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> = withContext(Dispatchers.IO) {
         val out = ArrayList<Track>()
         var offset: Int? = 0
         while (offset != null) {
@@ -93,14 +95,14 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
         out
     }
 
-    override suspend fun track(ctx: Context, trackId: String): Track? =
+    override suspend fun track(ctx: Env, trackId: String): Track? =
         io(ctx, "spotify.track", trackId) { j -> toTrack(j) }
 
-    override fun webSearchUrl(ctx: Context, query: String): String = "https://open.spotify.com/search/" + Uri.encode(query)
+    override fun webSearchUrl(ctx: Env, query: String): String = "https://open.spotify.com/search/" + Uri.encode(query)
 
     override fun rehydrate(track: Track): Track = track.copy(uri = track.uri ?: uriOf(track))
 
-    override suspend fun search(ctx: Context, track: Track): List<Track> {
+    override suspend fun search(ctx: Env, track: Track): List<Track> {
         val kind = when (track.kind) { Track.KIND_ALBUM -> "album"; Track.KIND_ARTIST -> "artist"; Track.KIND_PODCAST -> return emptyList(); else -> null }
         val q = when (kind) {
             "artist" -> track.title
@@ -112,17 +114,17 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
         return io(ctx, "spotify.search", Matcher.searchTitle(track.title), Bundle().apply { putString("kind", kind) }) { j -> j.arr.mapNotNull { toTrack(it) } }
     }
 
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist =
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist =
         io(ctx, "spotify.create", null, Bundle().apply { putString("name", name); putString("description", description) }) { j ->
             toPlaylist(j) ?: throw ProviderException("Spotify: playlist not created")
         }
 
-    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+    override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         withContext(Dispatchers.IO) { call(ctx, "spotify.rename", playlistId, Bundle().apply { putString("name", name) }) }
     }
 
     override val canReorder: Boolean get() = true
-    override suspend fun reorderTracks(ctx: Context, playlistId: String, current: List<Track>, ordered: List<Track>) {
+    override suspend fun reorderTracks(ctx: Env, playlistId: String, current: List<Track>, ordered: List<Track>) {
         val moves = com.xlollx.songport.sync.Reorder.moves(current.map { it.id }, ordered.map { it.id })
         if (moves.isEmpty()) return
         withContext(Dispatchers.IO) {
@@ -134,15 +136,15 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
     }
 
     override val canSetVisibility: Boolean get() = true
-    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+    override suspend fun setPlaylistVisibility(ctx: Env, playlistId: String, public: Boolean) {
         withContext(Dispatchers.IO) { call(ctx, "spotify.visibility", playlistId, Bundle().apply { putBoolean("public", public) }) }
     }
 
-    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+    override suspend fun deletePlaylist(ctx: Env, playlistId: String) {
         withContext(Dispatchers.IO) { call(ctx, "spotify.delete", playlistId) }
     }
 
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return
         withContext(Dispatchers.IO) {
             tracks.chunked(100).forEach { chunk ->
@@ -151,7 +153,7 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
         }
     }
 
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return
         withContext(Dispatchers.IO) {
             if (MusicProvider.isLibrary(playlistId)) {
@@ -196,11 +198,11 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
         )
     }
 
-    private suspend fun <T> io(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null, map: (JsonElement?) -> T): T =
+    private suspend fun <T> io(ctx: Env, method: String, arg: String? = null, extras: Bundle? = null, map: (JsonElement?) -> T): T =
         withContext(Dispatchers.IO) { map(parseJson(call(ctx, method, arg, extras).getString("json") ?: "")) }
 
-    private fun call(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
-        if (!BridgePlugin.installed(ctx)) throw ProviderException(ctx.getString(R.string.ytm_not_installed))
+    private fun call(ctx: Env, method: String, arg: String? = null, extras: Bundle? = null): Bundle {
+        if (!BridgePlugin.installed(ctx)) throw ProviderException(ctx.text("ytm_not_installed"))
         val b = try {
             BridgePlugin.call(ctx, method, arg, extras)
         } catch (e: Exception) {

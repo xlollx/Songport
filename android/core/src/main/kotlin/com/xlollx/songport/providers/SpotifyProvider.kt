@@ -1,9 +1,7 @@
 package com.xlollx.songport.providers
 
-import android.content.Context
-import com.xlollx.songport.BuildConfig
-import com.xlollx.songport.R
-import com.xlollx.songport.auth.AuthFlow
+import com.xlollx.songport.platform.Env
+import com.xlollx.songport.platform.BuildDefaults
 import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
@@ -34,10 +32,10 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val revokeUrl = "https://www.spotify.com/account/apps/"
     override val displayName = "Spotify"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.OFFICIAL
-    override val routeNoteRes: Int? get() = R.string.route_note_spotify_api
+    override val routeNoteName: String? get() = "route_note_spotify_api"
     override val familyName: String get() = "Spotify"
     override val brandColor = 0xFF1DB954
-    override val noteRes = R.string.provider_note_spotify
+    override val noteName = "provider_note_spotify"
     override val supportsLikedSongs = true
     override val searchesByIsrc: Boolean get() = true
     override val supportsLikedTarget = true
@@ -48,14 +46,14 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
 
     override val setupGuide: SetupGuide? = SetupGuide(
         dashboardUrl = "https://developer.spotify.com/dashboard",
-        redirectUri = AuthFlow.REDIRECT_URI,
+        redirectUri = Env.APP_REDIRECT_URI,
         stepUrls = listOf("https://developer.spotify.com/dashboard", "https://developer.spotify.com/dashboard/create", null, null, "https://developer.spotify.com/dashboard", "https://developer.spotify.com/dashboard"),
-        whyRes = R.string.setup_why_spotify,
-        stepsArrayRes = R.array.setup_steps_spotify,
-        fieldLabelRes = R.string.setup_field_client_id,
+        whyName = "setup_why_spotify",
+        stepsArrayName = "setup_steps_spotify",
+        fieldLabelName = "setup_field_client_id",
     )
 
-    override val defaultClientId: String get() = BuildConfig.SPOTIFY_CLIENT_ID
+    override val defaultClientId: String get() = BuildDefaults["SPOTIFY_CLIENT_ID"]
     override val authorizeEndpoint = "https://accounts.spotify.com/authorize"
     override val tokenEndpoint = "https://accounts.spotify.com/api/token"
     override val scopes =
@@ -65,7 +63,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val switchAccountParams = mapOf("show_dialog" to "true")
 
 
-    override suspend fun enrichAccount(ctx: Context, t: Tokens): Tokens {
+    override suspend fun enrichAccount(ctx: Env, t: Tokens): Tokens {
         val me = api(ctx, "GET", "$API/me")
         val uid = me["id"].str ?: ""
         return t.copy(userId = uid, userName = me["display_name"].str ?: uid)
@@ -77,16 +75,16 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
 
     // Da novembre 2024 le app in Development Mode non possono leggere le playlist create da Spotify
     // (Discover Weekly, Release Radar, mix editoriali): la risposta e' un 403 senza spiegazioni.
-    override fun friendlyApiError(ctx: Context, resp: HttpResponse): String? {
+    override fun friendlyApiError(ctx: Env, resp: HttpResponse): String? {
         if (resp.code == 429) return rateLimited(ctx, resp)
         if (resp.code != 403) return null
         val msg = errorMessage(resp).ifBlank { "403" }
         return when {
             // The key's owner has no Premium: since February 2026 Spotify switches the app off for that.
-            msg.contains("premium", ignoreCase = true) -> ctx.getString(R.string.spotify_premium_required)
+            msg.contains("premium", ignoreCase = true) -> ctx.text("spotify_premium_required")
             // A token granted before a scope was added lacks it: only a new sign-in can widen it.
-            msg.contains("scope", ignoreCase = true) -> ctx.getString(R.string.spotify_scope_reconnect, msg)
-            else -> ctx.getString(R.string.spotify_forbidden, msg)
+            msg.contains("scope", ignoreCase = true) -> ctx.text("spotify_scope_reconnect", msg)
+            else -> ctx.text("spotify_forbidden", msg)
         }
     }
 
@@ -95,18 +93,18 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
      * (seconds, sometimes hours). The tail "(429, retry in N s)" is what the sync engine reads to wait
      * exactly that long instead of giving up.
      */
-    protected fun rateLimited(ctx: Context, resp: HttpResponse): String {
+    protected fun rateLimited(ctx: Env, resp: HttpResponse): String {
         val secs = resp.header("Retry-After")?.trim()?.toLongOrNull()
         val human = when {
-            secs == null -> ctx.getString(R.string.in_a_few_minutes)
+            secs == null -> ctx.text("in_a_few_minutes")
             secs < 90 -> "$secs s"
             secs < 5400 -> "${(secs + 59) / 60} min"
             else -> "${(secs + 3599) / 3600} h"
         }
-        return ctx.getString(R.string.spotify_rate_limited, human) + (secs?.let { " (429, retry in $it s)" } ?: " (429)")
+        return ctx.text("spotify_rate_limited", human) + (secs?.let { " (429, retry in $it s)" } ?: " (429)")
     }
 
-    override suspend fun playlists(ctx: Context): List<Playlist> {
+    override suspend fun playlists(ctx: Env): List<Playlist> {
         val me = tokens(ctx).userId
         val out = ArrayList<Playlist>()
         var url: String? = "$API/me/playlists?limit=50"
@@ -128,7 +126,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         return out
     }
 
-    override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
+    override suspend fun playlistInfo(ctx: Env, playlistId: String): Playlist {
         val j = api(ctx, "GET", "$API/playlists/$playlistId?fields=name,description,images,items(total),tracks(total)")
         return Playlist(playlistId, j["name"].str ?: playlistId, j["items"]["total"].int ?: j["tracks"]["total"].int ?: -1, ownedByMe = false, description = j["description"].str.orEmpty(), imageUrl = j["images"][0]["url"].str)
     }
@@ -136,14 +134,14 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     override val canSetCover: Boolean get() = true
 
     /** The JPEG goes up base64-encoded as the body; Spotify wants it under 256 KB (scope ugc-image-upload). */
-    override suspend fun setPlaylistCover(ctx: Context, playlistId: String, jpeg: ByteArray) {
+    override suspend fun setPlaylistCover(ctx: Env, playlistId: String, jpeg: ByteArray) {
         val t = tokens(ctx)
-        val body = android.util.Base64.encodeToString(jpeg, android.util.Base64.NO_WRAP)
+        val body = java.util.Base64.getEncoder().encodeToString(jpeg)
         val resp = Http.send("PUT", "$API/playlists/$playlistId/images", mapOf("Authorization" to "Bearer ${t.accessToken}"), Http.jsonBody(body, "image/jpeg"))
         if (!resp.ok) throw ProviderException(friendlyApiError(ctx, resp) ?: "$displayName API ${resp.code}: ${errorMessage(resp)}")
     }
 
-    override suspend fun playlistVersion(ctx: Context, playlistId: String): String? = when (playlistId) {
+    override suspend fun playlistVersion(ctx: Env, playlistId: String): String? = when (playlistId) {
         MusicProvider.LIKED_ID -> api(ctx, "GET", "$API/me/tracks?limit=1").let { "${it["total"].int}|${it["items"][0]["added_at"].str}" }
         MusicProvider.ALBUMS_ID -> api(ctx, "GET", "$API/me/albums?limit=1").let { "${it["total"].int}|${it["items"][0]["added_at"].str}" }
         MusicProvider.ARTISTS_ID -> api(ctx, "GET", "$API/me/following?type=artist&limit=1")["artists"].let { "${it["total"].int}|${it["items"][0]["id"].str}" }
@@ -153,7 +151,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     }
 
     /** The last fifty plays, newest first, a track once. */
-    private suspend fun recentlyPlayed(ctx: Context): List<Track> {
+    private suspend fun recentlyPlayed(ctx: Env): List<Track> {
         val j = api(ctx, "GET", "$API/me/player/recently-played?limit=50")
         return j["items"].arr.mapNotNull { item ->
             val t = item["track"]
@@ -161,7 +159,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         }.distinctBy { it.id }
     }
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> {
         if (playlistId == MusicProvider.RECENT_ID) return recentlyPlayed(ctx)
         if (playlistId == MusicProvider.ALBUMS_ID) return savedAlbums(ctx)
         if (playlistId == MusicProvider.ARTISTS_ID) return followedArtists(ctx)
@@ -210,12 +208,12 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         )
     }
 
-    override suspend fun track(ctx: Context, trackId: String): Track? =
+    override suspend fun track(ctx: Env, trackId: String): Track? =
         api(ctx, "GET", "$API/tracks/${Http.enc(trackId)}").takeIf { it["id"].str != null }?.let { toTrack(it) }
 
     // ---- library: saved albums and followed artists, as Track items of their kind
 
-    private suspend fun savedAlbums(ctx: Context): List<Track> {
+    private suspend fun savedAlbums(ctx: Env): List<Track> {
         val out = ArrayList<Track>()
         var url: String? = "$API/me/albums?limit=50"
         while (url != null) {
@@ -226,7 +224,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         return out
     }
 
-    private suspend fun followedArtists(ctx: Context): List<Track> {
+    private suspend fun followedArtists(ctx: Env): List<Track> {
         val out = ArrayList<Track>()
         var url: String? = "$API/me/following?type=artist&limit=50"
         while (url != null) {
@@ -237,7 +235,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         return out
     }
 
-    private suspend fun savedShows(ctx: Context): List<Track> {
+    private suspend fun savedShows(ctx: Env): List<Track> {
         val out = ArrayList<Track>()
         var url: String? = "$API/me/shows?limit=50"
         while (url != null) {
@@ -253,7 +251,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         return Track(id = id, title = s["name"].str ?: "", artists = listOfNotNull(s["publisher"].str), uri = s["uri"].str ?: "spotify:show:$id", kind = Track.KIND_PODCAST)
     }
 
-    private suspend fun searchAlbums(ctx: Context, q: String): List<Track> {
+    private suspend fun searchAlbums(ctx: Env, q: String): List<Track> {
         val j = api(ctx, "GET", "$API/search?type=album&limit=5&q=${Http.enc(q)}")
         return j["albums"]["items"].arr.mapNotNull { albumItem(it) }
     }
@@ -272,12 +270,12 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         return Track(id = id, title = name, artists = listOf(name), uri = a["uri"].str ?: "spotify:artist:$id", kind = Track.KIND_ARTIST)
     }
 
-    private suspend fun searchQuery(ctx: Context, q: String): List<Track> {
+    private suspend fun searchQuery(ctx: Env, q: String): List<Track> {
         val j = api(ctx, "GET", "$API/search?type=track&limit=5&q=${Http.enc(q)}")
         return j["tracks"]["items"].arr.filter { it["id"].str != null }.map { toTrack(it) }
     }
 
-    override suspend fun search(ctx: Context, track: Track): List<Track> {
+    override suspend fun search(ctx: Env, track: Track): List<Track> {
         when (track.kind) {
             Track.KIND_ALBUM -> {
                 track.isrcNorm?.let { upc ->
@@ -312,11 +310,11 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         return searchQuery(ctx, listOfNotNull(title, artist).joinToString(" "))
     }
 
-    override fun webSearchUrl(ctx: Context, query: String): String = "https://open.spotify.com/search/" + android.net.Uri.encode(query)
+    override fun webSearchUrl(ctx: Env, query: String): String = "https://open.spotify.com/search/" + Http.enc(query)
 
     override fun rehydrate(track: Track): Track = track.copy(uri = "spotify:track:${track.id}")
 
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist {
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist {
         val body = jsonObj("name" to name, "public" to false, "description" to description)
         // Creation moved to /me/playlists; the older /users/{id}/playlists answers Development Mode
         // apps with a 403. The old path stays as the fallback should the new one be missing.
@@ -329,12 +327,12 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         return Playlist(j["id"].str ?: throw ProviderException("Spotify: playlist not created"), name, 0)
     }
 
-    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+    override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         api(ctx, "PUT", "$API/playlists/$playlistId", jsonObj("name" to name))
     }
 
     override val canReorder: Boolean get() = canWrite
-    override suspend fun reorderTracks(ctx: Context, playlistId: String, current: List<Track>, ordered: List<Track>) {
+    override suspend fun reorderTracks(ctx: Env, playlistId: String, current: List<Track>, ordered: List<Track>) {
         val moves = com.xlollx.songport.sync.Reorder.moves(current.map { it.id }, ordered.map { it.id })
         var path = "items"
         for ((from, to) in moves) {
@@ -350,16 +348,16 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
     }
 
     override val canSetVisibility: Boolean get() = canWrite
-    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+    override suspend fun setPlaylistVisibility(ctx: Env, playlistId: String, public: Boolean) {
         api(ctx, "PUT", "$API/playlists/$playlistId", jsonObj("public" to public))
     }
 
     /** Spotify has no delete: a playlist you stop following disappears from your library. */
-    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+    override suspend fun deletePlaylist(ctx: Env, playlistId: String) {
         api(ctx, "DELETE", "$API/playlists/$playlistId/followers")
     }
 
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.map { it.id }.chunked(50).forEach { ids -> api(ctx, "PUT", "$API/me/tracks", jsonObj("ids" to ids)) }
             return
@@ -381,7 +379,7 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         }
     }
 
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (playlistId == MusicProvider.LIKED_ID) {
             tracks.map { it.id }.chunked(50).forEach { ids -> api(ctx, "DELETE", "$API/me/tracks", jsonObj("ids" to ids)) }
             return

@@ -1,11 +1,8 @@
 package com.xlollx.songport.providers
 
-import android.content.Context
-import com.xlollx.songport.BuildConfig
-import com.xlollx.songport.R
-import com.xlollx.songport.auth.AuthFlow
-import com.xlollx.songport.auth.AuthScope
-import com.xlollx.songport.data.Diagnostics
+import com.xlollx.songport.platform.AuthMode
+import com.xlollx.songport.platform.Env
+import com.xlollx.songport.platform.BuildDefaults
 import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
@@ -34,16 +31,16 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
     override val revokeUrl = "https://myaccount.google.com/permissions"
     override val displayName = "YouTube Music (Google API)"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.OFFICIAL
-    override val routeNoteRes: Int? get() = R.string.route_note_youtube_api
+    override val routeNoteName: String? get() = "route_note_youtube_api"
     override val familyName: String get() = "YouTube Music"
     override val brandColor = 0xFFFF0000
-    override val noteRes = R.string.provider_note_youtube
+    override val noteName = "provider_note_youtube"
 
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://console.cloud.google.com/apis/credentials",
-        whyRes = R.string.setup_why_youtube,
-        stepsArrayRes = R.array.setup_steps_youtube,
-        fieldLabelRes = R.string.setup_field_client_id,
+        whyName = "setup_why_youtube",
+        stepsArrayName = "setup_steps_youtube",
+        fieldLabelName = "setup_field_client_id",
         needsSecret = true,
         // La console ricorda l'ultimo progetto scelto: dopo il primo passo i link si aprono gia' dentro.
         stepUrls = listOf(
@@ -55,7 +52,7 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         ),
     )
 
-    override val defaultClientId: String get() = BuildConfig.GOOGLE_CLIENT_ID
+    override val defaultClientId: String get() = BuildDefaults["GOOGLE_CLIENT_ID"]
     override val authorizeEndpoint = "https://accounts.google.com/o/oauth2/v2/auth"
     override val tokenEndpoint = "https://oauth2.googleapis.com/token"
     override val scopes = "https://www.googleapis.com/auth/youtube"
@@ -65,9 +62,9 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
     override val switchAccountParams = mapOf("prompt" to "consent select_account")
 
     // Client Android della build: Google impone lo schema "client id invertito" (nel manifest).
-    override fun redirectUri(ctx: Context) = "${BuildConfig.GOOGLE_REDIRECT_SCHEME}:/oauth2redirect"
+    override fun redirectUri(ctx: Env) = "${BuildDefaults["GOOGLE_REDIRECT_SCHEME"]}:/oauth2redirect"
 
-    override fun isConfigured(ctx: Context) = clientId(ctx).isNotBlank()
+    override fun isConfigured(ctx: Env) = clientId(ctx).isNotBlank()
 
     /**
      * Con le credenziali dell'utente si usa il flusso "installed app": client OAuth di tipo
@@ -75,21 +72,20 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
      * Cosi' la quota giornaliera YouTube consumata e' quella del progetto Google dell'utente,
      * non quella (condivisa da tutti) della build.
      */
-    override fun startAuth(ctx: Context) {
-        if (ownClientId(ctx) != null) AuthFlow.startLoopbackFlow(AuthScope, ctx, this)
-        else AuthFlow.startBrowserFlow(ctx, this)
+    override fun startAuth(ctx: Env) {
+        ctx.startAuth(this, if (ownClientId(ctx) != null) AuthMode.LOOPBACK else AuthMode.BROWSER)
     }
 
 
 
     /** Ogni chiamata ha un costo in unita' di quota: lo registriamo per mostrarlo all'utente. */
-    private suspend fun counted(ctx: Context, cost: Long, call: suspend () -> JsonElement): JsonElement {
+    private suspend fun counted(ctx: Env, cost: Long, call: suspend () -> JsonElement): JsonElement {
         val r = call()
         QuotaMeter.add(ctx, serviceId, cost)
         return r
     }
 
-    override suspend fun enrichAccount(ctx: Context, t: Tokens): Tokens {
+    override suspend fun enrichAccount(ctx: Env, t: Tokens): Tokens {
         val j = api(ctx, "GET", "$API/channels?part=snippet&mine=true")
         val ch = j["items"][0]
         return t.copy(userId = ch["id"].str ?: "", userName = ch["snippet"]["title"].str ?: "")
@@ -102,7 +98,7 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         return e["message"].str ?: super.errorMessage(resp)
     }
 
-    override suspend fun playlists(ctx: Context): List<Playlist> {
+    override suspend fun playlists(ctx: Env): List<Playlist> {
         val out = ArrayList<Playlist>()
         var page: String? = null
         do {
@@ -121,18 +117,18 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         return out
     }
 
-    override suspend fun playlistInfo(ctx: Context, playlistId: String): Playlist {
+    override suspend fun playlistInfo(ctx: Env, playlistId: String): Playlist {
         val p = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlists?part=snippet,contentDetails&id=$playlistId") }["items"][0]
         return Playlist(playlistId, p["snippet"]["title"].str ?: playlistId, p["contentDetails"]["itemCount"].int ?: -1, ownedByMe = false, description = p["snippet"]["description"].str.orEmpty())
     }
 
-    private suspend fun isEmptyPlaylist(ctx: Context, playlistId: String): Boolean {
+    private suspend fun isEmptyPlaylist(ctx: Env, playlistId: String): Boolean {
         val j = runCatching { counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlists?part=contentDetails&id=$playlistId") } }.getOrNull()
         val p = j["items"].arr.firstOrNull() ?: return false
         return (p["contentDetails"]["itemCount"].int ?: -1) == 0
     }
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> {
         data class Raw(val itemId: String, val videoId: String, val title: String, val channel: String?)
         val raws = ArrayList<Raw>()
         var page: String? = null
@@ -144,7 +140,7 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
                 // The Data API answers 404 "playlist cannot be found" for a playlist that exists but is
                 // empty (typically one just created). Check the playlist itself before giving up.
                 if (page == null && e.message?.contains("cannot be found") == true && isEmptyPlaylist(ctx, playlistId)) {
-                    Diagnostics.log(ctx, id, "playlist $playlistId is empty; YouTube reports it as not found")
+                    ctx.log(id, "playlist $playlistId is empty; YouTube reports it as not found")
                     return emptyList()
                 }
                 throw e
@@ -173,16 +169,16 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         }
     }
 
-    override suspend fun track(ctx: Context, trackId: String): Track? {
+    override suspend fun track(ctx: Env, trackId: String): Track? {
         val v = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/videos?part=snippet,contentDetails&id=${Http.enc(trackId)}") }
         val item = v["items"].arr.firstOrNull() ?: return null
         val (title, artists) = TitleParser.parseYouTube(item["snippet"]["title"].str ?: "", item["snippet"]["channelTitle"].str)
         return Track(id = trackId, title = title, artists = artists, durationMs = Durations.parseIso8601(item["contentDetails"]["duration"].str))
     }
 
-    override fun webSearchUrl(ctx: Context, query: String): String = "https://www.youtube.com/results?search_query=" + android.net.Uri.encode(query)
+    override fun webSearchUrl(ctx: Env, query: String): String = "https://www.youtube.com/results?search_query=" + Http.enc(query)
 
-    override suspend fun search(ctx: Context, track: Track): List<Track> {
+    override suspend fun search(ctx: Env, track: Track): List<Track> {
         val q = (track.artists.take(2) + track.title).joinToString(" ")
         val s = counted(ctx, QuotaMeter.COST_SEARCH) { api(ctx, "GET", "$API/search?part=snippet&type=video&videoCategoryId=10&maxResults=5&q=${Http.enc(q)}") }
         val ids = s["items"].arr.mapNotNull { it["id"]["videoId"].str }
@@ -195,7 +191,7 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         }
     }
 
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist {
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist {
         val j = counted(ctx, QuotaMeter.COST_WRITE) { api(ctx, "POST", "$API/playlists?part=snippet,status",
             jsonObj(
                 "snippet" to mapOf("title" to name, "description" to description),
@@ -204,7 +200,7 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         return Playlist(j["id"].str ?: throw ProviderException("YouTube: playlist not created"), name, 0)
     }
 
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         for (t in tracks) {
             counted(ctx, QuotaMeter.COST_WRITE) { api(ctx, "POST", "$API/playlistItems?part=snippet",
                 jsonObj("snippet" to mapOf(
@@ -214,7 +210,7 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         }
     }
 
-    override suspend fun renamePlaylist(ctx: Context, playlistId: String, name: String) {
+    override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         counted(ctx, QuotaMeter.COST_WRITE) {
             api(ctx, "PUT", "$API/playlists?part=snippet", jsonObj("id" to playlistId, "snippet" to mapOf("title" to name)))
         }
@@ -222,7 +218,7 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
 
     /** An update must carry the title as well, so the current one is read first. */
     override val canSetVisibility: Boolean get() = true
-    override suspend fun setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) {
+    override suspend fun setPlaylistVisibility(ctx: Env, playlistId: String, public: Boolean) {
         val title = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlists?part=snippet&id=$playlistId") }["items"][0]["snippet"]["title"].str
             ?: throw ProviderException("$displayName: playlist $playlistId not found")
         counted(ctx, QuotaMeter.COST_WRITE) {
@@ -232,11 +228,11 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         }
     }
 
-    override suspend fun deletePlaylist(ctx: Context, playlistId: String) {
+    override suspend fun deletePlaylist(ctx: Env, playlistId: String) {
         counted(ctx, QuotaMeter.COST_WRITE) { api(ctx, "DELETE", "$API/playlists?id=$playlistId") }
     }
 
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) {
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         for (t in tracks) {
             val itemId = t.itemId ?: continue
             counted(ctx, QuotaMeter.COST_WRITE) { api(ctx, "DELETE", "$API/playlistItems?id=$itemId") }

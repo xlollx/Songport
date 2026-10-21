@@ -1,5 +1,6 @@
 package com.xlollx.songport.sync
 
+import com.xlollx.songport.providers.*
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.xlollx.songport.net.Http

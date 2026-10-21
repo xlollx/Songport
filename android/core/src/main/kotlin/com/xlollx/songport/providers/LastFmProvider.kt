@@ -1,9 +1,7 @@
 package com.xlollx.songport.providers
 
-import android.content.Context
-import com.xlollx.songport.BuildConfig
-import com.xlollx.songport.R
-import com.xlollx.songport.data.Store
+import com.xlollx.songport.platform.Env
+import com.xlollx.songport.platform.BuildDefaults
 import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
@@ -24,32 +22,32 @@ class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
     override val serviceId = SERVICE
     override val displayName = "Last.fm"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.OFFICIAL
-    override val routeNoteRes: Int? get() = R.string.route_note_api_readonly
+    override val routeNoteName: String? get() = "route_note_api_readonly"
     override val brandColor = 0xFFD51007
-    override val noteRes = R.string.provider_note_lastfm
+    override val noteName = "provider_note_lastfm"
     override val beta = true
     override val canWrite = false
     override val canRemoveTracks = false
     override val supportsLikedSongs = true
     override val supportsRecent = true
-    override val loginForm = LoginForm(needsUrl = false, needsUser = true, needsSecret = false, hintRes = R.string.login_hint_lastfm)
+    override val loginForm = LoginForm(needsUrl = false, needsUser = true, needsSecret = false, hintName = "login_hint_lastfm")
     override val setupGuide = SetupGuide(
         dashboardUrl = "https://www.last.fm/api/account/create",
         stepUrls = listOf("https://www.last.fm/api/account/create", null, "https://www.last.fm/api/accounts"),
-        whyRes = R.string.setup_why_lastfm,
-        stepsArrayRes = R.array.setup_steps_lastfm,
-        fieldLabelRes = R.string.setup_field_api_key,
+        whyName = "setup_why_lastfm",
+        stepsArrayName = "setup_steps_lastfm",
+        fieldLabelName = "setup_field_api_key",
     )
 
-    private fun apiKey(ctx: Context): String =
-        Store.get(ctx).data.settings.clientIds[serviceId]?.trim()?.takeIf { it.isNotEmpty() } ?: BuildConfig.LASTFM_API_KEY
+    private fun apiKey(ctx: Env): String =
+        ctx.store.data.settings.clientIds[serviceId]?.trim()?.takeIf { it.isNotEmpty() } ?: BuildDefaults["LASTFM_API_KEY"]
 
-    override fun isConfigured(ctx: Context) = apiKey(ctx).isNotBlank()
-    override fun usesOwnCredentials(ctx: Context) = !Store.get(ctx).data.settings.clientIds[serviceId].isNullOrBlank()
+    override fun isConfigured(ctx: Env) = apiKey(ctx).isNotBlank()
+    override fun usesOwnCredentials(ctx: Env) = !ctx.store.data.settings.clientIds[serviceId].isNullOrBlank()
 
-    private suspend fun call(ctx: Context, params: Map<String, String>): JsonElement {
+    private suspend fun call(ctx: Env, params: Map<String, String>): JsonElement {
         val key = apiKey(ctx)
-        if (key.isBlank()) throw ProviderException(ctx.getString(R.string.not_configured))
+        if (key.isBlank()) throw ProviderException(ctx.text("not_configured"))
         val resp = Http.send("GET", "https://ws.audioscrobbler.com/2.0/?" + Http.query(params + mapOf("api_key" to key, "format" to "json")))
         val j = parseJson(resp.body)
         j["error"].int?.let { throw ProviderException("$displayName: ${j["message"].str ?: "error $it"}") }
@@ -57,15 +55,15 @@ class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
         return j
     }
 
-    override suspend fun login(ctx: Context, url: String, user: String, secret: String) {
+    override suspend fun login(ctx: Env, url: String, user: String, secret: String) {
         val name = call(ctx, mapOf("method" to "user.getinfo", "user" to user.trim()))["user"]["name"].str
             ?: throw ProviderException("$displayName: user not found")
         save(ctx, Tokens(accessToken = name, userName = name))
     }
 
-    override suspend fun playlists(ctx: Context): List<Playlist> = emptyList()
+    override suspend fun playlists(ctx: Env): List<Playlist> = emptyList()
 
-    override suspend fun tracks(ctx: Context, playlistId: String): List<Track> {
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> {
         val user = creds(ctx).userName
         if (playlistId == MusicProvider.RECENT_ID) {
             val j = call(ctx, mapOf("method" to "user.getrecenttracks", "user" to user, "limit" to "200"))
@@ -101,10 +99,10 @@ class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
         return out
     }
 
-    override suspend fun search(ctx: Context, track: Track): List<Track> = unsupported(ctx)
-    override suspend fun createPlaylist(ctx: Context, name: String, description: String): Playlist = unsupported(ctx)
-    override suspend fun addTracks(ctx: Context, playlistId: String, tracks: List<Track>) = unsupported(ctx)
-    override suspend fun removeTracks(ctx: Context, playlistId: String, tracks: List<Track>) = unsupported(ctx)
+    override suspend fun search(ctx: Env, track: Track): List<Track> = unsupported(ctx)
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist = unsupported(ctx)
+    override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) = unsupported(ctx)
+    override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) = unsupported(ctx)
 
     companion object { const val SERVICE = "lastfm" }
 }

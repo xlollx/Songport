@@ -13,12 +13,12 @@ data class SetupGuide(
     val dashboardUrl: String,
     /** Redirect da incollare nella dashboard (null se il servizio non lo richiede). */
     val redirectUri: String? = null,
-    /** Perche' conviene farlo, in una riga. */
-    val whyRes: Int,
-    /** Array di stringhe con i passi da seguire. */
-    val stepsArrayRes: Int,
-    /** Etichetta del campo principale (client ID, developer token…). */
-    val fieldLabelRes: Int,
+    /** Perche' conviene farlo, in una riga (nome della stringa). */
+    val whyName: String,
+    /** Array di stringhe con i passi da seguire (nome dello string-array). */
+    val stepsArrayName: String,
+    /** Etichetta del campo principale (client ID, developer token…), nome della stringa. */
+    val fieldLabelName: String,
     /** Google: serve anche il client secret dell'app "Desktop". */
     val needsSecret: Boolean = false,
     /** Deezer: l'utente deve fornire anche il proprio URL di redirect https. */

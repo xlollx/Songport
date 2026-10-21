@@ -1,5 +1,6 @@
 package com.xlollx.songport.data
 
+import com.xlollx.songport.providers.*
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
@@ -9,24 +10,12 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
-@Serializable
-data class Tokens(
-    val accessToken: String,
-    val refreshToken: String? = null,
-    /** Scadenza (epoch ms); 0 = non scade / sconosciuta. */
-    val expiresAt: Long = 0,
-    val userId: String = "",
-    val userName: String = "",
-    val extra: Map<String, String> = emptyMap(),
-) {
-    fun isExpiringSoon(): Boolean = expiresAt > 0 && System.currentTimeMillis() > expiresAt - 60_000
-}
 
 /**
  * Token OAuth per servizio, cifrati con l'Android Keystore (EncryptedSharedPreferences).
  * Se la cifratura non e' disponibile sul dispositivo si ricade su SharedPreferences normali.
  */
-class TokenStore(context: Context) {
+class TokenStore(context: Context) : TokenVault {
     // Aprire le preferenze cifrate costa (chiave nel Keystore, decifratura dell'indice): si fa una
     // volta per processo, altrimenti ogni ridisegno delle schermate che mostrano "collegato" rallenta.
     private val sp: SharedPreferences = shared(context)
@@ -51,14 +40,14 @@ class TokenStore(context: Context) {
         }
     }
 
-    fun get(providerId: String): Tokens? =
+    override fun get(providerId: String): Tokens? =
         sp.getString(providerId, null)?.let { runCatching { json.decodeFromString<Tokens>(it) }.getOrNull() }
 
-    fun set(providerId: String, tokens: Tokens) {
+    override fun set(providerId: String, tokens: Tokens) {
         sp.edit().putString(providerId, json.encodeToString(tokens)).apply()
     }
 
-    fun clear(providerId: String) {
+    override fun clear(providerId: String) {
         sp.edit().remove(providerId).apply()
     }
 }
