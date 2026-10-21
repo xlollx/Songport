@@ -1,19 +1,29 @@
-# Songport
+<h1 align="center">Songport</h1>
 
-[![Latest release](https://img.shields.io/github/v/release/xlollx/Songport?label=release)](https://github.com/xlollx/Songport/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/xlollx/Songport/total)](https://github.com/xlollx/Songport/releases)
-[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue)](LICENSE)
-[![Android 8+](https://img.shields.io/badge/Android-8.0%2B-3ddc84)](#)
+<p align="center"><b>Your playlists, in sync across music services.</b><br>
+On your phone, on a schedule. No account, no server, no subscription.</p>
 
-![Songport](docs/store/feature_en.png)
+<p align="center">
+  <a href="https://github.com/xlollx/Songport/releases/latest"><img src="https://img.shields.io/github/v/release/xlollx/Songport?label=release" alt="Latest release"></a>
+  <a href="https://github.com/xlollx/Songport/releases"><img src="https://img.shields.io/github/downloads/xlollx/Songport/total" alt="Downloads"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0--only-blue" alt="License: GPL-3.0-only"></a>
+  <img src="https://img.shields.io/badge/Android-8.0%2B-3ddc84" alt="Android 8.0+">
+</p>
 
-<p align="center"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" width="160" alt="Syncs"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg" width="160" alt="New sync"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg" width="160" alt="Choosing a service"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.jpg" width="160" alt="Review of tracks not found"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.jpg" width="160" alt="Tools"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.jpg" width="160" alt="Settings"></p>
+<p align="center">
+  <a href="https://f-droid.org/packages/com.xlollx.songport/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="64" alt="Get it on F-Droid"></a>
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="64" alt="Get it on Obtainium"></a>
+</p>
 
-<p align="center"><img src="docs/store/demo.gif" width="280" alt="Creating a sync from Spotify to YouTube Music, then the sync running"></p>
+<p align="center"><img src="docs/store/demo.gif" width="240" alt="Creating a sync from Spotify to YouTube Music, then the sync running"></p>
 
-Android app that keeps playlists in sync across music services, manually or on a schedule.
-Free, no account, no subscription, and no ads in the GitHub build: development lives on voluntary
-donations. Everything runs on the phone. There is no Songport server and access tokens never leave the device.
+<p align="center"><img src="docs/store/screenshots.png" width="100%" alt="Syncs, new sync, choosing a service, review of tracks not found, tools, settings"></p>
+
+Songport keeps playlists identical across Spotify, Apple Music, YouTube Music, Amazon Music, TIDAL,
+Deezer, Subsonic/Navidrome, Jellyfin and Plex, with Last.fm and ListenBrainz as sources and playlist
+files (CSV, TSV, M3U, iTunes XML, JSON, pasted text) as a bridge to everything else. Everything runs
+on the phone: there is no Songport server, and access tokens never leave the device. Free, no ads in
+this build: development lives on voluntary donations.
 
 **Why not an online transfer service?** Soundiiz, TuneMyMusic and FreeYourMusic are good at a one-off
 move. Songport is for keeping playlists in step over time, without handing your accounts to anyone:
@@ -27,30 +37,28 @@ move. Songport is for keeping playlists in step over time, without handing your 
 | Personal servers (Navidrome, Jellyfin, Plex) | Yes | Rarely |
 | Source code | Open (GPL-3.0-only) | Closed |
 
-Supported: Spotify, Apple Music, YouTube Music, Amazon Music, TIDAL, Deezer, Subsonic/Navidrome,
-Jellyfin, Plex, Last.fm and ListenBrainz (read-only), plus playlist files (CSV, TSV, M3U, iTunes XML,
-JSON, pasted text) as a bridge to everything else.
+### Install
 
-Apple Music, TIDAL, Deezer, the personal servers, Last.fm and ListenBrainz are marked **beta** in the
-app: they are written against each service's documented API and work, but they have had far less
-real-world use than the rest, so a report about them is especially welcome.
+- **[F-Droid](https://f-droid.org/packages/com.xlollx.songport/)**: built from source, signed with the
+  same key as the GitHub APK, so the two update each other.
+- **[Obtainium](https://github.com/ImranR98/Obtainium)**: add `https://github.com/xlollx/Songport` and
+  each release reaches the phone by itself.
+- **[Releases](https://github.com/xlollx/Songport/releases/latest)**: the signed APK of every version.
 
-The app ships without any service credentials of its own: each user creates a free developer key
-on the services that require one (Spotify, YouTube Music, TIDAL, Deezer, Last.fm) and the app walks
-them through it in about two minutes. Personal servers and files need nothing.
+Android 8.0 or newer. Languages: English, Italian, French, German, Spanish, Chinese, Japanese.
+New here? The **[guide](https://xlollx.github.io/Songport/guide/)** covers getting started and the
+common errors.
 
-Guide (getting started, troubleshooting): https://xlollx.github.io/Songport/guide/
+### Good to know
 
-Download: [F-Droid](https://f-droid.org/packages/com.xlollx.songport/) (same signature as the GitHub APK, so
-the two update each other), or the signed APK of every version on the
-[Releases](https://github.com/xlollx/Songport/releases/latest) page. UI languages: English, Italian,
-French, German, Spanish, Chinese and Japanese. License: GPL-3.0-only, see [LICENSE](LICENSE). Security reports: see
-[SECURITY.md](SECURITY.md).
-
-<a href="https://f-droid.org/packages/com.xlollx.songport/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="80" alt="Get it on F-Droid"></a> <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="80" alt="Get it on Obtainium"></a>
-
-With [Obtainium](https://github.com/ImranR98/Obtainium) each new release reaches the phone by itself:
-tap the badge on the phone, or add `https://github.com/xlollx/Songport` in Obtainium.
+- Apple Music, TIDAL, Deezer, the personal servers, Last.fm and ListenBrainz are marked **beta** in
+  the app: written against each service's documented API and working, but with far less real-world
+  use than the rest, so a report about them is especially welcome.
+- The app ships without service credentials of its own: on the services that require one (Spotify,
+  YouTube Music, TIDAL, Deezer, Last.fm) each user creates a free developer key, and the app walks
+  them through it in about two minutes. Or use the quick route: sign in on the service's own page.
+  Personal servers and files need nothing.
+- License: GPL-3.0-only, see [LICENSE](LICENSE). Security reports: [SECURITY.md](SECURITY.md).
 
 ---
 
