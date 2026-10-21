@@ -1,0 +1,1 @@
+Amazon Music: el inicio de sesión y el reproductor oculto ahora se presentan como Chrome para Android, como el navegador del teléfono donde Amazon acepta la cuenta, en lugar de Chrome de escritorio, que Amazon ahora rechaza con "401". Tras actualizar, desconecta y vuelve a conectar Amazon Music una vez.

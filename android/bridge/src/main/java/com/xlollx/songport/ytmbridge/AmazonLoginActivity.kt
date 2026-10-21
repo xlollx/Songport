@@ -67,10 +67,10 @@ class AmazonLoginActivity : ComponentActivity() {
             builtInZoomControls = true
             displayZoomControls = false
         }
-        // The desktop player: the phone-sized one stopped calling its API, so nothing could be seen.
+        // Chrome for Android: dressed as desktop Chrome, the WebView's sessions were refused (401).
         web.settings.useWideViewPort = true
         web.settings.loadWithOverviewMode = true
-        BridgeUa.apply(this, web)
+        BridgeUa.applyMobile(this, web)
         // The player runs here, in front of the user: the surest place to see the headers it builds
         // for its own API calls, which are the only thing carrying an access token.
         val early = AmazonBridge.install(this, web)
@@ -89,7 +89,7 @@ class AmazonLoginActivity : ComponentActivity() {
         }
         // A new sign-in starts from an empty jar: old Amazon cookies would ride along with the new ones.
         val wiped = AmazonSession.wipeCookies()
-        BridgeNet.log("amazon", "sign-in started ($wiped old Amazon cookies removed first; ${BridgeUa.describe()})")
+        BridgeNet.log("amazon", "sign-in started ($wiped old Amazon cookies removed first; ${BridgeUa.describe()}; as Chrome for Android)")
         web.loadUrl(LOGIN_URL)
         // The player is a single page app: navigation does not always report a finished page.
         handler.postDelayed(object : Runnable {

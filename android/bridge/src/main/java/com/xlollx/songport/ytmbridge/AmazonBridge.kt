@@ -239,8 +239,8 @@ object AmazonBridge {
                 // single page application lays nothing out and makes no calls at all.
                 w.measure(View.MeasureSpec.makeMeasureSpec(VIEW_W, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(VIEW_H, View.MeasureSpec.EXACTLY))
                 w.layout(0, 0, VIEW_W, VIEW_H)
-                // The desktop player, as in the traffic capture: the phone-sized one stopped calling its API.
-                BridgeUa.apply(app, w)
+                // Chrome for Android, as on the phone's own browser (where Amazon accepts the account).
+                BridgeUa.applyMobile(app, w)
                 w.addJavascriptInterface(sink, "AmzBridge")
                 val early = WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)
                 if (early) WebViewCompat.addDocumentStartJavaScript(w, HOOK, setOf("*"))
@@ -313,8 +313,10 @@ object AmazonBridge {
           // What the desktop player checks before it starts (taken from its own code, see the traffic
           // capture): not Linux, no touch, FLAC in MP4 through MSE and Widevine, a window.chrome.
           // Nothing is ever played here, so the codec answers are given.
-          try { Object.defineProperty(Navigator.prototype, 'platform', { get: function(){ return 'Win32'; }, configurable: true }); } catch(e){}
-          try { Object.defineProperty(Navigator.prototype, 'maxTouchPoints', { get: function(){ return 0; }, configurable: true }); } catch(e){}
+          // A WebView introduced as Chrome for Android stays a phone: only a desktop identity needs these.
+          var desk = !/Android/.test(navigator.userAgent);
+          if (desk) try { Object.defineProperty(Navigator.prototype, 'platform', { get: function(){ return 'Win32'; }, configurable: true }); } catch(e){}
+          if (desk) try { Object.defineProperty(Navigator.prototype, 'maxTouchPoints', { get: function(){ return 0; }, configurable: true }); } catch(e){}
           try {
             var isType = MediaSource.isTypeSupported.bind(MediaSource);
             MediaSource.isTypeSupported = function(t){ return /audio\/mp4/.test(String(t)) ? true : isType(t); };

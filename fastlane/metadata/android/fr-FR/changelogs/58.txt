@@ -1,0 +1,1 @@
+Amazon Music : la connexion et le lecteur caché se présentent maintenant comme Chrome pour Android, comme le navigateur du téléphone où Amazon accepte le compte, au lieu de Chrome pour ordinateur, qu'Amazon refuse désormais en « 401 ». Après la mise à jour, déconnectez et reconnectez Amazon Music une fois.

@@ -122,7 +122,7 @@ class AmazonClient(private val ctx: Context) {
         val req = Request.Builder()
             .url(url)
             .header("Cookie", cookies)
-            .header("User-Agent", BridgeUa.desktop(ctx))
+            .header("User-Agent", AmazonBridge.storedUserAgent(ctx) ?: BridgeUa.mobile(ctx))
             .header("Accept", accept)
             .header("Accept-Language", "en-US,en;q=0.9")
             .header("Referer", "https://${url.substringAfter("https://").substringBefore('/')}/")
@@ -315,7 +315,7 @@ class AmazonClient(private val ctx: Context) {
             .header("Cookie", cookies())
             .header("Origin", "https://$domain")
             .header("Referer", "https://$domain/")
-            .header("User-Agent", AmazonBridge.storedUserAgent(ctx) ?: BridgeUa.desktop(ctx))
+            .header("User-Agent", AmazonBridge.storedUserAgent(ctx) ?: BridgeUa.mobile(ctx))
             .header("Accept", "application/graphql-response+json, application/json")
         headers.forEach { (k, v) -> b.header(k, v) }
         val (code, text) = send(b.build())

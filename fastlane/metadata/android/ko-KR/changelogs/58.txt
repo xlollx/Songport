@@ -1,0 +1,1 @@
+Amazon Music: 로그인과 숨겨진 플레이어가 이제 Amazon이 "401"로 거부하는 데스크톱 Chrome 대신, Amazon이 계정을 받아들이는 휴대폰 브라우저처럼 Android용 Chrome으로 자신을 소개합니다. 업데이트 후 Amazon Music 연결을 한 번 끊고 다시 연결하세요.

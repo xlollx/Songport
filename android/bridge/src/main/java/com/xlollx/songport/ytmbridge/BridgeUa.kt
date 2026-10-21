@@ -27,6 +27,50 @@ object BridgeUa {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/$ver Safari/537.36"
     }.getOrDefault(FALLBACK).also { cached = it }
 
+    /**
+     * Chrome on this phone, as Chrome itself introduces itself (the reduced user agent: no device,
+     * Android 10, "K"), without the WebView's "; wv" and "Version/4.0" marks. Amazon accepts the
+     * account from Chrome on the phone and refuses it from a WebView dressed as desktop Chrome.
+     */
+    fun mobile(ctx: Context): String = cachedMobile ?: runCatching {
+        val own = WebSettings.getDefaultUserAgent(ctx.applicationContext)
+        val major = Regex("""Chrome/(\d+)""").find(own)?.groupValues?.get(1) ?: return@runCatching MOBILE_FALLBACK
+        "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/$major.0.0.0 Mobile Safari/537.36"
+    }.getOrDefault(MOBILE_FALLBACK).also { cachedMobile = it }
+
+    const val MOBILE_FALLBACK = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36"
+    @Volatile private var cachedMobile: String? = null
+
+    /** Chrome for Android on a WebView: the string and the client hints, all saying the same phone. */
+    fun applyMobile(ctx: Context, web: WebView) {
+        val ua = mobile(ctx)
+        web.settings.userAgentString = ua
+        val own = runCatching { WebSettings.getDefaultUserAgent(ctx.applicationContext) }.getOrDefault("")
+        val full = Regex("""Chrome/([\d.]+)""").find(own)?.groupValues?.get(1) ?: "140.0.0.0"
+        val major = full.substringBefore('.')
+        val release = android.os.Build.VERSION.RELEASE ?: "14"
+        val model = android.os.Build.MODEL ?: ""
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.USER_AGENT_METADATA)) runCatching {
+            val brands = listOf(
+                UserAgentMetadata.BrandVersion.Builder().setBrand("Chromium").setMajorVersion(major).setFullVersion(full).build(),
+                UserAgentMetadata.BrandVersion.Builder().setBrand("Google Chrome").setMajorVersion(major).setFullVersion(full).build(),
+                UserAgentMetadata.BrandVersion.Builder().setBrand("Not:A-Brand").setMajorVersion("99").setFullVersion("99.0.0.0").build(),
+            )
+            val md = UserAgentMetadata.Builder()
+                .setBrandVersionList(brands).setFullVersion(full)
+                .setPlatform("Android").setPlatformVersion("$release.0.0")
+                .setArchitecture("").setMobile(true).setModel(model)
+                .build()
+            WebSettingsCompat.setUserAgentMetadata(web.settings, md)
+        }
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.REQUESTED_WITH_HEADER_ALLOW_LIST)) runCatching {
+            WebSettingsCompat.setRequestedWithHeaderOriginAllowList(web.settings, emptySet())
+        }
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) runCatching {
+            WebViewCompat.addDocumentStartJavaScript(web, hintsScript(major, full, "Android", true, model, "$release.0.0", ""), setOf("*"))
+        }
+    }
+
     private fun version(ua: String): Pair<String, String> {
         val full = Regex("""Chrome/([\d.]+)""").find(ua)?.groupValues?.get(1) ?: "140.0.0.0"
         return full.substringBefore('.') to full
@@ -58,7 +102,7 @@ object BridgeUa {
         }
         // The page-side view of the same hints, for a WebView that cannot set them natively.
         if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) runCatching {
-            WebViewCompat.addDocumentStartJavaScript(web, hintsScript(major, full), setOf("*"))
+            WebViewCompat.addDocumentStartJavaScript(web, hintsScript(major, full, "Windows", false, "", "15.0.0", "x86"), setOf("*"))
         }
     }
 
@@ -69,14 +113,14 @@ object BridgeUa {
         return "client hints ${if (hints) "set" else "not settable"}, app header ${if (xrw) "removed" else "not removable"}"
     }
 
-    fun hintsScript(major: String, full: String): String = """
+    fun hintsScript(major: String, full: String, platform: String, mobile: Boolean, model: String, platformVersion: String, arch: String): String = """
         (function(){
           try {
             var brands = [{brand:'Chromium',version:'$major'},{brand:'Google Chrome',version:'$major'},{brand:'Not:A-Brand',version:'99'}];
             var fullList = [{brand:'Chromium',version:'$full'},{brand:'Google Chrome',version:'$full'},{brand:'Not:A-Brand',version:'99.0.0.0'}];
-            var data = { brands: brands, mobile: false, platform: 'Windows',
-              getHighEntropyValues: function(){ return Promise.resolve({ brands: brands, mobile: false, platform: 'Windows', platformVersion: '15.0.0', architecture: 'x86', bitness: '64', model: '', uaFullVersion: '$full', fullVersionList: fullList }); },
-              toJSON: function(){ return { brands: brands, mobile: false, platform: 'Windows' }; } };
+            var data = { brands: brands, mobile: $mobile, platform: '$platform',
+              getHighEntropyValues: function(){ return Promise.resolve({ brands: brands, mobile: $mobile, platform: '$platform', platformVersion: '$platformVersion', architecture: '$arch', bitness: '${if (mobile) "" else "64"}', model: '${model.replace("'", "")}', uaFullVersion: '$full', fullVersionList: fullList }); },
+              toJSON: function(){ return { brands: brands, mobile: $mobile, platform: '$platform' }; } };
             Object.defineProperty(navigator, 'userAgentData', { get: function(){ return data; }, configurable: true });
           } catch (e) {}
         })();
