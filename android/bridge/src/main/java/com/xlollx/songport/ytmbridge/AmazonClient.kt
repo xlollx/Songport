@@ -222,7 +222,8 @@ class AmazonClient(private val ctx: Context) {
                 "Amazon Music opened as a signed-out visitor (${player.anonymousCalls} calls without a token): the Amazon session has expired. " +
                     "Accounts, Amazon Music: disconnect and connect again."
             } else {
-                "the Amazon Music player loaded but made no calls of its own within 50 s. Accounts, Amazon Music: connect again, letting the player load in the sign-in screen, then try again."
+                "the Amazon Music player loaded but made no calls of its own within 50 s. Accounts, Amazon Music: connect again, letting the player load in the sign-in screen, then try again." +
+                    " [requests: " + player.otherRequests.joinToString(", ").ifBlank { "none" } + "]"
             },
         )
         return xAmznHeaders(c, domain, pageUrl) + fresh

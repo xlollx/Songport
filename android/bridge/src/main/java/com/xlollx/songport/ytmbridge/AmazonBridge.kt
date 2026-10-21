@@ -39,6 +39,8 @@ object AmazonBridge {
         val headers: Map<String, String>, val config: JsonObject?, val userAgent: String?, val at: Long,
         /** Calls the offscreen player made without a token: it ran, but as a signed-out visitor. */
         val anonymousCalls: Int = 0,
+        /** Where its other requests went (host and path), for the error when no API call was seen. */
+        val otherRequests: List<String> = emptyList(),
     ) {
         /** The access token lives inside the authentication header the player builds. */
         val signedIn: Boolean
@@ -129,6 +131,7 @@ object AmazonBridge {
         val problem = AtomicReference<String?>(null)
         val calls = AtomicInteger(0)
         val anonymous = AtomicInteger(0)
+        val others = java.util.Collections.synchronizedSet(LinkedHashSet<String>())
         var web: WebView? = null
         val main = Handler(Looper.getMainLooper())
 
@@ -149,6 +152,10 @@ object AmazonBridge {
                 config.compareAndSet(null, parseJson(json) as? JsonObject ?: return)
                 userAgent.compareAndSet(null, ua)
             }
+
+            /** Host and path of a request that is not an API call we know. */
+            @JavascriptInterface
+            fun other(where: String) { if (others.size < 40) others.add(where.take(80)) }
 
             /** The player showed a page instead of starting ("update your browser", "get the app"). */
             @JavascriptInterface
@@ -215,7 +222,8 @@ object AmazonBridge {
                 (problem.get()?.let { ", $it" } ?: "") + "]." +
                 " Open Songport Bridge, tap Capture traffic and let the player load once, then try again.",
         )
-        return Player(h ?: emptyMap(), c, userAgent.get(), System.currentTimeMillis(), anonymous.get())
+        val seen = synchronized(others) { others.filterNot { it.startsWith("m.media-amazon") || it.contains("/images") }.take(12) }
+        return Player(h ?: emptyMap(), c, userAgent.get(), System.currentTimeMillis(), anonymous.get(), seen)
     }
 
     private const val VIEW_W = 1280
@@ -270,15 +278,18 @@ object AmazonBridge {
               AmzBridge.headers(h, navigator.userAgent, location.host);
             } catch(e){}
           };
+          // Where the player's other requests go (host and path only): if Amazon moves its API, the
+          // error says where to, instead of "no calls".
+          var other = function(u){ try { if (!AmzBridge.other) return; var x = new URL(String(u), location.href); AmzBridge.other(x.host + x.pathname.split('/').slice(0, 3).join('/')); } catch(e){} };
           var of = window.fetch;
           if (of) window.fetch = function(input, init){
             var url = (typeof input === 'string') ? input : (input && input.url) || '';
-            if (match(url) && init && init.body) grab(init.body);
+            if (match(url) && init && init.body) grab(init.body); else other(url);
             return of.apply(this, arguments);
           };
           var oo = XMLHttpRequest.prototype.open, os = XMLHttpRequest.prototype.send;
           XMLHttpRequest.prototype.open = function(m, u){ this.__u = u; return oo.apply(this, arguments); };
-          XMLHttpRequest.prototype.send = function(b){ if (match(this.__u)) grab(b); return os.apply(this, arguments); };
+          XMLHttpRequest.prototype.send = function(b){ if (match(this.__u)) grab(b); else other(this.__u); return os.apply(this, arguments); };
         })();
     """.trimIndent()
 
