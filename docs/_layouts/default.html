@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="{{ page.lang | default: 'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% assign t = page.title | default: site.title %}
+  <title>{% if t == site.title %}{{ site.title }} – {{ site.description }}{% else %}{{ t }} · {{ site.title }}{% endif %}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <meta name="theme-color" content="#5b3fd9">
+  <meta property="og:title" content="{{ t }}">
+  <meta property="og:description" content="{{ page.description | default: site.description }}">
+  <meta property="og:image" content="{{ '/store/feature_en.png' | absolute_url }}">
+  <link rel="icon" href="{{ '/store/icon512.png' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="{{ '/' | relative_url }}"><img src="{{ '/store/icon512.png' | relative_url }}" alt="" width="28" height="28">Songport</a>
+    <nav>
+      <a href="{{ '/guide/' | relative_url }}">Guide</a>
+      <a href="{{ '/privacy-policy' | relative_url }}">Privacy</a>
+      <a href="https://github.com/xlollx/Songport">GitHub</a>
+    </nav>
+  </header>
+  <main class="{{ page.main_class | default: 'prose' }}">
+{{ content }}
+  </main>
+  <footer class="foot">
+    <div>
+      <a href="{{ '/guide/' | relative_url }}">Guide</a>
+      <a href="{{ '/privacy-policy' | relative_url }}">Privacy policy</a>
+      <a href="https://github.com/xlollx/Songport">Source code</a>
+      <a href="https://github.com/xlollx/Songport/issues">Report a problem</a>
+      <a href="https://github.com/xlollx/Songport/security">Security</a>
+    </div>
+    <p>Songport is free software under GPL-3.0-only. It is not affiliated with any music service; their names are used only to indicate compatibility.</p>
+  </footer>
+</body>
+</html>
