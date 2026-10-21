@@ -117,7 +117,7 @@
     <string name="settings_isrc">Deezer で正確な録音を特定</string>
     <string name="settings_isrc_desc">ISRC のない曲（ウェブ経路やファイル）は、Deezer の公開カタログで一度だけ照会し、Spotify・Apple Music・TIDAL が似た曲ではなく正確な録音を返せるようにします。匿名のリクエストで、アカウントは関与しません。</string>
     <string name="settings_language">言語</string>
-    <string name="settings_language_desc">Songport はシステムの言語に従います：英語、イタリア語、フランス語、ドイツ語、スペイン語、中国語、日本語。</string>
+    <string name="settings_language_desc">Songport はシステムの言語に従います：英語、イタリア語、フランス語、ドイツ語、スペイン語、ポルトガル語、ポーランド語、ロシア語、トルコ語、中国語、日本語、韓国語。</string>
     <string name="settings_language_open">変更</string>
     <string name="settings_language_system">システムの言語</string>
     <string name="settings_advanced">サービスのキー</string>

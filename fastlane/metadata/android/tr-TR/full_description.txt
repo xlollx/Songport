@@ -1,0 +1,14 @@
+<p>Çalma listelerinizi müzik servisleri arasında elle yeniden kurmadan aynı tutun. Her şey telefonunuzda çalışır: hesap yok, sunucu yok, reklam yok, izleme yok.</p>
+<ul>
+<li>Bir kaynak ve bir hedef çalma listesi seçin ya da uygulamanın oluşturmasına izin verin</li>
+<li>Elle veya zamanlayarak senkronize edin: her saat, 6 saatte bir, her gün veya her hafta</li>
+<li>Yalnızca eklemeler, ya da kaldırmaları da yansıtın</li>
+<li>Beğenilen şarkılar kaynak olarak</li>
+<li>Bulunamayan parçaları inceleyin: tek dokunuşla öneriler, en olası sonuçlar önce, kaynak albümün parçaları veya parçanın bağlantısını yapıştırın</li>
+<li>API'si olmayan servisler için çalma listesi dosyalarını içe ve dışa aktarın (CSV, M3U, iTunes XML, JSON)</li>
+<li>Tüm hesabın tarihli sürümler halinde yedeği, yinelenenleri kaldırma</li>
+</ul>
+<p>Spotify, Apple Music, YouTube Music, TIDAL, Deezer, Subsonic/Navidrome, Jellyfin ve Plex sunucuları, kaynak olarak Last.fm ve ListenBrainz, ve dosyalarla çalışır. Geliştirici anahtarı gerektiren servisler uygulama içi bir rehberle kurulur; anahtar ve her erişim jetonu cihazda şifreli kalır. Deezer'ın oturum açması, Deezer'ın gerektirdiği https yönlendirmesi olan xlollx.github.io üzerindeki statik bir sayfadan geri döner; bu sayfa yalnızca uygulamaya iletir ve hiçbir şey saklamaz.</p>
+<p>YouTube Music, Amazon Music ile geliştirici anahtarsız Spotify ve Apple Music oturum açma, servislerin kendi yerleşik web oynatıcıları üzerinden çalışır. Bunlar resmi API değildir: uygulama ilk oturum açmadan önce bir bildirim gösterir.</p>
+<p>Diğer bağlantılar, tümü isteğe bağlı ve hesapsız: bir parçanın ISRC'si yoksa kaydı aramak için Deezer'ın herkese açık kataloğu (Ayarlar'dan kapatılabilir), Spotify web oynatıcısının sorgu hash'leri için GitHub'daki statik bir kayıt defteri, incelemedeki ek sonuçlar için song.link ve çalma listesi oluşturucu için kendiniz yapılandırdığınız yapay zeka sağlayıcısı (OpenAI, Anthropic, Google Gemini veya uyumlu bir sunucu; yalnızca yazdığınız metin gönderilir).</p>
+<p>Songport bu servislerin hiçbiriyle bağlantılı değildir; adları yalnızca uyumluluğu belirtmek için kullanılır.</p>

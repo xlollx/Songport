@@ -1,0 +1,1 @@
+Amazon Music yeniden çalışıyor: bağlayıcı artık Amazon web oynatıcısının yeni arayüzünü konuşuyor (çalma listeleri, arama, oluşturma, ekleme, kaldırma, silme). Amazon çalma listelerini yeniden adlandırma ve görünürlük ayarı şimdilik kullanılamıyor.

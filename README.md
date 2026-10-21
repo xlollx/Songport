@@ -47,7 +47,8 @@ move. Songport is for keeping playlists in step over time, without handing your 
   each release reaches the phone by itself.
 - **[Releases](https://github.com/xlollx/Songport/releases/latest)**: the signed APK of every version.
 
-Android 8.0 or newer. Languages: English, Italian, French, German, Spanish, Chinese, Japanese.
+Android 8.0 or newer. Languages: English, Italian, French, German, Spanish, Portuguese (Brazil), Polish,
+Russian, Turkish, Chinese, Japanese, Korean.
 New here? The **[guide](https://xlollx.github.io/Songport/guide/)** covers getting started and the
 common errors.
 

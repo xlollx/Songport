@@ -1,0 +1,14 @@
+<p>Utrzymuj identyczne playlisty w różnych serwisach muzycznych, bez odtwarzania ich ręcznie. Wszystko działa na twoim telefonie: bez konta, bez serwera, bez reklam, bez śledzenia.</p>
+<ul>
+<li>Wybierz playlistę źródłową i docelową albo pozwól aplikacji ją utworzyć</li>
+<li>Synchronizuj ręcznie lub według harmonogramu: co godzinę, co 6 godzin, codziennie lub co tydzień</li>
+<li>Tylko dodawanie albo także odzwierciedlanie usunięć</li>
+<li>Polubione utwory jako źródło</li>
+<li>Sprawdzaj utwory, których nie znaleziono: propozycje do akceptacji jednym dotknięciem, najbardziej prawdopodobne wyniki na początku, utwory z albumu źródłowego albo wklejony link do utworu</li>
+<li>Import i eksport plików playlist (CSV, M3U, XML iTunes, JSON) dla serwisów bez API</li>
+<li>Kopie zapasowe całego konta jako wersje z datą, usuwanie duplikatów</li>
+</ul>
+<p>Działa ze Spotify, Apple Music, YouTube Music, TIDAL, Deezer, serwerami Subsonic/Navidrome, Jellyfin i Plex, z Last.fm i ListenBrainz jako źródłami oraz z plikami. Serwisy wymagające klucza dewelopera konfiguruje się z przewodnikiem w aplikacji; klucz i każdy token dostępu pozostają zaszyfrowane na urządzeniu. Logowanie Deezer wraca przez statyczną stronę na xlollx.github.io, czyli przekierowanie https wymagane przez Deezer; strona tylko przekazuje dane do aplikacji i niczego nie zapisuje.</p>
+<p>YouTube Music, Amazon Music oraz logowanie do Spotify i Apple Music bez kluczy dewelopera działają przez wbudowane odtwarzacze internetowe tych serwisów. Nie są to oficjalne API: aplikacja wyświetla informację przed pierwszym logowaniem.</p>
+<p>Inne połączenia, wszystkie opcjonalne i bez konta: publiczny katalog Deezer do wyszukania kodu ISRC nagrania, gdy utwór go nie ma (wyłączane w Ustawieniach), statyczny rejestr na GitHub z hashami zapytań odtwarzacza internetowego Spotify, song.link dla dodatkowych wyników przy sprawdzaniu oraz dostawca AI, którego sam konfigurujesz dla generatora playlist (OpenAI, Anthropic, Google Gemini lub zgodny serwer; wysyłany jest tylko wpisany przez ciebie tekst).</p>
+<p>Songport nie jest powiązany z żadnym z tych serwisów; ich nazwy służą wyłącznie wskazaniu zgodności.</p>

@@ -5,7 +5,7 @@
     <string name="app_name">Trackhop</string>
     <string name="not_configured_hint">Trackhop 不自带任何服务密钥。请在该服务的开发者页面免费创建自己的密钥：大约只需两分钟，应用会一步步引导你。</string>
     <string name="settings_isrc_desc">当曲目没有 ISRC（网页路径、文件）时，Trackhop 会在 Deezer 的公开曲库中查询一次，让 Spotify、Apple Music 和 TIDAL 返回精确的录音而不是相似曲目。匿名请求，不涉及任何账号。</string>
-    <string name="settings_language_desc">Trackhop 跟随系统语言：英语、意大利语、法语、德语、西班牙语、中文、日语。</string>
+    <string name="settings_language_desc">Trackhop 跟随系统语言：英语、意大利语、法语、德语、西班牙语、葡萄牙语、波兰语、俄语、土耳其语、中文、日语、韩语。</string>
     <string name="settings_advanced_desc">Trackhop 不自带密钥：Spotify、YouTube Music、TIDAL、Deezer、Last.fm 和 Apple Music 通过以你的名义免费创建的密钥连接，因此它们的限制和配额只属于你。你可以在这里查看和更改这些密钥。</string>
     <string name="settings_ads_note">Trackhop 免费，无订阅。它依靠一个小横幅广告维持；不出售任何数据，除了向你连接的音乐服务发送的请求外，没有任何数据离开你的手机。</string>
     <string name="note_file_target">已保存在 Trackhop 内：可在此处使用“另存为文件”，或前往“设置 → 文件”，获取 CSV 或 M3U 文件。</string>

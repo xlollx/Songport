@@ -16,7 +16,7 @@ import java.util.Locale
  */
 object AppLocale {
     /** Language tags offered, in display order; "" is the system language. */
-    val CHOICES = listOf("", "en", "it", "fr", "de", "es", "zh", "ja")
+    val CHOICES = listOf("", "en", "it", "fr", "de", "es", "pt-BR", "pl", "ru", "tr", "zh", "ja", "ko")
 
     private fun prefs(ctx: Context) = ctx.getSharedPreferences("app_locale", Context.MODE_PRIVATE)
 

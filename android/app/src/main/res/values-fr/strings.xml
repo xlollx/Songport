@@ -117,7 +117,7 @@
     <string name="settings_isrc">Enregistrement exact via Deezer</string>
     <string name="settings_isrc_desc">Quand un titre n\'a pas d\'ISRC (voies web, fichiers), Songport le cherche une fois dans le catalogue public de Deezer, pour que Spotify, Apple Music et TIDAL répondent avec l\'enregistrement exact plutôt qu\'un sosie. Requête anonyme, aucun compte impliqué.</string>
     <string name="settings_language">Langue</string>
-    <string name="settings_language_desc">Songport suit la langue du système : anglais, italien, français, allemand, espagnol, chinois, japonais.</string>
+    <string name="settings_language_desc">Songport suit la langue du système : anglais, italien, français, allemand, espagnol, portugais, polonais, russe, turc, chinois, japonais, coréen.</string>
     <string name="settings_language_open">Changer</string>
     <string name="settings_language_system">Langue du système</string>
     <string name="settings_advanced">Clés de service</string>

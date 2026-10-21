@@ -5,7 +5,7 @@
     <string name="app_name">Trackhop</string>
     <string name="not_configured_hint">Trackhop non include chiavi dei servizi. Crea la tua chiave gratuita sulla pagina sviluppatori del servizio: ci vogliono circa due minuti e l\'app ti guida passo passo.</string>
     <string name="settings_isrc_desc">Quando un brano non ha l\'ISRC (strade web, file), Trackhop lo cerca una volta nel catalogo pubblico di Deezer, così Spotify, Apple Music e TIDAL rispondono con la registrazione esatta invece di una simile. Richiesta anonima, nessun account coinvolto.</string>
-    <string name="settings_language_desc">Trackhop segue la lingua di sistema: inglese, italiano, francese, tedesco, spagnolo, cinese, giapponese.</string>
+    <string name="settings_language_desc">Trackhop segue la lingua di sistema: inglese, italiano, francese, tedesco, spagnolo, portoghese, polacco, russo, turco, cinese, giapponese, coreano.</string>
     <string name="settings_advanced_desc">Trackhop non include chiavi proprie: Spotify, YouTube Music, TIDAL, Deezer, Last.fm e Apple Music si collegano con una chiave gratuita creata a tuo nome, così limiti e quote sono solo tuoi. Qui puoi vederle e cambiarle.</string>
     <string name="settings_ads_note">Trackhop è gratuita e senza abbonamenti. Si sostiene con un solo piccolo banner pubblicitario; nessun dato viene venduto e nulla lascia il telefono a parte le richieste ai servizi musicali che colleghi.</string>
     <string name="note_file_target">Salvata dentro Trackhop: usa “Salva come file” qui, oppure Opzioni → File, per ottenere un CSV o M3U.</string>

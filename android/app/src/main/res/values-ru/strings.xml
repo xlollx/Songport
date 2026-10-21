@@ -117,7 +117,7 @@
     <string name="settings_isrc">Точная запись через Deezer</string>
     <string name="settings_isrc_desc">Если у трека нет ISRC (веб-пути, файлы), Songport один раз ищет его в открытом каталоге Deezer, чтобы Spotify, Apple Music и TIDAL вернули именно ту запись, а не похожую. Анонимный запрос, без аккаунта.</string>
     <string name="settings_language">Язык</string>
-    <string name="settings_language_desc">Songport следует языку системы: английский, итальянский, французский, немецкий, испанский, китайский, японский, русский.</string>
+    <string name="settings_language_desc">Songport использует язык системы: английский, итальянский, французский, немецкий, испанский, португальский, польский, русский, турецкий, китайский, японский, корейский.</string>
     <string name="settings_language_open">Изменить</string>
     <string name="settings_language_system">Язык системы</string>
     <string name="settings_advanced">Ключи сервисов</string>

@@ -1,0 +1,1 @@
+Amazon Music znów działa: konektor obsługuje teraz nowy interfejs odtwarzacza internetowego Amazon (playlisty, wyszukiwanie, tworzenie, dodawanie, usuwanie utworów, usuwanie playlist). Zmiana nazwy i widoczności playlist Amazon na razie nie jest dostępna.

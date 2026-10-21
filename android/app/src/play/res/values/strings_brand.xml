@@ -5,7 +5,7 @@
     <string name="app_name">Trackhop</string>
     <string name="not_configured_hint">Trackhop ships without service keys. Create your own free key on the service\'s developer page: it takes about two minutes and the app guides you step by step.</string>
     <string name="settings_isrc_desc">When a track carries no ISRC (web routes, files), Trackhop looks it up once in Deezer\'s public catalogue, so Spotify, Apple Music and TIDAL answer with the exact recording instead of a look-alike. Anonymous request, no account involved.</string>
-    <string name="settings_language_desc">Trackhop follows the system language: English, Italian, French, German, Spanish, Chinese, Japanese.</string>
+    <string name="settings_language_desc">Trackhop follows the system language: English, Italian, French, German, Spanish, Portuguese, Polish, Russian, Turkish, Chinese, Japanese, Korean.</string>
     <string name="settings_advanced_desc">Trackhop ships without keys of its own: Spotify, YouTube Music, TIDAL, Deezer, Last.fm and Apple Music connect through a free key created in your name, so their limits and quotas are yours alone. Here you can see and change them.</string>
     <string name="settings_ads_note">Trackhop is free with no subscriptions. It is supported by a single small banner ad; no data is sold and nothing leaves your phone except the requests to the music services you connect.</string>
     <string name="note_file_target">Saved inside Trackhop: use “Save as file” here, or Options → Files, to get a CSV or M3U.</string>

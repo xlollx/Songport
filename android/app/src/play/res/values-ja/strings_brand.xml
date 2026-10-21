@@ -4,7 +4,7 @@
 <resources>
     <string name="app_name">Trackhop</string>
     <string name="not_configured_hint">Trackhop にはサービスのキーが含まれていません。サービスの開発者ページで無料のキーを自分で作成してください。所要時間は約2分で、アプリが手順を1つずつ案内します。</string>
-    <string name="settings_language_desc">Trackhop はシステムの言語に従います：英語、イタリア語、フランス語、ドイツ語、スペイン語、中国語、日本語。</string>
+    <string name="settings_language_desc">Trackhop はシステムの言語に従います：英語、イタリア語、フランス語、ドイツ語、スペイン語、ポルトガル語、ポーランド語、ロシア語、トルコ語、中国語、日本語、韓国語。</string>
     <string name="settings_advanced_desc">Trackhop 自体はキーを持っていません。Spotify、YouTube Music、TIDAL、Deezer、Last.fm、Apple Music は、あなたの名前で作成した無料のキーで接続するため、制限や割り当てはあなた専用です。ここで確認・変更できます。</string>
     <string name="settings_ads_note">Trackhop は無料で、サブスクリプションもありません。小さなバナー広告1つで運営されています。データを販売することはなく、接続した音楽サービスへのリクエスト以外、何も端末の外に送信されません。</string>
     <string name="note_file_target">Trackhop 内に保存されています。CSV や M3U が必要な場合は、ここで「ファイルとして保存」を使うか、「設定」→「ファイル」を開いてください。</string>
