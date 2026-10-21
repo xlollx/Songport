@@ -1,0 +1,1 @@
+Amazon Music: Amazon kendi web oynatıcısını kabul ederken Songport'un isteklerini "geçersiz müşteri" diye reddediyordu. Songport artık istekleri oynatıcının kendi API'sine gönderdiği gibi (yalnızca başlıklar, çerezsiz) de deniyor, Amazon'un kabul ettiği yolu tutuyor ve günlüğe yazıyor.

@@ -1,0 +1,1 @@
+Amazon Music: Amazon odrzucał żądania Songport jako „nieprawidłowy klient”, akceptując jednocześnie własny odtwarzacz webowy. Songport próbuje teraz wysyłać je tak jak odtwarzacz do swojego API (same nagłówki, bez ciasteczek), zachowuje sposób akceptowany przez Amazon i zapisuje go w dzienniku.

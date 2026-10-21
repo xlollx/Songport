@@ -62,6 +62,8 @@ class AmazonClient(private val ctx: Context) {
      */
     private fun browserCookies(chain: Interceptor.Chain): okhttp3.Response {
         val req = chain.request()
+        // A call sent the way the player sends it to its API host: headers only, no cookies.
+        if (req.header(NO_COOKIES) != null) return chain.proceed(req.newBuilder().removeHeader(NO_COOKIES).removeHeader("Cookie").build())
         val live = if (req.url.host.contains("amazon.")) {
             runCatching { CookieManager.getInstance().getCookie(req.url.toString()) }.getOrNull()
         } else null
@@ -244,8 +246,20 @@ class AmazonClient(private val ctx: Context) {
         val first = runCatching { gqlWith(domain, operation, variables, headersFromConfig(domain)) }
             .recoverCatching { e ->
                 if (!refused(e)) throw e
-                cachedConfig = null
-                gqlWith(domain, operation, variables, headersFromConfig(domain))
+                // AUTH_INVALID_CUSTOMER_ID with cookies, while the player is accepted: the player
+                // calls its API host without cookies, on its headers alone. Try the other way once,
+                // and keep whichever Amazon accepts.
+                val before = cookieless
+                cookieless = !before
+                runCatching { gqlWith(domain, operation, variables, headersFromConfig(domain)) }
+                    .onSuccess { BridgeNet.log("amazon", "$operation accepted ${if (cookieless) "without" else "with"} cookies: keeping that") }
+                    .getOrElse { e2 ->
+                        cookieless = before
+                        BridgeNet.log("amazon", "$operation refused ${if (before) "with" else "without"} cookies too (${e2.message?.take(160)})")
+                        if (!refused(e2)) throw e2
+                        cachedConfig = null
+                        gqlWith(domain, operation, variables, headersFromConfig(domain))
+                    }
             }
         val answer = first.getOrNull()
         if (answer != null && !answer.codes.any { it in AUTH_CODES }) return answer
@@ -269,13 +283,22 @@ class AmazonClient(private val ctx: Context) {
         // Accepted from the browser only? The player page sends the call.
         var pageSaid = run.exceptionOrNull()?.message?.let { "player: ${it.take(120)}" } ?: if (player?.signedIn == true) "player ran" else "the player sent no headers"
         if (player?.signedIn == true) {
-            val (code, text) = AmazonBridge.gqlInPage(ctx, domain, body(operation, variables))
-            val viaPage = runCatching { parse(code, text, operation) }
-            viaPage.getOrNull()?.takeIf { a -> !a.codes.any { it in AUTH_CODES } }?.let {
-                pageModeUntil = System.currentTimeMillis() + PAGE_MODE_MS
-                return it
+            // As the player's own client sends it (the browser's default: no cookies to the API
+            // host), then with the cookies.
+            val said = ArrayList<String>()
+            for (withCookies in listOf(false, true)) {
+                val (code, text) = AmazonBridge.gqlInPage(ctx, domain, body(operation, variables), withCookies)
+                val viaPage = runCatching { parse(code, text, operation) }
+                viaPage.getOrNull()?.takeIf { a -> !a.codes.any { it in AUTH_CODES } }?.let {
+                    BridgeNet.log("amazon", "$operation accepted from the page ${if (withCookies) "with" else "without"} cookies")
+                    pageWithCookies = withCookies
+                    pageModeUntil = System.currentTimeMillis() + PAGE_MODE_MS
+                    return it
+                }
+                said += (if (withCookies) "with cookies: " else "without: ") +
+                    (viaPage.exceptionOrNull()?.message ?: viaPage.getOrNull()?.codes?.joinToString()).orEmpty().take(110)
             }
-            pageSaid = "the player's own call: " + (viaPage.exceptionOrNull()?.message ?: viaPage.getOrNull()?.codes?.joinToString()).orEmpty().take(120)
+            pageSaid = "the page's call " + said.joinToString(" / ")
         }
         // Refused for the whole account, or only for this playlist? The library says which.
         val playlistId = variables["id"].str
@@ -312,7 +335,7 @@ class AmazonClient(private val ctx: Context) {
 
     /** One call through the open player page; null when the page refused it (the caller starts over). */
     private fun inPage(domain: String, operation: String, variables: JsonObject): Answer? {
-        val (code, text) = AmazonBridge.gqlInPage(ctx, domain, body(operation, variables))
+        val (code, text) = AmazonBridge.gqlInPage(ctx, domain, body(operation, variables), pageWithCookies)
         val a = runCatching { parse(code, text, operation) }
         a.exceptionOrNull()?.let { if (!refused(it) && code != -1) throw it }
         val answer = a.getOrNull()
@@ -341,6 +364,8 @@ class AmazonClient(private val ctx: Context) {
             .url("https://gql.$domain/")
             .post(body(operation, variables).toRequestBody(JSON))
             .header("Cookie", cookies())
+        if (cookieless) b.header(NO_COOKIES, "1")
+        b
             .header("Origin", "https://$domain")
             .header("Referer", "https://$domain/")
             .header("User-Agent", AmazonBridge.storedUserAgent(ctx) ?: BridgeUa.mobile(ctx))
@@ -506,6 +531,12 @@ class AmazonClient(private val ctx: Context) {
         @Volatile private var cachedConfig: Pair<Long, Config>? = null
         /** Until when calls go straight through the player page, after it was the only way in. */
         @Volatile private var pageModeUntil = 0L
+        /** The API host takes the calls without cookies (as the player sends them): learned on a refusal. */
+        @Volatile private var cookieless = false
+        /** Whether the page's calls went through with the cookies (learned with [pageModeUntil]). */
+        @Volatile private var pageWithCookies = false
+        /** Marks a request for [browserCookies] to send without any cookie; never leaves the phone. */
+        private const val NO_COOKIES = "X-Songport-No-Cookies"
         private const val PAGE_MODE_MS = 30 * 60_000L
         fun forgetConfig() { cachedConfig = null }
 
