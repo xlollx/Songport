@@ -89,7 +89,7 @@ Listings to ask for once the F-Droid page is live (each is a pull request or a f
 - [ ] **AlternativeTo**: listed as an alternative to Soundiiz, TuneMyMusic and FreeYourMusic.
 - [ ] **IzzyOnDroid** repository (request on its GitLab issue tracker).
 - [ ] Posts: r/fossdroid, r/androidapps, r/navidrome, r/jellyfin, r/selfhosted (its weekly thread), Lemmy c/android and c/fdroid, Mastodon #FDroid; Show HN once.
-- [ ] A short demo GIF at the top of the README: record ten seconds on the phone, then `scripts/readme_demo.sh recording.mp4`.
+- [x] A short demo GIF at the top of the README (`docs/store/demo.gif`; `scripts/readme_demo.sh recording.mp4` makes a new one).
 - [ ] Repository topics and social preview image (Settings: About, and Social preview with `docs/store/feature_en.png`).
 
 ## Name
