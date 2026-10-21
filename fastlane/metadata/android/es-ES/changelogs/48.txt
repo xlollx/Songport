@@ -1,0 +1,1 @@
+Amazon Music: la pantalla de inicio de sesión y el reproductor en segundo plano vuelven a usar el reproductor de escritorio, que Amazon dejó de servir a los teléfonos; si no arranca, el error dice qué muestra la página y adónde van sus peticiones. Detener y pausar indican cuándo actúan: al final del paso en curso.

@@ -1,0 +1,1 @@
+Amazon Music: Anmeldebildschirm und Hintergrund-Player nutzen wieder den Desktop-Player, den Amazon Telefonen nicht mehr liefert; startet er nicht, nennt der Fehler, was die Seite zeigt und wohin ihre Anfragen gehen. Stopp und Pause sagen, wann sie wirken: am Ende des laufenden Schritts.

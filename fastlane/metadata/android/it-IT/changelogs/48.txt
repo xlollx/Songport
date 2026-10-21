@@ -1,0 +1,1 @@
+Amazon Music: la schermata di accesso e il player in background usano di nuovo il player desktop, che Amazon ha smesso di dare ai telefoni; se non parte, l'errore dice cosa mostra la pagina e dove vanno le sue richieste. Stop e pausa dicono quando agiscono: alla fine del passo in corso.

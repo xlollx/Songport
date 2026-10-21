@@ -1,0 +1,1 @@
+Amazon Music: the sign-in screen and the background player run the desktop player again, which Amazon stopped serving to phones; when it does not start, the error says what the page shows and where its requests go. Stop and pause say when they take effect: at the end of the current step.

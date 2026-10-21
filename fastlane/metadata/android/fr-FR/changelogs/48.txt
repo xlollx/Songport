@@ -1,0 +1,1 @@
+Amazon Music : l'écran de connexion et le lecteur en arrière-plan utilisent de nouveau le lecteur de bureau, qu'Amazon ne sert plus aux téléphones ; s'il ne démarre pas, l'erreur dit ce que la page affiche et où vont ses requêtes. Arrêt et pause indiquent quand ils agissent : à la fin de l'étape en cours.
