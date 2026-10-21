@@ -84,7 +84,7 @@ fun SettingsScreen(
     val scope = rememberCoroutineScope()
 
     Column(
-        Modifier.padding(horizontal = 16.dp, vertical = 8.dp).verticalScroll(rememberScrollState()),
+        Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp + LocalBottomBarInset.current).verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         SectionCard(stringResource(R.string.settings_section_general)) {

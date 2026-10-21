@@ -7,6 +7,7 @@ import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
@@ -84,6 +85,12 @@ private val AppShapes = Shapes(
     large = RoundedCornerShape(24.dp),
     extraLarge = RoundedCornerShape(32.dp),
 )
+
+/**
+ * Height of the glass navigation bar the main screens scroll under: their lists add it to their
+ * bottom padding, so the last card clears the bar while the content still shows through it.
+ */
+val LocalBottomBarInset = compositionLocalOf { 0.dp }
 
 /** Colori "esito positivo" (Material 3 non ne ha uno): sempre accompagnati da icona e testo. */
 object Tones {

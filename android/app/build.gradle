@@ -183,6 +183,9 @@ dependencies {
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.material3:material3'
     implementation 'androidx.compose.material:material-icons-extended'
+    // Backdrop blur for the glass navigation bar (Apache-2.0). 1.6.x is the line built for Compose 1.8 / Kotlin 2.1.
+    implementation 'dev.chrisbanes.haze:haze:1.6.10'
+    implementation 'dev.chrisbanes.haze:haze-materials:1.6.10'
 
     // Lavori in background (sync programmata)
     implementation 'androidx.work:work-runtime-ktx:2.10.2'

@@ -34,4 +34,19 @@ object SupportPrompt {
 
     /** Qualunque risposta chiude la richiesta per sempre. */
     fun close(store: Store) = store.updateSettings { it.copy(supportPromptDone = true, supportPromptReport = null) }
+
+    /** One open in ten shows a small coffee card at the top of the syncs; the next open hides it again. */
+    const val NUDGE_EVERY = 10
+
+    /** Counted once per process start, from MainActivity. */
+    fun opened(store: Store) = store.updateSettings { it.copy(appOpens = it.appOpens + 1) }
+
+    /** True on the tenth, twentieth... open, until the card is answered or the app is opened again. */
+    fun nudge(store: Store): Boolean {
+        if (!available()) return false
+        val s = store.data.settings
+        return s.appOpens >= NUDGE_EVERY && s.appOpens % NUDGE_EVERY == 0 && s.supportNudgeSeen != s.appOpens && s.supportPromptReport == null
+    }
+
+    fun closeNudge(store: Store) = store.updateSettings { it.copy(supportNudgeSeen = it.appOpens) }
 }

@@ -127,7 +127,7 @@ fun SyncsScreen(
     }
     val lastRun = data.jobs.maxOfOrNull { it.lastRunEpoch } ?: 0L
     LazyColumn(
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 100.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 100.dp + LocalBottomBarInset.current),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item(key = "hero") {
@@ -149,6 +149,8 @@ fun SyncsScreen(
         // Una volta sola, dopo la prima sync grande: il momento in cui si vede quanto tempo ha fatto risparmiare.
         val support = SupportPrompt.pending(Store.get(ctx))
         if (support != null) item(key = "support") { SupportCard(support) }
+        // One open in ten: a small card that goes away by itself at the next open.
+        else if (data.settings.appOpens > 0 && SupportPrompt.nudge(Store.get(ctx))) item(key = "nudge") { CoffeeCard() }
         items(data.jobs, key = { it.id }) { job ->
             JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview)
         }
@@ -774,6 +776,30 @@ private fun LinkImportField(initial: String = "", keep: Boolean = false, onResol
         }
         if (busy) Text(stringResource(R.string.link_resolving), style = MaterialTheme.typography.bodySmall)
         error?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
+    }
+}
+
+/** The periodic coffee card: two lines, two buttons, gone at the next open whatever is tapped. */
+@Composable
+private fun CoffeeCard() {
+    val ctx = LocalContext.current
+    val store = remember { Store.get(ctx) }
+    Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
+        Row(Modifier.padding(start = 16.dp, top = 12.dp, end = 8.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Filled.Favorite, null, tint = MaterialTheme.colorScheme.tertiary)
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.support_title), style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.support_body), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                    TextButton(onClick = { SupportPrompt.closeNudge(store) }) { Text(stringResource(R.string.support_prompt_later)) }
+                    TextButton(onClick = {
+                        if (BuildConfig.KOFI_URL.isNotBlank()) openSupport(ctx) else openSponsors(ctx)
+                        SupportPrompt.closeNudge(store)
+                    }) { Text(stringResource(R.string.support_button)) }
+                }
+            }
+        }
     }
 }
 

@@ -21,7 +21,20 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import com.xlollx.songport.ui.LocalBottomBarInset
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -107,6 +120,7 @@ class MainActivity : ComponentActivity() {
         // Asked for on the first sync run or schedule, not here (see NotificationAsk).
         NotificationAsk.request = { askNotificationPermission() }
         handleIntent(intent)
+        if (savedInstanceState == null) com.xlollx.songport.sync.SupportPrompt.opened(Store.get(this))
         if (Store.get(this).data.settings.appLock && !unlockedThisProcess) {
             locked.value = true
             requestUnlock()
@@ -164,6 +178,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
 private fun MainScreen(
     messages: MutableStateFlow<String?>,
@@ -324,6 +339,9 @@ private fun MainScreen(
         return
     }
 
+    val haze = remember { HazeState() }
+    var barHeightPx by remember { mutableIntStateOf(0) }
+
     val tabs = listOf(
         Triple(R.string.tab_syncs, Icons.Filled.Sync, MainActivity.TAB_SYNCS),
         Triple(R.string.tab_accounts, Icons.Filled.AccountCircle, MainActivity.TAB_ACCOUNTS),
@@ -338,9 +356,16 @@ private fun MainScreen(
         },
         snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
-            Column {
+            // Glass: the bar is translucent and blurs the content scrolling under it (Android 12+;
+            // older phones get a plain translucent surface).
+            Column(
+                Modifier
+                    .onSizeChanged { barHeightPx = it.height }
+                    .hazeEffect(state = haze, style = HazeMaterials.thin(MaterialTheme.colorScheme.surface)),
+            ) {
+                HorizontalDivider(thickness = Dp.Hairline, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
                 AdBanner()
-                NavigationBar {
+                NavigationBar(containerColor = Color.Transparent, windowInsets = NavigationBarDefaults.windowInsets) {
                     tabs.forEach { (label, icon, index) ->
                         NavigationBarItem(
                             selected = tab == index,
@@ -367,7 +392,10 @@ private fun MainScreen(
             }
         },
     ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
+        val barInset = with(LocalDensity.current) { barHeightPx.toDp() }
+        // Only the top inset: the content runs under the glass bar, and each screen pads its own list by LocalBottomBarInset.
+        CompositionLocalProvider(LocalBottomBarInset provides barInset) {
+            Box(Modifier.fillMaxSize().hazeSource(state = haze).padding(top = padding.calculateTopPadding())) {
             when (tab) {
                 MainActivity.TAB_SYNCS -> SyncsScreen(
                     data = data,
@@ -385,6 +413,7 @@ private fun MainScreen(
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
                 MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it })
                 else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
+            }
             }
         }
     }

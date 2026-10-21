@@ -50,6 +50,10 @@ data class Settings(
     val supportPromptReport: String? = null,
     /** Richiesta di contributo gia' mostrata e chiusa: non torna piu'. */
     val supportPromptDone: Boolean = false,
+    /** Times the app was opened (one per process start): every tenth open shows the coffee card once. */
+    val appOpens: Int = 0,
+    /** The open count at which the coffee card was last answered, so it is not shown twice in the same open. */
+    val supportNudgeSeen: Int = 0,
 )
 
 /** Unita' di quota consumate in un giorno (chiave = data nel fuso del servizio). */
