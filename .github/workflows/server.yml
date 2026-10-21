@@ -8,6 +8,7 @@ on:
     paths:
       - 'server/**'
       - 'android/core/**'
+      - 'android/ytm/**'
       - 'android/app/src/main/res/**'
       - 'android/app/build.gradle'
       - '.dockerignore'
@@ -17,6 +18,7 @@ on:
     paths:
       - 'server/**'
       - 'android/core/**'
+      - 'android/ytm/**'
       - 'android/app/src/main/res/**'
       - 'android/app/build.gradle'
       - '.dockerignore'

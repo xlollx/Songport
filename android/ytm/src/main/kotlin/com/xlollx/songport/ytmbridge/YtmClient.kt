@@ -1,10 +1,8 @@
 package com.xlollx.songport.ytmbridge
 
-import android.content.Context
 import kotlinx.serialization.json.JsonElement
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import com.xlollx.songport.ytmbridge.BridgeNet.withHook
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URLEncoder
@@ -16,17 +14,20 @@ import java.util.concurrent.TimeUnit
  * This is not a public API: Google can change the response shapes at any time. Parsing therefore
  * never relies on exact paths; it looks for well-known renderer names anywhere in the tree and
  * degrades gracefully (a track without a video id is skipped, never guessed).
+ *
+ * Where the session, the browser engine and Google's block live is the [host]'s business: the app
+ * (:bridge) or the server.
  */
-class YtmClient(private val ctx: Context) {
+class YtmClient(private val host: YtmHost) {
 
     private val http = OkHttpClient.Builder()
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(40, TimeUnit.SECONDS)
-        .withHook().build()
+        .apply { host.interceptor?.let { addInterceptor(it) } }.build()
 
     // ------------------------------------------------------------------ transport
 
-    private fun cookies(): String = Session.cookies(ctx) ?: throw BridgeException("not connected")
+    private fun cookies(): String = host.cookies() ?: throw BridgeException("not connected")
 
     /** Thrown on 403/429: the service is refusing requests for now, not a broken session. */
     class Throttled(message: String) : Exception(message)
@@ -59,24 +60,24 @@ class YtmClient(private val ctx: Context) {
         // business on the WebView route; on plain HTTP they are added below.
         val apiHeaders = linkedMapOf(
             "Content-Type" to "application/json",
-            "X-Origin" to Session.ORIGIN,
+            "X-Origin" to YtmAuth.ORIGIN,
             "X-YouTube-Client-Name" to "67",
             "X-YouTube-Client-Version" to v.clientVersion,
             "Accept-Language" to "en-US,en;q=0.9",
         ).apply {
             v.visitorData?.let { put("X-Goog-Visitor-Id", it) }
-            if (ck != null) { put("Authorization", Session.authorization(ck)); put("X-Goog-AuthUser", "0") }
+            if (ck != null) { put("Authorization", YtmAuth.authorization(ck)); put("X-Goog-AuthUser", "0") }
         }
         val body = payload.toString()
         val req = Request.Builder()
-            .url(Session.ORIGIN + path)
+            .url(YtmAuth.ORIGIN + path)
             .post(body.toRequestBody(JSON_TYPE))
             .apply { apiHeaders.forEach { (k, v2) -> header(k, v2) } }
             // Consent cookie only, as a visitor who dismissed the cookie banner.
             .header("Cookie", ck ?: ANON_COOKIES)
-            .header("Origin", Session.ORIGIN)
-            .header("Referer", "${Session.ORIGIN}/")
-            .header("User-Agent", BridgeUa.desktop(ctx))
+            .header("Origin", YtmAuth.ORIGIN)
+            .header("Referer", "${YtmAuth.ORIGIN}/")
+            .header("User-Agent", host.userAgent)
             .build()
         // The web interface throttles bursts (403/429): pace the calls, slow down further after each
         // refusal, and retry once after a short pause. Longer waits are Songport's job, which shows
@@ -86,24 +87,26 @@ class YtmClient(private val ctx: Context) {
         while (true) {
             // Google's block lifts only when the requests stop: while it lasts nothing goes out, and
             // Songport is told exactly how long to wait.
-            val blocked = Verification.remainingSeconds(ctx)
+            val blocked = Verification.remainingSeconds(host.verification)
             if (blocked > 0) throw Throttled(
-                "YouTube Music is blocked by Google's abuse page for this network address; it lifts only if requests stop. Retry in $blocked s",
+                "YouTube Music is blocked by Google's abuse page for this network address; it lifts only if requests stop. Retry in $blocked s" +
+                    (host.blockedHint?.let { ". $it" } ?: ""),
             )
             lane.pace()
             val t0 = System.currentTimeMillis()
             // Chrome's fingerprint through the WebView keeps Google's abuse page away; plain HTTP is
             // the fallback when the engine cannot start in this process.
-            val viaWeb = YtmWeb.usable()
-            val r = if (viaWeb) runCatching { YtmWeb.post(ctx, path, body, apiHeaders, credentials = ck != null) }.getOrNull() else null
+            val web = host.web
+            val viaWeb = web?.usable() == true
+            val r = if (viaWeb) runCatching { web!!.post(path, body, apiHeaders, credentials = ck != null) }.getOrNull() else null
             val (code, text) = if (r != null) r.code to r.body else http.newCall(req).execute().use { resp -> resp.code to (resp.body?.string() ?: "") }
             run {
                 Stats.record(auth, code, System.currentTimeMillis() - t0, text, viaWeb && r != null)
                 // Google's abuse page: the browser was redirected to it. That address, opened by the user
                 // in a visible WebView, lets them pass the verification that lifts the block.
-                if ((code == 403 || code == 429) && text.contains("<title>Sorry", true)) Verification.noticed(ctx, text)
+                if ((code == 403 || code == 429) && text.contains("<title>Sorry", true)) Verification.noticed(host.verification, text)
                 when {
-                    code == 401 -> throw BridgeException("YouTube Music rejected the session (401): sign in again in Songport Bridge")
+                    code == 401 -> throw BridgeException("YouTube Music rejected the session (401): ${host.signInAgain}")
                     code == 403 || code == 429 -> {
                         lane.slowDown()
                         // A refusal can also mean a stale visitor id: refresh it before the retry.
@@ -115,8 +118,9 @@ class YtmClient(private val ctx: Context) {
                             val reason = Regex(""""message"\s*:\s*"([^"]{1,160})"""").find(text)?.groupValues?.get(1)
                                 ?: if (text.contains("<title>Sorry", true)) "Google's abuse detection page" else text.replace(Regex("\\s+"), " ").trim().take(120).ifBlank { null }
                             val who = if (auth) "signed-in" else "anonymous"
-                            val advice = if (Verification.pending(ctx)) "Google blocked this network address; it lifts only if requests stop. Retry in ${Verification.remainingSeconds(ctx)} s"
-                                else "Songport will wait and retry; if it persists, sign in again in Songport Bridge"
+                            val advice = if (Verification.pending(host.verification)) "Google blocked this network address; it lifts only if requests stop. Retry in ${Verification.remainingSeconds(host.verification)} s" +
+                                    (host.blockedHint?.let { ". $it" } ?: "")
+                                else "Songport will wait and retry; if it persists, ${host.signInAgain}"
                             throw Throttled(
                                 "YouTube Music refused the $who request ($code): too many requests" +
                                     (reason?.let { " [$it]" } ?: "") + ". " + advice,
@@ -141,7 +145,7 @@ class YtmClient(private val ctx: Context) {
         val cached = if (ck != null) cachedVisitor else cachedAnonVisitor
         cached?.takeIf { System.currentTimeMillis() - it.at < 3_600_000 }?.let { return it }
         val fresh = runCatching {
-            val req = Request.Builder().url("${Session.ORIGIN}/").header("Cookie", ck ?: ANON_COOKIES).header("User-Agent", BridgeUa.desktop(ctx))
+            val req = Request.Builder().url("${YtmAuth.ORIGIN}/").header("Cookie", ck ?: ANON_COOKIES).header("User-Agent", host.userAgent)
                 .header("Accept-Language", "en-US,en;q=0.9").build()
             http.newCall(req).execute().use { resp ->
                 val html = resp.body?.string() ?: ""
@@ -159,9 +163,9 @@ class YtmClient(private val ctx: Context) {
 
     private fun anonymousVisitorId(clientVersion: String): String? = runCatching {
         val body = jsonObj("context" to mapOf("client" to mapOf("clientName" to "WEB_REMIX", "clientVersion" to clientVersion, "hl" to "en", "gl" to "US")))
-        val req = Request.Builder().url("${Session.ORIGIN}/youtubei/v1/visitor_id?prettyPrint=false")
+        val req = Request.Builder().url("${YtmAuth.ORIGIN}/youtubei/v1/visitor_id?prettyPrint=false")
             .post(body.toString().toRequestBody(JSON_TYPE))
-            .header("Cookie", ANON_COOKIES).header("User-Agent", BridgeUa.desktop(ctx)).header("Origin", Session.ORIGIN)
+            .header("Cookie", ANON_COOKIES).header("User-Agent", host.userAgent).header("Origin", YtmAuth.ORIGIN)
             .header("X-YouTube-Client-Name", "67").header("X-YouTube-Client-Version", clientVersion).build()
         http.newCall(req).execute().use { resp -> parseJson(resp.body?.string() ?: "")["responseContext"]["visitorData"].str }
     }.getOrNull()
@@ -200,9 +204,8 @@ class YtmClient(private val ctx: Context) {
      * browser with the same cookie jar, Google sets an exemption cookie and the calls flow again.
      */
     object Verification {
-        // Kept in plain preferences too (a time and Google's page, nothing secret): the block outlives
-        // this process, so the button and the pause must still be there after the app is reopened.
-        private fun prefs(ctx: Context) = ctx.applicationContext.getSharedPreferences("ytm_verification", Context.MODE_PRIVATE)
+        // Kept by the host too (a time and Google's page, nothing secret): the block outlives this
+        // process, so the button and the pause must still be there after the app is reopened.
         @Volatile private var blockedUntil = 0L
         @Volatile private var lastSeen = 0L
         @Volatile private var level = 0
@@ -213,29 +216,28 @@ class YtmClient(private val ctx: Context) {
          * stop for a window that doubles each time (3, 6, 12, 24 minutes) and Songport is told how
          * long; a quiet half hour resets the ladder.
          */
-        fun noticed(ctx: Context, html: String) {
+        fun noticed(store: YtmVerificationStore, html: String) {
             val now = System.currentTimeMillis()
             if (now - lastSeen > 30 * 60_000) level = 0
             level = (level + 1).coerceAtMost(4)
             lastSeen = now
             blockedUntil = now + (3 shl (level - 1)) * 60_000L
-            prefs(ctx).edit().putLong("until", blockedUntil).putLong("seen", lastSeen).putInt("level", level).putString("html", html.take(60_000)).apply()
+            store.save(blockedUntil, lastSeen, level, html.take(60_000))
         }
 
-        private fun load(ctx: Context) {
+        private fun load(store: YtmVerificationStore) {
             if (lastSeen == 0L) {
-                val p = prefs(ctx)
-                blockedUntil = p.getLong("until", 0); lastSeen = p.getLong("seen", 0); level = p.getInt("level", 0)
+                blockedUntil = store.until(); lastSeen = store.seen(); level = store.level()
             }
         }
 
         /** Seconds still to wait before YouTube Music may be called again; 0 when free. */
-        fun remainingSeconds(ctx: Context): Long { load(ctx); return ((blockedUntil - System.currentTimeMillis()) / 1000).coerceAtLeast(0) }
+        fun remainingSeconds(store: YtmVerificationStore): Long { load(store); return ((blockedUntil - System.currentTimeMillis()) / 1000).coerceAtLeast(0) }
         /** True while blocks were seen in the last ten minutes. */
-        fun pending(ctx: Context? = null): Boolean { ctx?.let { load(it) }; return System.currentTimeMillis() - lastSeen < 10 * 60_000 }
+        fun pending(store: YtmVerificationStore? = null): Boolean { store?.let { load(it) }; return System.currentTimeMillis() - lastSeen < 10 * 60_000 }
         /** Google's own page, as it came back, to show the person what Google says. */
-        fun html(ctx: Context): String? = prefs(ctx).getString("html", null)
-        fun passed(ctx: Context) { blockedUntil = 0L; lastSeen = 0L; level = 0; prefs(ctx).edit().clear().apply() }
+        fun html(store: YtmVerificationStore): String? = store.html()
+        fun passed(store: YtmVerificationStore) { blockedUntil = 0L; lastSeen = 0L; level = 0; store.clear() }
     }
 
     /** Counters for the diagnostics report: what the two routes are doing, nothing about content. */

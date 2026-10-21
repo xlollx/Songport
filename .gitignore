@@ -4,6 +4,7 @@ android/build/
 android/app/build/
 android/core/build/
 android/bridge/build/
+android/ytm/build/
 android/captures/
 android/local.properties
 server/build/

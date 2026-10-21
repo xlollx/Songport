@@ -16,3 +16,6 @@ dependencyResolutionManagement {
 rootProject.name = "songport-server"
 include ':core'
 project(':core').projectDir = file('../android/core')
+// YouTube Music's web client, the same the app's built-in connector uses (without its WebView).
+include ':ytm'
+project(':ytm').projectDir = file('../android/ytm')

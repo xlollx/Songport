@@ -70,12 +70,52 @@ playlist files. Back that folder up and you have backed up Songport.
 | Navidrome / Subsonic, Jellyfin, Plex | yes | The server's address and your login |
 | Last.fm, ListenBrainz | yes, as sources | Your user name |
 | CSV files | yes | Put them in `csv/` inside the data volume |
-| YouTube Music, Amazon Music, Spotify (web), Apple Music | no | See below |
+| YouTube Music | yes (unofficial, alpha) | The cookies of a browser where you are signed in: [see below](#youtube-music-unofficial) |
+| Amazon Music, Spotify (web), Apple Music | no | See below |
 
-**Why not all of them.** The quick routes (YouTube Music, Amazon Music, Spotify without a key, Apple
-Music without a key) work by running the service's own web player inside the phone's browser
-engine: there is no such browser on a server. Apple Music's official route signs in with Apple's
-MusicKit JS, which needs one too. Keep those syncs in the app.
+**Why not all of them.** The other quick routes (Amazon Music, Spotify without a key, Apple Music
+without a key) work by running the service's own web player inside the phone's browser engine:
+there is no such browser on a server. Apple Music's official route signs in with Apple's MusicKit
+JS, which needs one too. Keep those syncs in the app.
+
+## YouTube Music (unofficial)
+
+The server talks to music.youtube.com the way the app's built-in YouTube Music connector does,
+through the web player's own endpoints, signed in with the cookies of a browser where you are
+signed in. It is **not an official API**: Google can change it or block it at any time, and it is
+an **alpha** on the server.
+
+**Copy the cookies** (a desktop browser, Chrome, Edge or Firefox):
+
+1. Open [music.youtube.com](https://music.youtube.com) and sign in with the account to sync.
+2. Open the developer tools (<kbd>F12</kbd>, or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>; on a
+   Mac <kbd>Cmd</kbd>+<kbd>Option</kbd>+<kbd>I</kbd>) and pick the **Network** tab.
+3. Reload the page, type `browse` in the filter box and click one of the requests that appear (any
+   request to `music.youtube.com` will do).
+4. Under **Headers**, then **Request Headers**, find `cookie:`, right-click its value and copy it
+   (in Firefox: *Raw* view, then select the value).
+5. In Songport, **Services**, **YouTube Music (unofficial, alpha)**, paste it in *Cookies* and press
+   **Connect**. The page checks them with one call before saving.
+
+A `cookies.txt` export or the JSON export of a cookie-editor extension works too: paste the file's
+content. Only YouTube's and Google's cookies are kept. Optionally paste your browser's user agent
+as well (type `navigator.userAgent` in the developer tools' *Console*): requests then look like that
+browser's.
+
+**What to know before using it:**
+
+- **They are as good as your password.** The cookies give full access to that Google account. They
+  are stored only in the data volume (`tokens.json`, readable by its owner only) and never written
+  to the log. Consider a separate Google account for syncing.
+- **They end.** Signing out of that browser session, changing the password or Google rotating them
+  ends the cookies: paste fresh ones. To keep them alive longer, copy them from a browser profile
+  you then leave alone (a private window ends its cookies when it closes).
+- **Google's block.** Without the app's hidden browser every call is plain HTTP, which Google's
+  abuse detection ("Sorry… unusual traffic") stops sooner. When that happens Songport pauses
+  YouTube Music for a few minutes, longer each time. Open music.youtube.com in a browser **on the same
+  network as the server**, pass Google's check, then paste fresh cookies: that also lifts the pause.
+- **Home beats datacenter.** Addresses of VPS and cloud providers are flagged far more often than a
+  home connection: a server at home (a NAS, a Raspberry Pi) works best.
 
 **Your own key.** The app's built-in keys only work with the app's own redirect (`songport://`),
 so on the server every service that needs a key needs yours. Each service page in Songport lists

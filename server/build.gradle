@@ -24,6 +24,7 @@ application {
 
 dependencies {
     implementation project(':core')
+    implementation project(':ytm')
     testImplementation 'junit:junit:4.13.2'
 }
 

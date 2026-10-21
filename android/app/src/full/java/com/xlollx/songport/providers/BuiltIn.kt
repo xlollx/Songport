@@ -10,6 +10,7 @@ import com.xlollx.songport.ytmbridge.LoginActivity
 import com.xlollx.songport.ytmbridge.VerifyActivity
 import com.xlollx.songport.ytmbridge.WebLoginActivity
 import com.xlollx.songport.ytmbridge.YtmClient
+import com.xlollx.songport.ytmbridge.pending
 
 /**
  * GitHub and F-Droid build: the web connectors (YouTube Music, Amazon Music, Spotify and Apple Music

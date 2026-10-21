@@ -201,6 +201,12 @@ class Web(
                 redirect(r.ex, "$back?ok=${q("Saved.")}")
             }
             "connect" -> {
+                if (provider is YtmServerProvider) {
+                    val result = runCatching { runBlocking { provider.connect(env, r.form["cookies"].orEmpty(), r.form["userAgent"]) } }
+                    result.exceptionOrNull()?.let { return redirect(r.ex, "$back?err=${q(it.message ?: it.javaClass.simpleName)}") }
+                    env.log("auth", "${provider.id} connected (pasted cookies)")
+                    return redirect(r.ex, "$back?ok=${q("Connected.")}")
+                }
                 if (provider is CredentialsProvider) {
                     val result = runCatching { runBlocking { provider.login(env, r.form["url"].orEmpty(), r.form["user"].orEmpty(), r.form["secret"].orEmpty()) } }
                     result.exceptionOrNull()?.let { return redirect(r.ex, "$back?err=${q(it.message ?: it.javaClass.simpleName)}") }
@@ -230,22 +236,29 @@ class Web(
                 !p.isConfigured(env) -> """<span class="muted">needs your key</span>"""
                 else -> """<span class="muted">not connected</span>"""
             }
-            body.append("""<div class="card row"><div><a href="/connectors/${q(p.id)}"><b>${h(p.label(env))}</b></a> $state</div></div>""")
+            body.append("""<div class="card row"><div><a href="/connectors/${q(p.id)}"><b>${h(p.label(env))}</b></a>${unofficialBadges(p)} $state</div></div>""")
         }
         val available = Providers.services().filter { s -> added.none { it.id == s.id } }
         if (available.isNotEmpty()) {
             body.append("""<h2>Add a service</h2><form method="post" action="/connectors/add" class="card"><select name="service">""")
-            available.forEach { body.append("""<option value="${h(it.id)}">${h(it.displayName)}</option>""") }
+            available.forEach { body.append("""<option value="${h(it.id)}">${h(it.displayName)}${if (it is YtmServerProvider) " (unofficial, alpha)" else ""}</option>""") }
             body.append("""</select><p><button>Add</button></p></form>""")
         }
         send(r.ex, 200, page("Services", body.toString()))
     }
 
+    /** The web connector is not an official API: said next to its name wherever it is listed. */
+    private fun unofficialBadges(p: MusicProvider): String =
+        if (p is YtmServerProvider) """ <span class="badge">unofficial</span> <span class="alpha">alpha</span>""" else ""
+
     private fun connectorPage(r: Req, p: MusicProvider) {
         val body = StringBuilder(notice(r))
-        body.append("""<div class="card"><p>${h(env.text(p.noteName))}</p>""")
-        if (p.beta) body.append("""<p><span class="badge">beta</span></p>""")
-        body.append("</div>")
+        if (p is YtmServerProvider) body.append(ytmNote())
+        else {
+            body.append("""<div class="card"><p>${h(env.text(p.noteName))}</p>""")
+            if (p.beta) body.append("""<p><span class="badge">beta</span></p>""")
+            body.append("</div>")
+        }
         when {
             !p.requiresAuth -> body.append(
                 """<div class="card">Put CSV playlist files in <code>${h(java.io.File(env.dataDir, "csv").path)}</code> inside the data volume: they show up as playlists here.</div>""",
@@ -254,6 +267,7 @@ class Web(
                 """<div class="card row"><div><span class="ok">Connected</span>${p.accountName(env)?.let { " as <b>" + h(it) + "</b>" } ?: ""}</div>""" +
                     Html.postButton("/connectors/${q(p.id)}/disconnect", "Disconnect", "secondary") + "</div>",
             )
+            p is YtmServerProvider -> body.append(ytmForm(p))
             p is CredentialsProvider -> {
                 val f = p.loginForm
                 body.append("""<form method="post" action="/connectors/${q(p.id)}/connect" class="card">""")
@@ -271,6 +285,20 @@ class Web(
         body.append("""<p>${Html.postButton("/connectors/${q(p.id)}/remove", "Remove from the list", "danger", confirm = "Remove this service from the list?")}</p>""")
         send(r.ex, 200, page(p.label(env), body.toString()))
     }
+
+    private fun ytmNote(): String = """<div class="card"><p><span class="badge">unofficial</span> <span class="alpha">alpha</span></p>
+<p>YouTube Music through the music.youtube.com web player, signed in with the cookies of a browser where you are signed in. Not an official API: Google can change it, or block it, at any time.</p>
+<p class="muted">Without the app's hidden browser every call is plain HTTP, which Google's abuse detection stops sooner, above all from a datacenter address: a server at home works best. When Google blocks this network, open music.youtube.com in a browser on the same network as this server, pass Google's check, then paste fresh cookies here. Signing out in that browser ends these cookies too. <a href="https://xlollx.github.io/Songport/guide/docker#youtube-music-unofficial">How to copy them</a></p></div>"""
+
+    /** The pasted cookies: a Cookie header, cookies.txt or a JSON export, and optionally the browser's user agent. */
+    private fun ytmForm(p: YtmServerProvider): String =
+        """<form method="post" action="/connectors/${q(p.id)}/connect" class="card">
+<label>Cookies of music.youtube.com</label>
+<textarea name="cookies" rows="6" required autocomplete="off" spellcheck="false" placeholder="SAPISID=…; __Secure-3PAPISID=…; SID=…  (the Cookie header, cookies.txt or a JSON export)"></textarea>
+<label>Your browser's user agent (optional)</label>
+<input type="text" name="userAgent" autocomplete="off" placeholder="Mozilla/5.0 … Chrome/… Safari/537.36">
+<p class="muted">Stored only in this server's data folder, readable by its owner only, and never written to the log.</p>
+<p><button>Connect</button></p></form>"""
 
     /** Your own key for an OAuth service: the setup steps of the app, with this server's redirect address. */
     private fun oauthSetup(p: OAuthProvider): String {

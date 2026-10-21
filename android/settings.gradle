@@ -19,3 +19,5 @@ include ':app'
 include ':core'
 // The web connectors, built into the GitHub/F-Droid build (see bridge/build.gradle).
 include ':bridge'
+// The YouTube Music web client without Android: shared by :bridge and the server build.
+include ':ytm'

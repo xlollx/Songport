@@ -48,7 +48,8 @@ move. Songport is for keeping playlists in step over time, without handing your 
 - **[Releases](https://github.com/xlollx/Songport/releases/latest)**: the signed APK of every version.
 - **Server (Docker, ⚠️ alpha)**: an early test version, expect rough edges. The same engine on a home server or a NAS, with a web page and
   scheduled syncs: `docker run -p 8080:8080 -v songport-data:/data ghcr.io/xlollx/songport`. Official
-  APIs and personal servers only; see the [Docker guide](https://xlollx.github.io/Songport/guide/docker).
+  APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
+  [Docker guide](https://xlollx.github.io/Songport/guide/docker).
 
 Android 8.0 or newer. Languages: English, Italian, French, German, Spanish, Portuguese (Brazil), Polish,
 Russian, Turkish, Chinese, Japanese, Korean.
@@ -292,9 +293,12 @@ Songport/
 │   ├── google-shared-client.md    # shipping a shared Google client: verification and quota
 │   ├── guide/                     # the guide on the site (getting started, troubleshooting, Docker…)
 │   └── store/                     # 512×512 icon and 1024×500 feature graphic (en/it)
-├── server/                        # Songport on a server: JVM build on android/core, web page, Dockerfile
+├── server/                        # Songport on a server: JVM build on android/core and android/ytm, web page, Dockerfile
 └── android/
     ├── build.gradle, settings.gradle, gradle.properties
+    ├── core/                      # the engine without Android (model, matching, connectors, sync), shared with server/
+    ├── ytm/                       # the YouTube Music web client without Android, shared by bridge/ and server/
+    ├── bridge/                    # the built-in web connectors (GitHub/F-Droid build): WebView sign-ins and players
     └── app/
         ├── build.gradle           # build parameters: client IDs, AdMob, release signing from env/secrets
         ├── proguard-rules.pro
