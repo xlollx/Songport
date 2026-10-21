@@ -1,0 +1,1 @@
+Amazon Music: Lehnt Amazon die Sitzung ab (401), erneuert die App sie jetzt wie ein Browser – sie folgt den unterwegs gesetzten Cookies und startet einmal den Player –, bevor sie dich bittet, dich erneut zu verbinden.

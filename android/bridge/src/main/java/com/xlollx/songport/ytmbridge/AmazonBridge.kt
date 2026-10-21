@@ -89,11 +89,16 @@ object AmazonBridge {
         return early
     }
 
-    /** The player's credentials, from cache or freshly captured. Blocking; never on the main thread. */
+    /**
+     * The player's credentials, from cache or freshly captured; [refresh] always runs the player,
+     * which also renews the session cookies in the WebView's jar. Blocking; never on the main thread.
+     */
     @Synchronized
-    fun player(ctx: Context, domain: String): Player {
-        cached?.takeIf { fresh(it.at) && it.signedIn }?.let { return it }
-        stored(ctx)?.let { cached = it; return it }
+    fun player(ctx: Context, domain: String, refresh: Boolean = false): Player {
+        if (!refresh) {
+            cached?.takeIf { fresh(it.at) && it.signedIn }?.let { return it }
+            stored(ctx)?.let { cached = it; return it }
+        }
         val p = capture(ctx.applicationContext, domain)
         cached = p
         return p

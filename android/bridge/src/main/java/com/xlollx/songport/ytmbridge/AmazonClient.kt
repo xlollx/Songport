@@ -6,6 +6,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import com.xlollx.songport.ytmbridge.BridgeNet.withHook
 import okhttp3.Request
@@ -50,7 +51,24 @@ class AmazonClient(private val ctx: Context) {
     private val http = OkHttpClient.Builder()
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(40, TimeUnit.SECONDS)
+        .addNetworkInterceptor { browserCookies(it) }
         .withHook().build()
+
+    /**
+     * Cookies hop by hop, as a browser handles them. Amazon renews an expired session through
+     * redirects that set new cookies on the way: each hop is sent with the cookie jar as it is at
+     * that moment, and what each hop sets goes back into it, redirects included.
+     */
+    private fun browserCookies(chain: Interceptor.Chain): okhttp3.Response {
+        val req = chain.request()
+        val live = if (req.url.host.contains("amazon.")) {
+            runCatching { CookieManager.getInstance().getCookie(req.url.toString()) }.getOrNull()
+        } else null
+        val sent = if (AmazonSession.looksSignedIn(live)) req.newBuilder().header("Cookie", live!!).build() else req
+        val resp = chain.proceed(sent)
+        keepCookies(resp)
+        return resp
+    }
 
     private fun domain(): String = AmazonSession.domain(ctx) ?: throw BridgeException("not connected")
     /**
@@ -151,10 +169,7 @@ class AmazonClient(private val ctx: Context) {
         var attempt = 0
         while (true) {
             try {
-                http.newCall(req).execute().use { resp ->
-                    keepCookies(resp)
-                    return resp.code to (resp.body?.string() ?: "")
-                }
+                http.newCall(req).execute().use { resp -> return resp.code to (resp.body?.string() ?: "") }
             } catch (e: java.io.IOException) {
                 if (attempt >= 2) throw BridgeException("Amazon Music unreachable: ${e.message ?: e.javaClass.simpleName}")
                 Thread.sleep(if (attempt == 0) 2_000 else 5_000)
@@ -163,7 +178,7 @@ class AmazonClient(private val ctx: Context) {
         }
     }
 
-    /** What Amazon sets in a response goes into the shared cookie jar, as a browser would keep it. */
+    /** What Amazon sets in a response (or a redirect on the way) goes into the shared cookie jar, as a browser would keep it. */
     private fun keepCookies(resp: okhttp3.Response) {
         val set = resp.headers("Set-Cookie")
         if (set.isEmpty() || !resp.request.url.host.contains("amazon.")) return
@@ -203,34 +218,44 @@ class AmazonClient(private val ctx: Context) {
     }
 
     /**
-     * Runs a persisted query. Headers come from the page configuration; if Amazon refuses them
-     * (401/403, or an authentication error), the ones the real player sent are captured from a
-     * WebView and the call is made once more with those.
+     * Runs a persisted query. Headers come from the page configuration. When Amazon refuses the
+     * session (401/403, or an authentication error) it is renewed the way a browser renews it, one
+     * step further each time: the player page is fetched again (new CSRF values, renewed cookies),
+     * then the real player is run in a WebView, whose cookie jar is the one these requests use and
+     * whose own headers are mirrored. Only when that is refused too is the session really over.
      */
     private fun gql(operation: String, variables: JsonObject): Answer {
         val domain = domain()
-        // A refused session is first refreshed the way a browser does it: the player page is loaded
-        // again (its answer renews the session cookies and the CSRF values), then the call is repeated.
         val first = runCatching { gqlWith(domain, operation, variables, headersFromConfig(domain)) }
             .recoverCatching { e ->
-                if (e.message?.contains(" 401 ") != true && e.message?.contains(" 403 ") != true) throw e
+                if (!refused(e)) throw e
                 cachedConfig = null
                 gqlWith(domain, operation, variables, headersFromConfig(domain))
             }
         val answer = first.getOrNull()
         if (answer != null && !answer.codes.any { it in AUTH_CODES }) return answer
         val reason = first.exceptionOrNull()?.message ?: answer?.codes?.joinToString()
-        val player = AmazonBridge.player(ctx, domain)
-        if (!player.signedIn) throw BridgeException(
-            "Amazon Music refused the session ($reason) and the player did not hand over its own headers. Accounts, Amazon Music: disconnect and connect again.",
+
+        // Cached or stored player headers carry the same stale session: the player runs again.
+        AmazonBridge.forget()
+        val run = runCatching { AmazonBridge.player(ctx, domain, refresh = true) }
+        val player = run.getOrNull()
+        cachedConfig = null
+        val headers = player?.takeIf { it.signedIn }?.headers?.filterKeys { it.lowercase() !in SKIPPED_HEADERS }
+        val again = runCatching { gqlWith(domain, operation, variables, headers ?: headersFromConfig(domain)) }
+        val last = again.getOrNull()
+        if (last != null && !last.codes.any { it in AUTH_CODES }) return last
+        val e = again.exceptionOrNull()
+        if (e != null && !refused(e) && e.message?.contains("signed-out") != true) throw e
+        AmazonBridge.forget()
+        throw BridgeException(
+            "Amazon Music no longer accepts the session ($reason; again after renewing it" +
+                (run.exceptionOrNull()?.message?.let { ", player: ${it.take(120)}" } ?: " in the player") + "). " +
+                "Accounts, Amazon Music: disconnect and connect again.",
         )
-        val again = gqlWith(domain, operation, variables, player.headers.filterKeys { it.lowercase() !in SKIPPED_HEADERS })
-        if (again.codes.any { it in AUTH_CODES }) {
-            AmazonBridge.forget()
-            throw BridgeException("Amazon Music refused the session (${again.codes.joinToString()}): Accounts, Amazon Music: disconnect and connect again.")
-        }
-        return again
     }
+
+    private fun refused(e: Throwable) = e.message?.let { it.contains(" 401 ") || it.contains(" 403 ") } == true
 
     private fun gqlWith(domain: String, operation: String, variables: JsonObject, headers: Map<String, String>): Answer {
         val hash = HASHES[operation] ?: throw BridgeException("Amazon Music: unknown operation $operation")
