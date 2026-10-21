@@ -10,4 +10,5 @@
 </ul>
 <p>支持 Spotify、Apple Music、YouTube Music、TIDAL、Deezer，Subsonic/Navidrome、Jellyfin 和 Plex 服务器，可将 Last.fm 和 ListenBrainz 用作来源，也支持文件。需要开发者密钥的服务可按应用内指南完成设置；密钥和所有访问令牌都加密保存在设备上。 Deezer 登录会经由 xlollx.github.io 上的一个静态页面返回应用，这是 Deezer 要求的 https 重定向：它只负责跳回应用，不记录任何内容。</p>
 <p>YouTube Music、Amazon Music，以及无需开发者密钥的 Spotify 和 Apple Music 登录，均通过内置的各服务自己的网页播放器实现。这些并非官方 API：首次登录前，应用会显示相关说明。</p>
+<p>其他连接均为可选且无需账户：Deezer 公开目录（在曲目没有 ISRC 时查询录音的 ISRC，可在设置中关闭）、GitHub 上的一个静态注册表（提供 Spotify 网页播放器的查询哈希）、song.link（用于复核时的额外结果），以及你自己配置的用于播放列表生成器的 AI 服务商（OpenAI、Anthropic、Google Gemini 或兼容服务器；只发送你输入的文字）。</p>
 <p>Songport 与上述任何服务均无关联；使用其名称仅为说明兼容性。</p>
