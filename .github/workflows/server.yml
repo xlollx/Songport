@@ -1,11 +1,10 @@
 name: Server
 
 # Songport server (server/, docs/guide/docker.md): tests, then the Docker image. On main the image
-# is published to ghcr.io/xlollx/songport as "latest" and as the app's version; elsewhere it is
-# only built, to prove the Dockerfile still works.
+# is published to ghcr.io/xlollx/songport as "latest" and as the app's version; on any other branch
+# it is only built, to prove the Dockerfile still works.
 on:
   push:
-    branches: [ main ]
     paths:
       - 'server/**'
       - 'android/core/**'
