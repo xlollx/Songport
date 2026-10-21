@@ -1,0 +1,1 @@
+O Amazon Music voltou a funcionar: o conector agora fala a nova interface do player web da Amazon (playlists, pesquisa, criar, adicionar, remover, excluir). Renomear e alterar a visibilidade de playlists da Amazon ainda não estão disponíveis.
