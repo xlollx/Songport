@@ -221,11 +221,15 @@ class AmazonClient(private val ctx: Context) {
      * Runs a persisted query. Headers come from the page configuration. When Amazon refuses the
      * session (401/403, or an authentication error) it is renewed the way a browser renews it, one
      * step further each time: the player page is fetched again (new CSRF values, renewed cookies),
-     * then the real player is run in a WebView, whose cookie jar is the one these requests use and
-     * whose own headers are mirrored. Only when that is refused too is the session really over.
+     * then the real player is run in a WebView and the call is made with its headers. If Amazon
+     * still refuses our HTTP client, the call is sent by the player page itself, and so are the
+     * following ones for a while: only when the player is refused too is the session really over.
      */
     private fun gql(operation: String, variables: JsonObject): Answer {
         val domain = domain()
+        if (System.currentTimeMillis() < pageModeUntil && AmazonBridge.pageOpen) {
+            inPage(domain, operation, variables)?.let { return it }
+        }
         val first = runCatching { gqlWith(domain, operation, variables, headersFromConfig(domain)) }
             .recoverCatching { e ->
                 if (!refused(e)) throw e
@@ -247,26 +251,51 @@ class AmazonClient(private val ctx: Context) {
         if (last != null && !last.codes.any { it in AUTH_CODES }) return last
         val e = again.exceptionOrNull()
         if (e != null && !refused(e) && e.message?.contains("signed-out") != true) throw e
+
+        // Accepted from the browser only? The player page sends the call.
+        var pageSaid = run.exceptionOrNull()?.message?.let { "player: ${it.take(120)}" } ?: if (player?.signedIn == true) "player ran" else "the player sent no headers"
+        if (player?.signedIn == true) {
+            val (code, text) = AmazonBridge.gqlInPage(ctx, domain, body(operation, variables))
+            val viaPage = runCatching { parse(code, text, operation) }
+            viaPage.getOrNull()?.takeIf { a -> !a.codes.any { it in AUTH_CODES } }?.let {
+                pageModeUntil = System.currentTimeMillis() + PAGE_MODE_MS
+                return it
+            }
+            pageSaid = "the player's own call: " + (viaPage.exceptionOrNull()?.message ?: viaPage.getOrNull()?.codes?.joinToString()).orEmpty().take(120)
+        }
         AmazonBridge.forget()
         throw BridgeException(
-            "Amazon Music no longer accepts the session ($reason; again after renewing it" +
-                (run.exceptionOrNull()?.message?.let { ", player: ${it.take(120)}" } ?: " in the player") + "). " +
+            "Amazon Music no longer accepts the session ($reason; again after renewing it; $pageSaid). " +
                 "Accounts, Amazon Music: disconnect and connect again.",
         )
     }
 
+    /** One call through the open player page; null when the page refused it (the caller starts over). */
+    private fun inPage(domain: String, operation: String, variables: JsonObject): Answer? {
+        val (code, text) = AmazonBridge.gqlInPage(ctx, domain, body(operation, variables))
+        val a = runCatching { parse(code, text, operation) }
+        a.exceptionOrNull()?.let { if (!refused(it) && code != -1) throw it }
+        val answer = a.getOrNull()
+        if (answer == null || answer.codes.any { it in AUTH_CODES }) { pageModeUntil = 0; return null }
+        pageModeUntil = System.currentTimeMillis() + PAGE_MODE_MS
+        return answer
+    }
+
     private fun refused(e: Throwable) = e.message?.let { it.contains(" 401 ") || it.contains(" 403 ") } == true
 
-    private fun gqlWith(domain: String, operation: String, variables: JsonObject, headers: Map<String, String>): Answer {
+    private fun body(operation: String, variables: JsonObject): String {
         val hash = HASHES[operation] ?: throw BridgeException("Amazon Music: unknown operation $operation")
-        val body = jsonObj(
+        return jsonObj(
             "operationName" to operation,
             "variables" to variables,
             "extensions" to jsonObj("persistedQuery" to jsonObj("version" to 1, "sha256Hash" to hash)),
-        )
+        ).toString()
+    }
+
+    private fun gqlWith(domain: String, operation: String, variables: JsonObject, headers: Map<String, String>): Answer {
         val b = Request.Builder()
             .url("https://gql.$domain/")
-            .post(body.toString().toRequestBody(JSON))
+            .post(body(operation, variables).toRequestBody(JSON))
             .header("Cookie", cookies())
             .header("Origin", "https://$domain")
             .header("Referer", "https://$domain/")
@@ -274,10 +303,16 @@ class AmazonClient(private val ctx: Context) {
             .header("Accept", "application/graphql-response+json, application/json")
         headers.forEach { (k, v) -> b.header(k, v) }
         val (code, text) = send(b.build())
+        return parse(code, text, operation)
+    }
+
+    /** An answer of the GraphQL endpoint, from our client or from the player page (-1: no answer). */
+    private fun parse(code: Int, text: String, operation: String): Answer {
         if (code == 401 || code == 403) {
             cachedConfig = null
             throw BridgeException("Amazon Music $code on $operation")
         }
+        if (code == -1) throw BridgeException("Amazon Music: $operation not sent (${text.take(160)})")
         val j = runCatching { parseJson(text) }.getOrNull()
             ?: throw BridgeException("Amazon Music $code on $operation: ${text.take(200)}")
         val errors = j["errors"].arr
@@ -425,6 +460,9 @@ class AmazonClient(private val ctx: Context) {
         )
 
         @Volatile private var cachedConfig: Pair<Long, Config>? = null
+        /** Until when calls go straight through the player page, after it was the only way in. */
+        @Volatile private var pageModeUntil = 0L
+        private const val PAGE_MODE_MS = 30 * 60_000L
         fun forgetConfig() { cachedConfig = null }
 
         /** Regional web player domains, with the language the player sends. */

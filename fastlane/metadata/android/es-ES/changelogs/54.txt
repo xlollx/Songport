@@ -1,0 +1,1 @@
+Amazon Music: cuando Amazon solo acepta la sesión desde su propio reproductor web, Songport ahora envía sus peticiones desde dentro de ese reproductor (una página de navegador oculta), en lugar de detenerse con "401".
