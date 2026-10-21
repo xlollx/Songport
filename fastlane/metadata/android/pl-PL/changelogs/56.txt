@@ -1,0 +1,1 @@
+Amazon Music: rozłączenie i ponowne połączenie usuwa teraz wszystkie stare ciasteczka Amazon, których nieaktualna kopia powodowała błąd „401” nawet tuż po połączeniu. Łączenie i rozłączanie trafia do dziennika diagnostycznego. Po aktualizacji rozłącz i połącz Amazon Music jeden raz.

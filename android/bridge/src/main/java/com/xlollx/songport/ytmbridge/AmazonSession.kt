@@ -66,21 +66,42 @@ object AmazonSession {
     fun clear(ctx: Context) {
         prefs(ctx).edit().clear().apply()
         AmazonClient.forgetConfig()
-        runCatching {
-            val cm = CookieManager.getInstance()
-            // Only Amazon cookies: the YouTube Music session must survive.
-            AmazonClient.DOMAINS.keys.forEach { d ->
-                cm.getCookie("https://$d")?.split(';')?.forEach { c ->
-                    val name = c.substringBefore('=').trim()
-                    if (name.isNotEmpty()) {
-                        cm.setCookie("https://$d", "$name=; Max-Age=0; Domain=.${d.removePrefix("music.")}; Path=/")
-                        cm.setCookie("https://$d", "$name=; Max-Age=0; Path=/")
-                    }
-                }
-            }
-            cm.flush()
-        }
+        AmazonBridge.forget()
+        val n = wipeCookies()
+        BridgeNet.log("amazon", "disconnected: session forgotten, $n Amazon cookies removed")
     }
+
+    /**
+     * Removes every Amazon cookie from the WebView jar, and only those (the YouTube Music and
+     * Spotify sessions must survive). A cookie lives on a host or on a domain, so each name seen is
+     * expired in every form it can have: host-only on the player, its API host (gql.), the store and
+     * the bare domain, and set on the domain or the music subdomain. A copy left behind is sent next
+     * to the new one after signing in again, and Amazon then refuses both. Returns how many it saw.
+     */
+    fun wipeCookies(): Int = runCatching {
+        val cm = CookieManager.getInstance()
+        var seen = 0
+        val bases = (AmazonClient.DOMAINS.keys.map { it.removePrefix("music.") } + "amazon.com").distinct()
+        for (base in bases) {
+            val hosts = listOf("music.$base", "gql.music.$base", "www.$base", base)
+            val names = hosts.flatMap { h -> cm.getCookie("https://$h").orEmpty().split(';').map { it.substringBefore('=').trim() } }
+                .filter { it.isNotEmpty() }.distinct()
+            seen += names.size
+            for (h in hosts) for (name in names) {
+                cm.setCookie("https://$h", "$name=; Max-Age=0; Path=/")
+                cm.setCookie("https://$h", "$name=; Max-Age=0; Domain=.$base; Path=/")
+                cm.setCookie("https://$h", "$name=; Max-Age=0; Domain=.music.$base; Path=/")
+            }
+        }
+        cm.flush()
+        seen
+    }.getOrDefault(0)
+
+    /** Cookie names the jar would send twice to [url] (stale copies next to fresh ones), for diagnostics. */
+    fun duplicateCookies(url: String): List<String> = runCatching {
+        CookieManager.getInstance().getCookie(url).orEmpty().split(';').map { it.substringBefore('=').trim() }
+            .filter { it.isNotEmpty() }.groupingBy { it }.eachCount().filterValues { it > 1 }.keys.sorted()
+    }.getOrDefault(emptyList())
 
     /** True when the cookie jar holds an Amazon authentication token (at-main, at-acbit, sess-at-*, ...). */
     fun looksSignedIn(cookies: String?): Boolean = cookies != null && cookies.split(';').any {

@@ -55,9 +55,10 @@ class AmazonClient(private val ctx: Context) {
         .withHook().build()
 
     /**
-     * Cookies hop by hop, as a browser handles them. Amazon renews an expired session through
-     * redirects that set new cookies on the way: each hop is sent with the cookie jar as it is at
-     * that moment, and what each hop sets goes back into it, redirects included.
+     * Each hop is sent with the WebView's cookie jar as it is at that moment. The jar is only read
+     * here, never written: what Amazon set in answers to this client (a 401 among them) went into it
+     * in 1.0.51-1.0.54 and left stale copies that even a new sign-in did not remove. Only the
+     * WebView, the real browser, keeps the jar.
      */
     private fun browserCookies(chain: Interceptor.Chain): okhttp3.Response {
         val req = chain.request()
@@ -65,9 +66,7 @@ class AmazonClient(private val ctx: Context) {
             runCatching { CookieManager.getInstance().getCookie(req.url.toString()) }.getOrNull()
         } else null
         val sent = if (AmazonSession.looksSignedIn(live)) req.newBuilder().header("Cookie", live!!).build() else req
-        val resp = chain.proceed(sent)
-        keepCookies(resp)
-        return resp
+        return chain.proceed(sent)
     }
 
     private fun domain(): String = AmazonSession.domain(ctx) ?: throw BridgeException("not connected")
@@ -178,18 +177,6 @@ class AmazonClient(private val ctx: Context) {
         }
     }
 
-    /** What Amazon sets in a response (or a redirect on the way) goes into the shared cookie jar, as a browser would keep it. */
-    private fun keepCookies(resp: okhttp3.Response) {
-        val set = resp.headers("Set-Cookie")
-        if (set.isEmpty() || !resp.request.url.host.contains("amazon.")) return
-        runCatching {
-            val cm = CookieManager.getInstance()
-            val url = "https://" + resp.request.url.host
-            set.forEach { cm.setCookie(url, it) }
-            cm.flush()
-        }
-    }
-
     // ------------------------------------------------------------------ GraphQL
 
     /** One answer: its data, and the error codes GraphQL returned next to it (DUPLICATE_TRACK...). */
@@ -239,6 +226,7 @@ class AmazonClient(private val ctx: Context) {
         val answer = first.getOrNull()
         if (answer != null && !answer.codes.any { it in AUTH_CODES }) return answer
         val reason = first.exceptionOrNull()?.message ?: answer?.codes?.joinToString()
+        BridgeNet.log("amazon", "$operation refused ($reason) after reloading the page: running the player")
 
         // Cached or stored player headers carry the same stale session: the player runs again.
         AmazonBridge.forget()
@@ -252,6 +240,8 @@ class AmazonClient(private val ctx: Context) {
         val e = again.exceptionOrNull()
         if (e != null && !refused(e) && e.message?.contains("signed-out") != true) throw e
 
+        BridgeNet.log("amazon", "player ${if (player?.signedIn == true) "ran" else "sent no headers"}" +
+            (run.exceptionOrNull()?.message?.let { " (${it.take(120)})" } ?: "") + "; our call with its headers refused: asking the page")
         // Accepted from the browser only? The player page sends the call.
         var pageSaid = run.exceptionOrNull()?.message?.let { "player: ${it.take(120)}" } ?: if (player?.signedIn == true) "player ran" else "the player sent no headers"
         if (player?.signedIn == true) {
@@ -277,6 +267,8 @@ class AmazonClient(private val ctx: Context) {
                     "Open it once in the Amazon Music app; if it still fails, send a diagnostics report.",
             )
         }
+        val dup = AmazonSession.duplicateCookies("https://gql.$domain/")
+        BridgeNet.log("amazon", "$pageSaid; library refused too; cookies sent twice: ${dup.joinToString().ifBlank { "none" }}")
         AmazonBridge.forget()
         throw BridgeException(
             "Amazon Music no longer accepts the session ($reason; again after renewing it; $pageSaid" +

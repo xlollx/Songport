@@ -20,7 +20,11 @@ object BuiltIn {
     const val available = true
 
     /** The web connectors' own HTTP clients join the app's connections log. */
-    fun onAppStart(interceptor: okhttp3.Interceptor) { com.xlollx.songport.ytmbridge.BridgeNet.interceptor = interceptor }
+    fun onAppStart(ctx: Context, interceptor: okhttp3.Interceptor) {
+        val app = ctx.applicationContext
+        com.xlollx.songport.ytmbridge.BridgeNet.interceptor = interceptor
+        com.xlollx.songport.ytmbridge.BridgeNet.logSink = { tag, message -> com.xlollx.songport.data.Diagnostics.log(app, tag, message) }
+    }
 
     fun call(ctx: Context, method: String, arg: String?, extras: Bundle?): Bundle =
         BridgeCore.call(ctx.applicationContext, method, arg, extras)

@@ -1,0 +1,1 @@
+Amazon Music: signing out and signing in again now removes every old Amazon cookie, which a stale copy kept refusing with "401" even right after connecting. Connecting and disconnecting are written in the diagnostics log. After updating, disconnect Amazon Music and connect it again once.
