@@ -113,7 +113,7 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
         if (tracks.isEmpty()) return
         val missing = tracks.filter { it.itemId == null }.map { it.id }.toSet()
         val byCatalog = if (missing.isNotEmpty()) tracks(ctx, playlistId).filter { it.id in missing }.groupBy { it.id } else emptyMap()
-        val libIds = tracks.flatMap { t -> if (t.itemId != null) listOf(t.itemId) else byCatalog[t.id].orEmpty().mapNotNull { it.itemId } }.distinct()
+        val libIds = tracks.flatMap { t -> t.itemId?.let { listOf(it) } ?: byCatalog[t.id].orEmpty().mapNotNull { it.itemId } }.distinct()
         for (lib in libIds) amp(ctx, "DELETE", "/v1/me/library/playlists/$playlistId/tracks?ids[library-songs]=${Http.enc(lib)}&mode=all")
     }
 

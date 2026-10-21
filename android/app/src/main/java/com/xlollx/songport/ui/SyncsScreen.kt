@@ -459,7 +459,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                         Spacer(Modifier.width(10.dp))
                         Column {
                             Text(stringResource(R.string.editor_source_ai), style = MaterialTheme.typography.titleSmall)
-                            if (!job.aiPrompt.isNullOrBlank()) Text(job.aiPrompt, style = MaterialTheme.typography.bodyMedium)
+                            job.aiPrompt?.takeIf { it.isNotBlank() }?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
                             Text(stringResource(R.string.editor_source_ai_desc, job.source.playlistName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
