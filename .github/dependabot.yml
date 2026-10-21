@@ -1,11 +1,13 @@
-# Weekly dependency updates: Gradle libraries and the GitHub Actions used by the workflow.
+# Weekly updates of the GitHub Actions used by the workflow. App libraries (Gradle) are updated by
+# hand, in changes that also check the F-Droid build stays reproducible: no automatic PRs for them
+# (security alerts still arrive).
 version: 2
 updates:
   - package-ecosystem: gradle
     directory: /android
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
   - package-ecosystem: github-actions
     directory: /
     schedule:

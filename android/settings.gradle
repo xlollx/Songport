@@ -15,5 +15,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "Songport"
 include ':app'
+// The engine without Android (model, matching, file formats): shared with the server build.
+include ':core'
 // The web connectors, built into the GitHub/F-Droid build (see bridge/build.gradle).
 include ':bridge'
