@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/store/icon512.png" width="96" alt=""></p>
+
 <h1 align="center">Songport</h1>
 
 <p align="center"><b>Your playlists, in sync across music services.</b><br>
@@ -15,7 +17,7 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
   <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="64" alt="Get it on Obtainium"></a>
 </p>
 
-<p align="center"><img src="docs/store/demo.gif" width="240" alt="Creating a sync from Spotify to YouTube Music, then the sync running"></p>
+<p align="center"><img src="docs/store/demo.gif" width="200" alt="Creating a sync from Spotify to YouTube Music, then the sync running"></p>
 
 <p align="center"><img src="docs/store/screenshots.png" width="100%" alt="Syncs, new sync, choosing a service, review of tracks not found, tools, settings"></p>
 
