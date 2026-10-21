@@ -1,0 +1,1 @@
+Amazon Music: 로그인과 숨겨진 플레이어가 더 이상 앱 안에서 실행 중임을 Amazon에 알리지 않습니다(Android가 추가하는 X-Requested-With 헤더). Amazon은 이제 이를 "401"로 거부합니다. 업데이트 후 Amazon Music 연결을 한 번 끊고 다시 연결하세요. YouTube Music: 클라이언트가 서버와 공유하는 모듈로 옮겨졌으며 동작은 그대로입니다.

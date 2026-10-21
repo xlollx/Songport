@@ -1,0 +1,1 @@
+Amazon Music : la connexion et le lecteur caché n'indiquent plus à Amazon qu'ils tournent dans une app (l'en-tête X-Requested-With ajouté par Android), ce qu'Amazon refuse désormais en « 401 ». Après la mise à jour, déconnectez et reconnectez Amazon Music une fois. YouTube Music : son client est passé dans un module partagé avec le serveur, sans changement de comportement.

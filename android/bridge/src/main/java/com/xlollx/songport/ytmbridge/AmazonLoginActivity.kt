@@ -89,7 +89,7 @@ class AmazonLoginActivity : ComponentActivity() {
         }
         // A new sign-in starts from an empty jar: old Amazon cookies would ride along with the new ones.
         val wiped = AmazonSession.wipeCookies()
-        BridgeNet.log("amazon", "sign-in started ($wiped old Amazon cookies removed first)")
+        BridgeNet.log("amazon", "sign-in started ($wiped old Amazon cookies removed first; ${BridgeUa.describe()})")
         web.loadUrl(LOGIN_URL)
         // The player is a single page app: navigation does not always report a finished page.
         handler.postDelayed(object : Runnable {

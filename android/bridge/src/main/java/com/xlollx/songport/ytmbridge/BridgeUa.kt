@@ -51,10 +51,22 @@ object BridgeUa {
                 .build()
             WebSettingsCompat.setUserAgentMetadata(web.settings, md)
         }
+        // A WebView adds "X-Requested-With: <app package>" to its requests, which no browser sends:
+        // the one header saying "embedded in an app". An empty allow-list keeps it off everywhere.
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.REQUESTED_WITH_HEADER_ALLOW_LIST)) runCatching {
+            WebSettingsCompat.setRequestedWithHeaderOriginAllowList(web.settings, emptySet())
+        }
         // The page-side view of the same hints, for a WebView that cannot set them natively.
         if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) runCatching {
             WebViewCompat.addDocumentStartJavaScript(web, hintsScript(major, full), setOf("*"))
         }
+    }
+
+    /** What this phone's WebView lets the identity cover, for the diagnostics log. */
+    fun describe(): String {
+        val hints = WebViewFeature.isFeatureSupported(WebViewFeature.USER_AGENT_METADATA)
+        val xrw = WebViewFeature.isFeatureSupported(WebViewFeature.REQUESTED_WITH_HEADER_ALLOW_LIST)
+        return "client hints ${if (hints) "set" else "not settable"}, app header ${if (xrw) "removed" else "not removable"}"
     }
 
     fun hintsScript(major: String, full: String): String = """
