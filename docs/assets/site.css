@@ -64,7 +64,7 @@ a { color: var(--link); text-underline-offset: 2px; }
 .foot p { max-width: 640px; margin: 0 auto; }
 
 /* Markdown pages */
-.prose { max-width: 760px; margin: 0 auto; padding: 32px 16px; }
+.prose { max-width: 760px; margin: 0 auto; padding: 32px 16px; overflow-wrap: anywhere; }
 .prose h1 { font-size: clamp(28px, 5vw, 38px); line-height: 1.2; margin: 8px 0 20px; }
 .prose h2 { font-size: 22px; margin: 36px 0 10px; }
 .prose h3 { font-size: 18px; margin: 28px 0 8px; }
