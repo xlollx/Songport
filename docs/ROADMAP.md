@@ -81,7 +81,7 @@ quota meter; own API keys to escape shared quotas.
 
 Listings to ask for once the F-Droid page is live (each is a pull request or a form, done once):
 
-- [ ] **F-Droid** badge in the README, as soon as https://f-droid.org/packages/com.xlollx.songport/ answers.
+- [x] **F-Droid** badge in the README (added before the page went live: check that https://f-droid.org/packages/com.xlollx.songport/ answers).
 - [ ] **Obtainium's app list** (github.com/ImranR98/apps.obtainium.imranr.dev): a pull request adding the app's JSON entry.
 - [ ] **Navidrome**: the apps page of the documentation (navidrome/website repository), as a tool that syncs streaming playlists into Navidrome.
 - [ ] **Jellyfin**: the third-party clients list on jellyfin.org (jellyfin/jellyfin.org repository), and awesome-jellyfin.

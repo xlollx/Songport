@@ -37,12 +37,14 @@ The app ships without any service credentials of its own: each user creates a fr
 on the services that require one (Spotify, YouTube Music, TIDAL, Deezer, Last.fm) and the app walks
 them through it in about two minutes. Personal servers and files need nothing.
 
-Download: the signed APK of every version is on the
+Download: [F-Droid](https://f-droid.org/packages/com.xlollx.songport/) (same signature as the GitHub APK, so
+the two update each other), or the signed APK of every version on the
 [Releases](https://github.com/xlollx/Songport/releases/latest) page. UI languages: English, Italian,
 French, German, Spanish, Chinese and Japanese. License: GPL-3.0-only, see [LICENSE](LICENSE). Security reports: see
 [SECURITY.md](SECURITY.md).
 
-<a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="54" alt="Get it on Obtainium"></a>
+<a href="https://f-droid.org/packages/com.xlollx.songport/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="80" alt="Get it on F-Droid"></a>
+<a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="54" align="top" alt="Get it on Obtainium"></a>
 
 With [Obtainium](https://github.com/ImranR98/Obtainium) each new release reaches the phone by itself:
 tap the badge on the phone, or add `https://github.com/xlollx/Songport` in Obtainium.
