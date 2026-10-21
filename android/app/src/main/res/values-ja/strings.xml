@@ -545,6 +545,8 @@
     <string name="sync_stop">停止</string>
     <string name="sync_paused">一時停止中</string>
     <string name="sync_stopped">ユーザーが停止しました</string>
+    <string name="sync_stopping">現在の手順が終わり次第停止します…</string>
+    <string name="sync_pause_pending">現在の手順が終わり次第一時停止します</string>
     <string name="live_title">同期の状況</string>
     <string name="live_empty">処理済みの曲はまだありません。</string>
     <string name="live_found">見つかりました：%1$s</string>

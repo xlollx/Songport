@@ -550,6 +550,8 @@
     <string name="sync_stop">Stop</string>
     <string name="sync_paused">Paused</string>
     <string name="sync_stopped">Stopped by you</string>
+    <string name="sync_stopping">Stopping after the current step…</string>
+    <string name="sync_pause_pending">Paused after the current step</string>
     <string name="live_title">Sync activity</string>
     <string name="live_empty">No track processed yet.</string>
     <string name="live_found">Found: %1$s</string>

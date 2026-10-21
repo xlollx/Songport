@@ -67,6 +67,10 @@ class AmazonLoginActivity : ComponentActivity() {
             builtInZoomControls = true
             displayZoomControls = false
         }
+        // The desktop player: the phone-sized one stopped calling its API, so nothing could be seen.
+        web.settings.useWideViewPort = true
+        web.settings.loadWithOverviewMode = true
+        BridgeUa.apply(this, web)
         // The player runs here, in front of the user: the surest place to see the headers it builds
         // for its own API calls, which are the only thing carrying an access token.
         val early = AmazonBridge.install(this, web)

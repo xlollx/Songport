@@ -214,6 +214,11 @@ private fun JobCard(
             if (isRunning) {
                 val pausedSet by SyncState.paused.collectAsState()
                 val paused = job.id in pausedSet
+                val stoppingSet by SyncState.stopping.collectAsState()
+                val stopping = job.id in stoppingSet
+                // Pause and stop act between steps: while one long step runs (reading a playlist,
+                // starting a web player) the card says the request is taken, instead of seeming idle.
+                val betweenSteps = progress?.step in setOf(Progress.Step.MATCHING, Progress.Step.ADDING, Progress.Step.REMOVING, Progress.Step.WAITING)
                 Spacer(Modifier.height(12.dp))
                 val pct = progress?.percent
                 if (pct != null) LinearProgressIndicator(progress = { pct / 100f }, modifier = Modifier.fillMaxWidth())
@@ -221,13 +226,18 @@ private fun JobCard(
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        (if (paused) stringResource(R.string.sync_paused) + " · " else "") + progressText(progress) + (pct?.let { " · $it%" } ?: ""),
+                        when {
+                            stopping -> stringResource(R.string.sync_stopping) + " · "
+                            paused && !betweenSteps -> stringResource(R.string.sync_pause_pending) + " · "
+                            paused -> stringResource(R.string.sync_paused) + " · "
+                            else -> ""
+                        } + progressText(progress) + (pct?.let { " · $it%" } ?: ""),
                         style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f),
                     )
-                    IconButton(onClick = { if (paused) SyncState.resume(job.id) else SyncState.pause(job.id) }) {
+                    IconButton(enabled = !stopping, onClick = { if (paused) SyncState.resume(job.id) else SyncState.pause(job.id) }) {
                         Icon(if (paused) Icons.Filled.PlayArrow else Icons.Filled.Pause, stringResource(if (paused) R.string.sync_resume else R.string.sync_pause))
                     }
-                    IconButton(onClick = { SyncState.stop(job.id) }) { Icon(Icons.Filled.Stop, stringResource(R.string.sync_stop)) }
+                    IconButton(enabled = !stopping, onClick = { SyncState.stop(job.id) }) { Icon(Icons.Filled.Stop, stringResource(R.string.sync_stop)) }
                 }
             } else if (report != null) {
                 Spacer(Modifier.height(8.dp))

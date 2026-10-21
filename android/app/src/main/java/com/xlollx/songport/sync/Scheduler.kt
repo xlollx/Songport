@@ -35,7 +35,9 @@ object SyncState {
     val running: StateFlow<Map<String, Progress?>> get() = _running
     private val _paused = MutableStateFlow<Set<String>>(emptySet())
     val paused: StateFlow<Set<String>> get() = _paused
-    @Volatile private var stopRequested: Set<String> = emptySet()
+    private val _stopping = MutableStateFlow<Set<String>>(emptySet())
+    /** Stop asked for, not yet reached: the engine stops at its next step, the card says so meanwhile. */
+    val stopping: StateFlow<Set<String>> get() = _stopping
 
     /** What happened to one source track during the run, for the live view. */
     enum class Outcome { FOUND, CACHED, NOT_FOUND, ADDED, ADD_FAILED, REMOVED }
@@ -55,14 +57,15 @@ object SyncState {
         _running.value = _running.value - jobId
         _paused.value = _paused.value - jobId
         _items.value = _items.value - jobId
-        stopRequested = stopRequested - jobId
+        _stopping.value = _stopping.value - jobId
     }
 
     private const val MAX_ITEMS = 1000
 
     fun pause(jobId: String) { _paused.value = _paused.value + jobId }
     fun resume(jobId: String) { _paused.value = _paused.value - jobId }
-    fun stop(jobId: String) { stopRequested = stopRequested + jobId; resume(jobId) }
+    // A paused sync stays shown as paused until it actually stops: checkpoint() lets a stop through a pause.
+    fun stop(jobId: String) { _stopping.value = _stopping.value + jobId }
     fun isPaused(jobId: String) = jobId in _paused.value
 
     /**
@@ -70,13 +73,13 @@ object SyncState {
      * l'ha fermata. Bloccante di proposito: il motore lavora su un thread di WorkManager.
      */
     fun checkpoint(ctx: Context, jobId: String) {
-        while (jobId in _paused.value && jobId !in stopRequested) Thread.sleep(250)
+        while (jobId in _paused.value && jobId !in _stopping.value) Thread.sleep(250)
         stopCheck(ctx, jobId)
     }
 
     /** Solo l'interruzione, senza attendere la pausa: per i passi che devono scorrere comunque. */
     fun stopCheck(ctx: Context, jobId: String) {
-        if (jobId in stopRequested) throw SyncStoppedException(ctx.getString(R.string.sync_stopped))
+        if (jobId in _stopping.value) throw SyncStoppedException(ctx.getString(R.string.sync_stopped))
     }
 }
 

@@ -550,6 +550,8 @@
     <string name="sync_stop">Abbrechen</string>
     <string name="sync_paused">Pausiert</string>
     <string name="sync_stopped">Von dir abgebrochen</string>
+    <string name="sync_stopping">Wird nach dem laufenden Schritt beendet…</string>
+    <string name="sync_pause_pending">Pause nach dem laufenden Schritt</string>
     <string name="live_title">Sync-Aktivität</string>
     <string name="live_empty">Noch kein Titel verarbeitet.</string>
     <string name="live_found">Gefunden: %1$s</string>

@@ -550,6 +550,8 @@
     <string name="sync_stop">Interrompi</string>
     <string name="sync_paused">In pausa</string>
     <string name="sync_stopped">Interrotta da te</string>
+    <string name="sync_stopping">Interruzione al termine del passo in corso…</string>
+    <string name="sync_pause_pending">In pausa al termine del passo in corso</string>
     <string name="live_title">Attività della sync</string>
     <string name="live_empty">Nessun brano ancora elaborato.</string>
     <string name="live_found">Trovato: %1$s</string>

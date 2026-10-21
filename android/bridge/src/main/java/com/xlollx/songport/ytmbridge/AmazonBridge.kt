@@ -149,6 +149,10 @@ object AmazonBridge {
                 config.compareAndSet(null, parseJson(json) as? JsonObject ?: return)
                 userAgent.compareAndSet(null, ua)
             }
+
+            /** The player showed a page instead of starting ("update your browser", "get the app"). */
+            @JavascriptInterface
+            fun page(text: String) { problem.compareAndSet(null, "page says: " + text.take(120)) }
         }
 
         main.post {
@@ -162,6 +166,8 @@ object AmazonBridge {
                 // single page application lays nothing out and makes no calls at all.
                 w.measure(View.MeasureSpec.makeMeasureSpec(VIEW_W, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(VIEW_H, View.MeasureSpec.EXACTLY))
                 w.layout(0, 0, VIEW_W, VIEW_H)
+                // The desktop player, as in the traffic capture: the phone-sized one stopped calling its API.
+                BridgeUa.apply(app, w)
                 w.addJavascriptInterface(sink, "AmzBridge")
                 val early = WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)
                 if (early) WebViewCompat.addDocumentStartJavaScript(w, HOOK, setOf("*"))
@@ -199,6 +205,9 @@ object AmazonBridge {
         if (h == null && problem.get() == SIGN_IN_AGAIN) throw BridgeException(
             "the Amazon session no longer opens the player (it asked to sign in again). Open Songport Bridge, sign out of Amazon and sign in again.",
         )
+        if (h == null && problem.get()?.startsWith("page says") == true) throw BridgeException(
+            "the Amazon Music player did not start [${problem.get()}, url: ${lastUrl.get().take(80)}].",
+        )
         if (h == null && c == null) throw BridgeException(
             "the Amazon Music player did not hand over its credentials in time" +
                 " [url: ${lastUrl.get().take(80).ifBlank { "none" }}" +
@@ -220,7 +229,37 @@ object AmazonBridge {
     val HOOK = """
         (function(){
           if (window.__amzHdr) return; window.__amzHdr = 1;
-          var match = function(u){ return /skill\.music\.a2z\.com\/api\//.test(String(u||'')); };
+          // What the desktop player checks before it starts (taken from its own code, see the traffic
+          // capture): not Linux, no touch, FLAC in MP4 through MSE and Widevine, a window.chrome.
+          // Nothing is ever played here, so the codec answers are given.
+          try { Object.defineProperty(Navigator.prototype, 'platform', { get: function(){ return 'Win32'; }, configurable: true }); } catch(e){}
+          try { Object.defineProperty(Navigator.prototype, 'maxTouchPoints', { get: function(){ return 0; }, configurable: true }); } catch(e){}
+          try {
+            var isType = MediaSource.isTypeSupported.bind(MediaSource);
+            MediaSource.isTypeSupported = function(t){ return /audio\/mp4/.test(String(t)) ? true : isType(t); };
+          } catch(e){}
+          try {
+            var realEme = navigator.requestMediaKeySystemAccess.bind(navigator);
+            var stub = function(ks, cfgs){
+              var cfg = (cfgs && cfgs[0]) || {};
+              return { keySystem: ks, getConfiguration: function(){ return cfg; },
+                createMediaKeys: function(){ return Promise.resolve({
+                  createSession: function(){ return { addEventListener: function(){}, removeEventListener: function(){}, generateRequest: function(){ return Promise.resolve(); }, update: function(){ return Promise.resolve(); }, close: function(){ return Promise.resolve(); }, closed: Promise.resolve() }; },
+                  setServerCertificate: function(){ return Promise.resolve(true); } }); } };
+            };
+            navigator.requestMediaKeySystemAccess = function(ks, cfgs){ return realEme(ks, cfgs).catch(function(){ return stub(ks, cfgs); }); };
+          } catch(e){}
+          try { if (!window.chrome) window.chrome = { runtime: {}, app: { isInstalled: false }, loadTimes: function(){ return {}; }, csi: function(){ return {}; } }; } catch(e){}
+          // A page in place of the player: said, so the error names it instead of a silent timeout.
+          var probe = function(){
+            try {
+              var t = String(document.body && document.body.innerText || '');
+              var m = t.match(/[^\n]*(Update Chrome|Aggiornare Chrome|no longer supported|non è più supportat|Get the app|Scarica l.app|Open the app|Apri l.app)[^\n]*/i);
+              if (m && AmzBridge.page) AmzBridge.page(m[0]);
+            } catch(e){}
+          };
+          setTimeout(probe, 8000); setTimeout(probe, 20000);
+          var match = function(u){ return /skill\.music\.a2z\.com\/api\/|music\.amazon\.[a-z.]+\/(?:[A-Z]{2}\/)?api\//.test(String(u||'')); };
           var grab = function(b){
             if (b == null) return;
             try {

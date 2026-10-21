@@ -545,6 +545,8 @@
     <string name="sync_stop">停止</string>
     <string name="sync_paused">已暂停</string>
     <string name="sync_stopped">已由你停止</string>
+    <string name="sync_stopping">将在当前步骤完成后停止…</string>
+    <string name="sync_pause_pending">将在当前步骤完成后暂停</string>
     <string name="live_title">同步动态</string>
     <string name="live_empty">尚未处理任何歌曲。</string>
     <string name="live_found">已找到：%1$s</string>

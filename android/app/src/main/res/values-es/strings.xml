@@ -550,6 +550,8 @@
     <string name="sync_stop">Detener</string>
     <string name="sync_paused">En pausa</string>
     <string name="sync_stopped">Detenida por ti</string>
+    <string name="sync_stopping">Deteniendo al terminar el paso en curso…</string>
+    <string name="sync_pause_pending">En pausa al terminar el paso en curso</string>
     <string name="live_title">Actividad de la sincronización</string>
     <string name="live_empty">Aún no se ha procesado ninguna canción.</string>
     <string name="live_found">Encontrada: %1$s</string>
