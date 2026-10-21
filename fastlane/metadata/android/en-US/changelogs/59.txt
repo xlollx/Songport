@@ -1,0 +1,1 @@
+Amazon Music: requests now match the web player's more closely (subscription header, client name), and when Amazon refuses one the diagnostics log records what Amazon answered, to find out why it accepts the player and not Songport.

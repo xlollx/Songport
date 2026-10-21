@@ -1,0 +1,1 @@
+Amazon Music: Anfragen gleichen jetzt stärker denen des Web-Players (Abo-Header, Client-Name), und lehnt Amazon eine ab, hält das Diagnoseprotokoll Amazons Antwort fest – um herauszufinden, warum der Player akzeptiert wird und Songport nicht.

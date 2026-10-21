@@ -168,7 +168,11 @@ class AmazonClient(private val ctx: Context) {
         var attempt = 0
         while (true) {
             try {
-                http.newCall(req).execute().use { resp -> return resp.code to (resp.body?.string() ?: "") }
+                http.newCall(req).execute().use { resp ->
+                    val text = resp.body?.string() ?: ""
+                    if (resp.code == 401 || resp.code == 403) logRefusal(req, resp, text)
+                    return resp.code to text
+                }
             } catch (e: java.io.IOException) {
                 if (attempt >= 2) throw BridgeException("Amazon Music unreachable: ${e.message ?: e.javaClass.simpleName}")
                 Thread.sleep(if (attempt == 0) 2_000 else 5_000)
@@ -178,6 +182,24 @@ class AmazonClient(private val ctx: Context) {
     }
 
     // ------------------------------------------------------------------ GraphQL
+
+    /** One header of the player's last mirrored call, or "" when none was seen. */
+    private fun playerHeader(name: String): String = runCatching {
+        (parseJson(AmazonSession.headers(ctx) ?: return "") as? JsonObject)?.get(name).str.orEmpty()
+    }.getOrDefault("")
+
+    /**
+     * What Amazon said when it refused a request, for the diagnostics log: its error type and
+     * message, and the names (never the values) of the headers that went with the request, so a
+     * missing or extra one shows. Anything that looks like a token is cut out of the body.
+     */
+    private fun logRefusal(req: Request, resp: okhttp3.Response, body: String) {
+        val type = listOf("x-amzn-errortype", "x-amzn-error-type", "www-authenticate", "x-amzn-requestid")
+            .mapNotNull { h -> resp.header(h)?.let { "$h=${it.take(80)}" } }
+        val sent = req.headers.names().map { it.lowercase() }.sorted()
+        BridgeNet.log("amazon", "${resp.code} from ${req.url.host}: ${type.joinToString().ifBlank { "no error header" }}; " +
+            "body: ${redact(body).take(200).ifBlank { "empty" }}; sent: ${sent.joinToString(",")}")
+    }
 
     /** One answer: its data, and the error codes GraphQL returned next to it (DUPLICATE_TRACK...). */
     private class Answer(val data: JsonElement?, val codes: List<String>, val messages: List<String>)
@@ -198,6 +220,8 @@ class AmazonClient(private val ctx: Context) {
             "csrf-rnd" to c.csrfRnd,
             "csrf-ts" to c.csrfTs,
             "music-territory" to territory(domain),
+            // The player names the subscription with each call; taken from its own headers when seen.
+            "x-amzn-client-subscription-tier" to playerHeader("x-amzn-client-subscription-tier"),
             "x-amzn-feature-flags" to FEATURE_FLAGS,
             "content-language" to lang,
             "accept-language" to lang,
@@ -304,7 +328,11 @@ class AmazonClient(private val ctx: Context) {
         return jsonObj(
             "operationName" to operation,
             "variables" to variables,
-            "extensions" to jsonObj("persistedQuery" to jsonObj("version" to 1, "sha256Hash" to hash)),
+            // As the player sends it: Apollo names itself next to the persisted query.
+            "extensions" to jsonObj(
+                "clientLibrary" to jsonObj("name" to "@apollo/client", "version" to "4.1.6"),
+                "persistedQuery" to jsonObj("version" to 1, "sha256Hash" to hash),
+            ),
         ).toString()
     }
 
@@ -326,7 +354,7 @@ class AmazonClient(private val ctx: Context) {
     private fun parse(code: Int, text: String, operation: String): Answer {
         if (code == 401 || code == 403) {
             cachedConfig = null
-            throw BridgeException("Amazon Music $code on $operation")
+            throw BridgeException("Amazon Music $code on $operation" + redact(text).take(120).let { if (it.isBlank()) "" else ": $it" })
         }
         if (code == -1) throw BridgeException("Amazon Music: $operation not sent (${text.take(160)})")
         val j = runCatching { parseJson(text) }.getOrNull()
@@ -516,3 +544,10 @@ private fun JsonElement?.asText(): String = when (this) {
     null -> ""
     else -> toString()
 }
+
+/** Tokens, JWTs and long opaque values cut out of a text that goes to the diagnostics log. */
+private fun redact(text: String): String = text
+    .replace(Regex("""(Atn[a-z]?|Atza)\|[A-Za-z0-9_\-|.=+/]+"""), "[token]")
+    .replace(Regex("""eyJ[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]*"""), "[jwt]")
+    .replace(Regex("""[A-Za-z0-9+/=_\-]{40,}"""), "[...]")
+    .replace('\n', ' ')

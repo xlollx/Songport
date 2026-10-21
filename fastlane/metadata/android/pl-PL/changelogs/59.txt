@@ -1,0 +1,1 @@
+Amazon Music: żądania bardziej przypominają teraz te z odtwarzacza webowego (nagłówek subskrypcji, nazwa klienta), a gdy Amazon któreś odrzuci, dziennik diagnostyczny zapisuje jego odpowiedź, aby ustalić, dlaczego akceptuje odtwarzacz, a nie Songport.
