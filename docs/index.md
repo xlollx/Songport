@@ -15,13 +15,14 @@ Songport server. Details in the [privacy policy](privacy-policy).
 
 ## Try the beta
 
-Songport is in open beta. Install the signed APK from the
-[releases page](https://github.com/xlollx/Songport/releases/latest) (or the Google Play open-testing
-track once listed) and report anything that does not work as described with an
-[issue](https://github.com/xlollx/Songport/issues/new/choose), attaching the technical details report
-from the app (Settings → Sync log → Share technical details). It contains versions and the last
-sync steps, never tokens or track lists.
+Songport is in open beta. Install it from [F-Droid](https://f-droid.org/packages/com.xlollx.songport/),
+with [Obtainium](https://github.com/ImranR98/Obtainium) (add `https://github.com/xlollx/Songport`), or
+as a signed APK from the [releases page](https://github.com/xlollx/Songport/releases/latest), and report
+anything that does not work as described: *Settings → Diagnostics → Report an issue* opens a GitHub
+issue with the diagnostic report filled in (versions, connectors, the last runs and log lines, never
+tokens or passwords).
 
+- [Guide](guide/): getting started, troubleshooting, reporting a problem
 - [Source code and documentation](https://github.com/xlollx/Songport)
 - [Connector plugins](plugins): extra services through separately installed apps
 - [Privacy policy](privacy-policy)

@@ -1,0 +1,43 @@
+# Amazon Music capture
+
+Amazon has no open API for independent apps (its Web API is a closed beta for approved partners;
+access was requested in October 2026, case 22725377691). The connector therefore speaks the same
+interface as Amazon's own web player, and has to follow it when Amazon changes it. That happened in
+October 2026, when the player moved from the "skill" API (`*.web.skill.music.a2z.com/api/…`) to
+GraphQL (`gql.music.amazon.<tld>`, persisted queries).
+
+## Signs that Amazon changed something
+
+- *"Amazon Music updated its web player (… is no longer known)"*: a persisted query hash changed.
+- *"the Amazon Music player loaded but made no calls … [requests: …]"*: the player now calls
+  somewhere else; the list says where.
+- The sign-in screen stays on the player and never closes by itself.
+
+## Capturing the player's calls
+
+1. *Settings → Developer options* on.
+2. *Accounts → Amazon Music → Capture traffic*: the real web player opens inside the app.
+3. Tap **Clear**, then do, in order: open *Library → Playlists*; open one of your playlists and scroll
+   to the end; search for a song; create a test playlist; add a song to it; remove it; rename the
+   playlist (if the site allows it); delete it.
+4. Tap **Share** and attach the file to an issue (or send it to the maintainer).
+
+What the file holds: the URL, method, request body and response of every call to Amazon's music
+APIs, and the request's HTTP headers. Cookies are never written; credential headers (authorization,
+tokens, CSRF, session) are replaced by their length, and access tokens, bearer tokens and JWTs are
+blanked anywhere in the file.
+
+## Updating the connector
+
+`android/bridge/src/main/java/com/xlollx/songport/ytmbridge/AmazonClient.kt`:
+
+- `HASHES` maps each operation name to its persisted-query hash: a changed hash is a one-line fix.
+- Operations used: `AddToPlaylistModalUserPlaylists` (the user's playlists), `playlistDetail`
+  (tracks, 100 per page, `afterCursor`), `SpecSearchPage` (search, songs only), `CreatePlaylist`,
+  `addTrackToPlaylist` (`DUPLICATE_TRACK` is not a failure), `removeTrackFromPlaylist` (by entry
+  cursor `index:uuid`, highest index first), `deletePlaylist`.
+- Headers are rebuilt from the page configuration (`amznMusic.appConfig`: CSRF triple, device id and
+  type, session id from the cookie) plus the player's application key; when Amazon refuses them, the
+  headers mirrored from the real player (`AmazonBridge.HOOK`) are used.
+
+[All guide pages](./)
