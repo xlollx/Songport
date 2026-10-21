@@ -1,5 +1,10 @@
 # Songport
 
+[![Latest release](https://img.shields.io/github/v/release/xlollx/Songport?label=release)](https://github.com/xlollx/Songport/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/xlollx/Songport/total)](https://github.com/xlollx/Songport/releases)
+[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue)](LICENSE)
+[![Android 8+](https://img.shields.io/badge/Android-8.0%2B-3ddc84)](#)
+
 ![Songport](docs/store/feature_en.png)
 
 <p align="center"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" width="160" alt="Syncs"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg" width="160" alt="New sync"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg" width="160" alt="Choosing a service"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.jpg" width="160" alt="Review of tracks not found"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.jpg" width="160" alt="Tools"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.jpg" width="160" alt="Settings"></p>
@@ -7,6 +12,18 @@
 Android app that keeps playlists in sync across music services, manually or on a schedule.
 Free, no account, no subscription, and no ads in the GitHub build: development lives on voluntary
 donations. Everything runs on the phone. There is no Songport server and access tokens never leave the device.
+
+**Why not an online transfer service?** Soundiiz, TuneMyMusic and FreeYourMusic are good at a one-off
+move. Songport is for keeping playlists in step over time, without handing your accounts to anyone:
+
+| | Songport | Online transfer services |
+|---|---|---|
+| Where it runs | On your phone | On their servers |
+| Who holds your service logins | Only your phone, encrypted | The service |
+| Account, subscription | None | Account; limits on the free plan |
+| Scheduled sync, removals mirrored | Yes | Mostly paid plans |
+| Personal servers (Navidrome, Jellyfin, Plex) | Yes | Rarely |
+| Source code | Open (GPL-3.0-only) | Closed |
 
 Supported: Spotify, Apple Music, YouTube Music, Amazon Music, TIDAL, Deezer, Subsonic/Navidrome,
 Jellyfin, Plex, Last.fm and ListenBrainz (read-only), plus playlist files (CSV, TSV, M3U, iTunes XML,
