@@ -14,8 +14,8 @@ COPY server server
 RUN gradle -p server installDist --no-daemon --quiet
 
 FROM eclipse-temurin:17-jre
-LABEL org.opencontainers.image.title="Songport server" \
-      org.opencontainers.image.description="Keeps playlists in sync between music services, on your own server" \
+LABEL org.opencontainers.image.title="Songport server (alpha)" \
+      org.opencontainers.image.description="Alpha, an early test version. Keeps playlists in sync between music services, on your own server" \
       org.opencontainers.image.source="https://github.com/xlollx/Songport" \
       org.opencontainers.image.licenses="GPL-3.0-only"
 RUN groupadd --system songport && useradd --system --gid songport --home-dir /data songport \

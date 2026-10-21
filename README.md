@@ -46,7 +46,7 @@ move. Songport is for keeping playlists in step over time, without handing your 
 - **[Obtainium](https://github.com/ImranR98/Obtainium)**: add `https://github.com/xlollx/Songport` and
   each release reaches the phone by itself.
 - **[Releases](https://github.com/xlollx/Songport/releases/latest)**: the signed APK of every version.
-- **Server (Docker, beta)**: the same engine on a home server or a NAS, with a web page and
+- **Server (Docker, ⚠️ alpha)**: an early test version, expect rough edges. The same engine on a home server or a NAS, with a web page and
   scheduled syncs: `docker run -p 8080:8080 -v songport-data:/data ghcr.io/xlollx/songport`. Official
   APIs and personal servers only; see the [Docker guide](https://xlollx.github.io/Songport/guide/docker).
 

@@ -70,7 +70,7 @@ fun main() {
     val runner = Runner(env)
     Web(env, runner, Auth(env), config.password, version).start(config.port)
     runner.startScheduler()
-    env.log("server", "Songport server $version, data in ${config.dataDir.absolutePath}" + if (config.password == null) " (no password: set SONGPORT_PASSWORD if others can reach this port)" else "")
+    env.log("server", "Songport server $version (ALPHA: an early test version, keep a copy of the data folder), data in ${config.dataDir.absolutePath}" + if (config.password == null) " (no password: set SONGPORT_PASSWORD if others can reach this port)" else "")
 
     Runtime.getRuntime().addShutdownHook(Thread { env.store.flush() })
 }

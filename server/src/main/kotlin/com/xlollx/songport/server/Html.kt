@@ -22,12 +22,13 @@ ${refreshSeconds?.let { """<meta http-equiv="refresh" content="$it">""" } ?: ""}
 <title>${h(title)} · Songport</title>
 <link rel="stylesheet" href="/style.css">
 </head><body>
-<header><a class="brand" href="/">Songport</a><nav><a href="/">Syncs</a><a href="/connectors">Services</a><a href="/log">Log</a></nav></header>
+<header><a class="brand" href="/">Songport <span class="alpha">alpha</span></a><nav><a href="/">Syncs</a><a href="/connectors">Services</a><a href="/log">Log</a></nav></header>
+<p class="alpha-note"><strong>Alpha.</strong> The server is an early test version: things can break or change between releases. Keep a copy of the data folder and <a href="https://xlollx.github.io/Songport/guide/reporting-a-problem">report what goes wrong</a>.</p>
 <main>
 <h1>${h(title)}</h1>
 $body
 </main>
-<footer>Songport server ${h(version)} · <a href="https://xlollx.github.io/Songport/guide/docker">Guide</a> · <a href="https://github.com/xlollx/Songport">GitHub</a></footer>
+<footer>Songport server ${h(version)} (alpha) · <a href="https://xlollx.github.io/Songport/guide/docker">Guide</a> · <a href="https://github.com/xlollx/Songport">GitHub</a></footer>
 </body></html>"""
 
     const val CSS = """
@@ -46,6 +47,8 @@ h2{font-size:18px;margin:24px 0 8px}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
 .muted{color:var(--ink-3);font-size:13px}
 .ok{color:var(--ok)}.err{color:var(--err)}
+.alpha{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1px 7px;margin-left:6px;border-radius:999px;background:var(--err);color:var(--surface);vertical-align:middle}
+.alpha-note{margin:0;padding:10px 16px;background:var(--surface-2);border-bottom:1px solid var(--line);color:var(--ink-2);font-size:14px}
 .badge{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;background:var(--surface-2);color:var(--ink-2)}
 button,.button{font:inherit;cursor:pointer;border:0;border-radius:999px;padding:7px 16px;background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-block}
 button.secondary,.button.secondary{background:var(--surface-2);color:var(--ink)}
