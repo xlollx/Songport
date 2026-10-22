@@ -185,6 +185,14 @@ class AmazonClient(private val ctx: Context) {
 
     // ------------------------------------------------------------------ GraphQL
 
+    /** Logs [message] under [key] at most once every ten minutes. */
+    private fun logOnce(key: String, message: String) {
+        val now = System.currentTimeMillis()
+        if (now - (logged[key] ?: 0L) < 600_000) return
+        logged[key] = now
+        BridgeNet.log("amazon", message)
+    }
+
     /** One header of the player's last mirrored call, or "" when none was seen. */
     private fun playerHeader(name: String): String = runCatching {
         (parseJson(AmazonSession.headers(ctx) ?: return "") as? JsonObject)?.get(name).str.orEmpty()
@@ -212,6 +220,27 @@ class AmazonClient(private val ctx: Context) {
         if (!c.signedIn) throw BridgeException(
             "Amazon Music served the player to a signed-out visitor: the Amazon session has expired. Accounts, Amazon Music: disconnect and connect again.",
         )
+        val built = baseHeaders(domain, c)
+        if (built["csrf-token"] != null) return built
+        // The configuration no longer carries the CSRF triple where it used to (October 2026: sent
+        // without it, Amazon answers AUTH_INVALID_CUSTOMER_ID): the player's own values fill it.
+        val fromPlayer = listOf("csrf-token", "csrf-rnd", "csrf-ts", "x-amzn-session-id")
+            .mapNotNull { k -> playerHeader(k).takeIf { it.isNotBlank() }?.let { k to it } }.toMap()
+        logOnce("csrf", "page configuration has no CSRF token (csrf field: ${describe(c.raw["csrf"])}); " +
+            if (fromPlayer.isEmpty()) "the player's headers have none either" else "using the player's")
+        return built + fromPlayer
+    }
+
+    /** What a configuration field holds, by shape and key names only, for the diagnostics log. */
+    private fun describe(e: JsonElement?): String = when (e) {
+        null -> "absent"
+        is JsonObject -> "object with " + e.keys.sorted().joinToString(",")
+        is JsonPrimitive -> "a value of ${e.content.length} chars"
+        else -> e.javaClass.simpleName
+    }
+
+    /** The headers every call carries, from the configuration; empty values left out. */
+    private fun baseHeaders(domain: String, c: Config): Map<String, String> {
         val lang = (DOMAINS[domain]?.language ?: "en_US").replace('_', '-')
         return mapOf(
             "x-api-key" to API_KEY,
@@ -271,7 +300,12 @@ class AmazonClient(private val ctx: Context) {
         val run = runCatching { AmazonBridge.player(ctx, domain, refresh = true) }
         val player = run.getOrNull()
         cachedConfig = null
-        val headers = player?.takeIf { it.signedIn }?.headers?.filterKeys { it.lowercase() !in SKIPPED_HEADERS }
+        // The player's own headers, over the configuration's for whatever it did not send (a mirrored
+        // set can lack the API key or the language, and Amazon then answers AUTH_INVALID_CLIENT_ID).
+        val headers = player?.takeIf { it.signedIn }?.headers?.filterKeys { it.lowercase() !in SKIPPED_HEADERS }?.let { own ->
+            val base = runCatching { baseHeaders(domain, config(domain)) }.getOrDefault(emptyMap())
+            base.filterKeys { k -> own.keys.none { it.equals(k, ignoreCase = true) } } + own
+        }
         val again = runCatching { gqlWith(domain, operation, variables, headers ?: headersFromConfig(domain)) }
         val last = again.getOrNull()
         if (last != null && !last.codes.any { it in AUTH_CODES }) return last
@@ -531,6 +565,7 @@ class AmazonClient(private val ctx: Context) {
         @Volatile private var cachedConfig: Pair<Long, Config>? = null
         /** Until when calls go straight through the player page, after it was the only way in. */
         @Volatile private var pageModeUntil = 0L
+        private val logged = java.util.concurrent.ConcurrentHashMap<String, Long>()
         /** The API host takes the calls without cookies (as the player sends them): learned on a refusal. */
         @Volatile private var cookieless = false
         /** Whether the page's calls went through with the cookies (learned with [pageModeUntil]). */

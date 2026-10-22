@@ -80,6 +80,9 @@ object AmazonBridge {
         web.addJavascriptInterface(object {
             @JavascriptInterface
             fun headers(json: String, ua: String?, host: String?) { remember(app, json, ua, host) }
+            /** Status of one of the player's own API calls, for the diagnostics log. */
+            @JavascriptInterface
+            fun status(op: String, code: Int) { playerStatus(op, code) }
             /** The configuration is only used here for the display name shown on the status screen. */
             @JavascriptInterface
             fun config(json: String, ua: String?) {
@@ -144,6 +147,17 @@ object AmazonBridge {
             results.remove(id)
             pageUsed = System.currentTimeMillis()
         }
+    }
+
+    private val statusLogged = ConcurrentHashMap<String, Long>()
+
+    /** Logs how Amazon answered one of the player's own calls: each operation and status once in ten minutes. */
+    private fun playerStatus(op: String, code: Int) {
+        val key = "$op:$code"
+        val now = System.currentTimeMillis()
+        if (now - (statusLogged[key] ?: 0L) < 600_000) return
+        statusLogged[key] = now
+        BridgeNet.log("amazon", "the player's own ${op.ifBlank { "call" }}: $code")
     }
 
     /** Called from the page with the answer to [gqlInPage]. */
@@ -220,6 +234,9 @@ object AmazonBridge {
             @JavascriptInterface
             fun page(text: String) { problem.compareAndSet(null, "page says: " + text.take(120)) }
 
+            @JavascriptInterface
+            fun status(op: String, code: Int) { playerStatus(op, code) }
+
             /** The answer to a call made with [gqlInPage]. */
             @JavascriptInterface
             fun result(id: String, status: Int, text: String) { answer(id, status, text) }
@@ -239,8 +256,8 @@ object AmazonBridge {
                 // single page application lays nothing out and makes no calls at all.
                 w.measure(View.MeasureSpec.makeMeasureSpec(VIEW_W, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(VIEW_H, View.MeasureSpec.EXACTLY))
                 w.layout(0, 0, VIEW_W, VIEW_H)
-                // Chrome for Android, as on the phone's own browser (where Amazon accepts the account).
-                BridgeUa.applyMobile(app, w)
+                // Desktop Chrome, as in the traffic capture, whose player Amazon accepts on this session.
+                BridgeUa.apply(app, w)
                 w.addJavascriptInterface(sink, "AmzBridge")
                 val early = WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)
                 if (early) WebViewCompat.addDocumentStartJavaScript(w, HOOK, setOf("*"))
@@ -379,7 +396,14 @@ object AmazonBridge {
           if (of) window.fetch = function(input, init){
             var url = (typeof input === 'string') ? input : (input && input.url) || '';
             if (isGql(url)) grab((init && init.headers) || (input && input.headers)); else other(url);
-            return of.apply(this, arguments);
+            var p = of.apply(this, arguments);
+            // How Amazon answers the player's own calls: tells "the session is refused" from "our
+            // copy of the player's request is refused".
+            if (isGql(url) && AmzBridge.status) try {
+              var op = ''; try { op = JSON.parse(String((init && init.body) || '{}')).operationName || ''; } catch(e){}
+              p.then(function(r){ try { AmzBridge.status(op, r.status); } catch(e){} }, function(){});
+            } catch(e){}
+            return p;
           };
           var oo = XMLHttpRequest.prototype.open, os = XMLHttpRequest.prototype.send, osh = XMLHttpRequest.prototype.setRequestHeader;
           XMLHttpRequest.prototype.setRequestHeader = function(k, v){ (this.__h = this.__h || []).push([k, v]); return osh.apply(this, arguments); };
