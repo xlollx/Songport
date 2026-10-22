@@ -128,13 +128,13 @@ object AmazonBridge {
      * player last sent. Used when Amazon accepts the session from the browser but not from our own
      * HTTP client. Opens the player first if it is not running. Blocking; never on the main thread.
      */
-    fun gqlInPage(ctx: Context, domain: String, body: String, withCookies: Boolean = false): Pair<Int, String> {
+    fun gqlInPage(ctx: Context, domain: String, body: String): Pair<Int, String> {
         if (page == null) player(ctx, domain, refresh = true)
         val id = "q" + ids.incrementAndGet()
         val future = CompletableFuture<Pair<Int, String>>()
         results[id] = future
         pageUsed = System.currentTimeMillis()
-        val js = "window.__amzCall && window.__amzCall(${JsonPrimitive(id)}, ${JsonPrimitive(body)}, ${if (withCookies) "'include'" else "'same-origin'"});"
+        val js = "window.__amzCall && window.__amzCall(${JsonPrimitive(id)}, ${JsonPrimitive(body)});"
         Handler(Looper.getMainLooper()).post {
             val w = page
             if (w == null) future.complete(-1 to "the player page is closed") else w.evaluateJavascript(js, null)
@@ -330,10 +330,8 @@ object AmazonBridge {
           // What the desktop player checks before it starts (taken from its own code, see the traffic
           // capture): not Linux, no touch, FLAC in MP4 through MSE and Widevine, a window.chrome.
           // Nothing is ever played here, so the codec answers are given.
-          // A WebView introduced as Chrome for Android stays a phone: only a desktop identity needs these.
-          var desk = !/Android/.test(navigator.userAgent);
-          if (desk) try { Object.defineProperty(Navigator.prototype, 'platform', { get: function(){ return 'Win32'; }, configurable: true }); } catch(e){}
-          if (desk) try { Object.defineProperty(Navigator.prototype, 'maxTouchPoints', { get: function(){ return 0; }, configurable: true }); } catch(e){}
+          try { Object.defineProperty(Navigator.prototype, 'platform', { get: function(){ return 'Win32'; }, configurable: true }); } catch(e){}
+          try { Object.defineProperty(Navigator.prototype, 'maxTouchPoints', { get: function(){ return 0; }, configurable: true }); } catch(e){}
           try {
             var isType = MediaSource.isTypeSupported.bind(MediaSource);
             MediaSource.isTypeSupported = function(t){ return /audio\/mp4/.test(String(t)) ? true : isType(t); };
@@ -376,7 +374,7 @@ object AmazonBridge {
             try { var o = plain(h); if (o['csrf-token']) { window.__amzLast = o; AmzBridge.headers(JSON.stringify(o), navigator.userAgent, location.host); } } catch(e){}
           };
           // A call Songport asks for, sent by the page itself with the headers the player last used.
-          window.__amzCall = function(id, body, cred){
+          window.__amzCall = function(id, body){
             var done = function(st, t){ try { AmzBridge.result(id, st, String(t)); } catch(e){} };
             try {
               var h = {}, last = window.__amzLast || {};
@@ -384,7 +382,7 @@ object AmazonBridge {
               h['content-type'] = 'application/json';
               h['accept'] = 'application/graphql-response+json, application/json';
               if (h['x-amzn-trace-start']) h['x-amzn-trace-start'] = String(Date.now());
-              window.fetch('https://gql.' + location.host + '/', { method: 'POST', headers: h, body: body, credentials: cred || 'same-origin' })
+              window.fetch('https://gql.' + location.host + '/', { method: 'POST', headers: h, body: body, credentials: 'include' })
                 .then(function(r){ return r.text().then(function(t){ done(r.status, t); }); })
                 .catch(function(e){ done(-1, e); });
             } catch(e) { done(-1, e); }

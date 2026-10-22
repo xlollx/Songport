@@ -132,9 +132,8 @@ class AmazonCaptureActivity : ComponentActivity() {
               // must not be Linux (navigator.platform, "Linux aarch64" on a phone), the browser must
               // not be mobile, MSE must accept FLAC in MP4 and Widevine must accept it too. Otherwise
               // "Update Chrome". This screen never plays anything, so the codec answers are given.
-              var desk = !/Android/.test(navigator.userAgent);
-              if (desk) try { Object.defineProperty(Navigator.prototype, 'platform', { get: function(){ return 'Win32'; }, configurable: true }); } catch(e){}
-              if (desk) try { Object.defineProperty(Navigator.prototype, 'maxTouchPoints', { get: function(){ return 0; }, configurable: true }); } catch(e){}
+              try { Object.defineProperty(Navigator.prototype, 'platform', { get: function(){ return 'Win32'; }, configurable: true }); } catch(e){}
+              try { Object.defineProperty(Navigator.prototype, 'maxTouchPoints', { get: function(){ return 0; }, configurable: true }); } catch(e){}
               try {
                 var isType = MediaSource.isTypeSupported.bind(MediaSource);
                 MediaSource.isTypeSupported = function(t){ return /audio\/mp4/.test(String(t)) ? true : isType(t); };
