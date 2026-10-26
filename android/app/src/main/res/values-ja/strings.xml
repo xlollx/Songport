@@ -838,4 +838,10 @@
     <string name="card_ai_save">ジャケットを保存</string>
     <string name="ai_image_model">画像モデル（任意）</string>
     <string name="ai_image_model_hint">例：dall-e-3（ポスターの AI ジャケット用）</string>
+
+    <!-- Onboarding pager and the editor's third step -->
+    <string name="onboarding_skip">スキップ</string>
+    <string name="onboarding_next">次へ</string>
+    <string name="onboarding_page">%1$d / %2$d ページ</string>
+    <string name="editor_step_options">オプション</string>
 </resources>

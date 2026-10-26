@@ -837,4 +837,10 @@
     <string name="card_ai_save">커버 저장</string>
     <string name="ai_image_model">이미지 모델(선택)</string>
     <string name="ai_image_model_hint">예: dall-e-3, 포스터의 AI 커버용</string>
+
+    <!-- Onboarding pager and the editor's third step -->
+    <string name="onboarding_skip">건너뛰기</string>
+    <string name="onboarding_next">다음</string>
+    <string name="onboarding_page">%2$d페이지 중 %1$d페이지</string>
+    <string name="editor_step_options">옵션</string>
 </resources>

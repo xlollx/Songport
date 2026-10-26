@@ -62,6 +62,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.xlollx.songport.sync.BackupExport
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -108,7 +109,7 @@ private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVecto
  */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, onUnplayable: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null) {
+fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, onUnplayable: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null, onSubpage: (Boolean) -> Unit = {}) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
@@ -118,12 +119,18 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
     LaunchedEffect(compareLinks) { if (compareLinks != null) open = Tool.COMPAT }
 
     val current = open
+    // A tool's page has its own top bar with the way back: the tab's "Tools" header steps aside,
+    // so there is one header, not two stacked.
+    DisposableEffect(current != null) {
+        onSubpage(current != null)
+        onDispose { onSubpage(false) }
+    }
     if (current != null) {
         // The tool's own page: its card, full width, with a snackbar of its own (the tab's is behind us).
         val local = remember { SnackbarHostState() }
         BackHandler { open = null }
-        // Nested in the tab, under its header: the window insets are already taken (no second
-        // status-bar gap), and the end of the page clears the glass bottom bar.
+        // Nested in the tab, which keeps the status-bar inset (no second gap); the end of the page
+        // clears the glass bottom bar.
         Scaffold(
             snackbarHost = { SnackbarHost(local) },
             contentWindowInsets = WindowInsets(0, 0, 0, 0),

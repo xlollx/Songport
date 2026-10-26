@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -208,10 +209,10 @@ fun UnplayableScreen(provider: MusicProvider, onClose: () -> Unit) {
         bottomBar = {
             val a = applying
             if (decided > 0 || a != null) {
-                Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
                     if (a != null) {
                         CircularProgressIndicator(Modifier.size(18.dp)); Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.unplayable_applying, a.done, a.total), style = MaterialTheme.typography.bodySmall); Spacer(Modifier.width(12.dp))
+                        Text(stringResource(R.string.unplayable_applying, a.done, a.total), style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f)); Spacer(Modifier.width(12.dp))
                     }
                     Button(enabled = a == null, onClick = { confirm = true }) { Text(stringResource(R.string.unplayable_apply, decided)) }
                 }

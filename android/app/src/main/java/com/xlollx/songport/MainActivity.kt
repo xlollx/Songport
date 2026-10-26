@@ -237,6 +237,8 @@ private fun MainScreen(
     var previewJob by rememberSaveable(stateSaver = JobSaver) { mutableStateOf<SyncJob?>(null) }
     // Two playlist links shared at once: "how compatible are we?" in Tools.
     var compareLinks by remember { mutableStateOf<Pair<String, String>?>(null) }
+    // A tool page open in Tools: it brings its own top bar.
+    var toolSubpage by remember { mutableStateOf(false) }
     var addConnector by rememberSaveable { mutableStateOf(false) }
     // A single track shared from a service's app: which of your playlists it goes to.
     var sharedTrack by remember { mutableStateOf<Pair<MusicProvider, com.xlollx.songport.model.Track>?>(null) }
@@ -390,8 +392,11 @@ private fun MainScreen(
 
     Scaffold(
         topBar = {
-            val label = tabs.firstOrNull { it.third == tab }?.first ?: R.string.app_name
-            AppTopBar(stringResource(if (tab == MainActivity.TAB_SYNCS) R.string.app_name else label))
+            // An open tool shows its own bar with the way back: no tab header above it.
+            if (!(tab == MainActivity.TAB_TOOLS && toolSubpage)) {
+                val label = tabs.firstOrNull { it.third == tab }?.first ?: R.string.app_name
+                AppTopBar(stringResource(if (tab == MainActivity.TAB_SYNCS) R.string.app_name else label))
+            }
         },
         snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
@@ -455,7 +460,7 @@ private fun MainScreen(
                     onReview = { unmatchedReport = it },
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
-                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks)
+                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks, onSubpage = { toolSubpage = it })
                 else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
             } }
             }

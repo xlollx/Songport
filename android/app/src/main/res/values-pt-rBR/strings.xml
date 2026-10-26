@@ -848,4 +848,10 @@
     <string name="card_ai_save">Salvar capa</string>
     <string name="ai_image_model">Modelo de imagens (opcional)</string>
     <string name="ai_image_model_hint">ex. dall-e-3, para a capa por IA do pôster</string>
+
+    <!-- Onboarding pager and the editor's third step -->
+    <string name="onboarding_skip">Pular</string>
+    <string name="onboarding_next">Avançar</string>
+    <string name="onboarding_page">Página %1$d de %2$d</string>
+    <string name="editor_step_options">Opções</string>
 </resources>

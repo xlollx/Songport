@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+
 package com.xlollx.songport.ui
 
 import com.xlollx.songport.providers.*
@@ -181,7 +183,7 @@ private fun CardActions(bitmaps: Map<Cards.Format, Bitmap>?, name: String, busy:
         Button(enabled = !busy, onClick = onRender) { Text(renderLabel) }
     }
     if (bmp != null) {
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             FilterChip(selected = format == Cards.Format.STORY, onClick = { format = Cards.Format.STORY }, label = { Text(stringResource(R.string.card_format_story)) })
             FilterChip(selected = format == Cards.Format.SQUARE, onClick = { format = Cards.Format.SQUARE }, label = { Text(stringResource(R.string.card_format_square)) })
         }
@@ -189,7 +191,8 @@ private fun CardActions(bitmaps: Map<Cards.Format, Bitmap>?, name: String, busy:
             bmp.asImageBitmap(), contentDescription = null,
             modifier = Modifier.fillMaxWidth().aspectRatio(format.width.toFloat() / format.height).clip(RoundedCornerShape(16.dp)),
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Wraps at a large font size instead of squeezing a button into a column of letters.
+        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Button(onClick = { Cards.share(ctx, bmp, name) }) { Text(stringResource(R.string.card_share)) }
             OutlinedButton(onClick = { save.launch("$name.png") }) { Text(stringResource(R.string.card_save)) }
         }
@@ -362,7 +365,7 @@ fun PosterCard(snackbar: SnackbarHostState) {
         if (bitmaps != null && qr == null) Text(stringResource(R.string.card_poster_no_qr), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         CardActions(bitmaps, "songport-poster", busy || pick == null, onRender = { run() }, renderLabel = stringResource(if (bitmaps == null) R.string.card_poster_run else R.string.card_again))
         if (aiCover && drawn != null && bitmaps != null) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 OutlinedButton(enabled = !busy, onClick = { run(newCover = true) }) { Text(stringResource(R.string.card_ai_again)) }
                 TextButton(onClick = { saveCover.launch("songport-cover.png") }) { Text(stringResource(R.string.card_ai_save)) }
             }

@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.clickable
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ModalBottomSheet
@@ -450,6 +451,38 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
         }
     }
 
+    // Save, from the bottom bar: the same checks and the same jobs as before the cards.
+    fun save() {
+        val sp = srcPlaylist
+        val dp = dstPlaylist
+        if (srcProvider.isEmpty() || dstProvider.isEmpty() || sp == null || (!createNew && dp == null)) {
+            error = ctx.getString(R.string.editor_error_incomplete)
+            return
+        }
+        val srcName = sp.name
+        // A link whose name could not be read yet: the run reads it and names the new playlist after it.
+        val target = if (createNew) PlaylistRef(dstProvider, null, newName.ifBlank { if (linkMode) "" else srcName })
+        else PlaylistRef(dstProvider, dp!!.id, dp.name)
+        val source = PlaylistRef(srcProvider, sp.id, srcName, link = linkText.trim().takeIf { linkMode && it.isNotBlank() })
+        val main = job.copy(
+            name = name.ifBlank { srcName },
+            source = source,
+            target = target,
+            schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
+            keepOrder = keepOrder,
+        )
+        val reverse = if (bidirectional && !createNew && dp != null) SyncJob(
+            id = job.linkedJobId ?: UUID.randomUUID().toString(),
+            name = "${main.name} ↔",
+            source = target,
+            target = source,
+            schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
+            linkedJobId = job.id,
+        ) else null
+        saveHaptic()
+        onSave(main.copy(linkedJobId = reverse?.id), reverse)
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -457,179 +490,173 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                 navigationIcon = { IconButton(onClick = onCancel) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
             )
         },
+        // Save stays in reach at the bottom whatever the length of the form.
+        bottomBar = {
+            androidx.compose.material3.Surface(tonalElevation = 3.dp, shadowElevation = 6.dp) {
+                Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium) }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f).height(52.dp)) { Text(stringResource(R.string.cancel)) }
+                        Button(onClick = { save() }, modifier = Modifier.weight(1f).height(52.dp)) { Text(stringResource(R.string.save)) }
+                    }
+                }
+            }
+        },
     ) { padding ->
-        Column(Modifier.padding(padding).padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             if (available.isEmpty()) {
                 Text(stringResource(R.string.no_connected_providers), color = MaterialTheme.colorScheme.error)
             }
-            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.editor_name)) },
-                singleLine = true, modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
-
-            Text(stringResource(R.string.editor_source), style = MaterialTheme.typography.titleMedium)
-            if (aiSource) {
-                Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-                    Row(Modifier.padding(14.dp), verticalAlignment = Alignment.Top) {
-                        Icon(Icons.Filled.AutoAwesome, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.tertiary)
-                        Spacer(Modifier.width(10.dp))
-                        Column {
-                            Text(stringResource(R.string.editor_source_ai), style = MaterialTheme.typography.titleSmall)
-                            job.aiPrompt?.takeIf { it.isNotBlank() }?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
-                            Text(stringResource(R.string.editor_source_ai_desc, job.source.playlistName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            EditorStep(1, stringResource(R.string.editor_source)) {
+                if (aiSource) {
+                    Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
+                        Row(Modifier.padding(14.dp), verticalAlignment = Alignment.Top) {
+                            Icon(Icons.Filled.AutoAwesome, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.tertiary)
+                            Spacer(Modifier.width(10.dp))
+                            Column {
+                                Text(stringResource(R.string.editor_source_ai), style = MaterialTheme.typography.titleSmall)
+                                job.aiPrompt?.takeIf { it.isNotBlank() }?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+                                Text(stringResource(R.string.editor_source_ai_desc, job.source.playlistName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
                         }
-                    }
-                }
-            } else {
-                // Il servizio di un link incollato puo' non essere fra quelli collegati (playlist pubblica).
-                val srcProviders = (available + listOfNotNull(Providers.byId(srcProvider))).distinctBy { it.id }
-                ProviderPicker(srcProviders, if (linkMode) "" else srcProvider, link = true, linkSelected = linkMode,
-                    onLink = { if (!linkMode) { linkMode = true; srcPlaylist = null } }) { srcProvider = it; srcPlaylist = null; linkMode = false }
-                if (linkMode) {
-                    LinkImportField(initial = linkText, keep = true) { providerId, playlist, text ->
-                        srcProvider = providerId
-                        srcPlaylist = playlist
-                        linkText = text
-                    }
-                    srcPlaylist?.let { sp ->
-                        Text((Providers.byId(srcProvider)?.label(ctx) ?: srcProvider) + " · " + playlistDisplayName(sp.id, sp.name), style = MaterialTheme.typography.bodyMedium)
                     }
                 } else {
-                    PlaylistPicker(srcLists, srcPlaylist, label = stringResource(R.string.editor_playlist)) { srcPlaylist = it }
+                    // Il servizio di un link incollato puo' non essere fra quelli collegati (playlist pubblica).
+                    val srcProviders = (available + listOfNotNull(Providers.byId(srcProvider))).distinctBy { it.id }
+                    ProviderPicker(srcProviders, if (linkMode) "" else srcProvider, link = true, linkSelected = linkMode,
+                        onLink = { if (!linkMode) { linkMode = true; srcPlaylist = null } }) { srcProvider = it; srcPlaylist = null; linkMode = false }
+                    if (linkMode) {
+                        LinkImportField(initial = linkText, keep = true) { providerId, playlist, text ->
+                            srcProvider = providerId
+                            srcPlaylist = playlist
+                            linkText = text
+                        }
+                        srcPlaylist?.let { sp ->
+                            Text((Providers.byId(srcProvider)?.label(ctx) ?: srcProvider) + " · " + playlistDisplayName(sp.id, sp.name), style = MaterialTheme.typography.bodyMedium)
+                        }
+                    } else {
+                        PlaylistPicker(srcLists, srcPlaylist, label = stringResource(R.string.editor_playlist)) { srcPlaylist = it }
+                    }
                 }
             }
 
-            Text(stringResource(R.string.editor_target), style = MaterialTheme.typography.titleMedium)
-            ProviderPicker(writable, dstProvider) { dstProvider = it; dstPlaylist = null }
-            val dstObj = Providers.byId(dstProvider)
-            val canCreate = dstObj?.canCreatePlaylists != false
-            if (!canCreate && createNew) createNew = false
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Switch(checked = createNew, enabled = canCreate, onCheckedChange = { createNew = it })
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.editor_new_playlist))
-            }
-            if (!canCreate && dstObj != null) {
-                Text(stringResource(R.string.error_create_unsupported, dstObj.displayName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            if (createNew) {
-                OutlinedTextField(value = newName, onValueChange = { newName = it }, singleLine = true, modifier = Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.editor_new_playlist_name)) },
-                    placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") },
-                    supportingText = { Text(stringResource(R.string.editor_new_playlist_name_hint)) })
-            } else {
-                PlaylistPicker(dstLists, dstPlaylist, label = stringResource(R.string.editor_playlist), onlyOwned = true) { dstPlaylist = it }
+            EditorStep(2, stringResource(R.string.editor_target)) {
+                ProviderPicker(writable, dstProvider) { dstProvider = it; dstPlaylist = null }
+                val dstObj = Providers.byId(dstProvider)
+                val canCreate = dstObj?.canCreatePlaylists != false
+                if (!canCreate && createNew) createNew = false
+                SwitchRow(stringResource(R.string.editor_new_playlist), null, createNew, enabled = canCreate) { createNew = it }
+                if (!canCreate && dstObj != null) {
+                    Text(stringResource(R.string.error_create_unsupported, dstObj.displayName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                if (createNew) {
+                    OutlinedTextField(value = newName, onValueChange = { newName = it }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(R.string.editor_new_playlist_name)) },
+                        placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") },
+                        supportingText = { Text(stringResource(R.string.editor_new_playlist_name_hint)) })
+                } else {
+                    PlaylistPicker(dstLists, dstPlaylist, label = stringResource(R.string.editor_playlist), onlyOwned = true) { dstPlaylist = it }
+                }
             }
 
-            Text(stringResource(R.string.editor_schedule), style = MaterialTheme.typography.titleMedium)
-            // I chip vanno a capo da soli, quante righe servono per lo schermo.
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
-                Schedule.entries.forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
-            }
-            SwitchRow(stringResource(R.string.editor_mirror), stringResource(R.string.editor_mirror_desc), mirror) { mirror = it }
-            if (Providers.byId(dstProvider)?.canReorder == true) {
-                SwitchRow(stringResource(R.string.editor_keep_order), stringResource(R.string.editor_keep_order_desc), keepOrder) { keepOrder = it }
-            }
-            val dstProviderObj = Providers.byId(dstProvider)
-            if (mirror && dstProviderObj != null && !dstProviderObj.canRemoveTracks) {
-                Text(
-                    stringResource(R.string.editor_mirror_unsupported, dstProviderObj.displayName),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-            // Bidirezionale: crea la sync gemella al contrario, senza rimozioni (niente cancellazioni a ping-pong).
-            val srcObj = Providers.byId(srcProvider)
-            // A public link or someone else's playlist can be read, not written: nothing to send back to.
-            val srcOwned = srcPlaylist?.ownedByMe == true && srcObj?.isConnected(ctx) == true
-            val biAllowed = !createNew && srcObj?.canWrite == true && srcOwned &&
-                srcObj.supportsLibrary(srcPlaylist?.id, asTarget = true) &&
-                dstObj?.supportsLibrary(dstPlaylist?.id, asTarget = false) == true
-            if (!biAllowed && bidirectional) bidirectional = false
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.editor_bidirectional))
+            EditorStep(3, stringResource(R.string.editor_step_options)) {
+                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.editor_name)) },
+                    singleLine = true, modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
+                Text(stringResource(R.string.editor_schedule), style = MaterialTheme.typography.labelLarge)
+                // I chip vanno a capo da soli, quante righe servono per lo schermo.
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+                    Schedule.entries.forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
+                }
+                SwitchRow(stringResource(R.string.editor_mirror), stringResource(R.string.editor_mirror_desc), mirror) { mirror = it }
+                if (Providers.byId(dstProvider)?.canReorder == true) {
+                    SwitchRow(stringResource(R.string.editor_keep_order), stringResource(R.string.editor_keep_order_desc), keepOrder) { keepOrder = it }
+                }
+                val dstProviderObj = Providers.byId(dstProvider)
+                if (mirror && dstProviderObj != null && !dstProviderObj.canRemoveTracks) {
                     Text(
-                        stringResource(
-                            when {
-                                biAllowed -> R.string.editor_bidirectional_desc
-                                srcPlaylist != null && !srcOwned -> R.string.editor_bidirectional_not_owned
-                                else -> R.string.editor_bidirectional_unavailable
-                            },
-                        ),
-                        style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        stringResource(R.string.editor_mirror_unsupported, dstProviderObj.displayName),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
                     )
                 }
-                Switch(checked = bidirectional, enabled = biAllowed, onCheckedChange = { bidirectional = it })
-            }
-            SwitchRow(stringResource(R.string.editor_wifi_only), null, wifiOnly) { wifiOnly = it }
-            SwitchRow(stringResource(R.string.editor_enabled), null, enabled) { enabled = it }
-
-            // How candidates are chosen: folded, because the defaults suit most syncs.
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { matchingOpen = !matchingOpen }) {
-                Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.policy_title), style = MaterialTheme.typography.titleMedium)
-                    Text(stringResource(R.string.policy_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Icon(if (matchingOpen) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            if (matchingOpen) {
-                Text(stringResource(R.string.policy_strictness), style = MaterialTheme.typography.labelLarge)
-                // I chip vanno a capo: in alcune lingue tre etichette non stanno su una riga.
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    listOf(-1 to R.string.policy_loose, 0 to R.string.policy_normal, 1 to R.string.policy_strict).forEach { (v, res) ->
-                        FilterChip(selected = policy.strictness == v, onClick = { policy = policy.copy(strictness = v) }, label = { Text(stringResource(res)) })
-                    }
-                }
-                Text(stringResource(R.string.policy_strictness_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(stringResource(R.string.policy_explicit), style = MaterialTheme.typography.labelLarge)
-                // I chip vanno a capo: in alcune lingue tre etichette non stanno su una riga.
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    listOf(0 to R.string.policy_explicit_any, 1 to R.string.policy_explicit_yes, -1 to R.string.policy_explicit_clean).forEach { (v, res) ->
-                        FilterChip(selected = policy.explicit == v, onClick = { policy = policy.copy(explicit = v) }, label = { Text(stringResource(res)) })
-                    }
-                }
-                SwitchRow(stringResource(R.string.policy_same_album), stringResource(R.string.policy_same_album_desc), policy.sameAlbum) { policy = policy.copy(sameAlbum = it) }
-                SwitchRow(stringResource(R.string.policy_studio), stringResource(R.string.policy_studio_desc), policy.studioOnly) { policy = policy.copy(studioOnly = it) }
-            }
-
-            error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.cancel)) }
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        val sp = srcPlaylist
-                        val dp = dstPlaylist
-                        if (srcProvider.isEmpty() || dstProvider.isEmpty() || sp == null || (!createNew && dp == null)) {
-                            error = ctx.getString(R.string.editor_error_incomplete)
-                            return@Button
-                        }
-                        val srcName = sp.name
-                        // A link whose name could not be read yet: the run reads it and names the new playlist after it.
-                        val target = if (createNew) PlaylistRef(dstProvider, null, newName.ifBlank { if (linkMode) "" else srcName })
-                        else PlaylistRef(dstProvider, dp!!.id, dp.name)
-                        val source = PlaylistRef(srcProvider, sp.id, srcName, link = linkText.trim().takeIf { linkMode && it.isNotBlank() })
-                        val main = job.copy(
-                            name = name.ifBlank { srcName },
-                            source = source,
-                            target = target,
-                            schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
-                            keepOrder = keepOrder,
+                // Bidirezionale: crea la sync gemella al contrario, senza rimozioni (niente cancellazioni a ping-pong).
+                val srcObj = Providers.byId(srcProvider)
+                // A public link or someone else's playlist can be read, not written: nothing to send back to.
+                val srcOwned = srcPlaylist?.ownedByMe == true && srcObj?.isConnected(ctx) == true
+                val biAllowed = !createNew && srcObj?.canWrite == true && srcOwned &&
+                    srcObj.supportsLibrary(srcPlaylist?.id, asTarget = true) &&
+                    dstProviderObj?.supportsLibrary(dstPlaylist?.id, asTarget = false) == true
+                if (!biAllowed && bidirectional) bidirectional = false
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.weight(1f)) {
+                        Text(stringResource(R.string.editor_bidirectional))
+                        Text(
+                            stringResource(
+                                when {
+                                    biAllowed -> R.string.editor_bidirectional_desc
+                                    srcPlaylist != null && !srcOwned -> R.string.editor_bidirectional_not_owned
+                                    else -> R.string.editor_bidirectional_unavailable
+                                },
+                            ),
+                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-                        val reverse = if (bidirectional && !createNew && dp != null) SyncJob(
-                            id = job.linkedJobId ?: UUID.randomUUID().toString(),
-                            name = "${main.name} ↔",
-                            source = target,
-                            target = source,
-                            schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
-                            linkedJobId = job.id,
-                        ) else null
-                        saveHaptic()
-                        onSave(main.copy(linkedJobId = reverse?.id), reverse)
-                    },
-                ) { Text(stringResource(R.string.save)) }
+                    }
+                    Switch(checked = bidirectional, enabled = biAllowed, onCheckedChange = { bidirectional = it })
+                }
+                SwitchRow(stringResource(R.string.editor_wifi_only), null, wifiOnly) { wifiOnly = it }
+                SwitchRow(stringResource(R.string.editor_enabled), null, enabled) { enabled = it }
+
+                // How candidates are chosen: folded, because the defaults suit most syncs.
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { matchingOpen = !matchingOpen }) {
+                    Column(Modifier.weight(1f)) {
+                        Text(stringResource(R.string.policy_title), style = MaterialTheme.typography.titleSmall)
+                        Text(stringResource(R.string.policy_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Icon(if (matchingOpen) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                if (matchingOpen) {
+                    Text(stringResource(R.string.policy_strictness), style = MaterialTheme.typography.labelLarge)
+                    // I chip vanno a capo: in alcune lingue tre etichette non stanno su una riga.
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        listOf(-1 to R.string.policy_loose, 0 to R.string.policy_normal, 1 to R.string.policy_strict).forEach { (v, res) ->
+                            FilterChip(selected = policy.strictness == v, onClick = { policy = policy.copy(strictness = v) }, label = { Text(stringResource(res)) })
+                        }
+                    }
+                    Text(stringResource(R.string.policy_strictness_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.policy_explicit), style = MaterialTheme.typography.labelLarge)
+                    // I chip vanno a capo: in alcune lingue tre etichette non stanno su una riga.
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        listOf(0 to R.string.policy_explicit_any, 1 to R.string.policy_explicit_yes, -1 to R.string.policy_explicit_clean).forEach { (v, res) ->
+                            FilterChip(selected = policy.explicit == v, onClick = { policy = policy.copy(explicit = v) }, label = { Text(stringResource(res)) })
+                        }
+                    }
+                    SwitchRow(stringResource(R.string.policy_same_album), stringResource(R.string.policy_same_album_desc), policy.sameAlbum) { policy = policy.copy(sameAlbum = it) }
+                    SwitchRow(stringResource(R.string.policy_studio), stringResource(R.string.policy_studio_desc), policy.studioOnly) { policy = policy.copy(studioOnly = it) }
+                }
             }
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(8.dp))
+        }
+    }
+}
+
+/** One of the editor's three steps: a numbered card (source, target, options). */
+@Composable
+private fun EditorStep(number: Int, title: String, content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit) {
+    androidx.compose.material3.Card(
+        Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    ) {
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(28.dp).clip(androidx.compose.foundation.shape.CircleShape).background(MaterialTheme.colorScheme.primary), contentAlignment = Alignment.Center) {
+                    Text(number.toString(), color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge)
+                }
+                Spacer(Modifier.width(12.dp))
+                Text(title, style = MaterialTheme.typography.titleMedium)
+            }
+            content()
         }
     }
 }

@@ -849,4 +849,10 @@
     <string name="card_ai_save">Save cover</string>
     <string name="ai_image_model">Image model (optional)</string>
     <string name="ai_image_model_hint">e.g. dall-e-3, for the poster\'s AI cover</string>
+
+    <!-- Onboarding pager and the editor's third step -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_page">Page %1$d of %2$d</string>
+    <string name="editor_step_options">Options</string>
 </resources>

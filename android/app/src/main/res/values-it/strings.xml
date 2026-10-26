@@ -848,4 +848,10 @@
     <string name="card_ai_save">Salva copertina</string>
     <string name="ai_image_model">Modello per le immagini (facoltativo)</string>
     <string name="ai_image_model_hint">es. dall-e-3, per la copertina IA del poster</string>
+
+    <!-- Onboarding pager and the editor's third step -->
+    <string name="onboarding_skip">Salta</string>
+    <string name="onboarding_next">Avanti</string>
+    <string name="onboarding_page">Pagina %1$d di %2$d</string>
+    <string name="editor_step_options">Opzioni</string>
 </resources>

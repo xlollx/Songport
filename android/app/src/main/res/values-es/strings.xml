@@ -848,4 +848,10 @@
     <string name="card_ai_save">Guardar portada</string>
     <string name="ai_image_model">Modelo de imágenes (opcional)</string>
     <string name="ai_image_model_hint">p. ej. dall-e-3, para la portada IA del póster</string>
+
+    <!-- Onboarding pager and the editor's third step -->
+    <string name="onboarding_skip">Omitir</string>
+    <string name="onboarding_next">Siguiente</string>
+    <string name="onboarding_page">Página %1$d de %2$d</string>
+    <string name="editor_step_options">Opciones</string>
 </resources>

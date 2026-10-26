@@ -838,4 +838,10 @@
     <string name="card_ai_save">保存封面</string>
     <string name="ai_image_model">图片模型（可选）</string>
     <string name="ai_image_model_hint">例如 dall-e-3，用于海报的 AI 封面</string>
+
+    <!-- Onboarding pager and the editor's third step -->
+    <string name="onboarding_skip">跳过</string>
+    <string name="onboarding_next">下一步</string>
+    <string name="onboarding_page">第 %1$d 页，共 %2$d 页</string>
+    <string name="editor_step_options">选项</string>
 </resources>

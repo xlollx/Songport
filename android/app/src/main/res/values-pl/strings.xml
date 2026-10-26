@@ -870,4 +870,10 @@
     <string name="card_ai_save">Zapisz okładkę</string>
     <string name="ai_image_model">Model obrazów (opcjonalnie)</string>
     <string name="ai_image_model_hint">np. dall-e-3, do okładki AI na plakacie</string>
+
+    <!-- Onboarding pager and the editor's third step -->
+    <string name="onboarding_skip">Pomiń</string>
+    <string name="onboarding_next">Dalej</string>
+    <string name="onboarding_page">Strona %1$d z %2$d</string>
+    <string name="editor_step_options">Opcje</string>
 </resources>

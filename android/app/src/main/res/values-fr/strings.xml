@@ -848,4 +848,10 @@
     <string name="card_ai_save">Enregistrer la pochette</string>
     <string name="ai_image_model">Modèle d\'images (facultatif)</string>
     <string name="ai_image_model_hint">ex. dall-e-3, pour la pochette IA de l\'affiche</string>
+
+    <!-- Onboarding pager and the editor's third step -->
+    <string name="onboarding_skip">Passer</string>
+    <string name="onboarding_next">Suivant</string>
+    <string name="onboarding_page">Page %1$d sur %2$d</string>
+    <string name="editor_step_options">Options</string>
 </resources>

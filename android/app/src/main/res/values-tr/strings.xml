@@ -846,4 +846,10 @@
     <string name="card_ai_save">Kapağı kaydet</string>
     <string name="ai_image_model">Görsel modeli (isteğe bağlı)</string>
     <string name="ai_image_model_hint">ör. dall-e-3, posterin yapay zekâ kapağı için</string>
+
+    <!-- Onboarding pager and the editor's third step -->
+    <string name="onboarding_skip">Geç</string>
+    <string name="onboarding_next">İleri</string>
+    <string name="onboarding_page">Sayfa %1$d / %2$d</string>
+    <string name="editor_step_options">Seçenekler</string>
 </resources>

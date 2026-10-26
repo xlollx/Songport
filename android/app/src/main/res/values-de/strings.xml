@@ -848,4 +848,10 @@
     <string name="card_ai_save">Cover speichern</string>
     <string name="ai_image_model">Bildmodell (optional)</string>
     <string name="ai_image_model_hint">z. B. dall-e-3, für das KI-Cover des Posters</string>
+
+    <!-- Onboarding pager and the editor's third step -->
+    <string name="onboarding_skip">Überspringen</string>
+    <string name="onboarding_next">Weiter</string>
+    <string name="onboarding_page">Seite %1$d von %2$d</string>
+    <string name="editor_step_options">Optionen</string>
 </resources>
