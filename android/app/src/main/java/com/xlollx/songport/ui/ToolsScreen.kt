@@ -161,7 +161,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
         return
     }
 
-    Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + LocalBottomBarInset.current).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + LocalBottomBarInset.current), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         ToolRow(Tool.FILES) { open = Tool.FILES }
         ToolRow(Tool.AI, beta = true) { open = Tool.AI }
         ToolRow(Tool.COMPAT) { open = Tool.COMPAT }
