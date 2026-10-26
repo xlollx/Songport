@@ -48,4 +48,8 @@
     <string name="settings_music_links">Proponi Trackhop per i link musicali</string>
     <string name="settings_music_links_desc">Un link di Spotify, Apple Music, YouTube Music, Amazon Music, Deezer o TIDAL potrà aprirsi in Trackhop, che aggiunge il brano a una playlist su uno qualsiasi dei tuoi servizi. Android continua a chiederti quale app usare, o tiene quella impostata nelle sue impostazioni dei link: Trackhop non prende mai un link da solo.</string>
     <string name="settings_dynamic_color_desc">I colori del tuo sfondo al posto di quelli di Trackhop. Il riquadro del titolo resta nei colori del brand.</string>
+    <string name="unplayable_unsupported">%1$s non dice quali brani non riproduce più, quindi Trackhop qui non può controllare.</string>
+    <string name="unplayable_hint">Per ognuno Trackhop propone una versione che si ascolta. Accettala, cercane un\'altra, togli la voce o saltala. Non cambia nulla finché non applichi.</string>
+    <string name="unplayable_confirm_body">%1$d brani ricevono una versione riproducibile, %2$d voci vengono tolte. Gli originali restano nel registro di Trackhop, così puoi annullare.</string>
+    <string name="settings_unplayable_desc">Una volta a settimana Trackhop scorre le tue playlist e ti avvisa quando un brano non si può più ascoltare. Non cambia nulla da solo.</string>
 </resources>

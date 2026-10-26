@@ -48,4 +48,8 @@
     <string name="settings_music_links">Müzik bağlantıları için Trackhop\'u öner</string>
     <string name="settings_music_links_desc">Bir Spotify, Apple Music, YouTube Music, Amazon Music, Deezer veya TIDAL bağlantısı Trackhop\'ta açılabilir; Trackhop parçayı servislerinden herhangi birindeki bir çalma listesine ekler. Android yine hangi uygulamanın kullanılacağını sorar ya da bağlantı ayarlarında seçileni kullanır: Trackhop bir bağlantıyı asla kendiliğinden almaz.</string>
     <string name="settings_dynamic_color_desc">Trackhop\'un renkleri yerine duvar kağıdının renkleri. Başlık alanı marka renklerini korur.</string>
+    <string name="unplayable_unsupported">%1$s hangi parçaları artık çalmadığını söylemiyor, bu yüzden Trackhop burada kontrol edemiyor.</string>
+    <string name="unplayable_hint">Her biri için Trackhop çalan bir sürüm önerir. Kabul et, başkasını ara, kaydı kaldır ya da atla. Uygulayana kadar hiçbir şey değişmez.</string>
+    <string name="unplayable_confirm_body">%1$d parça çalan bir sürüm alacak, %2$d kayıt kaldırılacak. Orijinaller Trackhop günlüğünde kalır, böylece geri alabilirsin.</string>
+    <string name="settings_unplayable_desc">Trackhop haftada bir çalma listelerini tarar ve bir parça artık çalınamadığında haber verir. Kendi başına hiçbir şeyi değiştirmez.</string>
 </resources>
