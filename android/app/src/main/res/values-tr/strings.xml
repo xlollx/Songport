@@ -833,4 +833,17 @@
         <item quantity="one">son %1$d çalıştırma · %2$d başarısız</item>
         <item quantity="other">son %1$d çalıştırma · %2$d başarısız</item>
     </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Kapağı yapay zekân çizsin</string>
+    <string name="card_ai_cover_yes">%1$s ile, kendi anahtarınla: birkaç sente mal olabilir.</string>
+    <string name="card_ai_cover_none">Önce Çalma listesi oluşturucuda bir yapay zekâ ayarla (Araçlar).</string>
+    <string name="card_ai_cover_claude">Claude görsel üretmez: Çalma listesi oluşturucuda OpenAI veya Gemini seç.</string>
+    <string name="card_ai_cover_no_images">%1$s burada görsel üretmez: Çalma listesi oluşturucuda OpenAI veya Gemini seç.</string>
+    <string name="card_ai_cover_model">Sunucunun görsel modelini Çalma listesi oluşturucunun ayarlarına yaz.</string>
+    <string name="card_ai_drawing">Yapay zekân kapağı çiziyor…</string>
+    <string name="card_ai_again">Başka bir kapak</string>
+    <string name="card_ai_save">Kapağı kaydet</string>
+    <string name="ai_image_model">Görsel modeli (isteğe bağlı)</string>
+    <string name="ai_image_model_hint">ör. dall-e-3, posterin yapay zekâ kapağı için</string>
 </resources>

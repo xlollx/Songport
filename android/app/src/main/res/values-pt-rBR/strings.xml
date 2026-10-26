@@ -835,4 +835,17 @@
         <item quantity="one">última %1$d execução · %2$d falharam</item>
         <item quantity="other">últimas %1$d execuções · %2$d falharam</item>
     </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Capa desenhada pela sua IA</string>
+    <string name="card_ai_cover_yes">Com %1$s, usando sua própria chave: pode custar alguns centavos.</string>
+    <string name="card_ai_cover_none">Configure primeiro uma IA no Gerador de playlists (Ferramentas).</string>
+    <string name="card_ai_cover_claude">O Claude não gera imagens: escolha OpenAI ou Gemini no Gerador de playlists.</string>
+    <string name="card_ai_cover_no_images">%1$s não gera imagens aqui: escolha OpenAI ou Gemini no Gerador de playlists.</string>
+    <string name="card_ai_cover_model">Informe o modelo de imagens do seu servidor nas configurações do Gerador de playlists.</string>
+    <string name="card_ai_drawing">Sua IA está desenhando a capa…</string>
+    <string name="card_ai_again">Outra capa</string>
+    <string name="card_ai_save">Salvar capa</string>
+    <string name="ai_image_model">Modelo de imagens (opcional)</string>
+    <string name="ai_image_model_hint">ex. dall-e-3, para a capa por IA do pôster</string>
 </resources>

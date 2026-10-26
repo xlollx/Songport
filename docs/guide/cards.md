@@ -54,6 +54,21 @@ first tracks' covers), the title, the owner and service, the track count and tot
 The QR code is generated on the phone (byte mode, error correction level M, up to 213 bytes), so
 nothing is sent anywhere to make it. Services with no public page get a poster without a QR.
 
+The mosaic takes four tracks from four different albums, so a playlist that opens with several
+songs of one record does not show the same cover four times.
+
+### A cover drawn by your AI
+
+Tick **Cover drawn by your AI** to have the AI you set up for the Playlist generator draw the art
+instead: OpenAI (gpt-image-1, or DALL·E 3 when the key has no access to it), Google Gemini
+(gemini-2.5-flash-image) or an OpenAI-compatible server for which you entered an image model.
+Claude, Groq and OpenRouter do not make images here, and the option says so.
+
+It runs on your own key, so it may cost a few cents per picture. Only the playlist's title, its five
+most frequent artists and its description are sent, with a request for square cover art without
+lettering, logos or real people's faces. The picture is kept for the session: **Make the card again**
+does not pay twice, **Another cover** asks for a new one, **Save cover** keeps it as a PNG.
+
 ## Sharing and saving
 
 **Share** opens the system share sheet with the PNG; **Save image** asks where to put the file.

@@ -857,4 +857,17 @@
         <item quantity="many">ostatnich %1$d uruchomień · %2$d nieudanych</item>
         <item quantity="other">ostatnich %1$d uruchomień · %2$d nieudanych</item>
     </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Okładka narysowana przez twoją AI</string>
+    <string name="card_ai_cover_yes">Przez %1$s, na twoim kluczu: może kosztować kilka centów.</string>
+    <string name="card_ai_cover_none">Najpierw skonfiguruj AI w Generatorze playlist (Narzędzia).</string>
+    <string name="card_ai_cover_claude">Claude nie tworzy obrazów: wybierz OpenAI lub Gemini w Generatorze playlist.</string>
+    <string name="card_ai_cover_no_images">%1$s nie tworzy tu obrazów: wybierz OpenAI lub Gemini w Generatorze playlist.</string>
+    <string name="card_ai_cover_model">Podaj model obrazów swojego serwera w ustawieniach Generatora playlist.</string>
+    <string name="card_ai_drawing">Twoja AI rysuje okładkę…</string>
+    <string name="card_ai_again">Inna okładka</string>
+    <string name="card_ai_save">Zapisz okładkę</string>
+    <string name="ai_image_model">Model obrazów (opcjonalnie)</string>
+    <string name="ai_image_model_hint">np. dall-e-3, do okładki AI na plakacie</string>
 </resources>

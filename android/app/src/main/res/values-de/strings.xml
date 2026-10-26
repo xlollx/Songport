@@ -835,4 +835,17 @@
         <item quantity="one">letzter %1$d Lauf · %2$d fehlgeschlagen</item>
         <item quantity="other">letzte %1$d Läufe · %2$d fehlgeschlagen</item>
     </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Cover von deiner KI gezeichnet</string>
+    <string name="card_ai_cover_yes">Mit %1$s, über deinen eigenen Schlüssel: kann ein paar Cent kosten.</string>
+    <string name="card_ai_cover_none">Richte zuerst eine KI im Playlist-Generator ein (Werkzeuge).</string>
+    <string name="card_ai_cover_claude">Claude erstellt keine Bilder: wähle OpenAI oder Gemini im Playlist-Generator.</string>
+    <string name="card_ai_cover_no_images">%1$s erstellt hier keine Bilder: wähle OpenAI oder Gemini im Playlist-Generator.</string>
+    <string name="card_ai_cover_model">Trage das Bildmodell deines Servers in den Einstellungen des Playlist-Generators ein.</string>
+    <string name="card_ai_drawing">Deine KI zeichnet das Cover…</string>
+    <string name="card_ai_again">Anderes Cover</string>
+    <string name="card_ai_save">Cover speichern</string>
+    <string name="ai_image_model">Bildmodell (optional)</string>
+    <string name="ai_image_model_hint">z. B. dall-e-3, für das KI-Cover des Posters</string>
 </resources>

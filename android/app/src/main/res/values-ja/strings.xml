@@ -825,4 +825,17 @@
     <plurals name="stat_history">
         <item quantity="other">直近 %1$d 回 · 失敗 %2$d 回</item>
     </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">AI でジャケットを生成</string>
+    <string name="card_ai_cover_yes">%1$s で、自分のキーを使用：数セントかかる場合があります。</string>
+    <string name="card_ai_cover_none">先にプレイリスト生成（ツール）で AI を設定してください。</string>
+    <string name="card_ai_cover_claude">Claude は画像を生成しません。プレイリスト生成で OpenAI か Gemini を選んでください。</string>
+    <string name="card_ai_cover_no_images">%1$s はここでは画像を生成しません。プレイリスト生成で OpenAI か Gemini を選んでください。</string>
+    <string name="card_ai_cover_model">プレイリスト生成の設定で、サーバーの画像モデルを指定してください。</string>
+    <string name="card_ai_drawing">AI がジャケットを描いています…</string>
+    <string name="card_ai_again">別のジャケット</string>
+    <string name="card_ai_save">ジャケットを保存</string>
+    <string name="ai_image_model">画像モデル（任意）</string>
+    <string name="ai_image_model_hint">例：dall-e-3（ポスターの AI ジャケット用）</string>
 </resources>

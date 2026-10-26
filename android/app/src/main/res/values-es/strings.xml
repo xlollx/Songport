@@ -835,4 +835,17 @@
         <item quantity="one">última %1$d ejecución · %2$d fallidas</item>
         <item quantity="other">últimas %1$d ejecuciones · %2$d fallidas</item>
     </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Portada dibujada por tu IA</string>
+    <string name="card_ai_cover_yes">Con %1$s, usando tu propia clave: puede costar unos céntimos.</string>
+    <string name="card_ai_cover_none">Configura primero una IA en el Generador de listas (Herramientas).</string>
+    <string name="card_ai_cover_claude">Claude no genera imágenes: elige OpenAI o Gemini en el Generador de listas.</string>
+    <string name="card_ai_cover_no_images">%1$s no genera imágenes aquí: elige OpenAI o Gemini en el Generador de listas.</string>
+    <string name="card_ai_cover_model">Indica el modelo de imágenes de tu servidor en los ajustes del Generador de listas.</string>
+    <string name="card_ai_drawing">Tu IA está dibujando la portada…</string>
+    <string name="card_ai_again">Otra portada</string>
+    <string name="card_ai_save">Guardar portada</string>
+    <string name="ai_image_model">Modelo de imágenes (opcional)</string>
+    <string name="ai_image_model_hint">p. ej. dall-e-3, para la portada IA del póster</string>
 </resources>

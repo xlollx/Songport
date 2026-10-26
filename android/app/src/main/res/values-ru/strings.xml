@@ -855,4 +855,17 @@
         <item quantity="many">последние %1$d запусков · ошибок: %2$d</item>
         <item quantity="other">последние %1$d запусков · ошибок: %2$d</item>
     </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Обложка от вашего ИИ</string>
+    <string name="card_ai_cover_yes">Через %1$s, на вашем ключе: может стоить несколько центов.</string>
+    <string name="card_ai_cover_none">Сначала настройте ИИ в генераторе плейлистов (Инструменты).</string>
+    <string name="card_ai_cover_claude">Claude не создаёт изображения: выберите OpenAI или Gemini в генераторе плейлистов.</string>
+    <string name="card_ai_cover_no_images">%1$s здесь не создаёт изображения: выберите OpenAI или Gemini в генераторе плейлистов.</string>
+    <string name="card_ai_cover_model">Укажите модель изображений вашего сервера в настройках генератора плейлистов.</string>
+    <string name="card_ai_drawing">Ваш ИИ рисует обложку…</string>
+    <string name="card_ai_again">Другая обложка</string>
+    <string name="card_ai_save">Сохранить обложку</string>
+    <string name="ai_image_model">Модель изображений (необязательно)</string>
+    <string name="ai_image_model_hint">напр. dall-e-3, для обложки постера</string>
 </resources>

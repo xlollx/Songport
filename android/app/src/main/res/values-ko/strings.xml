@@ -824,4 +824,17 @@
     <plurals name="stat_history">
         <item quantity="other">최근 %1$d회 · 실패 %2$d회</item>
     </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">AI가 그린 커버</string>
+    <string name="card_ai_cover_yes">%1$s 사용, 내 키로 요청: 몇 센트가 들 수 있습니다.</string>
+    <string name="card_ai_cover_none">먼저 플레이리스트 생성기(도구)에서 AI를 설정하세요.</string>
+    <string name="card_ai_cover_claude">Claude는 이미지를 만들지 않습니다. 플레이리스트 생성기에서 OpenAI나 Gemini를 선택하세요.</string>
+    <string name="card_ai_cover_no_images">%1$s은(는) 여기서 이미지를 만들지 않습니다. 플레이리스트 생성기에서 OpenAI나 Gemini를 선택하세요.</string>
+    <string name="card_ai_cover_model">플레이리스트 생성기 설정에서 서버의 이미지 모델을 입력하세요.</string>
+    <string name="card_ai_drawing">AI가 커버를 그리는 중…</string>
+    <string name="card_ai_again">다른 커버</string>
+    <string name="card_ai_save">커버 저장</string>
+    <string name="ai_image_model">이미지 모델(선택)</string>
+    <string name="ai_image_model_hint">예: dall-e-3, 포스터의 AI 커버용</string>
 </resources>

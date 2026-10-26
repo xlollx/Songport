@@ -45,7 +45,11 @@ object AiClient {
         val freeTier: Boolean get() = this == GEMINI || this == GROQ || this == OPENROUTER
     }
 
-    data class Config(val vendor: Vendor, val apiKey: String, val model: String, val baseUrl: String) {
+    data class Config(
+        val vendor: Vendor, val apiKey: String, val model: String, val baseUrl: String,
+        /** The image model of an OpenAI-compatible server (blank: that server makes no images here). */
+        val imageModel: String = "",
+    ) {
         val base: String get() = (baseUrl.ifBlank { vendor.defaultBase }).trimEnd('/')
         /** The only host the key is ever sent to. */
         val host: String get() = runCatching { java.net.URI(base).host }.getOrNull() ?: base
@@ -72,11 +76,12 @@ object AiClient {
             apiKey = t.accessToken,
             model = t.extra["model"].orEmpty(),
             baseUrl = t.extra["baseUrl"].orEmpty(),
+            imageModel = t.extra["imageModel"].orEmpty(),
         )
     }
 
     fun save(ctx: Context, c: Config) {
-        TokenStore(ctx).set(STORE_ID, Tokens(accessToken = c.apiKey, extra = mapOf("vendor" to c.vendor.name, "model" to c.model, "baseUrl" to c.baseUrl)))
+        TokenStore(ctx).set(STORE_ID, Tokens(accessToken = c.apiKey, extra = mapOf("vendor" to c.vendor.name, "model" to c.model, "baseUrl" to c.baseUrl, "imageModel" to c.imageModel)))
     }
 
     fun clear(ctx: Context) = TokenStore(ctx).clear(STORE_ID)
@@ -301,6 +306,86 @@ object AiClient {
                 val resp = post("${c.base}/chat/completions", headers, body.toString())
                 parseJson(resp)["choices"][0]["message"]["content"].str ?: ""
             }
+        }
+    }
+
+    // ------------------------------------------------------------------ images
+
+    /** Whether this configuration can draw a picture, and why not when it cannot. */
+    enum class ImageSupport { YES, NO_IMAGES, NEEDS_IMAGE_MODEL }
+
+    fun imageSupport(c: Config): ImageSupport = when (c.vendor) {
+        Vendor.OPENAI, Vendor.GEMINI -> ImageSupport.YES
+        Vendor.CUSTOM -> if (c.imageModel.isBlank()) ImageSupport.NEEDS_IMAGE_MODEL else ImageSupport.YES
+        // Claude does not make images; Groq and OpenRouter have no image endpoint of this kind.
+        Vendor.ANTHROPIC, Vendor.GROQ, Vendor.OPENROUTER -> ImageSupport.NO_IMAGES
+    }
+
+    const val GEMINI_IMAGE_MODEL = "gemini-2.5-flash-image"
+
+    // An image takes longer than a chat answer, but not three minutes.
+    private val imageClient = Http.client.newBuilder().readTimeout(90, TimeUnit.SECONDS).callTimeout(120, TimeUnit.SECONDS).build()
+
+    /**
+     * A square picture drawn by the user's own AI from [prompt], as PNG/JPEG bytes. OpenAI:
+     * gpt-image-1, else dall-e-3; Gemini: [GEMINI_IMAGE_MODEL]; an OpenAI-compatible server: its
+     * image model. Errors name what went wrong (key, quota, content policy, model not enabled).
+     */
+    suspend fun generateImage(c: Config, prompt: String): ByteArray = withContext(Dispatchers.IO) {
+        when (c.vendor) {
+            Vendor.GEMINI -> {
+                val body = jsonObj(
+                    "contents" to jsonArr(listOf(jsonObj("role" to "user", "parts" to jsonArr(listOf(jsonObj("text" to prompt)))))),
+                    "generationConfig" to jsonObj("responseModalities" to jsonArr(listOf("IMAGE"))),
+                )
+                val (code, text) = postImage("${c.base}/models/$GEMINI_IMAGE_MODEL:generateContent?key=${Http.enc(c.apiKey)}", emptyMap(), body.toString())
+                if (code == 404) throw ProviderException("Gemini: $GEMINI_IMAGE_MODEL is not available for this key")
+                if (code !in 200..299) throw ProviderException(imageError(code, text))
+                val parts = parseJson(text)["candidates"][0]["content"]["parts"].arr
+                val data = parts.firstNotNullOfOrNull { it["inlineData"]["data"].str ?: it["inline_data"]["data"].str }
+                    ?: throw ProviderException("Gemini made no image" + (parseJson(text)["candidates"][0]["finishReason"].str?.let { " ($it)" } ?: ""))
+                java.util.Base64.getDecoder().decode(data)
+            }
+            Vendor.OPENAI -> runCatching { openAiImage(c, "gpt-image-1", prompt, b64Param = false) }.getOrElse { e ->
+                // A key without access to gpt-image-1 (organisation not verified, model not offered): DALL·E 3.
+                val m = e.message.orEmpty().lowercase()
+                if ("model" in m || "verif" in m || "not found" in m || "does not exist" in m) openAiImage(c, "dall-e-3", prompt, b64Param = true) else throw e
+            }
+            Vendor.CUSTOM -> openAiImage(c, c.imageModel, prompt, b64Param = true)
+            else -> throw ProviderException("${c.vendor.label} does not make images")
+        }
+    }
+
+    private fun openAiImage(c: Config, model: String, prompt: String, b64Param: Boolean): ByteArray {
+        val fields = mutableListOf<Pair<String, Any?>>("model" to model, "prompt" to prompt, "size" to "1024x1024", "n" to 1)
+        if (b64Param) fields += "response_format" to "b64_json"
+        val body = jsonObj(*fields.toTypedArray()).toString()
+        val (code, text) = postImage("${c.base}/images/generations", bearer(c), body)
+        if (code !in 200..299) throw ProviderException(imageError(code, text))
+        val item = parseJson(text)["data"][0]
+        item["b64_json"].str?.let { return java.util.Base64.getDecoder().decode(it) }
+        // Some compatible servers answer with a link instead.
+        val url = item["url"].str ?: throw ProviderException("AI image: empty answer")
+        return imageClient.newCall(Request.Builder().url(url).get().build()).execute().use { r ->
+            if (!r.isSuccessful) throw ProviderException("AI image ${r.code}")
+            r.body?.bytes() ?: throw ProviderException("AI image: empty answer")
+        }
+    }
+
+    private fun postImage(url: String, headers: Map<String, String>, body: String): Pair<Int, String> {
+        val req = Request.Builder().url(url).apply { headers.forEach { (k, v) -> header(k, v) } }.post(Http.jsonBody(body)).build()
+        return imageClient.newCall(req).execute().use { it.code to (it.body?.string() ?: "") }
+    }
+
+    /** The service's own reason, said plainly for the cases people meet: key, quota, content policy. */
+    private fun imageError(code: Int, body: String): String {
+        val base = errorMessage(code, body)
+        val l = body.lowercase()
+        return when {
+            code == 401 || (code == 403 && "key" in l) -> "$base (key refused)"
+            code == 429 || "quota" in l || "billing" in l || "insufficient" in l -> "$base (quota or billing)"
+            "safety" in l || "content_policy" in l || "policy" in l || "blocked" in l -> "$base (refused by the content policy)"
+            else -> base
         }
     }
 

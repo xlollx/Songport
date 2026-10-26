@@ -2,6 +2,12 @@ package com.xlollx.songport.ui
 
 import com.xlollx.songport.providers.*
 import android.graphics.Bitmap
+import com.xlollx.songport.sync.CoverPrompt
+import com.xlollx.songport.ai.AiClient
+import androidx.compose.ui.semantics.Role
+import androidx.compose.material3.Checkbox
+import androidx.compose.foundation.selection.toggleable
+import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -281,6 +287,9 @@ private fun Suggestions(title: String, tracks: List<Track>) {
     tracks.take(5).forEach { Text("• $it", style = MaterialTheme.typography.bodySmall) }
 }
 
+/** Covers the user's AI drew in this session, by playlist: "make the card again" does not pay twice. */
+private val aiCovers = HashMap<String, Bitmap>()
+
 /** The playlist poster: covers, title, numbers and a QR to open it. */
 @Composable
 fun PosterCard(snackbar: SnackbarHostState) {
@@ -290,15 +299,42 @@ fun PosterCard(snackbar: SnackbarHostState) {
     var busy by remember { mutableStateOf(false) }
     var bitmaps by remember { mutableStateOf<Map<Cards.Format, Bitmap>?>(null) }
     var qr by remember { mutableStateOf<String?>(null) }
+    // The AI of the Playlist generator, if any, and whether it can draw.
+    val ai = remember { AiClient.config(ctx)?.takeIf { it.complete } }
+    val aiSupport = ai?.let { AiClient.imageSupport(it) }
+    var aiCover by remember { mutableStateOf(false) }
+    var drawing by remember { mutableStateOf(false) }
+    var drawn by remember { mutableStateOf<Bitmap?>(null) }
+    val saveCover = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("image/png")) { uri ->
+        val b = drawn
+        if (uri != null && b != null) Cards.save(ctx, b, uri)
+    }
 
-    fun run() {
+    fun run(newCover: Boolean = false) {
         val p = pick ?: return
         busy = true; bitmaps = null
         scope.launch {
             try {
                 val tracks = p.provider.tracks(ctx, p.playlist.id)
                 val info = if (p.playlist.trackCount >= 0 && p.playlist.name.isNotBlank()) p.playlist else runCatching { p.provider.playlistInfo(ctx, p.playlist.id) }.getOrDefault(p.playlist)
+                val key = p.provider.id + "|" + p.playlist.id
+                if (newCover) aiCovers.remove(key)
                 val covers: List<Bitmap?> = withContext(Dispatchers.IO) {
+                    if (aiCover && ai != null && aiSupport == AiClient.ImageSupport.YES) {
+                        // Only the title, the main artists and the description go to the user's AI.
+                        val art = aiCovers[key] ?: kotlin.run {
+                            drawing = true
+                            try {
+                                val prompt = CoverPrompt.build(info.name.ifBlank { p.playlist.name }, CoverPrompt.topArtists(tracks), info.description)
+                                val bytes = AiClient.generateImage(ai, prompt)
+                                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.also { aiCovers[key] = it }
+                                    ?: throw com.xlollx.songport.model.ProviderException(ctx.getString(R.string.error_generic))
+                            } finally { drawing = false }
+                        }
+                        drawn = art
+                        return@withContext listOf(art)
+                    }
+                    drawn = null
                     info.imageUrl?.let { url -> Cards.bitmap(url, 900)?.let { return@withContext listOf(it) } }
                     Cards.distinctCovers(tracks, p.provider.serviceId)
                 }
@@ -320,9 +356,44 @@ fun PosterCard(snackbar: SnackbarHostState) {
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(stringResource(R.string.tools_poster_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        PlaylistSource(stringResource(R.string.editor_playlist), null, snackbar) { pick = it; bitmaps = null }
+        PlaylistSource(stringResource(R.string.editor_playlist), null, snackbar) { pick = it; bitmaps = null; drawn = null }
+        AiCoverOption(ai, aiSupport, aiCover) { aiCover = it; bitmaps = null }
+        if (drawing) Text(stringResource(R.string.card_ai_drawing), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (bitmaps != null && qr == null) Text(stringResource(R.string.card_poster_no_qr), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         CardActions(bitmaps, "songport-poster", busy || pick == null, onRender = { run() }, renderLabel = stringResource(if (bitmaps == null) R.string.card_poster_run else R.string.card_again))
+        if (aiCover && drawn != null && bitmaps != null) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(enabled = !busy, onClick = { run(newCover = true) }) { Text(stringResource(R.string.card_ai_again)) }
+                TextButton(onClick = { saveCover.launch("songport-cover.png") }) { Text(stringResource(R.string.card_ai_save)) }
+            }
+        }
+    }
+}
+
+/** "Cover drawn by your AI": a checkbox row, enabled only when the configured AI can make images, with the reason when not. */
+@Composable
+private fun AiCoverOption(ai: AiClient.Config?, support: AiClient.ImageSupport?, checked: Boolean, onChange: (Boolean) -> Unit) {
+    val enabled = support == AiClient.ImageSupport.YES
+    val note = when {
+        ai == null -> stringResource(R.string.card_ai_cover_none)
+        support == AiClient.ImageSupport.YES -> stringResource(R.string.card_ai_cover_yes, ai.vendor.label)
+        support == AiClient.ImageSupport.NEEDS_IMAGE_MODEL -> stringResource(R.string.card_ai_cover_model)
+        ai.vendor == AiClient.Vendor.ANTHROPIC -> stringResource(R.string.card_ai_cover_claude)
+        else -> stringResource(R.string.card_ai_cover_no_images, ai.vendor.label)
+    }
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
+            .toggleable(value = checked && enabled, enabled = enabled, role = Role.Checkbox, onValueChange = onChange)
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(checked = checked && enabled, onCheckedChange = null, enabled = enabled)
+        Spacer(Modifier.width(8.dp))
+        Column(Modifier.weight(1f)) {
+            Text(stringResource(R.string.card_ai_cover), style = MaterialTheme.typography.bodyLarge,
+                color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+            Text(note, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }
 

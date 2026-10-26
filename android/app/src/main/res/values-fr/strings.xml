@@ -835,4 +835,17 @@
         <item quantity="one">dernière %1$d exécution · %2$d échouées</item>
         <item quantity="other">%1$d dernières exécutions · %2$d échouées</item>
     </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Pochette dessinée par votre IA</string>
+    <string name="card_ai_cover_yes">Avec %1$s, sur votre propre clé : cela peut coûter quelques centimes.</string>
+    <string name="card_ai_cover_none">Configurez d\'abord une IA dans le Générateur de playlists (Outils).</string>
+    <string name="card_ai_cover_claude">Claude ne génère pas d\'images : choisissez OpenAI ou Gemini dans le Générateur de playlists.</string>
+    <string name="card_ai_cover_no_images">%1$s ne génère pas d\'images ici : choisissez OpenAI ou Gemini dans le Générateur de playlists.</string>
+    <string name="card_ai_cover_model">Indiquez le modèle d\'images de votre serveur dans les réglages du Générateur de playlists.</string>
+    <string name="card_ai_drawing">Votre IA dessine la pochette…</string>
+    <string name="card_ai_again">Une autre pochette</string>
+    <string name="card_ai_save">Enregistrer la pochette</string>
+    <string name="ai_image_model">Modèle d\'images (facultatif)</string>
+    <string name="ai_image_model_hint">ex. dall-e-3, pour la pochette IA de l\'affiche</string>
 </resources>

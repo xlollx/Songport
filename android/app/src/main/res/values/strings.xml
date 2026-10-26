@@ -836,4 +836,17 @@
         <item quantity="one">last %1$d run · %2$d failed</item>
         <item quantity="other">last %1$d runs · %2$d failed</item>
     </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Cover drawn by your AI</string>
+    <string name="card_ai_cover_yes">With %1$s, on your own key: it may cost a few cents.</string>
+    <string name="card_ai_cover_none">Set up an AI in the Playlist generator first (Tools).</string>
+    <string name="card_ai_cover_claude">Claude does not make images: pick OpenAI or Gemini in the Playlist generator.</string>
+    <string name="card_ai_cover_no_images">%1$s does not make images here: pick OpenAI or Gemini in the Playlist generator.</string>
+    <string name="card_ai_cover_model">Add your server\'s image model in the Playlist generator\'s settings.</string>
+    <string name="card_ai_drawing">Your AI is drawing the cover…</string>
+    <string name="card_ai_again">Another cover</string>
+    <string name="card_ai_save">Save cover</string>
+    <string name="ai_image_model">Image model (optional)</string>
+    <string name="ai_image_model_hint">e.g. dall-e-3, for the poster\'s AI cover</string>
 </resources>
