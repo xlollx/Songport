@@ -1,0 +1,1 @@
+New look, phase 2: real service logos and bigger service tiles, a cleaner Accounts page, and sync cards with the last run in numbers and the recent history (Settings › Appearance › New look). Playlist poster: four covers of four different albums, and an optional cover drawn by your own AI (OpenAI or Gemini). Fixed the squeezed Search button in Unplayable tracks.
