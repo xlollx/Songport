@@ -1,0 +1,1 @@
+F-Droid için yeniden üretilebilir derleme: her derlemede farklı çıkan başlangıç profili artık eklenmiyor. Amazon Music: ekim düzeltmesinden sonra bağlayıcı kodu toparlandı; YouTube Music: istemci sunucuyla paylaşılıyor.
