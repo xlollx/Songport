@@ -12,6 +12,9 @@ import android.webkit.WebViewClient
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -77,6 +80,9 @@ object AmazonBridge {
         web.addJavascriptInterface(object {
             @JavascriptInterface
             fun headers(json: String, ua: String?, host: String?) { remember(app, json, ua, host) }
+            /** Status of one of the player's own API calls, for the diagnostics log. */
+            @JavascriptInterface
+            fun status(op: String, code: Int) { playerStatus(op, code) }
             /** The configuration is only used here for the display name shown on the status screen. */
             @JavascriptInterface
             fun config(json: String, ua: String?) {
@@ -89,14 +95,81 @@ object AmazonBridge {
         return early
     }
 
-    /** The player's credentials, from cache or freshly captured. Blocking; never on the main thread. */
+    /**
+     * The player's credentials, from cache or freshly captured; [refresh] always runs the player,
+     * which also renews the session cookies in the WebView's jar. Blocking; never on the main thread.
+     */
     @Synchronized
-    fun player(ctx: Context, domain: String): Player {
-        cached?.takeIf { fresh(it.at) && it.signedIn }?.let { return it }
-        stored(ctx)?.let { cached = it; return it }
-        val p = capture(ctx.applicationContext, domain)
+    fun player(ctx: Context, domain: String, refresh: Boolean = false): Player {
+        if (!refresh) {
+            cached?.takeIf { fresh(it.at) && it.signedIn }?.let { return it }
+            stored(ctx)?.let { cached = it; return it }
+        }
+        val p = capture(ctx.applicationContext, domain, keep = refresh)
         cached = p
         return p
+    }
+
+    // ------------------------------------------------------------------ calls from inside the player
+
+    /** The offscreen player kept open after a refresh, and when it was last used. Main thread only. */
+    @Volatile private var page: WebView? = null
+    @Volatile private var pageUsed = 0L
+    private val results = ConcurrentHashMap<String, CompletableFuture<Pair<Int, String>>>()
+    private val ids = AtomicInteger(0)
+    private const val PAGE_IDLE_MS = 3 * 60_000L
+
+    /** True while a player page is open to run calls in. */
+    val pageOpen: Boolean get() = page != null
+
+    /**
+     * Sends one GraphQL request from inside the running player page, as the player itself would:
+     * the browser adds the cookies, renews what it renews, and the request carries the headers the
+     * player last sent. Used when Amazon accepts the session from the browser but not from our own
+     * HTTP client. Opens the player first if it is not running. Blocking; never on the main thread.
+     */
+    fun gqlInPage(ctx: Context, domain: String, body: String): Pair<Int, String> {
+        if (page == null) player(ctx, domain, refresh = true)
+        val id = "q" + ids.incrementAndGet()
+        val future = CompletableFuture<Pair<Int, String>>()
+        results[id] = future
+        pageUsed = System.currentTimeMillis()
+        val js = "window.__amzCall && window.__amzCall(${JsonPrimitive(id)}, ${JsonPrimitive(body)});"
+        Handler(Looper.getMainLooper()).post {
+            val w = page
+            if (w == null) future.complete(-1 to "the player page is closed") else w.evaluateJavascript(js, null)
+        }
+        return try {
+            future.get(45, TimeUnit.SECONDS)
+        } catch (e: java.util.concurrent.TimeoutException) {
+            -1 to "no answer from the player page in 45 s"
+        } finally {
+            results.remove(id)
+            pageUsed = System.currentTimeMillis()
+        }
+    }
+
+    private val statusLogged = ConcurrentHashMap<String, Long>()
+
+    /** Logs how Amazon answered one of the player's own calls: each operation and status once in ten minutes. */
+    private fun playerStatus(op: String, code: Int) {
+        val key = "$op:$code"
+        val now = System.currentTimeMillis()
+        if (now - (statusLogged[key] ?: 0L) < 600_000) return
+        statusLogged[key] = now
+        BridgeNet.log("amazon", "the player's own ${op.ifBlank { "call" }}: $code")
+    }
+
+    /** Called from the page with the answer to [gqlInPage]. */
+    private fun answer(id: String, status: Int, text: String) { results[id]?.complete(status to text) }
+
+    /** Closes the kept player once nobody has used it for a while. */
+    private fun scheduleClose(main: Handler) {
+        main.postDelayed({
+            val w = page ?: return@postDelayed
+            if (System.currentTimeMillis() - pageUsed < PAGE_IDLE_MS) scheduleClose(main)
+            else { page = null; runCatching { w.stopLoading(); w.destroy() } }
+        }, 60_000L)
     }
 
     private fun fresh(at: Long) = System.currentTimeMillis() - at < TTL_MS
@@ -121,7 +194,7 @@ object AmazonBridge {
     fun storedUserAgent(ctx: Context): String? = AmazonSession.headersUserAgent(ctx.applicationContext)
 
     @SuppressLint("SetJavaScriptEnabled", "AddJavascriptInterface")
-    private fun capture(app: Context, domain: String): Player {
+    private fun capture(app: Context, domain: String, keep: Boolean = false): Player {
         val latch = CountDownLatch(1)
         // Written from the WebView thread, read here: atomic holders, not plain locals.
         val headers = AtomicReference<Map<String, String>?>(null)
@@ -160,7 +233,17 @@ object AmazonBridge {
             /** The player showed a page instead of starting ("update your browser", "get the app"). */
             @JavascriptInterface
             fun page(text: String) { problem.compareAndSet(null, "page says: " + text.take(120)) }
+
+            @JavascriptInterface
+            fun status(op: String, code: Int) { playerStatus(op, code) }
+
+            /** The answer to a call made with [gqlInPage]. */
+            @JavascriptInterface
+            fun result(id: String, status: Int, text: String) { answer(id, status, text) }
         }
+
+        // A kept page from an earlier refresh is replaced by this one.
+        main.post { page?.let { old -> page = null; runCatching { old.stopLoading(); old.destroy() } } }
 
         main.post {
             try {
@@ -173,7 +256,7 @@ object AmazonBridge {
                 // single page application lays nothing out and makes no calls at all.
                 w.measure(View.MeasureSpec.makeMeasureSpec(VIEW_W, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(VIEW_H, View.MeasureSpec.EXACTLY))
                 w.layout(0, 0, VIEW_W, VIEW_H)
-                // The desktop player, as in the traffic capture: the phone-sized one stopped calling its API.
+                // Desktop Chrome, as in the traffic capture, whose player Amazon accepts on this session.
                 BridgeUa.apply(app, w)
                 w.addJavascriptInterface(sink, "AmzBridge")
                 val early = WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)
@@ -205,7 +288,14 @@ object AmazonBridge {
             }
         }
         latch.await(50, TimeUnit.SECONDS)
-        main.post { runCatching { web?.stopLoading(); web?.destroy() } }
+        val usable = headers.get() != null
+        main.post {
+            if (keep && usable && web != null) {
+                page = web
+                pageUsed = System.currentTimeMillis()
+                scheduleClose(main)
+            } else runCatching { web?.stopLoading(); web?.destroy() }
+        }
 
         val h = headers.get()
         val c = config.get()
@@ -281,7 +371,21 @@ object AmazonBridge {
             return out;
           };
           var grab = function(h){
-            try { var o = plain(h); if (o['csrf-token']) AmzBridge.headers(JSON.stringify(o), navigator.userAgent, location.host); } catch(e){}
+            try { var o = plain(h); if (o['csrf-token']) { window.__amzLast = o; AmzBridge.headers(JSON.stringify(o), navigator.userAgent, location.host); } } catch(e){}
+          };
+          // A call Songport asks for, sent by the page itself with the headers the player last used.
+          window.__amzCall = function(id, body){
+            var done = function(st, t){ try { AmzBridge.result(id, st, String(t)); } catch(e){} };
+            try {
+              var h = {}, last = window.__amzLast || {};
+              Object.keys(last).forEach(function(k){ h[k] = last[k]; });
+              h['content-type'] = 'application/json';
+              h['accept'] = 'application/graphql-response+json, application/json';
+              if (h['x-amzn-trace-start']) h['x-amzn-trace-start'] = String(Date.now());
+              window.fetch('https://gql.' + location.host + '/', { method: 'POST', headers: h, body: body, credentials: 'include' })
+                .then(function(r){ return r.text().then(function(t){ done(r.status, t); }); })
+                .catch(function(e){ done(-1, e); });
+            } catch(e) { done(-1, e); }
           };
           // Where the player's other requests go (host and path only): if Amazon moves its API again,
           // the error says where to, instead of "no calls".
@@ -290,7 +394,14 @@ object AmazonBridge {
           if (of) window.fetch = function(input, init){
             var url = (typeof input === 'string') ? input : (input && input.url) || '';
             if (isGql(url)) grab((init && init.headers) || (input && input.headers)); else other(url);
-            return of.apply(this, arguments);
+            var p = of.apply(this, arguments);
+            // How Amazon answers the player's own calls: tells "the session is refused" from "our
+            // copy of the player's request is refused".
+            if (isGql(url) && AmzBridge.status) try {
+              var op = ''; try { op = JSON.parse(String((init && init.body) || '{}')).operationName || ''; } catch(e){}
+              p.then(function(r){ try { AmzBridge.status(op, r.status); } catch(e){} }, function(){});
+            } catch(e){}
+            return p;
           };
           var oo = XMLHttpRequest.prototype.open, os = XMLHttpRequest.prototype.send, osh = XMLHttpRequest.prototype.setRequestHeader;
           XMLHttpRequest.prototype.setRequestHeader = function(k, v){ (this.__h = this.__h || []).push([k, v]); return osh.apply(this, arguments); };

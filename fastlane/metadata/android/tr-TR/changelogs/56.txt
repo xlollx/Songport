@@ -1,0 +1,1 @@
+Amazon Music: bağlantıyı kesip yeniden bağlanmak artık tüm eski Amazon çerezlerini siliyor; eski bir kopya, bağlandıktan hemen sonra bile "401" hatasına yol açıyordu. Bağlanma ve bağlantı kesme tanılama günlüğüne yazılıyor. Güncellemeden sonra Amazon Music bağlantısını bir kez kesip yeniden bağlan.

@@ -1,0 +1,1 @@
+Amazon Music: gdy Amazon akceptuje sesję tylko z własnego odtwarzacza webowego, Songport wysyła teraz żądania z wnętrza tego odtwarzacza (ukryta strona przeglądarki), zamiast zatrzymywać się z błędem „401”.

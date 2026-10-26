@@ -1,0 +1,1 @@
+Duas ferramentas novas para compartilhar: "Somos compatíveis?" compara duas playlists, mesmo de serviços diferentes, e dá uma pontuação com as faixas e os artistas em comum, como imagem para os stories. "Pôster da playlist" cria um card com as capas e um QR que abre a playlist.

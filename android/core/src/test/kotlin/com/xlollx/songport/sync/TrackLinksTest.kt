@@ -48,4 +48,13 @@ class TrackLinksTest {
         assertTrue(TrackLinks.matches("amazon", "amazon"))
         assertFalse(TrackLinks.matches("spotify", "apple"))
     }
+
+    @Test fun webUrls() {
+        assertEquals("https://open.spotify.com/track/abc", TrackLinks.url("spotify_bridge", "abc"))
+        assertEquals("https://music.youtube.com/watch?v=dQw4w9WgXcQ", TrackLinks.url("ytm", "dQw4w9WgXcQ"))
+        assertEquals("https://tidal.com/browse/track/12", TrackLinks.url("tidal", "12"))
+        assertNull(TrackLinks.url("subsonic", "12"))
+        // Every address this gives is one parse() reads back to the same id.
+        for (s in TrackLinks.SERVICES) assertEquals(s, TrackLinks.parse(TrackLinks.url(s, if (s == "youtube") "dQw4w9WgXcQ" else if (s == "amazon") "B0CXYZ1234" else "123")!!)!!.service)
+    }
 }

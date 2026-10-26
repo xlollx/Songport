@@ -1,0 +1,1 @@
+Amazon Music: Amazon oturumu yalnızca kendi web oynatıcısından kabul ettiğinde Songport artık "401" ile durmak yerine isteklerini o oynatıcının içinden (gizli bir tarayıcı sayfası) gönderiyor.

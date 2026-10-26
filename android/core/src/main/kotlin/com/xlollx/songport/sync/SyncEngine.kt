@@ -1,0 +1,838 @@
+package com.xlollx.songport.sync
+
+import com.xlollx.songport.providers.*
+import com.xlollx.songport.data.FileStore
+import com.xlollx.songport.platform.Env
+import kotlinx.coroutines.sync.withPermit
+import com.xlollx.songport.model.MatchPolicy
+import com.xlollx.songport.model.MatchReview
+import com.xlollx.songport.model.Progress
+import com.xlollx.songport.model.ProviderException
+import com.xlollx.songport.model.SyncJob
+import com.xlollx.songport.model.SyncPlan
+import com.xlollx.songport.model.SyncReport
+import com.xlollx.songport.model.TargetSearch
+import com.xlollx.songport.model.Track
+import com.xlollx.songport.providers.LocalFilesProvider
+import com.xlollx.songport.providers.MusicProvider
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
+import com.xlollx.songport.providers.Providers
+import java.util.UUID
+
+/**
+ * Esegue una sincronizzazione origine -> destinazione in due tempi:
+ *
+ *  **plan()** legge origine e destinazione, riconosce i brani gia' presenti (cache abbinamenti,
+ *  ISRC, titolo+artista+durata), cerca i mancanti e decide cosa aggiungere e cosa togliere.
+ *  Non scrive nulla: e' quello che mostra l'anteprima.
+ *
+ *  **apply()** esegue il piano: aggiunte a blocchi, rimozioni, cache, report.
+ *
+ * Ogni abbinamento riuscito finisce nella cache, cosi' le sync successive non ripetono le ricerche.
+ * I brani che l'utente ha messo fra gli "ignorati" del job non vengono ne' cercati ne' segnalati.
+ */
+/**
+ * Attese visibili quando il servizio limita le richieste: brevi e crescenti. Il contatore si azzera
+ * dopo un tratto di ricerche riuscite, cosi' una playlist lunga con limiti intermittenti arriva in
+ * fondo; solo una serie di rifiuti senza progressi fa fermare con quanto trovato.
+ */
+private val WAIT_SECONDS = intArrayOf(10, 20, 40, 60, 120)
+/** Quante attese dichiarate dal servizio (blocco dell'indirizzo) si accettano prima di fermarsi con quanto fatto. */
+private const val MAX_BLOCK_WAITS = 8
+private const val RESET_AFTER_CHUNKS = 15
+/** Punteggio fittizio di un "non trovato" preso dalla cache dei fallimenti, mai mostrato. */
+private const val MISS_SCORE = -1.0
+/**
+ * Attese crescenti quando la rete non risponde. Una sync programmata parte spesso mentre il telefono
+ * si sta svegliando: WorkManager la lancia appena il sistema dichiara la rete "connessa", ma il DNS
+ * puo' arrivare qualche decina di secondi dopo. Quindici secondi di tentativi non bastavano.
+ */
+private val NETWORK_RETRY_SECONDS = intArrayOf(5, 15, 30, 60, 120)
+
+/** Errori di trasporto che passano da soli: risoluzione del nome, connessione rifiutata o caduta, timeout. */
+fun isTransientNetwork(msg: String?): Boolean {
+    val m = msg ?: return false
+    return m.contains("Unable to resolve host", true) || m.contains("unreachable", true) || m.contains("Failed to connect", true) ||
+        m.contains("timeout", true) || m.contains("timed out", true) || m.contains("connection abort", true) || m.contains("reset by peer", true)
+}
+
+/** Below the match threshold but close enough to be worth proposing in the review. */
+private const val HINT_THRESHOLD = 0.45
+/** Above this many tracks the order step is skipped: too many single moves for one run. */
+private const val MAX_REORDER = 1500
+/** Hosts of the short links music apps put in their share text. */
+private val SHORT_LINK_HOSTS = setOf("amzn.to", "amzn.eu", "a.co", "spotify.link", "spoti.fi", "apple.co", "deezer.page.link", "link.deezer.com", "tidal.link")
+
+class SyncEngine(
+    private val env: Env,
+    /** User-facing texts by their strings.xml name; replaced in tests, which check the names. */
+    private val texts: (String, Array<out Any>) -> String = { name, args -> env.text(name, *args) },
+) {
+    private val store = env.store
+    private fun str(name: String, vararg args: Any): String = texts(name, args)
+    /** Best candidate under the threshold per source track searched in this run: the review's proposals. */
+    private val hints = java.util.concurrent.ConcurrentHashMap<String, Track>()
+    /** Source ids whose searches on the target returned nothing at all: not there, nothing to review. */
+    private val absent: MutableSet<String> = java.util.concurrent.ConcurrentHashMap.newKeySet()
+
+    suspend fun run(job: SyncJob, unattended: Boolean = false, onProgress: (Progress) -> Unit = {}): SyncReport {
+        val started = System.currentTimeMillis()
+        val reportId = UUID.randomUUID().toString()
+        // The source's version before anything is read: a change during the run is seen next time.
+        val (src0, dst0) = runCatching { providers(job) }.getOrNull() ?: (null to null)
+        val sourceVersion = job.source.playlistId?.let { id -> src0?.let { runCatching { it.playlistVersion(env, id) }.getOrNull() } }
+        if (unattended && sourceVersion != null && sourceVersion == job.sourceVersion && job.targetVersion != null) {
+            val targetVersion = job.target.playlistId?.let { id -> dst0?.let { runCatching { it.playlistVersion(env, id) }.getOrNull() } }
+            if (targetVersion == job.targetVersion) {
+                env.log("engine", "${job.name}: unchanged on both sides, skipped")
+                val report = SyncReport(reportId, job.id, job.name, started, System.currentTimeMillis() - started, notes = listOf(str("note_unchanged")))
+                store.addReport(report)
+                return report
+            }
+        }
+        val report = try {
+            val plan = plan(job, onProgress, unattended = unattended)
+            // La ricerca e' finita: i brani non trovati e gli abbinamenti incerti si possono gia'
+            // sistemare mentre l'aggiunta procede. Un report provvisorio li rende raggiungibili.
+            if (plan.unmatched.isNotEmpty() || plan.uncertain.isNotEmpty()) {
+                store.addReport(
+                    SyncReport(
+                        reportId, job.id, job.name, started, System.currentTimeMillis() - started,
+                        sourceCount = plan.sourceCount, unmatched = plan.unmatched.map { it.toString() }, unmatchedTracks = plan.unmatched,
+                        ignored = plan.ignored, reviewTracks = plan.uncertain, notes = plan.notes, partial = true,
+                        suggestions = suggestionsFor(plan.unmatched), absent = plan.unmatched.filter { it.id in absent }.map { it.id },
+                    ),
+                )
+            }
+            apply(job, plan, started, reportId, onProgress)
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Il sistema ha fermato il worker (cambio di rete, limiti): non e' un esito della sync e
+            // WorkManager la fara' ripartire; gli abbinamenti fatti finora sono gia' in cache.
+            throw e
+        } catch (e: Exception) {
+            env.log("engine", "${job.name}: ${e.javaClass.simpleName}: ${e.message}")
+            SyncReport(reportId, job.id, job.name, started, System.currentTimeMillis() - started,
+                error = e.message ?: e.javaClass.simpleName)
+        }
+        store.addReport(report)
+        if (report.error == null && dst0 != null) {
+            // The target's version after our own writes: the next scheduled run compares against it.
+            val latest = store.job(job.id) ?: job
+            val targetVersion = latest.target.playlistId?.let { id -> runCatching { dst0.playlistVersion(env, id) }.getOrNull() }
+            if (sourceVersion != latest.sourceVersion || targetVersion != latest.targetVersion) store.upsertJob(latest.copy(sourceVersion = sourceVersion, targetVersion = targetVersion))
+        }
+        return report
+    }
+
+    /**
+     * The playlist is still in the user's library. Library slots (liked, albums…) and files always
+     * are; a source that is not listed may be someone else's public playlist, so it passes when the
+     * service still describes it. A target must be the user's own: listed, or gone.
+     */
+    private suspend fun checkStillThere(p: MusicProvider, playlistId: String, name: String, isSource: Boolean) {
+        if (MusicProvider.isLibrary(playlistId) || !p.requiresAuth) return
+        val listed = runCatching { p.playlists(env).any { it.id == playlistId } }.getOrDefault(true)
+        if (listed) return
+        if (isSource && runCatching { p.playlistInfo(env, playlistId) }.isSuccess) return
+        throw ProviderException(str(if (isSource) "error_source_gone" else "error_target_gone", name.ifBlank { playlistId }, p.label(env)))
+    }
+
+    /** Below this many removals a scheduled run proceeds whatever the share of the target they are. */
+    private val REMOVAL_CAP_MIN = 10
+
+    private fun providers(job: SyncJob): Pair<MusicProvider, MusicProvider> {
+        val src = Providers.byId(job.source.provider) ?: throw ProviderException("Unknown service: ${job.source.provider}")
+        val dst = Providers.byId(job.target.provider) ?: throw ProviderException("Unknown service: ${job.target.provider}")
+        return src to dst
+    }
+
+    /** Calcola cosa farebbe la sync senza modificare nulla (a parte creare la destinazione se manca). */
+    /**
+     * [interactive]: the plan is for the preview, where the user sees every removal before applying it.
+     * Any other run (scheduled or started with a tap) holds back removals that would take a large
+     * part of the target: a source the service listed only partly looks exactly like a source that
+     * lost most of its tracks, and only a person can tell the two apart.
+     */
+    suspend fun plan(job: SyncJob, onProgress: (Progress) -> Unit = {}, createTarget: Boolean = true, unattended: Boolean = false, interactive: Boolean = false): SyncPlan {
+        val (src, dst) = providers(job)
+        val srcPlaylistId = job.source.playlistId ?: throw ProviderException("No source playlist selected")
+        // L'origine puo' essere una playlist pubblica leggibile senza login (catalogo Apple Music).
+        if (!src.canRead(env, srcPlaylistId)) throw ProviderException(str("error_not_connected", src.displayName))
+        if (!dst.isConnected(env)) throw ProviderException(str("error_not_connected", dst.displayName))
+
+        val notes = ArrayList<String>()
+
+        onProgress(Progress(Progress.Step.FETCH_SOURCE))
+        // A playlist deleted on the service (or unfollowed on Spotify, whose API keeps answering for
+        // it) must stop the sync with its name, not feed a ghost. One list call per side, per run.
+        checkStillThere(src, srcPlaylistId, job.source.playlistName, isSource = true)
+        job.target.playlistId?.let { checkStillThere(dst, it, job.target.playlistName, isSource = false) }
+        val allSource = patient(onProgress) { src.tracks(env, srcPlaylistId) }
+        // Ignored in this sync, or declared absent from this destination service by any sync.
+        val ignoredIds = job.ignoredSourceIds.toHashSet()
+        // Verso "album salvati" o "artisti seguiti" (anche da un file) si cercano album o artisti, non brani.
+        val kind = MusicProvider.libraryKind(job.target.playlistId)
+        val srcTracks = allSource.filter { it.id !in ignoredIds && !store.isIgnored(src.id, it.id, dst.id) }
+            .map { if (kind != null && it.kind.isEmpty()) it.copy(kind = kind) else it }
+        val ignored = allSource.size - srcTracks.size
+
+        var targetId = job.target.playlistId
+        var targetCreated = false
+        if (targetId == null) {
+            if (!createTarget) {
+                // Anteprima senza destinazione: tutto cio' che si abbina verrebbe aggiunto.
+                return previewWithoutTarget(job, src, dst, srcTracks, ignored, notes, onProgress)
+            }
+            onProgress(Progress(Progress.Step.CREATE_TARGET))
+            // The source's own name, description and cover travel with the playlist, where the source has them to give.
+            val info = if (MusicProvider.isLibrary(srcPlaylistId)) null else runCatching { src.playlistInfo(env, srcPlaylistId) }.getOrNull()
+            val srcName = job.source.playlistName.ifBlank { info?.name.orEmpty() }
+            // No name given for the new playlist: the shared one's own name, read now (a link pasted
+            // without a name resolves here), then whatever the sync is called.
+            val name = job.target.playlistName.ifBlank { info?.name?.takeIf { it.isNotBlank() } ?: srcName.ifBlank { job.name } }
+            val description = info?.description.orEmpty().trim().take(300)
+            val created = patient(onProgress) { dst.createPlaylist(env, name, description.ifBlank { MusicProvider.description(str("app_name")) }) }
+            targetId = created.id
+            targetCreated = true
+            store.upsertJob(job.copy(
+                name = job.name.ifBlank { name },
+                source = job.source.copy(playlistName = srcName),
+                target = job.target.copy(playlistId = created.id, playlistName = created.name),
+            ))
+            val cover = info?.imageUrl ?: (if (dst.canSetCover) runCatching { src.playlists(env).firstOrNull { it.id == srcPlaylistId }?.imageUrl }.getOrNull() else null)
+            if (dst.canSetCover && cover != null) runCatching { Covers.fetchJpeg(env, cover)?.let { dst.setPlaylistCover(env, created.id, it) } }
+                .onFailure { env.log("engine", "cover not set: ${it.message?.take(120)}") }
+        }
+
+        if (dst.serviceId == LocalFilesProvider.serviceId) notes += str("note_file_target")
+
+        onProgress(Progress(Progress.Step.FETCH_TARGET))
+        // A playlist created a moment ago is empty: skip the fetch (saves quota, and YouTube's Data API
+        // may not even know the playlist yet).
+        val dstTracks = if (targetCreated) emptyList() else patient(onProgress) { dst.tracks(env, targetId) }
+        val dstById = dstTracks.associateBy { it.id }
+        val index = Matcher.TrackIndex(dstTracks)
+
+        val matchedDstIds = HashSet<String>()
+        val newCache = HashMap<String, String>()
+        val toSearch = ArrayList<Track>()
+
+        // 1) brani gia' presenti nella destinazione
+        for (s in srcTracks) {
+            val key = FileStore.cacheKey(src.id, s.id, dst.id)
+            val found = store.cachedMatch(src.id, s.id, dst.id)?.let { dstById[it] } ?: index.best(s, policy = job.policy)
+            if (found != null) {
+                matchedDstIds += found.id
+                newCache[key] = found.id
+            } else toSearch += s
+        }
+
+        // 2) ricerca dei mancanti
+        val toAdd = LinkedHashMap<String, Track>()
+        val unmatched = ArrayList<Track>()
+        val uncertain = ArrayList<MatchReview>()
+        var searched = 0
+        val interrupted = searchMissing(src, dst, toSearch, job.policy, onProgress) { s, found, score ->
+            searched++
+            SyncState.item(
+                job.id,
+                SyncState.LiveItem(
+                    source = listOfNotNull(s.artists.firstOrNull(), s.title).joinToString(" – "),
+                    result = found?.let { listOfNotNull(it.artists.firstOrNull(), it.title).joinToString(" – ") },
+                    outcome = when {
+                        found == null -> SyncState.Outcome.NOT_FOUND
+                        score == null -> SyncState.Outcome.CACHED
+                        else -> SyncState.Outcome.FOUND
+                    },
+                ),
+            )
+            if (found != null) {
+                // The target may hold the same recording under another id (a remaster, the single
+                // edition): by ISRC or by name it counts as present, and nothing is added twice.
+                val present = dstById[found.id] ?: if (found.id in matchedDstIds) found else index.best(found)
+                val target = present ?: found
+                if (present == null) toAdd[found.id] = found
+                matchedDstIds += target.id
+                newCache[FileStore.cacheKey(src.id, s.id, dst.id)] = target.id
+                if (score != null && score < job.policy.reviewThreshold) uncertain += MatchReview(s, found, score)
+                // Salvataggio progressivo: un errore a meta' strada non butta via le ricerche fatte.
+                if (newCache.size % 100 == 0) store.putMatches(newCache)
+            } else unmatched += s
+        }
+        // Il servizio ha smesso di rispondere (limiti, sessione): si applica quanto trovato finora e
+        // la prossima esecuzione riparte dalla cache, senza rifare le ricerche.
+        if (interrupted != null) notes += str("note_search_interrupted", searched, toSearch.size, interrupted)
+
+        // 3) rimozioni: solo cio' che nella destinazione non corrisponde a nulla dell'origine
+        var toRemove: List<Track> = emptyList()
+        if (job.mirrorRemovals) {
+            val extra = dstTracks.filter { it.id !in matchedDstIds }
+            when {
+                // Ricerca non completata: un brano della destinazione puo' corrispondere a uno
+                // dell'origine non ancora cercato. Nulla si toglie finche' non si sa.
+                interrupted != null -> if (extra.isNotEmpty()) notes += str("note_removals_deferred", extra.size)
+                !dst.canRemoveTracks -> if (extra.isNotEmpty()) notes += str("note_no_removals", dst.displayName, extra.size)
+                // Origine vuota: quasi certamente un errore, non svuotiamo la destinazione.
+                srcTracks.isEmpty() -> notes += str("error_source_empty")
+                // Toglierebbe un quarto o piu' della destinazione (playlist svuotata per sbaglio, account
+                // cambiato, o un elenco letto a meta' dal servizio): senza l'anteprima non si tocca nulla.
+                !interactive && extra.size > REMOVAL_CAP_MIN && extra.size * 4 > dstTracks.size -> {
+                    notes += str("note_removals_capped", extra.size, dstTracks.size)
+                    env.log("engine", "${job.name}: removals held back, ${extra.size} of ${dstTracks.size} in the target matched none of the ${srcTracks.size} source tracks")
+                }
+                else -> toRemove = extra
+            }
+        }
+
+        // Gli abbinamenti sono fatti, non intenzioni: salvarli ora evita di ripetere le ricerche
+        // (e la quota YouTube) se l'utente esegue dopo l'anteprima.
+        store.putMatches(newCache)
+        return SyncPlan(
+            targetPlaylistId = targetId,
+            sourceCount = srcTracks.size,
+            alreadyPresent = srcTracks.size - toSearch.size,
+            toAdd = toAdd.values.toList(),
+            toRemove = toRemove,
+            unmatched = unmatched,
+            ignored = ignored,
+            uncertain = uncertain,
+            notes = notes,
+            newMatches = newCache,
+            targetCreated = targetCreated,
+            sourceOrder = srcTracks.map { it.id },
+            targetCount = dstTracks.size,
+        )
+    }
+
+    /** Anteprima quando la destinazione non esiste ancora: si cerca tutto, non si crea niente. */
+    private suspend fun previewWithoutTarget(
+        job: SyncJob, src: MusicProvider, dst: MusicProvider, srcTracks: List<Track>,
+        ignored: Int, notes: List<String>, onProgress: (Progress) -> Unit,
+    ): SyncPlan {
+        val toAdd = LinkedHashMap<String, Track>()
+        val unmatched = ArrayList<Track>()
+        val uncertain = ArrayList<MatchReview>()
+        val newCache = HashMap<String, String>()
+        searchMissing(src, dst, srcTracks, job.policy, onProgress) { s, found, score ->
+            if (found != null) {
+                toAdd[found.id] = found
+                newCache[FileStore.cacheKey(src.id, s.id, dst.id)] = found.id
+                if (score != null && score < job.policy.reviewThreshold) uncertain += MatchReview(s, found, score)
+            } else unmatched += s
+        }
+        store.putMatches(newCache)
+        return SyncPlan(
+            targetPlaylistId = "", sourceCount = srcTracks.size, alreadyPresent = 0,
+            toAdd = toAdd.values.toList(), toRemove = emptyList(), unmatched = unmatched,
+            ignored = ignored, uncertain = uncertain, notes = notes, newMatches = newCache, targetCreated = false,
+        )
+    }
+
+    /**
+     * Cerca sulla destinazione i brani mancanti, usando la cache quando c'e'. Le ricerche vanno in
+     * parallelo dove il servizio lo tollera (vedi [MusicProvider.searchParallelism]); i risultati
+     * sono consegnati nell'ordine di origine.
+     *
+     * @return null se ha finito, altrimenti il motivo per cui si e' fermata prima (errore sistemico:
+     * limiti di richieste, sessione scaduta). I brani non cercati non vengono consegnati.
+     */
+    /** Un semaforo per servizio di destinazione, condiviso da tutte le istanze del motore nel processo. */
+    private companion object {
+        val searchSlots = java.util.concurrent.ConcurrentHashMap<String, kotlinx.coroutines.sync.Semaphore>()
+    }
+
+    private suspend fun searchMissing(
+        src: MusicProvider, dst: MusicProvider, toSearch: List<Track>, policy: MatchPolicy,
+        onProgress: (Progress) -> Unit, onResult: (Track, Track?, Double?) -> Unit,
+    ): String? {
+        val parallel = dst.searchParallelism.coerceIn(1, 8)
+        var consecutiveErrors = 0
+        var done = 0
+        var waits = 0
+        var blockWaits = 0
+        var sinceWait = 0
+        val chunks = toSearch.chunked(parallel)
+        var ci = 0
+        val startedAt = System.currentTimeMillis()
+        var searched = 0
+        // Ricerche finite senza esito in questa esecuzione: ricordate, cosi' una ripresa o il giro di
+        // domani non le ripetono (le "non trovate" altrimenti si ricercavano ogni volta).
+        val misses = ArrayList<String>()
+        fun saveMisses() { store.putMisses(misses); misses.clear() }
+        while (ci < chunks.size) {
+            val chunk = chunks[ci]
+            // Cosa si sta cercando adesso: la scheda e la notifica lo mostrano, cosi' non sembra fermo.
+            onProgress(Progress(Progress.Step.MATCHING, done, toSearch.size, chunk.first().let { listOfNotNull(it.artists.firstOrNull(), it.title).joinToString(" – ") }))
+            // Esito per brano: (trovato, punteggio); punteggio null = preso dalla cache, mai "incerto".
+            val results: List<Result<Pair<Track?, Double?>>> = coroutineScope {
+                chunk.map { s ->
+                    async {
+                        val cached = store.cachedMatch(src.id, s.id, dst.id)
+                        if (cached != null) {
+                            // Abbinato in passato (o confermato a mano): lo aggiungiamo senza ripetere la ricerca.
+                            Result.success<Pair<Track?, Double?>>(dst.rehydrate(s.copy(id = cached, uri = null, itemId = null)) to null)
+                        } else if (store.cachedMiss(src.id, s.id, dst.id)) {
+                            // Cercato da poco senza esito: resta "non trovato" senza interrogare il servizio.
+                            Result.success<Pair<Track?, Double?>>(null to MISS_SCORE)
+                        } else {
+                            // Slot condivisi fra le sync in corso verso lo stesso servizio: due sync insieme
+                            // non raddoppiano la pressione, se la dividono.
+                            val slots = searchSlots.getOrPut(dst.id) { kotlinx.coroutines.sync.Semaphore(parallel) }
+                            slots.withPermit { runCatching { searchScored(dst, s, policy) }.map { it?.track to it?.score } }
+                        }
+                    }
+                }.awaitAll()
+            }
+            // Il servizio chiede una pausa (403/429 dopo molte ricerche): e' un limite suo, non un
+            // guasto. Si aspetta in modo visibile, sempre piu' a lungo, e si riprova lo stesso gruppo.
+            val throttled = results.firstNotNullOfOrNull { r -> (r.exceptionOrNull() as? ProviderException)?.takeIf { isThrottle(it.message) } }
+            // Un blocco dichiarato dal servizio ("retry in N s") si rispetta alla lettera: e' l'unico
+            // modo perche' scada. Le altre pause seguono la scala crescente.
+            val asked = declaredWait(throttled?.message)
+            if (throttled != null && asked != null && blockWaits < MAX_BLOCK_WAITS) {
+                blockWaits++
+                env.log("engine", "${dst.displayName} is blocked: ${throttled.message?.take(200)}; waiting ${asked}s")
+                waitVisible(asked, onProgress)
+                continue
+            }
+            if (throttled != null && asked == null && waits < WAIT_SECONDS.size) {
+                val seconds = WAIT_SECONDS[waits++]
+                env.log("engine", "${dst.displayName} is throttling: ${throttled.message?.take(200)}; waiting ${seconds}s")
+                sinceWait = 0
+                for (s in 1..seconds) {
+                    onProgress(Progress(Progress.Step.WAITING, s, seconds))
+                    kotlinx.coroutines.delay(1000)
+                }
+                continue
+            }
+            if (throttled == null && ++sinceWait >= RESET_AFTER_CHUNKS) { waits = 0; sinceWait = 0 }
+            ci++
+            chunk.forEachIndexed { i, s ->
+                done++
+                onProgress(Progress(Progress.Step.MATCHING, done, toSearch.size))
+                val r = results[i]
+                val e = r.exceptionOrNull()
+                if (e != null) {
+                    if (e !is ProviderException) throw e
+                    consecutiveErrors++
+                    val msg = e.message ?: ""
+                    // Errori sistemici (quota, limiti, sessione scaduta): inutile insistere. Se non e'
+                    // stato trovato ancora nulla l'errore e' dell'intera sync; altrimenti ci si ferma qui.
+                    val systemic = consecutiveErrors >= 3 || msg.contains("quota", true) || msg.contains("reconnect", true) ||
+                        msg.contains("sign in again", true) || isThrottle(msg)
+                    if (systemic) {
+                        saveMisses()
+                        if (done - chunk.size + i <= 0) throw e
+                        return msg
+                    }
+                    onResult(s, null, null)
+                } else {
+                    consecutiveErrors = 0
+                    val (found, score) = r.getOrThrow()
+                    if (score != MISS_SCORE && store.cachedMatch(src.id, s.id, dst.id) == null) searched++
+                    if (found == null && score != MISS_SCORE) misses += FileStore.cacheKey(src.id, s.id, dst.id)
+                    if (misses.size >= 50) saveMisses()
+                    onResult(s, found, if (score == MISS_SCORE) null else score)
+                }
+            }
+        }
+        saveMisses()
+        if (searched > 0) {
+            val secs = (System.currentTimeMillis() - startedAt) / 1000
+            env.log("engine", "${dst.displayName}: $searched searches in ${secs}s (${if (searched > 0) secs * 1000 / searched else 0} ms each), $waits waits")
+        }
+        return null
+    }
+
+    /**
+     * Cerca [s] sulla destinazione e ne tiene il miglior candidato sopra soglia. La prima query e' quella
+     * del servizio (artisti e titolo cosi' come sono); se non basta si riprova con il titolo pulito e il
+     * primo artista, poi con il solo titolo: alcuni cataloghi rispondono meglio a query corte, e i
+     * candidati sono comunque valutati contro l'artista originale, quindi un omonimo non passa.
+     */
+    /**
+     * The target in the source's order: each source track maps to the target track the cache holds
+     * for it, in source order; what the target has beyond the source stays at the end. One read of
+     * the target, then the service's own moves. A failure is a note, never a failed sync.
+     */
+    private suspend fun alignOrder(src: MusicProvider, dst: MusicProvider, targetId: String, sourceOrder: List<String>, notes: MutableList<String>, onProgress: (Progress) -> Unit) {
+        try {
+            onProgress(Progress(Progress.Step.FETCH_TARGET))
+            val current = dst.tracks(env, targetId)
+            if (current.size > MAX_REORDER) { notes += str("note_order_failed", "${current.size} > $MAX_REORDER"); return }
+            val byId = current.groupBy { it.id }
+            val seen = HashSet<String>()
+            val wanted = ArrayList<Track>()
+            for (sid in sourceOrder) {
+                val tid = store.cachedMatch(src.id, sid, dst.id) ?: continue
+                if (!seen.add(tid)) continue
+                byId[tid]?.firstOrNull()?.let { wanted += it }
+            }
+            wanted += current.filter { it.id !in seen }
+            if (wanted.size != current.size) return
+            if (wanted.map { it.id } == current.map { it.id }) return
+            dst.reorderTracks(env, targetId, current, wanted)
+            notes += str("note_order_aligned")
+        } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
+            notes += str("note_order_failed", e.message ?: e.javaClass.simpleName)
+        }
+    }
+
+    private suspend fun searchScored(dst: MusicProvider, s: Track, policy: MatchPolicy): Matcher.Scored? {
+        var runnerUp: Matcher.Scored? = null
+        var sawCandidates = false
+        fun consider(found: List<Track>): Matcher.Scored? {
+            if (found.isNotEmpty()) sawCandidates = true
+            val best = Matcher.bestScored(s, found, 0.0, policy) ?: return null
+            if (best.score >= policy.acceptThreshold) return best
+            if (best.score > (runnerUp?.score ?: 0.0)) runnerUp = best
+            return null
+        }
+        try {
+            // No ISRC on the source (web routes, files) but a target that searches by it: ask the
+            // catalogue oracle once, and the first search asks for the exact recording.
+            val withIsrc = if (s.isrc == null && s.kind.isEmpty() && dst.searchesByIsrc && dst.serviceId != "deezer" && store.data.settings.isrcLookup)
+                IsrcOracle.find(env, s)?.let { s.copy(isrc = it) } ?: s else s
+            consider(dst.search(env, withIsrc))?.let { return it }
+            val tried = hashSetOf(query(s))
+            val title = Matcher.searchTitle(s.title)
+            val first = s.artists.firstOrNull()?.let { Matcher.searchArtist(it) }?.takeIf { it.isNotBlank() }
+            val variants = listOf(
+                s.copy(title = title, artists = listOfNotNull(first), isrc = null),
+                s.copy(title = title, artists = emptyList(), isrc = null),
+            )
+            for (v in variants) {
+                if (!tried.add(query(v))) continue
+                consider(dst.search(env, v))?.let { return it }
+            }
+            // Last resort, where the service has one: a wider catalogue (YouTube videos for YouTube Music).
+            if (s.kind.isEmpty()) consider(dst.searchWide(env, s))?.let { return it }
+            return null
+        } finally {
+            // Not found, but something came close: the review offers it as a one-tap proposal.
+            runnerUp?.takeIf { it.score >= HINT_THRESHOLD }?.let { hints[s.id] = it.track }
+            if (!sawCandidates) absent += s.id else absent -= s.id
+        }
+    }
+
+    private fun suggestionsFor(unmatched: List<Track>): Map<String, Track> =
+        unmatched.mapNotNull { t -> hints[t.id]?.let { t.id to it } }.toMap()
+
+    private fun query(t: Track): String = (t.artists.take(2) + t.title).joinToString(" ").lowercase().trim()
+
+    /**
+     * Esegue una chiamata al servizio rispettando i blocchi che dichiara ("Retry in N s"): aspetta il
+     * tempo detto, visibilmente, e riprova, fino al limite; ogni altro errore passa oltre subito.
+     */
+    private suspend fun <T> patient(onProgress: (Progress) -> Unit, block: suspend () -> T): T {
+        var blockWaits = 0
+        var networkRetries = 0
+        while (true) {
+            try {
+                return block()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                val asked = declaredWait(e.message)
+                when {
+                    asked != null && blockWaits < MAX_BLOCK_WAITS -> {
+                        blockWaits++
+                        env.log("engine", "blocked: ${e.message?.take(160)}; waiting ${asked}s")
+                        waitVisible(asked, onProgress)
+                    }
+                    // Rete assente per un attimo (risveglio programmato, cambio Wi-Fi/dati): non e' il
+                    // servizio, si riprova con attese crescenti.
+                    isTransientNetwork(e.message) && networkRetries < NETWORK_RETRY_SECONDS.size -> {
+                        val seconds = NETWORK_RETRY_SECONDS[networkRetries++]
+                        env.log("engine", "network hiccup: ${e.message?.take(120)}; retrying in ${seconds}s")
+                        waitVisible(seconds, onProgress)
+                    }
+                    else -> throw e
+                }
+            }
+        }
+    }
+
+    /** "Artista – Titolo", come nella vista dal vivo della fase di ricerca. */
+    private fun Track.live(): String = listOfNotNull(artists.firstOrNull(), title).joinToString(" – ")
+
+    /** Secondi di attesa dichiarati dal servizio ("Retry in N s"), entro limiti ragionevoli; null se non li dichiara. */
+    private fun declaredWait(msg: String?): Int? =
+        Regex("retry in (\\d+) s", RegexOption.IGNORE_CASE).find(msg ?: "")?.groupValues?.get(1)?.toIntOrNull()?.coerceIn(5, 1800)
+
+    /** Attesa mostrata all'utente secondo per secondo; lo stop la interrompe, la pausa no. */
+    private suspend fun waitVisible(seconds: Int, onProgress: (Progress) -> Unit) {
+        for (s in 1..seconds) {
+            onProgress(Progress(Progress.Step.WAITING, s, seconds))
+            kotlinx.coroutines.delay(1000)
+        }
+    }
+
+    /** Il servizio sta limitando le richieste (non un errore dell'app). */
+    private fun isThrottle(msg: String?): Boolean {
+        val m = msg ?: return false
+        return m.contains("403") || m.contains("429") || m.contains("too many", true) || m.contains("rate limit", true) ||
+            m.contains("refused the request", true)
+    }
+
+    /** Applica un piano: aggiunte, rimozioni, cache e report. */
+    suspend fun apply(job: SyncJob, plan: SyncPlan, started: Long, reportId: String, onProgress: (Progress) -> Unit = {}): SyncReport {
+        val (src, dst) = providers(job)
+        val targetId = plan.targetPlaylistId.ifEmpty { throw ProviderException("No target playlist") }
+        val unmatched = ArrayList(plan.unmatched)
+        val failed = ArrayList<String>()
+        val notes = ArrayList(plan.notes)
+
+        var added = 0
+        if (plan.toAdd.isNotEmpty()) {
+            onProgress(Progress(Progress.Step.ADDING, 0, plan.toAdd.size))
+            // Verso una playlist un blocco di 50 e' una chiamata sola. Verso i "brani preferiti" ogni
+            // brano e' una chiamata a parte: blocchi piccoli, cosi' l'avanzamento si muove ogni pochi
+            // brani invece di restare fermo per minuti.
+            val chunkSize = if (MusicProvider.isLibrary(targetId)) 10 else 50
+            var blockWaits = 0
+            // I "brani preferiti" mostrano per primo l'ultimo aggiunto: si aggiunge dall'ultimo al primo,
+            // cosi' l'ordine dell'origine (il piu' recente in cima) si ritrova uguale nella destinazione.
+            val additions = if (MusicProvider.isLibrary(targetId)) plan.toAdd.asReversed() else plan.toAdd
+            for (chunk in additions.chunked(chunkSize)) {
+                // Cosa si sta aggiungendo adesso, in scheda e nella vista dal vivo, come per la ricerca.
+                onProgress(Progress(Progress.Step.ADDING, added, plan.toAdd.size, chunk.first().live()))
+                while (true) {
+                    try {
+                        dst.addTracks(env, targetId, chunk)
+                        added += chunk.size
+                        chunk.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.ADDED)) }
+                        break
+                    } catch (e: Exception) {
+                        // Il servizio ha bloccato l'indirizzo e dice quanto aspettare: si aspetta, come
+                        // nella ricerca, invece di dare per falliti brani che sono solo in attesa.
+                        val asked = declaredWait(e.message)
+                        if (asked != null && blockWaits < MAX_BLOCK_WAITS) {
+                            blockWaits++
+                            env.log("engine", "${dst.displayName} is blocked while adding: ${e.message?.take(160)}; waiting ${asked}s")
+                            waitVisible(asked, onProgress)
+                            continue
+                        }
+                        // Un blocco fallito (id non piu' valido, ecc.): riprova brano per brano.
+                        for (t in chunk) {
+                            try {
+                                dst.addTracks(env, targetId, listOf(t)); added++
+                                SyncState.item(job.id, SyncState.LiveItem(t.live(), null, SyncState.Outcome.ADDED))
+                            } catch (e2: Exception) {
+                                failed += "$t (${e2.message})"
+                                SyncState.item(job.id, SyncState.LiveItem(t.live(), e2.message?.take(80), SyncState.Outcome.ADD_FAILED))
+                            }
+                        }
+                        break
+                    }
+                }
+                onProgress(Progress(Progress.Step.ADDING, added, plan.toAdd.size))
+            }
+        }
+
+        var removed = 0
+        if (plan.toRemove.isNotEmpty()) {
+            onProgress(Progress(Progress.Step.REMOVING, 0, plan.toRemove.size, plan.toRemove.first().live()))
+            var blockWaits = 0
+            while (true) {
+                try {
+                    dst.removeTracks(env, targetId, plan.toRemove)
+                    plan.toRemove.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.REMOVED)) }
+                    break
+                }
+                catch (e: Exception) {
+                    val asked = declaredWait(e.message)
+                    if (asked != null && blockWaits < MAX_BLOCK_WAITS) { blockWaits++; waitVisible(asked, onProgress); continue }
+                    throw e
+                }
+            }
+            removed = plan.toRemove.size
+        }
+
+        store.putMatches(plan.newMatches)
+        // Quanto l'utente ha gia' sistemato dal report provvisorio non deve ricomparire.
+        val provisional = store.report(reportId)?.takeIf { it.partial }
+        if (provisional != null) {
+            val stillOpen = provisional.unmatchedTracks.map { it.id }.toHashSet()
+            unmatched.retainAll { it.id in stillOpen }
+        }
+        if (job.keepOrder && dst.canReorder && !MusicProvider.isLibrary(targetId) && plan.sourceOrder.isNotEmpty()) {
+            alignOrder(src, dst, targetId, plan.sourceOrder, notes, onProgress)
+        }
+        val reviews = provisional?.reviewTracks ?: plan.uncertain
+        return SyncReport(
+            id = reportId, jobId = job.id, jobName = job.name, startedEpoch = started,
+            durationMs = System.currentTimeMillis() - started,
+            sourceCount = plan.sourceCount, targetCount = plan.targetCount, added = added, removed = removed,
+            unmatched = unmatched.map { it.toString() } + failed,
+            unmatchedTracks = unmatched,
+            ignored = plan.ignored,
+            reviewTracks = reviews,
+            removedTracks = if (removed > 0) plan.toRemove else emptyList(),
+            notes = notes,
+            suggestions = suggestionsFor(unmatched),
+            absent = unmatched.filter { it.id in absent }.map { it.id },
+        )
+    }
+
+    // ------------------------------------------------------------------ revisione abbinamenti
+
+    /** L'abbinamento incerto va bene: resta in cache, sparisce dalla lista da rivedere. */
+    fun confirmMatch(reportId: String, review: MatchReview) {
+        store.updateReport(reportId) { r -> r.copy(reviewTracks = r.reviewTracks.filter { it.source.id != review.source.id }) }
+    }
+
+    /**
+     * L'abbinamento era sbagliato: toglie il brano errato dalla destinazione (dove l'API lo
+     * permette), aggiunge quello scelto e corregge la cache per le sync future.
+     */
+    suspend fun replaceMatch(job: SyncJob, reportId: String?, review: MatchReview, chosen: Track) {
+        val (src, dst) = providers(job)
+        val targetId = job.target.playlistId ?: throw ProviderException("No target playlist")
+        if (dst.canRemoveTracks) {
+            // Il brano errato letto dalla ricerca non ha l'itemId di playlist: lo si ripesca dalla destinazione.
+            val present = dst.tracks(env, targetId).firstOrNull { it.id == review.chosen.id }
+            if (present != null) dst.removeTracks(env, targetId, listOf(present))
+        }
+        dst.addTracks(env, targetId, listOf(chosen))
+        store.putMatches(mapOf(FileStore.cacheKey(src.id, review.source.id, dst.id) to chosen.id))
+        if (reportId != null) confirmMatch(reportId, review)
+    }
+
+    /** In anteprima non e' stato ancora scritto nulla: basta correggere la cache. */
+    fun rematchInPlan(job: SyncJob, review: MatchReview, chosen: Track) {
+        val (src, dst) = providers(job)
+        store.putMatches(mapOf(FileStore.cacheKey(src.id, review.source.id, dst.id) to chosen.id))
+    }
+
+    /** Rimette nella destinazione i brani tolti da una sync a specchio. */
+    suspend fun restoreRemoved(job: SyncJob, report: SyncReport) {
+        val (_, dst) = providers(job)
+        val targetId = job.target.playlistId ?: throw ProviderException("No target playlist")
+        if (report.removedTracks.isEmpty()) return
+        dst.addTracks(env, targetId, report.removedTracks)
+        store.updateReport(report.id) { r ->
+            r.copy(removedTracks = emptyList(), notes = r.notes + str("restored_note", report.removedTracks.size))
+        }
+    }
+
+    // ------------------------------------------------------------------ risoluzione manuale
+
+    /**
+     * Ricerca manuale sulla destinazione per una query libera ("Artista - Titolo", solo titolo, o un link).
+     * Con il brano d'origine [source] ogni risultato ha un punteggio di somiglianza (titolo, artista,
+     * durata) e una provenienza: il catalogo dei brani, l'album del brano d'origine (una seconda
+     * ricerca "artista album", quando l'album e' noto), o il catalogo largo (i video di YouTube), che
+     * si interroga solo se i brani non hanno dato nulla di convincente. Le edizioni ripetute di uno
+     * stesso brano compaiono una volta sola.
+     */
+    suspend fun searchOnTarget(job: SyncJob, query: String, source: Track? = null): TargetSearch {
+        val (_, dst) = providers(job)
+        return searchOn(dst, job.target.playlistId, job.policy, query, source)
+    }
+
+    /** The same search on any service [dst], for a playlist [playlistId] (its kind decides what is searched) under [policy]. */
+    suspend fun searchOn(dst: MusicProvider, playlistId: String?, policy: MatchPolicy, query: String, source: Track? = null): TargetSearch {
+        fun hit(t: Track, kind: TargetSearch.Kind) = TargetSearch.Hit(t, if (source != null) Matcher.score(source, t, policy) else 0.0, kind)
+        // Il link del brano incollato: si aggiunge quello, letto dal servizio quando possibile. I link
+        // brevi delle app (amzn.eu, spotify.link...) si seguono fino all'indirizzo vero.
+        (TrackLinks.parse(query) ?: resolveShortLink(query)?.let { TrackLinks.parse(it) })?.let { ref0 ->
+            // A link from another service: song.link knows the same recording on the target service.
+            val ref = if (TrackLinks.matches(ref0.service, dst.serviceId)) ref0
+                else TrackLinks.viaOdesli(query, dst.serviceId)
+                    ?: throw ProviderException(str("link_other_service", dst.label(env)))
+            val t = runCatching { dst.track(env, ref.trackId) }.getOrNull()
+            return TargetSearch(listOf(hit(t ?: dst.rehydrate(Track(id = ref.trackId, title = str("link_track_unknown"), album = ref.trackId)), TargetSearch.Kind.SONG)))
+        }
+        val kind = source?.kind?.ifEmpty { null } ?: MusicProvider.libraryKind(playlistId).orEmpty()
+        // An artist is searched by name alone: "Artist - Title" splitting would cut a name with a dash.
+        val (artists, title) = if (kind == Track.KIND_ARTIST) emptyList<String>() to query.trim() else PlaylistFiles.splitArtistTitle(query)
+        var songs = dst.search(env, Track(id = "", title = title, artists = artists, kind = kind))
+        // "Artista - Titolo" senza un candidato convincente: il solo titolo a volte lo trova.
+        fun convincing() = source == null || Matcher.bestScored(source, songs, policy = policy) != null
+        if (artists.isNotEmpty() && (songs.isEmpty() || !convincing())) {
+            songs = (songs + dst.search(env, Track(id = "", title = title, kind = kind))).distinctBy { it.id }
+        }
+        val hits = ArrayList<TargetSearch.Hit>()
+        val seen = HashSet<String>()
+        fun add(tracks: List<Track>, kind: TargetSearch.Kind) = dedupe(tracks).filter { seen.add(it.id) }.forEach { hits += hit(it, kind) }
+        var album: String? = null
+        var albumFound: Boolean? = null
+        if (source != null && kind.isEmpty()) {
+            source.album.trim().takeIf { it.isNotEmpty() }?.let { name ->
+                val byAlbum = runCatching { dst.search(env, Track(id = "", title = name, artists = source.artists.take(1))) }.getOrDefault(emptyList())
+                // Un servizio che non riporta l'album nei risultati non permette di dire se il disco c'e'.
+                if ((byAlbum + songs).any { it.album.isNotBlank() }) {
+                    val wanted = Matcher.normalizeTitle(name)
+                    val ofAlbum = (byAlbum + songs).filter {
+                        it.album.isNotBlank() && Matcher.similarity(Matcher.normalizeTitle(it.album), wanted) >= 0.8 &&
+                            (source.artists.isEmpty() || Matcher.artistScore(source.artists, it.artists) >= 0.7)
+                    }
+                    album = name
+                    albumFound = ofAlbum.isNotEmpty()
+                    add(ofAlbum, TargetSearch.Kind.ALBUM)
+                }
+            }
+        }
+        add(songs, TargetSearch.Kind.SONG)
+        if (source != null && kind.isEmpty() && !convincing()) {
+            val wide = runCatching { dst.searchWide(env, source.copy(title = title, artists = artists.ifEmpty { source.artists })) }.getOrDefault(emptyList())
+            add(wide, TargetSearch.Kind.VIDEO)
+        }
+        return TargetSearch(if (source != null) hits.sortedByDescending { it.score } else hits, album, albumFound)
+    }
+
+    /** Segue i redirect di un link breve condiviso da un'app musicale; null se non e' uno di quelli. */
+    private suspend fun resolveShortLink(text: String): String? {
+        val url = Regex("""https?://\S+""").find(text)?.value ?: return null
+        val host = runCatching { java.net.URI(url).host?.lowercase() }.getOrNull() ?: return null
+        if (host !in SHORT_LINK_HOSTS) return null
+        return withContext(kotlinx.coroutines.Dispatchers.IO) {
+            runCatching {
+                val req = okhttp3.Request.Builder().url(url).header("User-Agent", "Mozilla/5.0 (Linux; Android 14) Songport").build()
+                com.xlollx.songport.net.Http.client.newCall(req).execute().use { it.request.url.toString() }
+            }.getOrNull()
+        }
+    }
+
+    /** Una riga per titolo e artisti: le edizioni ripetute di uno stesso brano non aiutano a scegliere. */
+    private fun dedupe(tracks: List<Track>): List<Track> {
+        val seen = HashSet<String>()
+        return tracks.filter { seen.add(Matcher.normalizeTitle(it.title) + "|" + it.artists.map { a -> Matcher.normalizeArtist(a) }.sorted().joinToString(",")) }
+    }
+
+    /**
+     * L'utente ha scelto a mano il brano giusto: lo aggiunge alla destinazione, lo mette in cache
+     * (cosi' le sync future lo riconoscono) e lo toglie dai non trovati del report.
+     */
+    suspend fun resolveManually(job: SyncJob, reportId: String, sourceTrack: Track, chosen: Track) {
+        val (src, dst) = providers(job)
+        val targetId = job.target.playlistId ?: throw ProviderException("No target playlist")
+        dst.addTracks(env, targetId, listOf(chosen))
+        store.putMatches(mapOf(FileStore.cacheKey(src.id, sourceTrack.id, dst.id) to chosen.id))
+        dropUnmatched(reportId, sourceTrack)
+    }
+
+    /**
+     * L'utente non vuole piu' vedere questo brano: e' assente dalla destinazione, e lo resta per ogni
+     * sync verso quel servizio, non solo per questa (come gli abbinamenti scelti a mano).
+     */
+    fun ignore(job: SyncJob, reportId: String, sourceTrack: Track) {
+        store.upsertJob(job.copy(ignoredSourceIds = (job.ignoredSourceIds + sourceTrack.id).distinct()))
+        runCatching { val (src, dst) = providers(job); store.putIgnored(src.id, sourceTrack.id, dst.id) }
+        dropUnmatched(reportId, sourceTrack)
+    }
+
+    private fun dropUnmatched(reportId: String, track: Track) {
+        store.updateReport(reportId) { r ->
+            r.copy(
+                unmatchedTracks = r.unmatchedTracks.filter { it.id != track.id },
+                unmatched = r.unmatched.filter { it != track.toString() },
+                suggestions = r.suggestions - track.id,
+            )
+        }
+    }
+}

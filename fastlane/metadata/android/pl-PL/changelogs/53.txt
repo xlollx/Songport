@@ -1,0 +1,1 @@
+Amazon Music: gdy Amazon odrzuca sesję (401), aplikacja odnawia ją teraz jak przeglądarka — podąża za ciasteczkami ustawianymi po drodze i raz uruchamia odtwarzacz — zanim poprosi o ponowne połączenie.

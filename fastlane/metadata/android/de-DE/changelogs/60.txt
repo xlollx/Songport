@@ -1,0 +1,1 @@
+Amazon Music: Amazon lehnte Songports Anfragen als „ungültiger Kunde“ ab, akzeptierte aber den eigenen Web-Player. Songport versucht sie jetzt auch so zu senden wie der Player an seine API (nur Header, ohne Cookies), behält die Variante, die Amazon akzeptiert, und protokolliert sie.

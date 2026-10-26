@@ -1,5 +1,6 @@
 package com.xlollx.songport.auth
 
+import com.xlollx.songport.providers.*
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity

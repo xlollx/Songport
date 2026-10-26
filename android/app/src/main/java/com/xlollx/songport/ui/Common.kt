@@ -1,6 +1,17 @@
 package com.xlollx.songport.ui
 
+import com.xlollx.songport.providers.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Switch
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,29 +91,16 @@ fun ProviderLabel(providerId: String, detail: String? = null, modifier: Modifier
     }
 }
 
+/**
+ * The small service mark in a chip: colour and initial, never the colour alone, and it tells
+ * TalkBack which service it is. The chip's label carries the account name next to it.
+ */
 @Composable
-fun ProviderDot(p: MusicProvider?, sizeDp: Int = 10) {
-    Spacer(
-        Modifier.size(sizeDp.dp).clip(CircleShape)
-            .background(if (p != null) Color(p.brandColor) else MaterialTheme.colorScheme.outline)
-    )
-}
+fun ProviderDot(p: MusicProvider?, sizeDp: Int = 18) = ProviderBadge(p, sizeDp.dp)
 
-/** Cerchio nel colore del servizio con la sua iniziale: si riconosce a colpo d'occhio. */
+/** The service's mark ([ServiceLogo]): its glyph on its colour, read by TalkBack as its name. */
 @Composable
-fun ProviderBadge(p: MusicProvider?, size: Dp = 36.dp) {
-    val bg = if (p != null) Color(p.brandColor) else MaterialTheme.colorScheme.surfaceVariant
-    val fg = if (bg.luminance() > 0.45f) Color(0xFF1C1B22) else Color.White
-    val letter = p?.displayName?.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
-    Box(Modifier.size(size).clip(CircleShape).background(bg), contentAlignment = Alignment.Center) {
-        Text(
-            letter,
-            color = fg,
-            fontWeight = FontWeight.Bold,
-            style = if (size >= 32.dp) MaterialTheme.typography.titleMedium else MaterialTheme.typography.labelSmall,
-        )
-    }
-}
+fun ProviderBadge(p: MusicProvider?, size: Dp = 36.dp) = ServiceLogo(p, size)
 
 // ---------------------------------------------------------------------------------------------
 // Blocchi di interfaccia condivisi
@@ -168,18 +166,79 @@ fun EmptyState(
     }
 }
 
-/** Scheda con titolo opzionale: raggruppa le impostazioni in blocchi leggibili. */
+/**
+ * Scheda con titolo opzionale: raggruppa le impostazioni in blocchi leggibili. The title is text,
+ * not an action, so it is in the text colour: the accent is kept for what can be tapped.
+ */
 @Composable
 fun SectionCard(title: String? = null, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            if (title != null) Text(title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (title != null) Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 4.dp))
             content()
         }
     }
+}
+
+/**
+ * A settings row that is one big switch: title, note and the control, with the whole row as the
+ * touch target (56dp at least) and read out by TalkBack as a single switch.
+ */
+@Composable
+fun SwitchRow(
+    title: String, subtitle: String?, checked: Boolean, enabled: Boolean = true,
+    modifier: Modifier = Modifier, onChange: (Boolean) -> Unit,
+) {
+    val haptics = LocalHapticFeedback.current
+    Row(
+        modifier.fillMaxWidth().heightIn(min = 56.dp).clip(MaterialTheme.shapes.small)
+            .toggleable(value = checked, enabled = enabled, role = Role.Switch) { v ->
+                haptics.performHapticFeedback(if (v) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff)
+                onChange(v)
+            }
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Spacer(Modifier.width(16.dp))
+        // The row owns the toggle; the switch only shows the state.
+        Switch(checked = checked, onCheckedChange = null, enabled = enabled)
+    }
+}
+
+/**
+ * A settings row with a control on the right (button, value...). When [onClick] is given the whole
+ * row is the target, as in Android's own settings; otherwise the control is.
+ */
+@Composable
+fun SettingRow(title: String, desc: String, onClick: (() -> Unit)? = null, control: @Composable () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 56.dp).clip(MaterialTheme.shapes.small)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text(desc, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Spacer(Modifier.width(12.dp))
+        control()
+    }
+}
+
+/** A light tap you can feel, for the actions that start or save something. */
+@Composable
+fun rememberConfirmHaptic(): () -> Unit {
+    val haptics = LocalHapticFeedback.current
+    return { haptics.performHapticFeedback(HapticFeedbackType.Confirm) }
 }
 
 class MenuAction(val label: String, val onClick: () -> Unit, val destructive: Boolean = false, val enabled: Boolean = true)
@@ -229,13 +288,17 @@ fun AppTopBar(title: String, showBrand: Boolean = true, actions: @Composable Row
     )
 }
 
-/** Intestazione con la sfumatura del brand: titolo, sottotitolo e una riga di azioni. */
+/**
+ * Intestazione con la sfumatura del brand: titolo, sottotitolo e una riga di azioni. The gradient
+ * is the brand's whatever the colour scheme (Material You too): it is the one place the identity
+ * lives. White text at full alpha, and the gradient ends on a deep magenta, so it reads at AA.
+ */
 @Composable
 fun HeroHeader(title: String, subtitle: String, content: @Composable RowScope.() -> Unit = {}) {
     Box(
         Modifier.fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
-            .background(Brush.linearGradient(listOf(Brand.Indigo, Brand.Violet, Brand.Magenta)))
+            .background(Brush.linearGradient(listOf(Brand.Indigo, Brand.Violet, Brand.MagentaDeep)))
             .padding(20.dp),
     ) {
         Column {
@@ -245,8 +308,8 @@ fun HeroHeader(title: String, subtitle: String, content: @Composable RowScope.()
                 Text(title, color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.height(4.dp))
-            Text(subtitle, color = Color.White.copy(alpha = 0.88f), style = MaterialTheme.typography.bodyMedium)
-            Spacer(Modifier.height(14.dp))
+            Text(subtitle, color = Color.White, style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically, content = content)
         }
     }

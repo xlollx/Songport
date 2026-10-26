@@ -739,4 +739,133 @@
     <string name="support_prompt_title">Вы только что перенесли %1$s треков</string>
     <string name="support_prompt_body">С помощью синхронизации «%1$s». Songport бесплатен и без рекламы, он живёт на добровольные взносы: если он сэкономил вам время, можете угостить разработчика кофе.</string>
     <string name="support_prompt_later">Не сейчас</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">Добавить в…</string>
+    <string name="share_sheet_from">Отправлено из %1$s</string>
+    <string name="share_sheet_unknown">Songport не смог прочитать название этого трека. Найдите его вручную ниже.</string>
+    <string name="share_sheet_open">Открыть в %1$s</string>
+    <string name="share_sheet_copy">Копировать ссылку</string>
+    <string name="share_sheet_copied">Ссылка скопирована</string>
+    <string name="share_sheet_no_targets">Сначала подключите сервис в разделе «Аккаунты»: трек попадёт там в один из ваших плейлистов.</string>
+    <string name="share_sheet_target">Куда добавить</string>
+    <string name="share_sheet_looking">Ищу в %1$s…</string>
+    <string name="share_sheet_exact">Тот же трек, прочитан из %1$s</string>
+    <string name="share_sheet_best">Лучшее совпадение в %1$s</string>
+    <string name="share_sheet_no_match">Не найдено в %1$s. Найдите вручную или выберите другой сервис.</string>
+    <string name="share_sheet_add">Добавить в плейлист…</string>
+    <string name="share_sheet_change">Изменить</string>
+    <string name="settings_music_links">Предлагать Songport для музыкальных ссылок</string>
+    <string name="settings_music_links_desc">Ссылка Spotify, Apple Music, YouTube Music, Amazon Music, Deezer или TIDAL сможет открываться в Songport, который добавит трек в плейлист в любом из ваших сервисов. Android по-прежнему спрашивает, какое приложение использовать, или использует заданное в настройках ссылок: Songport никогда не перехватывает ссылку сам.</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">Насколько мы совпадаем?</string>
+    <string name="tools_compat_desc">Сравнивает два плейлиста, даже из разных сервисов: общие треки, общие исполнители, оценка и карточка, которой можно поделиться.</string>
+    <string name="tools_poster_title">Постер плейлиста</string>
+    <string name="tools_poster_desc">Карточка с обложками, названием, цифрами и QR-кодом, открывающим плейлист. Для вечеринки, концерта, стены.</string>
+    <string name="card_compat_eyebrow">Насколько мы совпадаем?</string>
+    <string name="card_compat_subtitle">%1$d общих треков · %2$d общих исполнителей</string>
+    <string name="card_compat_artists">Вы оба слушаете</string>
+    <string name="card_poster_scan">Отсканируйте, чтобы открыть в %1$s</string>
+    <string name="card_unnamed_playlist">Плейлист</string>
+    <string name="card_source_link">Ссылка</string>
+    <string name="card_source_link_hint">Ссылка на публичный плейлист</string>
+    <string name="card_format_story">История</string>
+    <string name="card_format_square">Квадрат</string>
+    <string name="card_share">Поделиться</string>
+    <string name="card_save">Сохранить изображение</string>
+    <string name="card_compat_first">Первый плейлист</string>
+    <string name="card_compat_second">Второй плейлист</string>
+    <string name="card_compat_common_pct">%1$d%% меньшего плейлиста есть и в другом</string>
+    <string name="card_compat_in_common">Общее</string>
+    <string name="card_compat_for">Для «%1$s»</string>
+    <string name="card_compat_run">Сравнить</string>
+    <string name="card_again">Сделать карточку заново</string>
+    <string name="card_poster_no_qr">У этого сервиса нет публичной страницы плейлиста: постер без QR-кода.</string>
+    <string name="card_poster_run">Создать постер</string>
+    <plurals name="card_tracks">
+        <item quantity="one">%1$d трек</item>
+        <item quantity="few">%1$d трека</item>
+        <item quantity="many">%1$d треков</item>
+        <item quantity="other">%1$d треков</item>
+    </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Внешний вид</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_system">Как в системе</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_dynamic_color">Динамические цвета (Material You)</string>
+    <string name="settings_dynamic_color_desc">Цвета ваших обоев вместо цветов Songport. Заголовок сохраняет фирменные цвета.</string>
+    <string name="settings_dynamic_color_unavailable">Нужен Android 12 или новее.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Недоступные треки</string>
+    <string name="tools_unplayable_desc">Находит треки, которые сервис показывает, но больше не воспроизводит (серые), и заменяет их версией, которая играет.</string>
+    <string name="unplayable_title">Недоступные треки: %1$s</string>
+    <string name="unplayable_unsupported">%1$s не сообщает, какие треки больше не воспроизводит, поэтому Songport не может проверить здесь.</string>
+    <string name="unplayable_all_playlists">Все мои плейлисты</string>
+    <string name="unplayable_scan">Проверить</string>
+    <string name="unplayable_scanning">Проверяю %1$s…</string>
+    <string name="unplayable_none">Всё играет: недоступных треков в %1$d плейлистах нет.</string>
+    <string name="unplayable_found">Недоступных треков: %1$d в %2$d плейлистах</string>
+    <string name="unplayable_hint">Для каждого Songport предлагает версию, которая играет. Примите её, найдите другую, удалите запись или пропустите. Ничего не меняется, пока вы не примените.</string>
+    <string name="unplayable_searching">Ищу версию, которая играет…</string>
+    <string name="unplayable_no_proposal">Убедительной версии нет: откройте запись, чтобы поискать вручную, или удалите её.</string>
+    <string name="unplayable_proposal">Замена: %1$s (совпадение %2$d%%)</string>
+    <string name="unplayable_relinked">%1$s — то, что сервис уже воспроизводит вместо него</string>
+    <string name="unplayable_remove_only">Только удалить</string>
+    <string name="unplayable_skip">Пропустить</string>
+    <string name="unplayable_undecide">Отменить выбор</string>
+    <string name="unplayable_decided_replace">Будет заменён на %1$s</string>
+    <string name="unplayable_decided_remove">Будет удалён</string>
+    <string name="unplayable_apply">Применить изменения: %1$d</string>
+    <string name="unplayable_applying">Применяю %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">Применить изменения?</string>
+    <string name="unplayable_confirm_body">%1$d треков получат играющую версию, %2$d записей будут удалены. Оригиналы остаются в журнале Songport, так что это можно отменить.</string>
+    <string name="unplayable_no_removal">%1$s не позволяет приложениям удалять треки: играющая версия добавляется, а недоступная запись остаётся.</string>
+    <string name="unplayable_done">Заменено %1$d, удалено %2$d</string>
+    <string name="unplayable_undo">Отменить</string>
+    <string name="unplayable_undo_last">Отменить последнее исправление (%1$d)</string>
+    <string name="unplayable_undone">Возвращено записей: %1$d</string>
+    <string name="unplayable_reason_market">Нет в вашей стране</string>
+    <string name="unplayable_reason_product">Нет в вашем тарифе</string>
+    <string name="unplayable_reason_explicit">Фильтр ненормативной лексики</string>
+    <string name="unplayable_reason_private">Приватное видео</string>
+    <string name="unplayable_reason_deleted">Удалено</string>
+    <string name="unplayable_reason_unknown">Не воспроизводится</string>
+    <string name="settings_unplayable">Еженедельная проверка недоступных треков</string>
+    <string name="settings_unplayable_desc">Раз в неделю Songport просматривает ваши плейлисты и сообщает, если трек больше нельзя воспроизвести. Сам ничего не меняет.</string>
+    <string name="notif_unplayable_title">Недоступные треки</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">%1$d трек в ваших плейлистах больше не воспроизводится. Нажмите, чтобы заменить.</item>
+        <item quantity="other">%1$d треков в ваших плейлистах больше не воспроизводятся. Нажмите, чтобы заменить.</item>
+    </plurals>
+    <string name="services_group_streaming">Стриминг</string>
+    <string name="services_group_servers">Ваш сервер</string>
+    <string name="services_group_other">Другое</string>
+    <string name="settings_new_look">Новый вид</string>
+    <string name="settings_new_look_desc">Карточки синхронизации с последним запуском в цифрах и историей недавних запусков.</string>
+    <string name="stat_added">добавлено</string>
+    <string name="stat_removed">удалено</string>
+    <string name="stat_not_found">не найдено</string>
+    <string name="stat_tracks">треков</string>
+    <plurals name="stat_history">
+        <item quantity="one">последний %1$d запуск · ошибок: %2$d</item>
+        <item quantity="few">последние %1$d запуска · ошибок: %2$d</item>
+        <item quantity="many">последние %1$d запусков · ошибок: %2$d</item>
+        <item quantity="other">последние %1$d запусков · ошибок: %2$d</item>
+    </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Обложка от вашего ИИ</string>
+    <string name="card_ai_cover_yes">Через %1$s, на вашем ключе: может стоить несколько центов.</string>
+    <string name="card_ai_cover_none">Сначала настройте ИИ в генераторе плейлистов (Инструменты).</string>
+    <string name="card_ai_cover_claude">Claude не создаёт изображения: выберите OpenAI или Gemini в генераторе плейлистов.</string>
+    <string name="card_ai_cover_no_images">%1$s здесь не создаёт изображения: выберите OpenAI или Gemini в генераторе плейлистов.</string>
+    <string name="card_ai_cover_model">Укажите модель изображений вашего сервера в настройках генератора плейлистов.</string>
+    <string name="card_ai_drawing">Ваш ИИ рисует обложку…</string>
+    <string name="card_ai_again">Другая обложка</string>
+    <string name="card_ai_save">Сохранить обложку</string>
+    <string name="ai_image_model">Модель изображений (необязательно)</string>
+    <string name="ai_image_model_hint">напр. dall-e-3, для обложки постера</string>
 </resources>

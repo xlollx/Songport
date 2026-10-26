@@ -1,0 +1,1 @@
+Amazon Music: as requisições agora se parecem mais com as do player web (cabeçalho da assinatura, nome do cliente) e, quando a Amazon recusa uma, o log de diagnóstico registra o que ela respondeu, para descobrir por que aceita o player e não o Songport.

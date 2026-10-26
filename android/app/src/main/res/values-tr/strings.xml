@@ -721,4 +721,129 @@
     <string name="support_prompt_title">Az önce %1$s parça taşıdınız</string>
     <string name="support_prompt_body">“%1$s” senkronizasyonuyla. Songport ücretsiz ve reklamsızdır, gönüllü katkılarla yaşar: size zaman kazandırdıysa geliştiriciye bir kahve ısmarlayabilirsiniz.</string>
     <string name="support_prompt_later">Şimdi değil</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">Şuraya ekle…</string>
+    <string name="share_sheet_from">%1$s üzerinden paylaşıldı</string>
+    <string name="share_sheet_unknown">Songport bu parçanın adını okuyamadı. Aşağıda elle ara.</string>
+    <string name="share_sheet_open">%1$s içinde aç</string>
+    <string name="share_sheet_copy">Bağlantıyı kopyala</string>
+    <string name="share_sheet_copied">Bağlantı kopyalandı</string>
+    <string name="share_sheet_no_targets">Önce Hesaplar\'da bir servis bağla: parça orada çalma listelerinden birine girecek.</string>
+    <string name="share_sheet_target">Nereye eklensin</string>
+    <string name="share_sheet_looking">%1$s üzerinde aranıyor…</string>
+    <string name="share_sheet_exact">Aynı parça, %1$s üzerinden okundu</string>
+    <string name="share_sheet_best">%1$s üzerindeki en iyi eşleşme</string>
+    <string name="share_sheet_no_match">%1$s üzerinde bulunamadı. Elle ara ya da başka bir servis seç.</string>
+    <string name="share_sheet_add">Çalma listesine ekle…</string>
+    <string name="share_sheet_change">Değiştir</string>
+    <string name="settings_music_links">Müzik bağlantıları için Songport\'u öner</string>
+    <string name="settings_music_links_desc">Bir Spotify, Apple Music, YouTube Music, Amazon Music, Deezer veya TIDAL bağlantısı Songport\'ta açılabilir; Songport parçayı servislerinden herhangi birindeki bir çalma listesine ekler. Android yine hangi uygulamanın kullanılacağını sorar ya da bağlantı ayarlarında seçileni kullanır: Songport bir bağlantıyı asla kendiliğinden almaz.</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">Ne kadar uyumluyuz?</string>
+    <string name="tools_compat_desc">Farklı servislerden bile olsa iki çalma listesini karşılaştırır: ortak parçalar, ortak sanatçılar, bir puan ve paylaşılacak bir kart.</string>
+    <string name="tools_poster_title">Çalma listesi posteri</string>
+    <string name="tools_poster_desc">Kapaklar, başlık, sayılar ve listeyi açan bir QR kodla bir kart. Bir parti, bir konser, bir duvar için.</string>
+    <string name="card_compat_eyebrow">Ne kadar uyumluyuz?</string>
+    <string name="card_compat_subtitle">%1$d ortak parça · %2$d ortak sanatçı</string>
+    <string name="card_compat_artists">İkiniz de dinliyorsunuz</string>
+    <string name="card_poster_scan">%1$s üzerinde açmak için tara</string>
+    <string name="card_unnamed_playlist">Çalma listesi</string>
+    <string name="card_source_link">Bağlantı</string>
+    <string name="card_source_link_hint">Herkese açık çalma listesi bağlantısı</string>
+    <string name="card_format_story">Hikâye</string>
+    <string name="card_format_square">Kare</string>
+    <string name="card_share">Paylaş</string>
+    <string name="card_save">Görseli kaydet</string>
+    <string name="card_compat_first">Birinci çalma listesi</string>
+    <string name="card_compat_second">İkinci çalma listesi</string>
+    <string name="card_compat_common_pct">Kısa listenin %%%1$d’si diğerinde de var</string>
+    <string name="card_compat_in_common">Ortak</string>
+    <string name="card_compat_for">“%1$s” için</string>
+    <string name="card_compat_run">Karşılaştır</string>
+    <string name="card_again">Kartı yeniden yap</string>
+    <string name="card_poster_no_qr">Bu servisin çalma listesi için herkese açık bir sayfası yok: posterde QR kod yok.</string>
+    <string name="card_poster_run">Posteri oluştur</string>
+    <plurals name="card_tracks">
+        <item quantity="one">%1$d parça</item>
+        <item quantity="other">%1$d parça</item>
+    </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Görünüm</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Sistem</string>
+    <string name="settings_theme_light">Açık</string>
+    <string name="settings_theme_dark">Koyu</string>
+    <string name="settings_dynamic_color">Dinamik renkler (Material You)</string>
+    <string name="settings_dynamic_color_desc">Songport\'un renkleri yerine duvar kağıdının renkleri. Başlık alanı marka renklerini korur.</string>
+    <string name="settings_dynamic_color_unavailable">Android 12 veya daha yenisi gerekir.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Çalınamayan parçalar</string>
+    <string name="tools_unplayable_desc">Bir servisin listelediği ama artık çalmadığı (gri) parçaları bulur ve çalan bir sürümle değiştirir.</string>
+    <string name="unplayable_title">Çalınamayan parçalar: %1$s</string>
+    <string name="unplayable_unsupported">%1$s hangi parçaları artık çalmadığını söylemiyor, bu yüzden Songport burada kontrol edemiyor.</string>
+    <string name="unplayable_all_playlists">Tüm çalma listelerim</string>
+    <string name="unplayable_scan">Kontrol et</string>
+    <string name="unplayable_scanning">%1$s kontrol ediliyor…</string>
+    <string name="unplayable_none">Her şey çalıyor: %1$d çalma listesinde çalınamayan parça yok.</string>
+    <string name="unplayable_found">%2$d çalma listesinde %1$d çalınamayan parça</string>
+    <string name="unplayable_hint">Her biri için Songport çalan bir sürüm önerir. Kabul et, başkasını ara, kaydı kaldır ya da atla. Uygulayana kadar hiçbir şey değişmez.</string>
+    <string name="unplayable_searching">Çalan bir sürüm aranıyor…</string>
+    <string name="unplayable_no_proposal">İkna edici bir sürüm bulunamadı: elle aramak için kaydı aç ya da kaldır.</string>
+    <string name="unplayable_proposal">Yerine: %1$s (%%%2$d eşleşme)</string>
+    <string name="unplayable_relinked">%1$s, servisin onun yerine zaten çaldığı sürüm</string>
+    <string name="unplayable_remove_only">Sadece kaldır</string>
+    <string name="unplayable_skip">Atla</string>
+    <string name="unplayable_undecide">Seçimi geri al</string>
+    <string name="unplayable_decided_replace">%1$s ile değiştirilecek</string>
+    <string name="unplayable_decided_remove">Kaldırılacak</string>
+    <string name="unplayable_apply">%1$d değişikliği uygula</string>
+    <string name="unplayable_applying">Uygulanıyor %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">Değişiklikler uygulansın mı?</string>
+    <string name="unplayable_confirm_body">%1$d parça çalan bir sürüm alacak, %2$d kayıt kaldırılacak. Orijinaller Songport günlüğünde kalır, böylece geri alabilirsin.</string>
+    <string name="unplayable_no_removal">%1$s uygulamaların parça kaldırmasına izin vermiyor: çalan sürüm eklenir, çalınamayan kayıt kalır.</string>
+    <string name="unplayable_done">%1$d değiştirildi, %2$d kaldırıldı</string>
+    <string name="unplayable_undo">Geri al</string>
+    <string name="unplayable_undo_last">Son düzeltmeyi geri al (%1$d)</string>
+    <string name="unplayable_undone">%1$d kayıt geri kondu</string>
+    <string name="unplayable_reason_market">Ülkende yok</string>
+    <string name="unplayable_reason_product">Planında yok</string>
+    <string name="unplayable_reason_explicit">Müstehcen filtresi</string>
+    <string name="unplayable_reason_private">Özel video</string>
+    <string name="unplayable_reason_deleted">Silinmiş</string>
+    <string name="unplayable_reason_unknown">Çalınamıyor</string>
+    <string name="settings_unplayable">Çalınamayan parçalar için haftalık kontrol</string>
+    <string name="settings_unplayable_desc">Songport haftada bir çalma listelerini tarar ve bir parça artık çalınamadığında haber verir. Kendi başına hiçbir şeyi değiştirmez.</string>
+    <string name="notif_unplayable_title">Çalınamayan parçalar</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">Çalma listelerindeki %1$d parça artık çalınamıyor. Değiştirmek için dokun.</item>
+        <item quantity="other">Çalma listelerindeki %1$d parça artık çalınamıyor. Değiştirmek için dokun.</item>
+    </plurals>
+    <string name="services_group_streaming">Yayın</string>
+    <string name="services_group_servers">Kendi sunucun</string>
+    <string name="services_group_other">Diğer</string>
+    <string name="settings_new_look">Yeni görünüm</string>
+    <string name="settings_new_look_desc">Son çalıştırmayı sayılarla ve son çalıştırmaların geçmişini gösteren senkronizasyon kartları.</string>
+    <string name="stat_added">eklendi</string>
+    <string name="stat_removed">kaldırıldı</string>
+    <string name="stat_not_found">bulunamadı</string>
+    <string name="stat_tracks">parça</string>
+    <plurals name="stat_history">
+        <item quantity="one">son %1$d çalıştırma · %2$d başarısız</item>
+        <item quantity="other">son %1$d çalıştırma · %2$d başarısız</item>
+    </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Kapağı yapay zekân çizsin</string>
+    <string name="card_ai_cover_yes">%1$s ile, kendi anahtarınla: birkaç sente mal olabilir.</string>
+    <string name="card_ai_cover_none">Önce Çalma listesi oluşturucuda bir yapay zekâ ayarla (Araçlar).</string>
+    <string name="card_ai_cover_claude">Claude görsel üretmez: Çalma listesi oluşturucuda OpenAI veya Gemini seç.</string>
+    <string name="card_ai_cover_no_images">%1$s burada görsel üretmez: Çalma listesi oluşturucuda OpenAI veya Gemini seç.</string>
+    <string name="card_ai_cover_model">Sunucunun görsel modelini Çalma listesi oluşturucunun ayarlarına yaz.</string>
+    <string name="card_ai_drawing">Yapay zekân kapağı çiziyor…</string>
+    <string name="card_ai_again">Başka bir kapak</string>
+    <string name="card_ai_save">Kapağı kaydet</string>
+    <string name="ai_image_model">Görsel modeli (isteğe bağlı)</string>
+    <string name="ai_image_model_hint">ör. dall-e-3, posterin yapay zekâ kapağı için</string>
 </resources>

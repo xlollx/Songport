@@ -1,0 +1,1 @@
+Paylaşılan bağlantılar her yere gider: Songport ile paylaşılan bir Spotify, Apple Music, YouTube Music, Amazon Music, Deezer veya TIDAL parça bağlantısı artık Navidrome, Jellyfin ve Plex dahil servislerinden herhangi birindeki bir çalma listesine giriyor; eşleşme eklemeden önce gösteriliyor. İsteğe bağlı: müzik bağlantılarını Songport ile açma (Ayarlar).

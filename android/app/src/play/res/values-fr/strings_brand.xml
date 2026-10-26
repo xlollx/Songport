@@ -44,4 +44,12 @@
     <string name="free_why_body">Trackhop n\'a ni publicité, ni abonnement, ni fonction bloquée. Elle vit de contributions volontaires : si elle vous fait gagner du temps, vous pouvez offrir un café au développeur.</string>
     <string name="support_title">Trackhop vous plaît ?</string>
     <string name="support_prompt_body">Avec la sync « %1$s ». Trackhop est gratuite et sans publicité, et vit de contributions volontaires : si elle vous a fait gagner du temps, vous pouvez offrir un café au développeur.</string>
+    <string name="share_sheet_unknown">Trackhop n’a pas pu lire le titre de ce morceau. Cherchez-le à la main ci-dessous.</string>
+    <string name="settings_music_links">Proposer Trackhop pour les liens musicaux</string>
+    <string name="settings_music_links_desc">Un lien Spotify, Apple Music, YouTube Music, Amazon Music, Deezer ou TIDAL pourra alors s’ouvrir dans Trackhop, qui ajoute le morceau à une playlist sur n’importe lequel de vos services. Android demande toujours quelle application utiliser, ou garde celle définie dans ses réglages de liens : Trackhop ne prend jamais un lien de lui-même.</string>
+    <string name="settings_dynamic_color_desc">Les couleurs de votre fond d\'écran à la place de celles de Trackhop. Le bandeau du titre garde les couleurs de la marque.</string>
+    <string name="unplayable_unsupported">%1$s ne dit pas quels titres il ne lit plus, Trackhop ne peut donc pas vérifier ici.</string>
+    <string name="unplayable_hint">Pour chacun, Trackhop propose une version qui se lit. Acceptez-la, cherchez-en une autre, retirez l\'entrée ou passez. Rien ne change avant d\'appliquer.</string>
+    <string name="unplayable_confirm_body">%1$d titres reçoivent une version lisible, %2$d entrées sont retirées. Les originaux restent dans le journal de Trackhop pour pouvoir annuler.</string>
+    <string name="settings_unplayable_desc">Une fois par semaine, Trackhop parcourt vos playlists et vous prévient quand un titre ne peut plus être lu. Rien n\'est changé tout seul.</string>
 </resources>

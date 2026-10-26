@@ -1,0 +1,1 @@
+Amazon Music: Ab- und erneutes Anmelden entfernt jetzt alle alten Amazon-Cookies; eine veraltete Kopie führte sonst selbst direkt nach dem Verbinden zu „401“. Verbinden und Trennen stehen im Diagnoseprotokoll. Nach dem Update Amazon Music einmal trennen und neu verbinden.

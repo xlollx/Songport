@@ -1,0 +1,1 @@
+Amazon Music：Amazon 一边接受自己的网页播放器，一边以“无效客户”拒绝 Songport 的请求。Songport 现在也会按播放器向其 API 发送的方式（仅请求头，不带 Cookie）尝试，保留 Amazon 接受的方式，并记录到日志中。

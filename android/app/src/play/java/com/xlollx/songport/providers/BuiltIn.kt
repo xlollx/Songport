@@ -22,5 +22,5 @@ object BuiltIn {
     fun extraActions(ctx: Context, serviceId: String, developer: Boolean): List<Pair<String, Intent>> = emptyList()
 
     @Suppress("UNUSED_PARAMETER")
-    fun onAppStart(interceptor: okhttp3.Interceptor) = Unit
+    fun onAppStart(ctx: Context, interceptor: okhttp3.Interceptor) = Unit
 }

@@ -724,4 +724,129 @@
     <string name="support_prompt_title">You just moved %1$s tracks</string>
     <string name="support_prompt_body">With the sync “%1$s”. Songport is free and ad-free, and it lives on voluntary contributions: if it saved you time, you can buy the developer a coffee.</string>
     <string name="support_prompt_later">Not now</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">Add to…</string>
+    <string name="share_sheet_from">Shared from %1$s</string>
+    <string name="share_sheet_unknown">Songport could not read this track’s title. Search for it by hand below.</string>
+    <string name="share_sheet_open">Open in %1$s</string>
+    <string name="share_sheet_copy">Copy link</string>
+    <string name="share_sheet_copied">Link copied</string>
+    <string name="share_sheet_no_targets">Connect a service in Accounts first: the track will then go into one of your playlists there.</string>
+    <string name="share_sheet_target">Where to add it</string>
+    <string name="share_sheet_looking">Finding it on %1$s…</string>
+    <string name="share_sheet_exact">The same track, read from %1$s</string>
+    <string name="share_sheet_best">Best match on %1$s</string>
+    <string name="share_sheet_no_match">Not found on %1$s. Search by hand, or pick another service.</string>
+    <string name="share_sheet_add">Add to playlist…</string>
+    <string name="share_sheet_change">Change</string>
+    <string name="settings_music_links">Offer Songport for music links</string>
+    <string name="settings_music_links_desc">A Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link can then open in Songport, which adds the track to a playlist on any of your services. Android still asks which app to use, or keeps the one set in its link settings: Songport never takes a link by itself.</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">How compatible are we?</string>
+    <string name="tools_compat_desc">Compare two playlists, from any services: tracks in common, shared artists, a score and a card to share.</string>
+    <string name="tools_poster_title">Playlist poster</string>
+    <string name="tools_poster_desc">A card with the covers, the title, the numbers and a QR code that opens the playlist. For a party, a concert, a wall.</string>
+    <string name="card_compat_eyebrow">How compatible are we?</string>
+    <string name="card_compat_subtitle">%1$d tracks in common · %2$d shared artists</string>
+    <string name="card_compat_artists">Both of you listen to</string>
+    <string name="card_poster_scan">Scan to open on %1$s</string>
+    <string name="card_unnamed_playlist">Playlist</string>
+    <string name="card_source_link">Link</string>
+    <string name="card_source_link_hint">Public playlist link</string>
+    <string name="card_format_story">Story</string>
+    <string name="card_format_square">Square</string>
+    <string name="card_share">Share</string>
+    <string name="card_save">Save image</string>
+    <string name="card_compat_first">First playlist</string>
+    <string name="card_compat_second">Second playlist</string>
+    <string name="card_compat_common_pct">%1$d%% of the smaller playlist is in the other one</string>
+    <string name="card_compat_in_common">In common</string>
+    <string name="card_compat_for">For “%1$s”</string>
+    <string name="card_compat_run">Compare</string>
+    <string name="card_again">Make the card again</string>
+    <string name="card_poster_no_qr">This service has no public page for the playlist: the poster has no QR code.</string>
+    <string name="card_poster_run">Make the poster</string>
+    <plurals name="card_tracks">
+        <item quantity="one">%1$d track</item>
+        <item quantity="other">%1$d tracks</item>
+    </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_dynamic_color">Dynamic colours (Material You)</string>
+    <string name="settings_dynamic_color_desc">The colours of your wallpaper instead of Songport\'s own. The title banner keeps the brand colours.</string>
+    <string name="settings_dynamic_color_unavailable">Needs Android 12 or newer.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Unplayable tracks</string>
+    <string name="tools_unplayable_desc">Finds the tracks a service lists but can no longer play (greyed out) and replaces them with a version that plays.</string>
+    <string name="unplayable_title">Unplayable tracks: %1$s</string>
+    <string name="unplayable_unsupported">%1$s does not say which tracks it can no longer play, so Songport cannot check here.</string>
+    <string name="unplayable_all_playlists">All my playlists</string>
+    <string name="unplayable_scan">Check</string>
+    <string name="unplayable_scanning">Checking %1$s…</string>
+    <string name="unplayable_none">Everything plays: no unplayable track in %1$d playlists.</string>
+    <string name="unplayable_found">%1$d unplayable tracks in %2$d playlists</string>
+    <string name="unplayable_hint">For each one Songport proposes a version that plays. Accept it, search another, remove the entry or skip it. Nothing changes until you apply.</string>
+    <string name="unplayable_searching">Looking for a version that plays…</string>
+    <string name="unplayable_no_proposal">No convincing version found: open the entry to search by hand, or remove it.</string>
+    <string name="unplayable_proposal">Replacement: %1$s (%2$d%% match)</string>
+    <string name="unplayable_relinked">%1$s is what the service already plays in its place</string>
+    <string name="unplayable_remove_only">Remove only</string>
+    <string name="unplayable_skip">Skip</string>
+    <string name="unplayable_undecide">Undo choice</string>
+    <string name="unplayable_decided_replace">Will be replaced with %1$s</string>
+    <string name="unplayable_decided_remove">Will be removed</string>
+    <string name="unplayable_apply">Apply %1$d changes</string>
+    <string name="unplayable_applying">Applying %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">Apply the changes?</string>
+    <string name="unplayable_confirm_body">%1$d tracks get a playable version, %2$d entries are removed. The originals stay in Songport\'s log so you can undo.</string>
+    <string name="unplayable_no_removal">%1$s does not let apps remove tracks: the playable version is added and the unplayable entry stays.</string>
+    <string name="unplayable_done">%1$d replaced, %2$d removed</string>
+    <string name="unplayable_undo">Undo</string>
+    <string name="unplayable_undo_last">Undo last fix (%1$d)</string>
+    <string name="unplayable_undone">%1$d entries put back</string>
+    <string name="unplayable_reason_market">Not in your country</string>
+    <string name="unplayable_reason_product">Not in your plan</string>
+    <string name="unplayable_reason_explicit">Explicit filter</string>
+    <string name="unplayable_reason_private">Private video</string>
+    <string name="unplayable_reason_deleted">Deleted</string>
+    <string name="unplayable_reason_unknown">Unplayable</string>
+    <string name="settings_unplayable">Weekly check for unplayable tracks</string>
+    <string name="settings_unplayable_desc">Once a week Songport looks through your playlists and tells you when a track can no longer be played. Nothing is changed by itself.</string>
+    <string name="notif_unplayable_title">Unplayable tracks</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">%1$d track in your playlists can no longer be played. Tap to replace it.</item>
+        <item quantity="other">%1$d tracks in your playlists can no longer be played. Tap to replace them.</item>
+    </plurals>
+    <string name="services_group_streaming">Streaming</string>
+    <string name="services_group_servers">Your server</string>
+    <string name="services_group_other">Other</string>
+    <string name="settings_new_look">New look</string>
+    <string name="settings_new_look_desc">Sync cards with the last run in numbers and the history of recent runs.</string>
+    <string name="stat_added">added</string>
+    <string name="stat_removed">removed</string>
+    <string name="stat_not_found">not found</string>
+    <string name="stat_tracks">tracks</string>
+    <plurals name="stat_history">
+        <item quantity="one">last %1$d run · %2$d failed</item>
+        <item quantity="other">last %1$d runs · %2$d failed</item>
+    </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Cover drawn by your AI</string>
+    <string name="card_ai_cover_yes">With %1$s, on your own key: it may cost a few cents.</string>
+    <string name="card_ai_cover_none">Set up an AI in the Playlist generator first (Tools).</string>
+    <string name="card_ai_cover_claude">Claude does not make images: pick OpenAI or Gemini in the Playlist generator.</string>
+    <string name="card_ai_cover_no_images">%1$s does not make images here: pick OpenAI or Gemini in the Playlist generator.</string>
+    <string name="card_ai_cover_model">Add your server\'s image model in the Playlist generator\'s settings.</string>
+    <string name="card_ai_drawing">Your AI is drawing the cover…</string>
+    <string name="card_ai_again">Another cover</string>
+    <string name="card_ai_save">Save cover</string>
+    <string name="ai_image_model">Image model (optional)</string>
+    <string name="ai_image_model_hint">e.g. dall-e-3, for the poster\'s AI cover</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.xlollx.songport.ui
 
+import com.xlollx.songport.providers.*
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -233,11 +234,7 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
             AiCountField(d.count.toInt()) { d.count = it.toFloat(); d.persist(ctx) }
             Text(stringResource(R.string.ai_target), style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(4.dp))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                targets.forEach { p ->
-                    FilterChip(selected = p.id == target.id, onClick = { d.targetId = p.id; d.persist(ctx) }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
-                }
-            }
+            ServicePicker(targets, target.id, { d.targetId = it; d.persist(ctx) })
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(
                 value = d.name, onValueChange = { d.name = it; d.persist(ctx) }, singleLine = true,
@@ -326,13 +323,14 @@ fun AiSetupDialog(initial: AiClient.Config?, onDismiss: () -> Unit, onSaved: (Ai
     var key by remember { mutableStateOf(initial?.apiKey.orEmpty()) }
     var model by remember { mutableStateOf(initial?.model.orEmpty()) }
     var baseUrl by remember { mutableStateOf(initial?.baseUrl.orEmpty()) }
+    var imageModel by remember { mutableStateOf(initial?.imageModel.orEmpty()) }
     var models by remember { mutableStateOf<List<String>>(emptyList()) }
     var modelsOpen by remember { mutableStateOf(false) }
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     /** "" = the test passed; text = its error; null = not tried. */
     var checkResult by remember { mutableStateOf<String?>(null) }
-    fun current() = AiClient.Config(vendor, key.trim(), model.trim(), baseUrl.trim())
+    fun current() = AiClient.Config(vendor, key.trim(), model.trim(), baseUrl.trim(), if (vendor == AiClient.Vendor.CUSTOM) imageModel.trim() else "")
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -412,6 +410,15 @@ fun AiSetupDialog(initial: AiClient.Config?, onDismiss: () -> Unit, onSaved: (Ai
                         loading = true; error = null; checkResult = null
                         scope.launch { checkResult = AiClient.check(current()) ?: ""; loading = false }
                     }) { Text(stringResource(R.string.ai_check)) }
+                }
+                if (vendor == AiClient.Vendor.CUSTOM) {
+                    // Optional: the model the server draws with, for the poster's AI cover.
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = imageModel, onValueChange = { imageModel = it }, singleLine = true,
+                        label = { Text(stringResource(R.string.ai_image_model)) }, placeholder = { Text(stringResource(R.string.ai_image_model_hint)) },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
                 checkResult?.let { r ->
                     if (r.isEmpty()) Text(stringResource(R.string.ai_check_ok), color = Tones.onSuccessContainer(), style = MaterialTheme.typography.bodySmall)

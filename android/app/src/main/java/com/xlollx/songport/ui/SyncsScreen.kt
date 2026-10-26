@@ -1,6 +1,13 @@
 package com.xlollx.songport.ui
 
-import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.semantics
+import com.xlollx.songport.model.SyncReport
+import com.xlollx.songport.providers.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -28,6 +35,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.clickable
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -134,8 +142,9 @@ fun SyncsScreen(
             val n = data.jobs.size
             val last = if (lastRun > 0) " · " + stringResource(R.string.hero_last, formatDate(lastRun)) else ""
             HeroHeader(stringResource(R.string.hero_title), ctx.resources.getQuantityString(R.plurals.hero_jobs, n, n) + last) {
+                val haptic = rememberConfirmHaptic()
                 Button(
-                    onClick = onRunAll,
+                    onClick = { haptic(); onRunAll() },
                     enabled = running.isEmpty(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White, contentColor = Brand.Indigo,
@@ -174,12 +183,14 @@ private fun JobCard(
     val dst = Providers.byId(job.target.provider)
     val srcName = playlistDisplayName(job.source.playlistId, job.source.playlistName)
     val dstName = job.target.playlistName.ifBlank { stringResource(R.string.editor_new_playlist) }
+    val haptic = rememberConfirmHaptic()
     Card(
         // While running, a tap opens the live list of tracks processed so far.
-        Modifier.fillMaxWidth().clickable(enabled = isRunning) { liveOpen = true },
+        Modifier.fillMaxWidth().animateContentSize().clickable(enabled = isRunning) { liveOpen = true },
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.width(56.dp).height(36.dp)) {
                     ProviderBadge(src, 34.dp)
@@ -193,13 +204,13 @@ private fun JobCard(
                             Icon(Icons.Filled.AutoAwesome, stringResource(R.string.ai_badge_desc), Modifier.size(16.dp), tint = MaterialTheme.colorScheme.tertiary)
                             Spacer(Modifier.width(4.dp))
                         }
-                        Text(job.name.ifBlank { job.source.playlistName }, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(job.name.ifBlank { job.source.playlistName }, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     Text(
                         (src?.label(ctx) ?: job.source.provider).let { if (job.source.link != null) stringResource(R.string.source_link_label, it) else it } + " · " + srcName +
                             (if (job.linkedJobId != null) "  ↔  " else "  →  ") +
                             (dst?.label(ctx) ?: job.target.provider) + " · " + dstName,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2, overflow = TextOverflow.Ellipsis,
                     )
@@ -236,15 +247,18 @@ private fun JobCard(
                         } + progressText(progress) + (pct?.let { " · $it%" } ?: ""),
                         style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f),
                     )
-                    IconButton(enabled = !stopping, onClick = { if (paused) SyncState.resume(job.id) else SyncState.pause(job.id) }) {
+                    IconButton(enabled = !stopping, modifier = Modifier.size(48.dp), onClick = { if (paused) SyncState.resume(job.id) else SyncState.pause(job.id) }) {
                         Icon(if (paused) Icons.Filled.PlayArrow else Icons.Filled.Pause, stringResource(if (paused) R.string.sync_resume else R.string.sync_pause))
                     }
-                    IconButton(enabled = !stopping, onClick = { SyncState.stop(job.id) }) { Icon(Icons.Filled.Stop, stringResource(R.string.sync_stop)) }
+                    IconButton(enabled = !stopping, modifier = Modifier.size(48.dp), onClick = { SyncState.stop(job.id) }) { Icon(Icons.Filled.Stop, stringResource(R.string.sync_stop)) }
                 }
+            } else if (report != null && data.settings.newLook && report.ok) {
+                Spacer(Modifier.height(14.dp))
+                RunStats(report, data.reports.filter { it.jobId == job.id && !it.partial }.sortedBy { it.startedEpoch }.takeLast(10))
             } else if (report != null) {
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    Notifications.summary(ctx, report), style = MaterialTheme.typography.bodySmall,
+                    Notifications.summary(ctx, report), style = MaterialTheme.typography.bodyMedium,
                     color = if (report.ok) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                 )
             }
@@ -269,7 +283,7 @@ private fun JobCard(
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
                 )
-                FilledTonalIconButton(onClick = { onRun(job) }, enabled = !isRunning) {
+                FilledTonalIconButton(onClick = { haptic(); onRun(job) }, enabled = !isRunning, modifier = Modifier.size(48.dp)) {
                     Icon(Icons.Filled.PlayArrow, stringResource(R.string.run_now))
                 }
                 OverflowMenu(
@@ -373,7 +387,8 @@ private sealed class Loaded {
 @Composable
 fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJob?) -> Unit) {
     val ctx = LocalContext.current
-    BackHandler { onCancel() }
+    ScreenBackHandler(onCancel)
+    val saveHaptic = rememberConfirmHaptic()
     val isNew = job.name.isEmpty()
     // Solo i connettori aggiunti nella scheda Account: uno tolto di li' non deve piu' essere
     // scegliibile, anche se il token o la sessione nell'app plugin sono ancora validi. I servizi gia'
@@ -459,7 +474,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                         Spacer(Modifier.width(10.dp))
                         Column {
                             Text(stringResource(R.string.editor_source_ai), style = MaterialTheme.typography.titleSmall)
-                            if (!job.aiPrompt.isNullOrBlank()) Text(job.aiPrompt, style = MaterialTheme.typography.bodyMedium)
+                            job.aiPrompt?.takeIf { it.isNotBlank() }?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
                             Text(stringResource(R.string.editor_source_ai_desc, job.source.playlistName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
@@ -609,6 +624,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                             schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
                             linkedJobId = job.id,
                         ) else null
+                        saveHaptic()
                         onSave(main.copy(linkedJobId = reverse?.id), reverse)
                     },
                 ) { Text(stringResource(R.string.save)) }
@@ -631,17 +647,6 @@ private suspend fun loadPlaylists(ctx: android.content.Context, providerId: Stri
     }
 }
 
-@Composable
-private fun SwitchRow(title: String, subtitle: String?, checked: Boolean, onChange: (Boolean) -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.weight(1f)) {
-            Text(title)
-            if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        Switch(checked = checked, onCheckedChange = onChange)
-    }
-}
-
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 private fun ProviderPicker(
@@ -650,24 +655,15 @@ private fun ProviderPicker(
     onSelect: (String) -> Unit,
 ) {
     val ctx = LocalContext.current
-    // Le chip vanno a capo: con gli account multipli e i server personali possono essere molte.
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        available.forEach { p ->
-            FilterChip(
-                selected = p.id == selected && !linkSelected,
-                onClick = { onSelect(p.id) },
-                label = { Text(p.label(ctx)) },
-                leadingIcon = { ProviderDot(p) },
-            )
-        }
-        if (link) FilterChip(
-            selected = linkSelected,
-            onClick = onLink,
-            label = { Text(stringResource(R.string.editor_source_link)) },
-            leadingIcon = { Icon(Icons.Filled.Link, null, Modifier.size(18.dp)) },
-        )
-    }
+    // A row of tiles that scrolls: with several accounts and personal servers there can be many.
+    val linkLabel = stringResource(R.string.editor_source_link)
+    val tiles = available.map { ServiceTile(it.id, it.label(ctx), it) } +
+        (if (link) listOf(ServiceTile(LINK_KEY, linkLabel, icon = Icons.Filled.Link)) else emptyList())
+    ServiceTiles(tiles, if (linkSelected) LINK_KEY else selected, { key -> if (key == LINK_KEY) onLink() else onSelect(key) })
 }
+
+/** The "from a link" tile among the services. */
+private const val LINK_KEY = "link:"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -831,5 +827,50 @@ private fun SupportCard(report: com.xlollx.songport.model.SyncReport) {
                 }
             }
         }
+    }
+}
+
+/**
+ * The last run in numbers: added, removed, not found, and the playlist's size, large enough to
+ * read at a glance; under them the last runs as a strip of marks (filled: ok, red: failed), oldest
+ * on the left, so a sync that keeps failing shows before anyone opens the log.
+ */
+@Composable
+private fun RunStats(r: SyncReport, history: List<SyncReport>) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Stat("+${r.added}", stringResource(R.string.stat_added), Modifier.weight(1f), MaterialTheme.colorScheme.primary)
+        Stat("−${r.removed}", stringResource(R.string.stat_removed), Modifier.weight(1f))
+        Stat("${r.unmatched.size}", stringResource(R.string.stat_not_found), Modifier.weight(1f), if (r.unmatched.isNotEmpty()) MaterialTheme.colorScheme.tertiary else null)
+        Stat("${r.sourceCount}", stringResource(R.string.stat_tracks), Modifier.weight(1f))
+    }
+    if (history.size >= 2) {
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.semantics(mergeDescendants = true) {}) {
+            history.forEach { h ->
+                Box(
+                    Modifier.size(width = 14.dp, height = 6.dp).clip(RoundedCornerShape(3.dp)).background(
+                        if (h.ok) MaterialTheme.colorScheme.primary.copy(alpha = if (h.added + h.removed > 0) 1f else 0.4f)
+                        else MaterialTheme.colorScheme.error,
+                    ),
+                )
+            }
+            Spacer(Modifier.width(6.dp))
+            Text(
+                pluralStringResource(R.plurals.stat_history, history.size, history.size, history.count { !it.ok }),
+                style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun Stat(value: String, label: String, modifier: Modifier, tint: Color? = null) {
+    Column(
+        modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(vertical = 10.dp, horizontal = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(value, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = tint ?: MaterialTheme.colorScheme.onSurface, maxLines = 1)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }

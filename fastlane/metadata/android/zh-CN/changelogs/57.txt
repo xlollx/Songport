@@ -1,0 +1,1 @@
+Amazon Music：登录和隐藏播放器不再向 Amazon 表明它们运行在应用内（Android 添加的 X-Requested-With 请求头），Amazon 现在会以“401”拒绝这种情况。更新后，请将 Amazon Music 断开并重新连接一次。YouTube Music：其客户端已移至与服务器共享的模块，行为不变。

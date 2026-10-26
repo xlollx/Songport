@@ -43,4 +43,22 @@ class PlaylistLinksTest {
         assertNull(ref("https://example.com/playlist/1"))
         assertNull(ref("https://open.spotify.com/album/1A2B3C"))
     }
+
+    @Test fun parseAllFindsEveryLinkOnce() {
+        val text = "mine https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M yours https://www.deezer.com/it/playlist/1234567 " +
+            "again https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
+        assertEquals(listOf(PlaylistLinks.Ref("spotify", "37i9dQZF1DXcBWIGoYBM5M"), PlaylistLinks.Ref("deezer", "1234567")), PlaylistLinks.parseAll(text))
+        assertEquals(emptyList<PlaylistLinks.Ref>(), PlaylistLinks.parseAll("no links here"))
+    }
+
+    @Test fun webUrls() {
+        assertEquals("https://open.spotify.com/playlist/abc", PlaylistLinks.webUrl("spotify_bridge", "abc"))
+        assertEquals("https://music.apple.com/it/playlist/pl.u-1", PlaylistLinks.webUrl("apple", "pl.u-1", region = "it"))
+        assertEquals("https://music.youtube.com/playlist?list=PL1", PlaylistLinks.webUrl("ytm", "PL1"))
+        assertEquals("https://music.amazon.it/user-playlists/u1", PlaylistLinks.webUrl("amazon", "u1", region = "it"))
+        assertEquals("https://jf.home/web/#/details?id=p1", PlaylistLinks.webUrl("jellyfin", "p1", base = "https://jf.home/"))
+        assertEquals("https://nav.home", PlaylistLinks.webUrl("subsonic@2", "p1", base = "https://nav.home"))
+        assertNull(PlaylistLinks.webUrl("spotify", "__liked__"))
+        assertNull(PlaylistLinks.webUrl("csv", "file"))
+    }
 }

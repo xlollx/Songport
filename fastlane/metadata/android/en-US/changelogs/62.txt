@@ -1,0 +1,1 @@
+Reproducible build for F-Droid: the startup profile, which differed from build to build, is no longer included. Amazon Music: tidier connector code after the October fix; YouTube Music: client shared with the server.

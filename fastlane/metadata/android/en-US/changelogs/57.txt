@@ -1,0 +1,1 @@
+Amazon Music: the sign-in and the hidden player no longer tell Amazon they run inside an app (the X-Requested-With header Android adds), which Amazon now refuses with "401". Disconnect and connect Amazon Music once after updating. YouTube Music: its client moved to a module shared with the server, with no change in behaviour.

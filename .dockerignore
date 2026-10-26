@@ -1,0 +1,12 @@
+# The server image is built from the repository root (server/Dockerfile) and reads only these.
+*
+!android/core
+!android/ytm
+!android/app/build.gradle
+!android/app/src/main/res
+!server
+android/core/build
+android/ytm/build
+server/build
+server/.gradle
+server/.kotlin

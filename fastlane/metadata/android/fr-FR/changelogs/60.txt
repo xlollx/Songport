@@ -1,0 +1,1 @@
+Amazon Music : Amazon refusait les requêtes de Songport comme « client invalide » tout en acceptant son propre lecteur web. Songport essaie maintenant aussi de les envoyer comme le lecteur vers son API (en-têtes seuls, sans cookies), garde la manière acceptée par Amazon et l'inscrit dans le journal.

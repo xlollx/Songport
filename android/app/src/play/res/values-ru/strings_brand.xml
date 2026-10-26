@@ -44,4 +44,12 @@
     <string name="free_why_body">В Trackhop нет рекламы, подписок и закрытых функций. Он живёт на добровольные взносы: если он экономит вам время, можете угостить разработчика кофе.</string>
     <string name="support_title">Нравится Trackhop?</string>
     <string name="support_prompt_body">С помощью синхронизации «%1$s». Trackhop бесплатен и без рекламы, он живёт на добровольные взносы: если он сэкономил вам время, можете угостить разработчика кофе.</string>
+    <string name="share_sheet_unknown">Trackhop не смог прочитать название этого трека. Найдите его вручную ниже.</string>
+    <string name="settings_music_links">Предлагать Trackhop для музыкальных ссылок</string>
+    <string name="settings_music_links_desc">Ссылка Spotify, Apple Music, YouTube Music, Amazon Music, Deezer или TIDAL сможет открываться в Trackhop, который добавит трек в плейлист в любом из ваших сервисов. Android по-прежнему спрашивает, какое приложение использовать, или использует заданное в настройках ссылок: Trackhop никогда не перехватывает ссылку сам.</string>
+    <string name="settings_dynamic_color_desc">Цвета ваших обоев вместо цветов Trackhop. Заголовок сохраняет фирменные цвета.</string>
+    <string name="unplayable_unsupported">%1$s не сообщает, какие треки больше не воспроизводит, поэтому Trackhop не может проверить здесь.</string>
+    <string name="unplayable_hint">Для каждого Trackhop предлагает версию, которая играет. Примите её, найдите другую, удалите запись или пропустите. Ничего не меняется, пока вы не примените.</string>
+    <string name="unplayable_confirm_body">%1$d треков получат играющую версию, %2$d записей будут удалены. Оригиналы остаются в журнале Trackhop, так что это можно отменить.</string>
+    <string name="settings_unplayable_desc">Раз в неделю Trackhop просматривает ваши плейлисты и сообщает, если трек больше нельзя воспроизвести. Сам ничего не меняет.</string>
 </resources>

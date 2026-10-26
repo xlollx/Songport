@@ -1,6 +1,6 @@
 package com.xlollx.songport.ui
 
-import androidx.activity.compose.BackHandler
+import com.xlollx.songport.providers.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -68,7 +68,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
     var plan by remember { mutableStateOf<SyncPlan?>(null) }
     var progress by remember { mutableStateOf<Progress?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
-    BackHandler { onClose() }
+    ScreenBackHandler(onClose)
 
     LaunchedEffect(job.id) {
         try { plan = engine.plan(job, { progress = it }, createTarget = false, interactive = true) }

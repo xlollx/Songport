@@ -1,0 +1,1 @@
+Amazon Music: desconectar y volver a conectar ahora elimina todas las cookies antiguas de Amazon, que con una copia caducada hacían que todo fallara con "401" incluso justo después de conectar. Conectar y desconectar quedan en el registro de diagnóstico. Tras actualizar, desconecta y vuelve a conectar Amazon Music una vez.

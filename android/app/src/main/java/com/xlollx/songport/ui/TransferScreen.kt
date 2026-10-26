@@ -1,6 +1,6 @@
 package com.xlollx.songport.ui
 
-import androidx.activity.compose.BackHandler
+import com.xlollx.songport.providers.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -70,7 +70,7 @@ fun TransferScreen(onClose: () -> Unit, onDone: () -> Unit) {
     val store = remember { Store.get(ctx) }
     val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
-    BackHandler { onClose() }
+    ScreenBackHandler(onClose)
 
     // Come nell'editor: i connettori collegati, piu' "File" (sempre disponibile) come destinazione.
     val connected = remember { Providers.connectors().filter { it.isConnected(ctx) } }
@@ -193,9 +193,5 @@ fun TransferScreen(onClose: () -> Unit, onDone: () -> Unit) {
 @Composable
 private fun ServiceChips(available: List<MusicProvider>, selected: String, onSelect: (String) -> Unit) {
     val ctx = LocalContext.current
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        available.forEach { p ->
-            FilterChip(selected = p.id == selected, onClick = { onSelect(p.id) }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
-        }
-    }
+    ServicePicker(available, selected, onSelect)
 }

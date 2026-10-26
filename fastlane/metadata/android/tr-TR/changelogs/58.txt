@@ -1,0 +1,1 @@
+Amazon Music: oturum açma ve gizli oynatıcı artık kendini masaüstü Chrome yerine, Amazon'un hesabı kabul ettiği telefon tarayıcısı gibi Android için Chrome olarak tanıtıyor; Amazon masaüstü Chrome'u artık "401" ile reddediyor. Güncellemeden sonra Amazon Music bağlantısını bir kez kesip yeniden bağlan.

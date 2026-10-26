@@ -1,0 +1,1 @@
+Amazon Music: istekler artık web oynatıcınınkilere daha çok benziyor (abonelik başlığı, istemci adı) ve Amazon birini reddettiğinde tanılama günlüğü verdiği yanıtı kaydediyor; oynatıcıyı kabul edip Songport'u neden reddettiğini anlamak için.

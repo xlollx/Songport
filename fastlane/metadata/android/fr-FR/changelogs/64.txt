@@ -1,0 +1,1 @@
+Deux nouveaux outils à partager : « Sommes-nous compatibles ? » compare deux playlists, même de services différents, et donne un score avec les titres et artistes en commun, en image pour vos stories. « Affiche de playlist » crée une carte avec les pochettes et un QR code qui ouvre la playlist.

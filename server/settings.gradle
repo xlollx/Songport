@@ -1,0 +1,21 @@
+// Songport without a phone: its own Gradle build, so that building it (in Docker, in CI) needs
+// neither the Android SDK nor the Android Gradle plugin. The engine is the app's :core module,
+// taken from where it lives; nothing in android/ knows about this build.
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "songport-server"
+include ':core'
+project(':core').projectDir = file('../android/core')
+// YouTube Music's web client, the same the app's built-in connector uses (without its WebView).
+include ':ytm'
+project(':ytm').projectDir = file('../android/ytm')

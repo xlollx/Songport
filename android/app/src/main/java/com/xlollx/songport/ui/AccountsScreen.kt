@@ -1,5 +1,12 @@
 package com.xlollx.songport.ui
 
+import androidx.compose.material3.Surface
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.draw.alpha
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import com.xlollx.songport.providers.*
 import android.net.Uri
 import com.xlollx.songport.sync.QuotaMeter
 import com.xlollx.songport.providers.YouTubeProvider
@@ -11,6 +18,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.filled.CheckCircle
@@ -171,7 +179,7 @@ fun AccountsScreen(snackbar: SnackbarHostState, showAdd: Boolean, onShowAdd: (Bo
         EmptyState(Icons.Filled.AccountCircle, stringResource(R.string.connectors_empty_title), stringResource(R.string.connectors_empty_body))
         return
     }
-    LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp + LocalBottomBarInset.current), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp + LocalBottomBarInset.current), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item(key = "intro") { TrustBanner() }
         items(providers, key = { it.id }) { p ->
             key(refresh) {
@@ -204,44 +212,53 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
             // A service reachable two ways (its official API with a key of yours, or its web player with a
             // plain sign-in) is one entry with two routes, each saying what it asks and what it is.
             val families = services.groupBy { it.familyName }
+            // First a grid of the services, grouped; a service reachable two ways then shows its
+            // routes, each saying what it asks and what it is.
+            var family by remember { mutableStateOf<String?>(null) }
+            val chosen = family?.let { families[it] }
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                if (families.values.any { it.size > 1 }) {
-                    Text(stringResource(R.string.connector_pick_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(Modifier.height(6.dp))
-                }
-                families.forEach { (family, members) ->
-                    val grouped = members.size > 1
-                    if (grouped) {
-                        Row(Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-                            ProviderBadge(members.first(), 32.dp)
-                            Spacer(Modifier.width(12.dp))
-                            Text(family, style = MaterialTheme.typography.bodyLarge)
+                if (chosen == null) {
+                    serviceGroups(families.keys.toList(), families).forEach { (groupRes, names) ->
+                        if (names.isEmpty()) return@forEach
+                        Text(stringResource(groupRes), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 10.dp, bottom = 6.dp))
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            names.forEach { name ->
+                                val members = families.getValue(name)
+                                val allTaken = members.all { m -> !m.supportsMultipleAccounts && connectors.any { Providers.byId(it)?.serviceId == m.serviceId } }
+                                ServiceGridTile(members.first(), name, enabled = !allTaken) {
+                                    if (members.size == 1) onPick(members.first()) else family = name
+                                }
+                            }
                         }
                     }
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = { family = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) }
+                        ServiceLogo(chosen.first(), 32.dp)
+                        Spacer(Modifier.width(12.dp))
+                        Text(family!!, style = MaterialTheme.typography.titleMedium)
+                    }
+                    Text(stringResource(R.string.connector_pick_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 6.dp))
                     // The easiest route first, so a first-timer's eye lands on it.
-                    members.sortedBy { if (it.route == MusicProvider.Route.EASY) 0 else 1 }.forEach { s ->
+                    chosen.sortedBy { if (it.route == MusicProvider.Route.EASY) 0 else 1 }.forEach { s ->
                         val taken = !s.supportsMultipleAccounts && connectors.any { Providers.byId(it)?.serviceId == s.serviceId }
                         Row(
-                            Modifier.fillMaxWidth().clickable(enabled = !taken) { onPick(s) }.padding(start = if (grouped) 44.dp else 0.dp, top = 8.dp, bottom = 8.dp),
+                            Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium).clickable(enabled = !taken) { onPick(s) }.padding(horizontal = 8.dp, vertical = 10.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            if (!grouped) { ProviderBadge(s, 32.dp); Spacer(Modifier.width(12.dp)) }
                             Column(Modifier.weight(1f)) {
                                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    if (!grouped) Text(
-                                        s.displayName,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = if (taken) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
-                                    )
                                     s.route?.let { r ->
                                         // Both routes wear the lock: the quick one signs in on the service's own page too.
                                         StatusPill(stringResource(if (r == MusicProvider.Route.EASY) R.string.route_easy else R.string.route_official), if (r == MusicProvider.Route.EASY) Tone.Ok else Tone.Accent, Icons.Filled.Lock)
-                                    }
+                                    } ?: Text(s.displayName, style = MaterialTheme.typography.bodyLarge)
                                     if (!s.canWrite) Text(stringResource(R.string.read_only), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     if (s.beta) Text(stringResource(R.string.beta), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    if (taken) Text(stringResource(R.string.connected), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                                 s.routeNoteRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
                             }
+                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -304,10 +321,17 @@ private fun ProviderCard(
     val configured = remember(p.id) { p.isConfigured(ctx) }
     val connected = remember(p.id) { p.isConnected(ctx) }
     val account = remember(p.id) { p.accountName(ctx) }
-    Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+    // The edge tells the state at a glance: the success tone when connected, a hairline otherwise.
+    val edge = if (connected) Tones.onSuccessContainer().copy(alpha = 0.45f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
+    Card(
+        Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        border = androidx.compose.foundation.BorderStroke(1.dp, edge),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    ) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                ProviderBadge(p, 40.dp)
+                ServiceLogo(p, 48.dp)
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
@@ -337,7 +361,7 @@ private fun ProviderCard(
             }
             if (p.usesOwnCredentials(ctx)) {
                 Spacer(Modifier.height(6.dp))
-                Text(stringResource(R.string.setup_using_own), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                Text(stringResource(R.string.setup_using_own), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else if (!configured && !connected) {
                 Spacer(Modifier.height(6.dp))
                 Text(stringResource(p.notConfiguredRes ?: R.string.not_configured_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
@@ -345,11 +369,11 @@ private fun ProviderCard(
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 if (connected) {
-                    Icon(Icons.Filled.Lock, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Filled.Lock, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(14.dp))
                     Spacer(Modifier.width(4.dp))
                     Text(
                         stringResource(R.string.account_encrypted), style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f),
                     )
                 } else Spacer(Modifier.weight(1f))
                 var testing by remember { mutableStateOf(false) }
@@ -503,4 +527,33 @@ private fun PasteListDialog(onDismiss: () -> Unit, onImport: (String, String) ->
         confirmButton = { TextButton(enabled = text.isNotBlank(), onClick = { onImport(name.ifBlank { "playlist" }, text) }) { Text(stringResource(R.string.import_action)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     )
+}
+
+/** Streaming services, personal servers, then the rest (stats services, files), each in its own group. */
+private fun serviceGroups(names: List<String>, families: Map<String, List<MusicProvider>>): List<Pair<Int, List<String>>> {
+    val servers = setOf("subsonic", "jellyfin", "plex")
+    val other = setOf("lastfm", "listenbrainz", "csv")
+    fun kind(n: String) = families.getValue(n).first().serviceId.let { if (it in servers) 1 else if (it in other) 2 else 0 }
+    return listOf(
+        R.string.services_group_streaming to names.filter { kind(it) == 0 },
+        R.string.services_group_servers to names.filter { kind(it) == 1 },
+        R.string.services_group_other to names.filter { kind(it) == 2 },
+    )
+}
+
+/** A service in the "add a service" grid: its mark, large, and its name. */
+@Composable
+private fun ServiceGridTile(p: MusicProvider, name: String, enabled: Boolean, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick, enabled = enabled,
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        modifier = Modifier.size(width = 84.dp, height = 96.dp).alpha(if (enabled) 1f else 0.45f),
+    ) {
+        Column(Modifier.padding(6.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            ServiceLogo(p, 40.dp)
+            Spacer(Modifier.height(6.dp))
+            Text(name, style = MaterialTheme.typography.labelMedium, maxLines = 2, textAlign = TextAlign.Center, overflow = TextOverflow.Ellipsis)
+        }
+    }
 }

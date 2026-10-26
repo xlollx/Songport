@@ -1,0 +1,1 @@
+Powtarzalna kompilacja dla F-Droid: profil startowy, inny przy każdej kompilacji, nie jest już dołączany. Amazon Music: uporządkowany kod łącznika po październikowej poprawce; YouTube Music: klient współdzielony z serwerem.

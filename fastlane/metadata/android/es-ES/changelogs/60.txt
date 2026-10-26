@@ -1,0 +1,1 @@
+Amazon Music: Amazon rechazaba las peticiones de Songport como "cliente no válido" mientras aceptaba su propio reproductor web. Songport ahora también las envía como lo hace el reproductor a su API (solo cabeceras, sin cookies), conserva la forma que Amazon acepta y la anota en el registro.

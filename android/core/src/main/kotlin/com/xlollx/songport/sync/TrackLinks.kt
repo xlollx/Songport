@@ -18,7 +18,8 @@ object TrackLinks {
         // Apple Music: https://music.apple.com/it/album/nome/123456?i=654321 (il brano e' "i"),
         // oppure https://music.apple.com/it/song/nome/654321
         Regex("""music\.apple\.com/[^\s]*[?&]i=(\d+)""") to "apple",
-        Regex("""music\.apple\.com/[^/]+/song/(?:[^/?\s]*/)?(\d+)""") to "apple",
+        // The storefront segment is optional: music.apple.com/song/<id> is sent to the visitor's own.
+        Regex("""music\.apple\.com/(?:[a-z]{2}/)?song/(?:[^/?\s]*/)?(\d+)""") to "apple",
         // YouTube / YouTube Music: watch?v=ID, youtu.be/ID
         Regex("""(?:music\.)?youtube\.com/[^\s]*[?&]v=([A-Za-z0-9_-]{11})""") to "youtube",
         Regex("""youtu\.be/([A-Za-z0-9_-]{11})""") to "youtube",
@@ -70,6 +71,26 @@ object TrackLinks {
         val target = links[platform]["url"].str ?: (if (platform == "youtubeMusic") links["youtube"]["url"].str else null) ?: return null
         return parse(target)
     }
+
+    /**
+     * The public web address of a track on one of the link services, for "open it there": no API
+     * call, the service's player resolves the id. Null for a service without a stable track page
+     * (personal servers, Last.fm, files).
+     */
+    fun url(serviceId: String, trackId: String): String? = when (serviceId) {
+        "spotify", "spotify_bridge" -> "https://open.spotify.com/track/$trackId"
+        // Apple opens a song page from the id alone, whatever the storefront.
+        "apple", "apple_bridge" -> "https://music.apple.com/song/$trackId"
+        "youtube" -> "https://www.youtube.com/watch?v=$trackId"
+        "ytm" -> "https://music.youtube.com/watch?v=$trackId"
+        "amazon" -> "https://music.amazon.com/tracks/$trackId"
+        "deezer" -> "https://www.deezer.com/track/$trackId"
+        "tidal" -> "https://tidal.com/browse/track/$trackId"
+        else -> null
+    }
+
+    /** The link services as parse() names them, in the order a sheet lists them. */
+    val SERVICES: List<String> = listOf("spotify", "apple", "youtube", "amazon", "deezer", "tidal")
 
     fun matches(service: String, serviceId: String): Boolean = when (service) {
         "spotify" -> serviceId == "spotify" || serviceId == "spotify_bridge"

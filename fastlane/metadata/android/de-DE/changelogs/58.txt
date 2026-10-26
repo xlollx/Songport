@@ -1,0 +1,1 @@
+Amazon Music: Anmeldung und versteckter Player geben sich jetzt als Chrome für Android aus – wie der Browser des Handys, in dem Amazon das Konto akzeptiert – statt als Desktop-Chrome, das Amazon jetzt mit „401“ ablehnt. Nach dem Update Amazon Music einmal trennen und neu verbinden.

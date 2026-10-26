@@ -1,0 +1,1 @@
+Amazon Music：ログインと非表示プレーヤーが、アプリ内で動作していること（Android が付ける X-Requested-With ヘッダー）を Amazon に伝えなくなりました。Amazon は現在これを「401」で拒否します。更新後、Amazon Music を一度切断して再接続してください。YouTube Music：クライアントをサーバーと共有するモジュールに移しました。動作は変わりません。

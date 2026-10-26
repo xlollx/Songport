@@ -1,0 +1,1 @@
+Amazon Music: Amazon refused Songport's calls as "invalid customer" while accepting its own web player. Songport now also tries calls the way the player sends them to its API (headers only, no cookies), keeps whichever Amazon accepts, and logs which one it was.

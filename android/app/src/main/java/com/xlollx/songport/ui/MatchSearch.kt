@@ -1,5 +1,6 @@
 package com.xlollx.songport.ui
 
+import com.xlollx.songport.providers.*
 import android.net.Uri
 import android.content.Intent
 import android.content.ClipboardManager
@@ -177,10 +178,16 @@ fun MatchSearch(
             Text(stringResource(R.string.search_paste_link), maxLines = 1)
         }
     }
-    Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        if (busy) { CircularProgressIndicator(Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)) }
+    // Wraps instead of squeezing: with three extra actions in a narrow card, a Row left the
+    // Search button a column of single letters.
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        if (busy) CircularProgressIndicator(Modifier.size(18.dp).align(Alignment.CenterVertically))
         extraActions(busy)
-        Button(enabled = !busy && query.isNotBlank(), onClick = { runSearch() }) { Text(stringResource(R.string.unmatched_search)) }
+        Button(enabled = !busy && query.isNotBlank(), onClick = { runSearch() }) { Text(stringResource(R.string.unmatched_search), maxLines = 1, softWrap = false) }
     }
     aiNote?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary) }
     candidates?.let { result ->
@@ -210,7 +217,7 @@ fun MatchSearch(
         }
         // The few likeliest first, whatever they came from: most fixes are one look and one tap.
         val top = result.hits.take(TOP_HITS)
-        Text(stringResource(R.string.search_top), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+        Text(stringResource(R.string.search_top), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         top.forEachIndexed { i, h -> pick(h, i == 0 && (h.score >= PRIMARY_SCORE || h.track.id == aiPick)) }
         val rest = result.hits.drop(TOP_HITS)
         // Everything else folded by origin: the album (or the news that it is missing), the other

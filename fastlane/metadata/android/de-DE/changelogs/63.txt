@@ -1,0 +1,1 @@
+Geteilte Links landen überall: Ein Link zu einem Stück auf Spotify, Apple Music, YouTube Music, Amazon Music, Deezer oder TIDAL, mit Songport geteilt, kommt jetzt in eine Playlist auf einem beliebigen deiner Dienste, Navidrome, Jellyfin und Plex eingeschlossen; die Übereinstimmung wird vor dem Hinzufügen gezeigt. Optional: Musiklinks mit Songport öffnen (Einstellungen).

@@ -1,0 +1,1 @@
+Amazon Music: scollegarsi e ricollegarsi ora rimuove tutti i vecchi cookie Amazon, che con una copia scaduta facevano rifiutare tutto con "401" anche subito dopo il collegamento. Collegamento e scollegamento compaiono nel log di diagnostica. Dopo l'aggiornamento, scollega e ricollega Amazon Music una volta.

@@ -1,0 +1,1 @@
+Okładki na kartach do udostępniania: utwory z YouTube Music pokazują własną okładkę, a inne serwisy szukają jej w publicznym katalogu Deezer, a potem Apple, więc plakat i karta zgodności nie pokazują już pustych kafelków.

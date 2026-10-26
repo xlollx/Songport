@@ -1,0 +1,1 @@
+Amazon Music: o login e o player oculto não dizem mais à Amazon que rodam dentro de um app (o cabeçalho X-Requested-With que o Android adiciona), algo que a Amazon agora recusa com "401". Depois de atualizar, desconecte e conecte o Amazon Music uma vez. YouTube Music: o cliente foi para um módulo compartilhado com o servidor, sem mudança de comportamento.

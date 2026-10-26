@@ -1,0 +1,1 @@
+Build riproducibile per F-Droid: il profilo di avvio, diverso a ogni compilazione, non viene più incluso. Amazon Music: codice del connettore ripulito dopo la correzione di ottobre; YouTube Music: client condiviso con il server.

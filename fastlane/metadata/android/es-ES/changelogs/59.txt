@@ -1,0 +1,1 @@
+Amazon Music: las peticiones ahora se parecen más a las del reproductor web (cabecera de suscripción, nombre del cliente) y, cuando Amazon rechaza una, el registro de diagnóstico guarda lo que respondió, para averiguar por qué acepta el reproductor y no Songport.

@@ -67,7 +67,7 @@ class AmazonLoginActivity : ComponentActivity() {
             builtInZoomControls = true
             displayZoomControls = false
         }
-        // The desktop player: the phone-sized one stopped calling its API, so nothing could be seen.
+        // The desktop player: its own calls are accepted on this session (traffic capture, 1.0.57).
         web.settings.useWideViewPort = true
         web.settings.loadWithOverviewMode = true
         BridgeUa.apply(this, web)
@@ -87,6 +87,9 @@ class AmazonLoginActivity : ComponentActivity() {
         onBackPressedDispatcher.addCallback(this) {
             if (web.canGoBack()) web.goBack() else { setResult(RESULT_CANCELED); finish() }
         }
+        // A new sign-in starts from an empty jar: old Amazon cookies would ride along with the new ones.
+        val wiped = AmazonSession.wipeCookies()
+        BridgeNet.log("amazon", "sign-in started ($wiped old Amazon cookies removed first; ${BridgeUa.describe()})")
         web.loadUrl(LOGIN_URL)
         // The player is a single page app: navigation does not always report a finished page.
         handler.postDelayed(object : Runnable {
@@ -134,6 +137,8 @@ class AmazonLoginActivity : ComponentActivity() {
         val cookies = hit.second ?: return
         AmazonSession.save(app, cookies, host, null)
         AmazonClient.forgetConfig()
+        BridgeNet.log("amazon", "connected on $host (${if (ready) "player started" else if (manual) "Done tapped" else "after waiting"}, " +
+            "${cookies.split(';').size} cookies)")
         // The display name comes from the player configuration; a failure here is not a failed login.
         thread {
             val name = runCatching { AmazonClient(app).config(host, cookies).customerName }.getOrNull()

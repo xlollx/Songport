@@ -44,4 +44,12 @@
     <string name="free_why_body">Trackhop nie ma reklam, subskrypcji ani zablokowanych funkcji. Utrzymuje się z dobrowolnych wpłat: jeśli oszczędza ci czas, możesz postawić deweloperowi kawę.</string>
     <string name="support_title">Lubisz Trackhop?</string>
     <string name="support_prompt_body">Synchronizacją „%1$s”. Trackhop jest bezpłatny i bez reklam, utrzymuje się z dobrowolnych wpłat: jeśli oszczędził ci czas, możesz postawić deweloperowi kawę.</string>
+    <string name="share_sheet_unknown">Trackhop nie odczytał tytułu tego utworu. Wyszukaj go ręcznie poniżej.</string>
+    <string name="settings_music_links">Proponuj Trackhop dla linków muzycznych</string>
+    <string name="settings_music_links_desc">Link ze Spotify, Apple Music, YouTube Music, Amazon Music, Deezera lub TIDAL będzie mógł otworzyć się w Trackhop, który doda utwór do playlisty w dowolnej z twoich usług. Android nadal pyta, której aplikacji użyć, albo trzyma się tej ustawionej w ustawieniach linków: Trackhop nigdy nie przejmuje linku sam.</string>
+    <string name="settings_dynamic_color_desc">Kolory tapety zamiast kolorów Trackhop. Baner tytułowy zachowuje kolory marki.</string>
+    <string name="unplayable_unsupported">%1$s nie podaje, których utworów już nie odtwarza, więc Trackhop nie może tu sprawdzić.</string>
+    <string name="unplayable_hint">Dla każdego Trackhop proponuje działającą wersję. Zaakceptuj ją, poszukaj innej, usuń wpis albo pomiń. Nic się nie zmieni, dopóki nie zastosujesz.</string>
+    <string name="unplayable_confirm_body">%1$d utworów dostanie działającą wersję, %2$d wpisów zostanie usuniętych. Oryginały zostają w dzienniku Trackhop, więc można to cofnąć.</string>
+    <string name="settings_unplayable_desc">Raz w tygodniu Trackhop przegląda twoje playlisty i daje znać, gdy jakiegoś utworu nie da się już odtworzyć. Sam niczego nie zmienia.</string>
 </resources>

@@ -1,0 +1,1 @@
+Amazon Music: Anmeldung und versteckter Player verraten Amazon nicht mehr, dass sie in einer App laufen (der von Android hinzugefügte X-Requested-With-Header), was Amazon jetzt mit „401“ ablehnt. Nach dem Update Amazon Music einmal trennen und neu verbinden. YouTube Music: Der Client liegt jetzt in einem mit dem Server geteilten Modul, ohne Verhaltensänderung.

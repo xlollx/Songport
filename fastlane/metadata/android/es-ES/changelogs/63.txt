@@ -1,0 +1,1 @@
+Los enlaces compartidos llegan a cualquier parte: un enlace a una pista de Spotify, Apple Music, YouTube Music, Amazon Music, Deezer o TIDAL compartido con Songport ahora va a una lista en cualquiera de tus servicios, incluidos Navidrome, Jellyfin y Plex, mostrando la coincidencia antes de añadir. Opcional: abrir los enlaces de música con Songport (Ajustes).

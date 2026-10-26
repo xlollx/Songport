@@ -1,0 +1,1 @@
+Reproduzierbarer Build für F-Droid: Das Startprofil, das sich von Build zu Build unterschied, ist nicht mehr enthalten. Amazon Music: aufgeräumter Connector-Code nach der Oktober-Korrektur; YouTube Music: Client mit dem Server geteilt.

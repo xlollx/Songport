@@ -1,6 +1,6 @@
 package com.xlollx.songport.ui
 
-import androidx.activity.compose.BackHandler
+import com.xlollx.songport.providers.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -56,7 +56,7 @@ fun LibraryScanScreen(provider: MusicProvider, onClose: () -> Unit) {
     var result by remember { mutableStateOf<LibraryScan.Result?>(null) }
     var step by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
-    BackHandler { onClose() }
+    ScreenBackHandler(onClose)
     LaunchedEffect(provider.id) {
         result = try { LibraryScan.run(ctx, provider) { step = it } } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { error = e.message ?: ctx.getString(R.string.error_generic); null }
     }
@@ -98,7 +98,7 @@ fun LibraryScanScreen(provider: MusicProvider, onClose: () -> Unit) {
                     items(r.repeats, key = { "r-" + it.track.id }) { rep ->
                         Column(Modifier.fillMaxWidth()) {
                             TrackLine(rep.track)
-                            Text(rep.playlists.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                            Text(rep.playlists.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
                         }
                     }
                 }

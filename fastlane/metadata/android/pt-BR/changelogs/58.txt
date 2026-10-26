@@ -1,0 +1,1 @@
+Amazon Music: o login e o player oculto agora se apresentam como Chrome para Android, como o navegador do telefone em que a Amazon aceita a conta, em vez de Chrome para computador, que a Amazon agora recusa com "401". Depois de atualizar, desconecte e conecte o Amazon Music uma vez.

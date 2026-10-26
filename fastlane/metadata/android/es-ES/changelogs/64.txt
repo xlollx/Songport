@@ -1,0 +1,1 @@
+Dos herramientas nuevas para compartir: "¿Cuánto somos compatibles?" compara dos listas, incluso de servicios distintos, y da una puntuación con las canciones y artistas en común, como imagen para tus historias. "Póster de la lista" crea una tarjeta con las portadas y un código QR que abre la lista.

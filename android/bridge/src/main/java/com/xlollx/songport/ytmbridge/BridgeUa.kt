@@ -51,20 +51,32 @@ object BridgeUa {
                 .build()
             WebSettingsCompat.setUserAgentMetadata(web.settings, md)
         }
+        // A WebView adds "X-Requested-With: <app package>" to its requests, which no browser sends:
+        // the one header saying "embedded in an app". An empty allow-list keeps it off everywhere.
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.REQUESTED_WITH_HEADER_ALLOW_LIST)) runCatching {
+            WebSettingsCompat.setRequestedWithHeaderOriginAllowList(web.settings, emptySet())
+        }
         // The page-side view of the same hints, for a WebView that cannot set them natively.
         if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) runCatching {
-            WebViewCompat.addDocumentStartJavaScript(web, hintsScript(major, full), setOf("*"))
+            WebViewCompat.addDocumentStartJavaScript(web, hintsScript(major, full, "Windows", false, "", "15.0.0", "x86"), setOf("*"))
         }
     }
 
-    fun hintsScript(major: String, full: String): String = """
+    /** What this phone's WebView lets the identity cover, for the diagnostics log. */
+    fun describe(): String {
+        val hints = WebViewFeature.isFeatureSupported(WebViewFeature.USER_AGENT_METADATA)
+        val xrw = WebViewFeature.isFeatureSupported(WebViewFeature.REQUESTED_WITH_HEADER_ALLOW_LIST)
+        return "client hints ${if (hints) "set" else "not settable"}, app header ${if (xrw) "removed" else "not removable"}"
+    }
+
+    fun hintsScript(major: String, full: String, platform: String, mobile: Boolean, model: String, platformVersion: String, arch: String): String = """
         (function(){
           try {
             var brands = [{brand:'Chromium',version:'$major'},{brand:'Google Chrome',version:'$major'},{brand:'Not:A-Brand',version:'99'}];
             var fullList = [{brand:'Chromium',version:'$full'},{brand:'Google Chrome',version:'$full'},{brand:'Not:A-Brand',version:'99.0.0.0'}];
-            var data = { brands: brands, mobile: false, platform: 'Windows',
-              getHighEntropyValues: function(){ return Promise.resolve({ brands: brands, mobile: false, platform: 'Windows', platformVersion: '15.0.0', architecture: 'x86', bitness: '64', model: '', uaFullVersion: '$full', fullVersionList: fullList }); },
-              toJSON: function(){ return { brands: brands, mobile: false, platform: 'Windows' }; } };
+            var data = { brands: brands, mobile: $mobile, platform: '$platform',
+              getHighEntropyValues: function(){ return Promise.resolve({ brands: brands, mobile: $mobile, platform: '$platform', platformVersion: '$platformVersion', architecture: '$arch', bitness: '${if (mobile) "" else "64"}', model: '${model.replace("'", "")}', uaFullVersion: '$full', fullVersionList: fullList }); },
+              toJSON: function(){ return { brands: brands, mobile: $mobile, platform: '$platform' }; } };
             Object.defineProperty(navigator, 'userAgentData', { get: function(){ return data; }, configurable: true });
           } catch (e) {}
         })();
