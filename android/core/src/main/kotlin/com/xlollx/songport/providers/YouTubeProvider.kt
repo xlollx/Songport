@@ -7,6 +7,8 @@ import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
 import com.xlollx.songport.model.Track
+import com.xlollx.songport.model.UnplayableEntry
+import com.xlollx.songport.sync.Unplayable
 import com.xlollx.songport.net.Http
 import com.xlollx.songport.net.HttpResponse
 import com.xlollx.songport.net.arr
@@ -166,6 +168,45 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         return raws.map { r ->
             val (title, artists) = TitleParser.parseYouTube(r.title, r.channel)
             Track(id = r.videoId, title = title, artists = artists, durationMs = durations[r.videoId] ?: 0, itemId = r.itemId)
+        }
+    }
+
+    override val detectsUnplayable: Boolean get() = true
+
+    /**
+     * Entries YouTube shows as "Private video" or "Deleted video", and videos the API no longer
+     * lists at all. The position counts every entry of the playlist, placeholders included. One
+     * quota unit per page and one per fifty videos.
+     */
+    override suspend fun unplayable(ctx: Env, playlistId: String): List<UnplayableEntry> {
+        if (MusicProvider.isLibrary(playlistId)) return emptyList()
+        data class Raw(val index: Int, val itemId: String, val videoId: String, val title: String, val channel: String?)
+        val raws = ArrayList<Raw>()
+        var page: String? = null
+        var index = 0
+        do {
+            val j = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=$playlistId" +
+                (page?.let { "&pageToken=$it" } ?: "")) }
+            for (item in j["items"].arr) {
+                val vid = item["contentDetails"]["videoId"].str ?: continue
+                raws += Raw(index++, item["id"].str ?: continue, vid, item["snippet"]["title"].str ?: "", item["snippet"]["videoOwnerChannelTitle"].str)
+            }
+            page = j["nextPageToken"].str
+        } while (page != null)
+        // Which of the videos the API still knows: a deleted one is simply missing from the answer.
+        val known = HashSet<String>()
+        raws.map { it.videoId }.distinct().chunked(50).forEach { ids ->
+            val j = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/videos?part=id&id=${ids.joinToString(",")}") }
+            j["items"].arr.mapNotNullTo(known) { it["id"].str }
+        }
+        return raws.mapNotNull { r ->
+            val reason = when {
+                r.title == "Private video" -> Unplayable.REASON_PRIVATE
+                r.title == "Deleted video" || r.videoId !in known -> Unplayable.REASON_DELETED
+                else -> return@mapNotNull null
+            }
+            val (title, artists) = TitleParser.parseYouTube(r.title, r.channel)
+            UnplayableEntry(Track(id = r.videoId, title = title, artists = artists, itemId = r.itemId, available = false), r.index, reason)
         }
     }
 

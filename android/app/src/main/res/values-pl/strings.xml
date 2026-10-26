@@ -799,4 +799,47 @@
     <string name="settings_dynamic_color">Dynamiczne kolory (Material You)</string>
     <string name="settings_dynamic_color_desc">Kolory tapety zamiast kolorów Songport. Baner tytułowy zachowuje kolory marki.</string>
     <string name="settings_dynamic_color_unavailable">Wymaga Androida 12 lub nowszego.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Nieodtwarzalne utwory</string>
+    <string name="tools_unplayable_desc">Znajduje utwory, które serwis wciąż wyświetla, ale już nie odtwarza (wyszarzone), i zastępuje je wersją, która działa.</string>
+    <string name="unplayable_title">Nieodtwarzalne utwory: %1$s</string>
+    <string name="unplayable_unsupported">%1$s nie podaje, których utworów już nie odtwarza, więc Songport nie może tu sprawdzić.</string>
+    <string name="unplayable_all_playlists">Wszystkie moje playlisty</string>
+    <string name="unplayable_scan">Sprawdź</string>
+    <string name="unplayable_scanning">Sprawdzam %1$s…</string>
+    <string name="unplayable_none">Wszystko gra: brak nieodtwarzalnych utworów w %1$d playlistach.</string>
+    <string name="unplayable_found">%1$d nieodtwarzalnych utworów w %2$d playlistach</string>
+    <string name="unplayable_hint">Dla każdego Songport proponuje działającą wersję. Zaakceptuj ją, poszukaj innej, usuń wpis albo pomiń. Nic się nie zmieni, dopóki nie zastosujesz.</string>
+    <string name="unplayable_searching">Szukam działającej wersji…</string>
+    <string name="unplayable_no_proposal">Brak przekonującej wersji: otwórz wpis, aby poszukać ręcznie, albo go usuń.</string>
+    <string name="unplayable_proposal">Zamiennik: %1$s (%2$d%% zgodności)</string>
+    <string name="unplayable_relinked">%1$s to wersja, którą serwis już odtwarza w jego miejsce</string>
+    <string name="unplayable_remove_only">Tylko usuń</string>
+    <string name="unplayable_skip">Pomiń</string>
+    <string name="unplayable_undecide">Cofnij wybór</string>
+    <string name="unplayable_decided_replace">Zostanie zastąpiony przez %1$s</string>
+    <string name="unplayable_decided_remove">Zostanie usunięty</string>
+    <string name="unplayable_apply">Zastosuj %1$d zmian</string>
+    <string name="unplayable_applying">Stosuję %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">Zastosować zmiany?</string>
+    <string name="unplayable_confirm_body">%1$d utworów dostanie działającą wersję, %2$d wpisów zostanie usuniętych. Oryginały zostają w dzienniku Songport, więc można to cofnąć.</string>
+    <string name="unplayable_no_removal">%1$s nie pozwala aplikacjom usuwać utworów: działająca wersja zostanie dodana, a nieodtwarzalny wpis zostanie.</string>
+    <string name="unplayable_done">Zastąpiono %1$d, usunięto %2$d</string>
+    <string name="unplayable_undo">Cofnij</string>
+    <string name="unplayable_undo_last">Cofnij ostatnią poprawkę (%1$d)</string>
+    <string name="unplayable_undone">Przywrócono %1$d wpisów</string>
+    <string name="unplayable_reason_market">Nie w twoim kraju</string>
+    <string name="unplayable_reason_product">Nie w twoim planie</string>
+    <string name="unplayable_reason_explicit">Filtr treści wulgarnych</string>
+    <string name="unplayable_reason_private">Prywatny film</string>
+    <string name="unplayable_reason_deleted">Usunięty</string>
+    <string name="unplayable_reason_unknown">Nieodtwarzalny</string>
+    <string name="settings_unplayable">Cotygodniowe sprawdzanie nieodtwarzalnych utworów</string>
+    <string name="settings_unplayable_desc">Raz w tygodniu Songport przegląda twoje playlisty i daje znać, gdy jakiegoś utworu nie da się już odtworzyć. Sam niczego nie zmienia.</string>
+    <string name="notif_unplayable_title">Nieodtwarzalne utwory</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">%1$d utwór z twoich playlist nie daje się już odtworzyć. Dotknij, aby go zastąpić.</item>
+        <item quantity="other">%1$d utworów z twoich playlist nie daje się już odtworzyć. Dotknij, aby je zastąpić.</item>
+    </plurals>
 </resources>

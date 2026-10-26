@@ -769,4 +769,47 @@
     <string name="settings_dynamic_color">다이내믹 색상(Material You)</string>
     <string name="settings_dynamic_color_desc">Songport의 색상 대신 배경화면의 색상을 사용합니다. 제목 배너는 브랜드 색상을 유지합니다.</string>
     <string name="settings_dynamic_color_unavailable">Android 12 이상이 필요합니다.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">재생할 수 없는 곡</string>
+    <string name="tools_unplayable_desc">서비스에 표시되지만 더 이상 재생되지 않는 곡(회색 표시)을 찾아 재생되는 버전으로 바꿉니다.</string>
+    <string name="unplayable_title">재생할 수 없는 곡: %1$s</string>
+    <string name="unplayable_unsupported">%1$s은(는) 어떤 곡이 더 이상 재생되지 않는지 알려주지 않아 Songport가 여기서는 확인할 수 없습니다.</string>
+    <string name="unplayable_all_playlists">내 모든 플레이리스트</string>
+    <string name="unplayable_scan">확인</string>
+    <string name="unplayable_scanning">%1$s 확인 중…</string>
+    <string name="unplayable_none">모두 재생됩니다: 플레이리스트 %1$d개에 재생할 수 없는 곡이 없습니다.</string>
+    <string name="unplayable_found">플레이리스트 %2$d개에 재생할 수 없는 곡 %1$d곡</string>
+    <string name="unplayable_hint">각 곡마다 Songport가 재생되는 버전을 제안합니다. 수락하거나, 다른 버전을 찾거나, 항목을 삭제하거나, 건너뛰세요. 적용하기 전에는 아무것도 바뀌지 않습니다.</string>
+    <string name="unplayable_searching">재생되는 버전을 찾는 중…</string>
+    <string name="unplayable_no_proposal">확실한 버전이 없습니다. 항목을 열어 직접 검색하거나 삭제하세요.</string>
+    <string name="unplayable_proposal">대체 곡: %1$s (일치 %2$d%%)</string>
+    <string name="unplayable_relinked">%1$s은(는) 서비스가 이미 그 자리에서 재생하는 곡입니다</string>
+    <string name="unplayable_remove_only">삭제만</string>
+    <string name="unplayable_skip">건너뛰기</string>
+    <string name="unplayable_undecide">선택 취소</string>
+    <string name="unplayable_decided_replace">%1$s(으)로 바뀝니다</string>
+    <string name="unplayable_decided_remove">삭제됩니다</string>
+    <string name="unplayable_apply">변경 %1$d건 적용</string>
+    <string name="unplayable_applying">적용 중 %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">변경을 적용할까요?</string>
+    <string name="unplayable_confirm_body">곡 %1$d개가 재생되는 버전으로 바뀌고 항목 %2$d개가 삭제됩니다. 원본은 Songport 로그에 남아 되돌릴 수 있습니다.</string>
+    <string name="unplayable_no_removal">%1$s은(는) 앱이 곡을 삭제하는 것을 허용하지 않습니다. 재생되는 버전이 추가되고 재생할 수 없는 항목은 그대로 남습니다.</string>
+    <string name="unplayable_done">%1$d곡 교체, %2$d개 삭제</string>
+    <string name="unplayable_undo">되돌리기</string>
+    <string name="unplayable_undo_last">마지막 수정 되돌리기(%1$d)</string>
+    <string name="unplayable_undone">항목 %1$d개를 되돌렸습니다</string>
+    <string name="unplayable_reason_market">내 국가에서 이용 불가</string>
+    <string name="unplayable_reason_product">내 요금제에 미포함</string>
+    <string name="unplayable_reason_explicit">선정성 필터</string>
+    <string name="unplayable_reason_private">비공개 동영상</string>
+    <string name="unplayable_reason_deleted">삭제됨</string>
+    <string name="unplayable_reason_unknown">재생 불가</string>
+    <string name="settings_unplayable">재생할 수 없는 곡 주간 확인</string>
+    <string name="settings_unplayable_desc">일주일에 한 번 Songport가 플레이리스트를 살펴보고 더 이상 재생할 수 없는 곡이 있으면 알려 줍니다. 스스로 아무것도 바꾸지 않습니다.</string>
+    <string name="notif_unplayable_title">재생할 수 없는 곡</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">플레이리스트의 곡 %1$d개를 더 이상 재생할 수 없습니다. 탭하여 교체하세요.</item>
+        <item quantity="other">플레이리스트의 곡 %1$d개를 더 이상 재생할 수 없습니다. 탭하여 교체하세요.</item>
+    </plurals>
 </resources>

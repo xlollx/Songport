@@ -6,9 +6,11 @@ import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
 import com.xlollx.songport.model.Track
+import com.xlollx.songport.sync.Unplayable
 import com.xlollx.songport.net.Http
 import com.xlollx.songport.net.HttpResponse
 import com.xlollx.songport.net.arr
+import com.xlollx.songport.net.isNullish
 import com.xlollx.songport.net.bool
 import com.xlollx.songport.net.get
 import com.xlollx.songport.net.int
@@ -104,8 +106,12 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
             isrc = a["isrc"].str,
             itemId = itemId,
             explicit = a["explicit"].bool,
+            // What the track allows (STREAM, DJ, STEM): without STREAM it is listed but does not play.
+            available = a["availability"].takeUnless { it.isNullish }?.let { Unplayable.tidalStreamable(it.arr.mapNotNull { v -> v.str }) },
         )
     }
+
+    override val detectsUnplayable: Boolean get() = true
 
     private suspend fun artistNames(ctx: Env, ids: Collection<String>): Map<String, String> {
         val out = HashMap<String, String>()

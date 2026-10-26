@@ -770,4 +770,47 @@
     <string name="settings_dynamic_color">动态颜色（Material You）</string>
     <string name="settings_dynamic_color_desc">使用壁纸的颜色，而不是 Songport 自己的颜色。标题横幅保留品牌颜色。</string>
     <string name="settings_dynamic_color_unavailable">需要 Android 12 或更高版本。</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">无法播放的曲目</string>
+    <string name="tools_unplayable_desc">找出服务仍列出但已无法播放的曲目（灰显），并用可播放的版本替换。</string>
+    <string name="unplayable_title">无法播放的曲目：%1$s</string>
+    <string name="unplayable_unsupported">%1$s 不会告知哪些曲目已无法播放，因此 Songport 无法在此检查。</string>
+    <string name="unplayable_all_playlists">我的全部播放列表</string>
+    <string name="unplayable_scan">检查</string>
+    <string name="unplayable_scanning">正在检查 %1$s…</string>
+    <string name="unplayable_none">全部可播放：%1$d 个播放列表中没有无法播放的曲目。</string>
+    <string name="unplayable_found">%2$d 个播放列表中有 %1$d 首无法播放的曲目</string>
+    <string name="unplayable_hint">Songport 会为每一首提议一个可播放的版本。接受它、另行搜索、移除该条目或跳过。在你应用之前不会有任何更改。</string>
+    <string name="unplayable_searching">正在寻找可播放的版本…</string>
+    <string name="unplayable_no_proposal">没有找到可信的版本：展开条目手动搜索，或将其移除。</string>
+    <string name="unplayable_proposal">替换为：%1$s（匹配度 %2$d%%）</string>
+    <string name="unplayable_relinked">%1$s 是服务已在其位置播放的版本</string>
+    <string name="unplayable_remove_only">仅移除</string>
+    <string name="unplayable_skip">跳过</string>
+    <string name="unplayable_undecide">撤销选择</string>
+    <string name="unplayable_decided_replace">将替换为 %1$s</string>
+    <string name="unplayable_decided_remove">将被移除</string>
+    <string name="unplayable_apply">应用 %1$d 项更改</string>
+    <string name="unplayable_applying">正在应用 %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">应用更改？</string>
+    <string name="unplayable_confirm_body">%1$d 首曲目将换成可播放的版本，%2$d 个条目将被移除。原始条目保留在 Songport 的日志中，可以撤销。</string>
+    <string name="unplayable_no_removal">%1$s 不允许应用移除曲目：会添加可播放的版本，无法播放的条目保持不变。</string>
+    <string name="unplayable_done">已替换 %1$d 首，移除 %2$d 个</string>
+    <string name="unplayable_undo">撤销</string>
+    <string name="unplayable_undo_last">撤销上次修复（%1$d）</string>
+    <string name="unplayable_undone">已恢复 %1$d 个条目</string>
+    <string name="unplayable_reason_market">在你所在的国家/地区不可用</string>
+    <string name="unplayable_reason_product">不在你的套餐内</string>
+    <string name="unplayable_reason_explicit">露骨内容过滤</string>
+    <string name="unplayable_reason_private">私享视频</string>
+    <string name="unplayable_reason_deleted">已删除</string>
+    <string name="unplayable_reason_unknown">无法播放</string>
+    <string name="settings_unplayable">每周检查无法播放的曲目</string>
+    <string name="settings_unplayable_desc">Songport 每周查看一次你的播放列表，当有曲目无法再播放时通知你。它不会自行更改任何内容。</string>
+    <string name="notif_unplayable_title">无法播放的曲目</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">你的播放列表中有 %1$d 首曲目已无法播放。点按即可替换。</item>
+        <item quantity="other">你的播放列表中有 %1$d 首曲目已无法播放。点按即可替换。</item>
+    </plurals>
 </resources>

@@ -596,7 +596,9 @@ class YtmClient(private val host: YtmHost) {
             ?: ""
         val durationText = r["fixedColumns"].arr.firstOrNull()["musicResponsiveListItemFixedColumnRenderer"]["text"].runsText()
             ?: runs1.mapNotNull { it["text"].str?.trim() }.firstOrNull { DURATION.matches(it) }
-        return TrackDto(videoId, title, artists, album, parseDuration(durationText), setId)
+        // A greyed-out entry (pulled, blocked in this country) keeps its row but gets this display policy.
+        val available = r["musicItemRendererDisplayPolicy"].str != "MUSIC_ITEM_RENDERER_DISPLAY_POLICY_GREY_OUT"
+        return TrackDto(videoId, title, artists, album, parseDuration(durationText), setId, available = available)
     }
 
     private fun parseDuration(text: String?): Long {

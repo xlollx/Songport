@@ -97,6 +97,7 @@ fun SettingsScreen(
             }
             SwitchRow(stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_desc), data.settings.notifyOnSync) { v -> store.updateSettings { it.copy(notifyOnSync = v) } }
             SwitchRow(stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_desc), data.settings.isrcLookup) { v -> store.updateSettings { it.copy(isrcLookup = v) } }
+            SwitchRow(stringResource(R.string.settings_unplayable), stringResource(R.string.settings_unplayable_desc), data.settings.unplayableCheck) { v -> store.updateSettings { it.copy(unplayableCheck = v) }; Scheduler.applyUnplayable(ctx) }
             // The link alias lives in the package manager, not in the store: read it from there.
             var musicLinks by remember { mutableStateOf(MusicLinks.enabled(ctx)) }
             SwitchRow(stringResource(R.string.settings_music_links), stringResource(R.string.settings_music_links_desc), musicLinks) { v -> MusicLinks.set(ctx, v); musicLinks = v }

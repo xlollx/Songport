@@ -45,6 +45,8 @@ data class Settings(
     val backupFolder: String = "",
     /** Ogni quanto copiare i backup nella cartella; MANUAL = solo a richiesta. */
     val backupSchedule: com.xlollx.songport.model.Schedule = com.xlollx.songport.model.Schedule.MANUAL,
+    /** Once a week, look through the playlists for tracks the services no longer play, and say so; never change anything. */
+    val unplayableCheck: Boolean = false,
     /** Sync che ha fatto scattare la richiesta di contributo, finche' l'utente non risponde. */
     val supportPromptReport: String? = null,
     /** Richiesta di contributo gia' mostrata e chiusa: non torna piu'. */

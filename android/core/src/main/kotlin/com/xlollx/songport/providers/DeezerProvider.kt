@@ -140,11 +140,14 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
             durationMs = (t["duration"].long ?: 0) * 1000,
             isrc = t["isrc"].str,
             explicit = t["explicit_lyrics"].bool,
+            // Deezer says of every listed track whether the account can play it.
+            available = t["readable"].bool,
         )
     }
 
     /** A public playlist is readable from its link with no account; the library slots need one. */
     override fun canRead(ctx: Env, playlistId: String): Boolean = isConnected(ctx) || !MusicProvider.isLibrary(playlistId)
+    override val detectsUnplayable: Boolean get() = true
 
     override suspend fun playlistInfo(ctx: Env, playlistId: String): Playlist {
         val j = dz(ctx, "GET", "/playlist/$playlistId")

@@ -9,6 +9,7 @@ import com.xlollx.songport.model.ProviderException
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.net.Http
 import com.xlollx.songport.net.arr
+import com.xlollx.songport.net.isNullish
 import com.xlollx.songport.net.bool
 import com.xlollx.songport.net.get
 import com.xlollx.songport.net.int
@@ -192,8 +193,13 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
             itemId = libId,
             year = Durations.year(a["releaseDate"].str),
             addedAt = Durations.parseInstant(a["dateAdded"].str),
+            // A library song Apple can still play carries playParams; one pulled from the catalogue has none.
+            available = !a["playParams"].isNullish,
         )
     }
+
+    /** Only the library says what it can play; a catalogue playlist is read as the catalogue lists it. */
+    override val detectsUnplayable: Boolean get() = true
 
     private fun catalogAlbum(d: JsonElement?): Track? {
         val id = d["id"].str ?: return null

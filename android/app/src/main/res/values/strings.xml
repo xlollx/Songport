@@ -780,4 +780,47 @@
     <string name="settings_dynamic_color">Dynamic colours (Material You)</string>
     <string name="settings_dynamic_color_desc">The colours of your wallpaper instead of Songport\'s own. The title banner keeps the brand colours.</string>
     <string name="settings_dynamic_color_unavailable">Needs Android 12 or newer.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Unplayable tracks</string>
+    <string name="tools_unplayable_desc">Finds the tracks a service lists but can no longer play (greyed out) and replaces them with a version that plays.</string>
+    <string name="unplayable_title">Unplayable tracks: %1$s</string>
+    <string name="unplayable_unsupported">%1$s does not say which tracks it can no longer play, so Songport cannot check here.</string>
+    <string name="unplayable_all_playlists">All my playlists</string>
+    <string name="unplayable_scan">Check</string>
+    <string name="unplayable_scanning">Checking %1$s…</string>
+    <string name="unplayable_none">Everything plays: no unplayable track in %1$d playlists.</string>
+    <string name="unplayable_found">%1$d unplayable tracks in %2$d playlists</string>
+    <string name="unplayable_hint">For each one Songport proposes a version that plays. Accept it, search another, remove the entry or skip it. Nothing changes until you apply.</string>
+    <string name="unplayable_searching">Looking for a version that plays…</string>
+    <string name="unplayable_no_proposal">No convincing version found: open the entry to search by hand, or remove it.</string>
+    <string name="unplayable_proposal">Replacement: %1$s (%2$d%% match)</string>
+    <string name="unplayable_relinked">%1$s is what the service already plays in its place</string>
+    <string name="unplayable_remove_only">Remove only</string>
+    <string name="unplayable_skip">Skip</string>
+    <string name="unplayable_undecide">Undo choice</string>
+    <string name="unplayable_decided_replace">Will be replaced with %1$s</string>
+    <string name="unplayable_decided_remove">Will be removed</string>
+    <string name="unplayable_apply">Apply %1$d changes</string>
+    <string name="unplayable_applying">Applying %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">Apply the changes?</string>
+    <string name="unplayable_confirm_body">%1$d tracks get a playable version, %2$d entries are removed. The originals stay in Songport\'s log so you can undo.</string>
+    <string name="unplayable_no_removal">%1$s does not let apps remove tracks: the playable version is added and the unplayable entry stays.</string>
+    <string name="unplayable_done">%1$d replaced, %2$d removed</string>
+    <string name="unplayable_undo">Undo</string>
+    <string name="unplayable_undo_last">Undo last fix (%1$d)</string>
+    <string name="unplayable_undone">%1$d entries put back</string>
+    <string name="unplayable_reason_market">Not in your country</string>
+    <string name="unplayable_reason_product">Not in your plan</string>
+    <string name="unplayable_reason_explicit">Explicit filter</string>
+    <string name="unplayable_reason_private">Private video</string>
+    <string name="unplayable_reason_deleted">Deleted</string>
+    <string name="unplayable_reason_unknown">Unplayable</string>
+    <string name="settings_unplayable">Weekly check for unplayable tracks</string>
+    <string name="settings_unplayable_desc">Once a week Songport looks through your playlists and tells you when a track can no longer be played. Nothing is changed by itself.</string>
+    <string name="notif_unplayable_title">Unplayable tracks</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">%1$d track in your playlists can no longer be played. Tap to replace it.</item>
+        <item quantity="other">%1$d tracks in your playlists can no longer be played. Tap to replace them.</item>
+    </plurals>
 </resources>

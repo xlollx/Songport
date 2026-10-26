@@ -777,4 +777,47 @@
     <string name="settings_dynamic_color">Dinamik renkler (Material You)</string>
     <string name="settings_dynamic_color_desc">Songport\'un renkleri yerine duvar kağıdının renkleri. Başlık alanı marka renklerini korur.</string>
     <string name="settings_dynamic_color_unavailable">Android 12 veya daha yenisi gerekir.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Çalınamayan parçalar</string>
+    <string name="tools_unplayable_desc">Bir servisin listelediği ama artık çalmadığı (gri) parçaları bulur ve çalan bir sürümle değiştirir.</string>
+    <string name="unplayable_title">Çalınamayan parçalar: %1$s</string>
+    <string name="unplayable_unsupported">%1$s hangi parçaları artık çalmadığını söylemiyor, bu yüzden Songport burada kontrol edemiyor.</string>
+    <string name="unplayable_all_playlists">Tüm çalma listelerim</string>
+    <string name="unplayable_scan">Kontrol et</string>
+    <string name="unplayable_scanning">%1$s kontrol ediliyor…</string>
+    <string name="unplayable_none">Her şey çalıyor: %1$d çalma listesinde çalınamayan parça yok.</string>
+    <string name="unplayable_found">%2$d çalma listesinde %1$d çalınamayan parça</string>
+    <string name="unplayable_hint">Her biri için Songport çalan bir sürüm önerir. Kabul et, başkasını ara, kaydı kaldır ya da atla. Uygulayana kadar hiçbir şey değişmez.</string>
+    <string name="unplayable_searching">Çalan bir sürüm aranıyor…</string>
+    <string name="unplayable_no_proposal">İkna edici bir sürüm bulunamadı: elle aramak için kaydı aç ya da kaldır.</string>
+    <string name="unplayable_proposal">Yerine: %1$s (%%%2$d eşleşme)</string>
+    <string name="unplayable_relinked">%1$s, servisin onun yerine zaten çaldığı sürüm</string>
+    <string name="unplayable_remove_only">Sadece kaldır</string>
+    <string name="unplayable_skip">Atla</string>
+    <string name="unplayable_undecide">Seçimi geri al</string>
+    <string name="unplayable_decided_replace">%1$s ile değiştirilecek</string>
+    <string name="unplayable_decided_remove">Kaldırılacak</string>
+    <string name="unplayable_apply">%1$d değişikliği uygula</string>
+    <string name="unplayable_applying">Uygulanıyor %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">Değişiklikler uygulansın mı?</string>
+    <string name="unplayable_confirm_body">%1$d parça çalan bir sürüm alacak, %2$d kayıt kaldırılacak. Orijinaller Songport günlüğünde kalır, böylece geri alabilirsin.</string>
+    <string name="unplayable_no_removal">%1$s uygulamaların parça kaldırmasına izin vermiyor: çalan sürüm eklenir, çalınamayan kayıt kalır.</string>
+    <string name="unplayable_done">%1$d değiştirildi, %2$d kaldırıldı</string>
+    <string name="unplayable_undo">Geri al</string>
+    <string name="unplayable_undo_last">Son düzeltmeyi geri al (%1$d)</string>
+    <string name="unplayable_undone">%1$d kayıt geri kondu</string>
+    <string name="unplayable_reason_market">Ülkende yok</string>
+    <string name="unplayable_reason_product">Planında yok</string>
+    <string name="unplayable_reason_explicit">Müstehcen filtresi</string>
+    <string name="unplayable_reason_private">Özel video</string>
+    <string name="unplayable_reason_deleted">Silinmiş</string>
+    <string name="unplayable_reason_unknown">Çalınamıyor</string>
+    <string name="settings_unplayable">Çalınamayan parçalar için haftalık kontrol</string>
+    <string name="settings_unplayable_desc">Songport haftada bir çalma listelerini tarar ve bir parça artık çalınamadığında haber verir. Kendi başına hiçbir şeyi değiştirmez.</string>
+    <string name="notif_unplayable_title">Çalınamayan parçalar</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">Çalma listelerindeki %1$d parça artık çalınamıyor. Değiştirmek için dokun.</item>
+        <item quantity="other">Çalma listelerindeki %1$d parça artık çalınamıyor. Değiştirmek için dokun.</item>
+    </plurals>
 </resources>

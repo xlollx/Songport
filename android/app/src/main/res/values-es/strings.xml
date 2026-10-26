@@ -779,4 +779,47 @@
     <string name="settings_dynamic_color">Colores dinámicos (Material You)</string>
     <string name="settings_dynamic_color_desc">Los colores de tu fondo de pantalla en lugar de los de Songport. El panel del título conserva los colores de la marca.</string>
     <string name="settings_dynamic_color_unavailable">Requiere Android 12 o posterior.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Canciones no reproducibles</string>
+    <string name="tools_unplayable_desc">Encuentra las canciones que un servicio lista pero ya no reproduce (en gris) y las sustituye por una versión que sí suena.</string>
+    <string name="unplayable_title">Canciones no reproducibles: %1$s</string>
+    <string name="unplayable_unsupported">%1$s no dice qué canciones ya no reproduce, así que Songport no puede comprobarlo aquí.</string>
+    <string name="unplayable_all_playlists">Todas mis listas</string>
+    <string name="unplayable_scan">Comprobar</string>
+    <string name="unplayable_scanning">Comprobando %1$s…</string>
+    <string name="unplayable_none">Todo suena: ninguna canción no reproducible en %1$d listas.</string>
+    <string name="unplayable_found">%1$d canciones no reproducibles en %2$d listas</string>
+    <string name="unplayable_hint">Para cada una Songport propone una versión que suena. Acéptala, busca otra, quita la entrada u omítela. Nada cambia hasta que apliques.</string>
+    <string name="unplayable_searching">Buscando una versión que suene…</string>
+    <string name="unplayable_no_proposal">Ninguna versión convincente: abre la entrada para buscar a mano, o quítala.</string>
+    <string name="unplayable_proposal">Sustituta: %1$s (%2$d%% de coincidencia)</string>
+    <string name="unplayable_relinked">%1$s es lo que el servicio ya reproduce en su lugar</string>
+    <string name="unplayable_remove_only">Solo quitar</string>
+    <string name="unplayable_skip">Omitir</string>
+    <string name="unplayable_undecide">Deshacer elección</string>
+    <string name="unplayable_decided_replace">Se sustituirá por %1$s</string>
+    <string name="unplayable_decided_remove">Se quitará</string>
+    <string name="unplayable_apply">Aplicar %1$d cambios</string>
+    <string name="unplayable_applying">Aplicando %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">¿Aplicar los cambios?</string>
+    <string name="unplayable_confirm_body">%1$d canciones reciben una versión reproducible y se quitan %2$d entradas. Los originales quedan en el registro de Songport para poder deshacer.</string>
+    <string name="unplayable_no_removal">%1$s no deja que las apps quiten canciones: se añade la versión reproducible y la entrada no reproducible se queda.</string>
+    <string name="unplayable_done">%1$d sustituidas, %2$d quitadas</string>
+    <string name="unplayable_undo">Deshacer</string>
+    <string name="unplayable_undo_last">Deshacer la última corrección (%1$d)</string>
+    <string name="unplayable_undone">%1$d entradas repuestas</string>
+    <string name="unplayable_reason_market">No en tu país</string>
+    <string name="unplayable_reason_product">No en tu plan</string>
+    <string name="unplayable_reason_explicit">Filtro de explícitas</string>
+    <string name="unplayable_reason_private">Vídeo privado</string>
+    <string name="unplayable_reason_deleted">Eliminado</string>
+    <string name="unplayable_reason_unknown">No reproducible</string>
+    <string name="settings_unplayable">Comprobación semanal de canciones no reproducibles</string>
+    <string name="settings_unplayable_desc">Una vez a la semana Songport revisa tus listas y te avisa cuando una canción ya no se puede reproducir. No cambia nada por sí solo.</string>
+    <string name="notif_unplayable_title">Canciones no reproducibles</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">%1$d canción de tus listas ya no se puede reproducir. Toca para sustituirla.</item>
+        <item quantity="other">%1$d canciones de tus listas ya no se pueden reproducir. Toca para sustituirlas.</item>
+    </plurals>
 </resources>

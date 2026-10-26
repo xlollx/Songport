@@ -779,4 +779,47 @@
     <string name="settings_dynamic_color">Cores dinâmicas (Material You)</string>
     <string name="settings_dynamic_color_desc">As cores do seu papel de parede no lugar das do Songport. O painel do título mantém as cores da marca.</string>
     <string name="settings_dynamic_color_unavailable">Requer Android 12 ou mais recente.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Faixas que não tocam</string>
+    <string name="tools_unplayable_desc">Encontra as faixas que um serviço lista mas não toca mais (em cinza) e as substitui por uma versão que toca.</string>
+    <string name="unplayable_title">Faixas que não tocam: %1$s</string>
+    <string name="unplayable_unsupported">%1$s não diz quais faixas não toca mais, então o Songport não consegue verificar aqui.</string>
+    <string name="unplayable_all_playlists">Todas as minhas playlists</string>
+    <string name="unplayable_scan">Verificar</string>
+    <string name="unplayable_scanning">Verificando %1$s…</string>
+    <string name="unplayable_none">Tudo toca: nenhuma faixa indisponível em %1$d playlists.</string>
+    <string name="unplayable_found">%1$d faixas que não tocam em %2$d playlists</string>
+    <string name="unplayable_hint">Para cada uma o Songport propõe uma versão que toca. Aceite, procure outra, remova a entrada ou pule. Nada muda até você aplicar.</string>
+    <string name="unplayable_searching">Procurando uma versão que toca…</string>
+    <string name="unplayable_no_proposal">Nenhuma versão convincente: abra a entrada para procurar à mão, ou remova.</string>
+    <string name="unplayable_proposal">Substituta: %1$s (%2$d%% de correspondência)</string>
+    <string name="unplayable_relinked">%1$s é o que o serviço já toca no lugar</string>
+    <string name="unplayable_remove_only">Só remover</string>
+    <string name="unplayable_skip">Pular</string>
+    <string name="unplayable_undecide">Desfazer escolha</string>
+    <string name="unplayable_decided_replace">Será substituída por %1$s</string>
+    <string name="unplayable_decided_remove">Será removida</string>
+    <string name="unplayable_apply">Aplicar %1$d alterações</string>
+    <string name="unplayable_applying">Aplicando %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">Aplicar as alterações?</string>
+    <string name="unplayable_confirm_body">%1$d faixas recebem uma versão que toca, %2$d entradas são removidas. Os originais ficam no log do Songport para você desfazer.</string>
+    <string name="unplayable_no_removal">%1$s não deixa apps removerem faixas: a versão que toca é adicionada e a entrada indisponível fica.</string>
+    <string name="unplayable_done">%1$d substituídas, %2$d removidas</string>
+    <string name="unplayable_undo">Desfazer</string>
+    <string name="unplayable_undo_last">Desfazer última correção (%1$d)</string>
+    <string name="unplayable_undone">%1$d entradas recolocadas</string>
+    <string name="unplayable_reason_market">Não no seu país</string>
+    <string name="unplayable_reason_product">Não no seu plano</string>
+    <string name="unplayable_reason_explicit">Filtro de explícitas</string>
+    <string name="unplayable_reason_private">Vídeo privado</string>
+    <string name="unplayable_reason_deleted">Excluído</string>
+    <string name="unplayable_reason_unknown">Não toca</string>
+    <string name="settings_unplayable">Verificação semanal de faixas que não tocam</string>
+    <string name="settings_unplayable_desc">Uma vez por semana o Songport percorre suas playlists e avisa quando uma faixa não pode mais ser tocada. Nada é alterado sozinho.</string>
+    <string name="notif_unplayable_title">Faixas que não tocam</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">%1$d faixa das suas playlists não toca mais. Toque para substituir.</item>
+        <item quantity="other">%1$d faixas das suas playlists não tocam mais. Toque para substituir.</item>
+    </plurals>
 </resources>

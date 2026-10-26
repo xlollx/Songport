@@ -23,6 +23,7 @@ suspend fun MusicProvider.completeAuth(ctx: Context, params: Map<String, String>
 fun MusicProvider.disconnect(ctx: Context) = disconnect(ctx.env)
 suspend fun MusicProvider.playlists(ctx: Context): List<Playlist> = playlists(ctx.env)
 suspend fun MusicProvider.tracks(ctx: Context, playlistId: String): List<Track> = tracks(ctx.env, playlistId)
+suspend fun MusicProvider.unplayable(ctx: Context, playlistId: String): List<com.xlollx.songport.model.UnplayableEntry> = unplayable(ctx.env, playlistId)
 suspend fun MusicProvider.search(ctx: Context, track: Track): List<Track> = search(ctx.env, track)
 suspend fun MusicProvider.createPlaylist(ctx: Context, name: String, description: String): Playlist = createPlaylist(ctx.env, name, description)
 suspend fun MusicProvider.addTracks(ctx: Context, playlistId: String, tracks: List<Track>) = addTracks(ctx.env, playlistId, tracks)

@@ -198,8 +198,12 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
             uri = j["uri"].str,
             kind = when (j["kind"].str) { "album" -> Track.KIND_ALBUM; "artist" -> Track.KIND_ARTIST; else -> "" },
             year = j["year"].long?.toInt() ?: 0,
+            available = j["available"].bool,
         )
     }
+
+    /** The built-in connector marks greyed-out entries; an older Bridge app does not. */
+    override val detectsUnplayable: Boolean get() = BridgePlugin.builtIn
 
     private suspend fun <T> io(ctx: Env, method: String, arg: String? = null, extras: Bundle? = null, map: (JsonElement?) -> T): T =
         withContext(Dispatchers.IO) { map(parseJson(call(ctx, method, arg, extras).getString("json") ?: "")) }

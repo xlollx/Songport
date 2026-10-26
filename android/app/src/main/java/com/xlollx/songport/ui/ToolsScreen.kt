@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.MusicOff
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Folder
@@ -98,6 +99,7 @@ private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVecto
     SCAN(Icons.Filled.ContentCopy, R.string.tools_scan_title, R.string.tools_scan_desc, true),
     COMPAT(Icons.Filled.Favorite, R.string.tools_compat_title, R.string.tools_compat_desc, false),
     POSTER(Icons.Filled.QrCode2, R.string.tools_poster_title, R.string.tools_poster_desc, false),
+    UNPLAYABLE(Icons.Filled.MusicOff, R.string.tools_unplayable_title, R.string.tools_unplayable_desc, true),
 }
 
 /**
@@ -106,7 +108,7 @@ private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVecto
  */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null) {
+fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, onUnplayable: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
@@ -185,6 +187,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
         ToolRow(Tool.BACKUP) { open = Tool.BACKUP }
         ToolRow(Tool.DEDUPE) { open = Tool.DEDUPE }
         ToolRow(Tool.SCAN) { onScan(provider) }
+        ToolRow(Tool.UNPLAYABLE) { onUnplayable(provider) }
     }
 }
 

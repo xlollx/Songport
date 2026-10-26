@@ -3,6 +3,7 @@ package com.xlollx.songport.providers
 import com.xlollx.songport.platform.Env
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.Track
+import com.xlollx.songport.model.UnplayableEntry
 
 /**
  * Un servizio musicale. Tutte le operazioni ricevono l'Env della piattaforma (Android o server)
@@ -89,6 +90,22 @@ interface MusicProvider {
      * verso questi servizi aggiungono soltanto, e lo segnalano nel report.
      */
     val canRemoveTracks: Boolean get() = true
+
+    /**
+     * True when the service says which entries of a playlist it can no longer play (Spotify, Deezer,
+     * TIDAL, Apple Music library, YouTube, YouTube Music): the "Unplayable tracks" tool works here.
+     * Personal servers and Amazon Music do not say, and the tool says so instead of guessing.
+     */
+    val detectsUnplayable: Boolean get() = false
+
+    /**
+     * The entries of [playlistId] the service cannot play now, in playlist order with their
+     * position. Default: whatever [tracks] marked with [Track.available] false. A service that
+     * offers its own playable version in place of a dead entry (Spotify's relinking) hands it over
+     * in [UnplayableEntry.relinked].
+     */
+    suspend fun unplayable(ctx: Env, playlistId: String): List<UnplayableEntry> =
+        tracks(ctx, playlistId).withIndex().filter { it.value.available == false }.map { UnplayableEntry(it.value, it.index) }
 
     /** Putting a playlist's tracks in a given order, where the API has a move: Spotify, YouTube Music, Deezer. */
     val canReorder: Boolean get() = false

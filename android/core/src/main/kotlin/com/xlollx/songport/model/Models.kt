@@ -24,6 +24,12 @@ data class Track(
     val kind: String = "",
     /** Testo esplicito, dove il servizio lo dice; null = non noto. */
     val explicit: Boolean? = null,
+    /**
+     * False when the service lists the track but can no longer play it (greyed out: pulled from the
+     * catalogue, not licensed in the user's country, not in the plan); null where the service does
+     * not say. Only the "Unplayable tracks" tool reads it; a sync treats such a track like any other.
+     */
+    val available: Boolean? = null,
     /** Anno di uscita (0 = non noto) e data di aggiunta alla playlist in epoch ms (0 = non nota): per gli ordinamenti. */
     val year: Int = 0,
     val addedAt: Long = 0,

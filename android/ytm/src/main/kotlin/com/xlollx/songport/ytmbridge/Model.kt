@@ -27,6 +27,8 @@ data class TrackDto(
     /** "album" or "artist" for library objects; null for a track. */
     val kind: String? = null,
     val year: Int? = null,
+    /** False when the service lists the entry greyed out (it no longer plays); null when it did not say. */
+    val available: Boolean? = null,
 )
 
 @Serializable

@@ -770,4 +770,47 @@
     <string name="settings_dynamic_color">ダイナミックカラー（Material You）</string>
     <string name="settings_dynamic_color_desc">Songport の配色ではなく、壁紙の色を使います。タイトルのバナーはブランドカラーのままです。</string>
     <string name="settings_dynamic_color_unavailable">Android 12 以降が必要です。</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">再生できない曲</string>
+    <string name="tools_unplayable_desc">サービスに表示されているのに再生できなくなった曲（グレー表示）を見つけて、再生できるバージョンに置き換えます。</string>
+    <string name="unplayable_title">再生できない曲：%1$s</string>
+    <string name="unplayable_unsupported">%1$s はどの曲が再生できなくなったかを教えてくれないため、Songport はここでは確認できません。</string>
+    <string name="unplayable_all_playlists">自分のプレイリストすべて</string>
+    <string name="unplayable_scan">確認</string>
+    <string name="unplayable_scanning">%1$s を確認中…</string>
+    <string name="unplayable_none">すべて再生できます：%1$d 件のプレイリストに再生できない曲はありません。</string>
+    <string name="unplayable_found">%2$d 件のプレイリストに再生できない曲が %1$d 曲</string>
+    <string name="unplayable_hint">それぞれについて Songport が再生できるバージョンを提案します。採用する、別のものを探す、項目を削除する、スキップする、から選べます。適用するまで何も変わりません。</string>
+    <string name="unplayable_searching">再生できるバージョンを探しています…</string>
+    <string name="unplayable_no_proposal">確かなバージョンが見つかりません。項目を開いて手動で検索するか、削除してください。</string>
+    <string name="unplayable_proposal">置き換え候補：%1$s（一致 %2$d%%）</string>
+    <string name="unplayable_relinked">%1$s はサービスがすでに代わりに再生しているものです</string>
+    <string name="unplayable_remove_only">削除のみ</string>
+    <string name="unplayable_skip">スキップ</string>
+    <string name="unplayable_undecide">選択を取り消す</string>
+    <string name="unplayable_decided_replace">%1$s に置き換えます</string>
+    <string name="unplayable_decided_remove">削除します</string>
+    <string name="unplayable_apply">%1$d 件の変更を適用</string>
+    <string name="unplayable_applying">適用中 %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">変更を適用しますか？</string>
+    <string name="unplayable_confirm_body">%1$d 曲が再生できるバージョンに置き換わり、%2$d 件の項目が削除されます。元の項目は Songport のログに残るので、取り消せます。</string>
+    <string name="unplayable_no_removal">%1$s はアプリによる曲の削除を許可していません。再生できるバージョンを追加し、再生できない項目はそのまま残ります。</string>
+    <string name="unplayable_done">%1$d 曲を置き換え、%2$d 件を削除</string>
+    <string name="unplayable_undo">元に戻す</string>
+    <string name="unplayable_undo_last">前回の修正を元に戻す（%1$d）</string>
+    <string name="unplayable_undone">%1$d 件の項目を戻しました</string>
+    <string name="unplayable_reason_market">お住まいの国では利用不可</string>
+    <string name="unplayable_reason_product">プラン対象外</string>
+    <string name="unplayable_reason_explicit">露骨な表現のフィルター</string>
+    <string name="unplayable_reason_private">非公開動画</string>
+    <string name="unplayable_reason_deleted">削除済み</string>
+    <string name="unplayable_reason_unknown">再生不可</string>
+    <string name="settings_unplayable">再生できない曲の週次チェック</string>
+    <string name="settings_unplayable_desc">週に一度、Songport がプレイリストを確認し、再生できなくなった曲があればお知らせします。勝手に変更することはありません。</string>
+    <string name="notif_unplayable_title">再生できない曲</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">プレイリスト内の %1$d 曲が再生できなくなりました。タップして置き換えます。</item>
+        <item quantity="other">プレイリスト内の %1$d 曲が再生できなくなりました。タップして置き換えます。</item>
+    </plurals>
 </resources>

@@ -153,9 +153,50 @@ class BackupWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
     }
 }
 
+/** The weekly look for entries the services no longer play (see the Unplayable tracks tool): a notice, never a change. */
+private const val UNPLAYABLE_NOTICE_ID = 4243
+
+class UnplayableWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
+    override suspend fun doWork(): Result {
+        val ctx = applicationContext
+        var count = 0
+        var services = 0
+        val failed = ArrayList<String>()
+        for (p in Providers.connectors().filter { it.detectsUnplayable && it.isConnected(ctx) }) {
+            try {
+                val scan = Tools.scanUnplayable(ctx, p, Tools.unplayableTargets(ctx, p))
+                count += scan.count
+                services++
+                failed += scan.failed.map { it.reason }
+            } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
+                failed += e.message ?: e.javaClass.simpleName
+            }
+        }
+        Diagnostics.log(ctx, "unplayable", "weekly check: $count unplayable in $services services" + (if (failed.isEmpty()) "" else "; ${failed.size} playlists not read"))
+        if (count > 0) Notifications.unplayable(ctx, UNPLAYABLE_NOTICE_ID, count)
+        return if (services == 0 && failed.isNotEmpty() && failed.all { isTransientNetwork(it) }) Result.retry() else Result.success()
+    }
+}
+
 object Scheduler {
     private fun name(jobId: String) = "sync-$jobId"
     private const val BACKUP_WORK = "backup-export"
+    private const val UNPLAYABLE_WORK = "unplayable-check"
+
+    /** Allinea il controllo settimanale dei brani non riproducibili alle impostazioni. */
+    fun applyUnplayable(ctx: Context) {
+        val wm = WorkManager.getInstance(ctx)
+        if (!Store.get(ctx).data.settings.unplayableCheck) {
+            wm.cancelUniqueWork(UNPLAYABLE_WORK)
+            return
+        }
+        com.xlollx.songport.NotificationAsk.onUse()
+        val req = PeriodicWorkRequestBuilder<UnplayableWorker>(7, TimeUnit.DAYS)
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 15, TimeUnit.MINUTES)
+            .build()
+        wm.enqueueUniquePeriodicWork(UNPLAYABLE_WORK, ExistingPeriodicWorkPolicy.UPDATE, req)
+    }
 
     /** Allinea il lavoro periodico di copia dei backup alle impostazioni. */
     fun applyBackup(ctx: Context) {
@@ -198,6 +239,7 @@ object Scheduler {
         val store = Store.get(ctx)
         store.data.jobs.forEach { apply(ctx, it) }
         applyBackup(ctx)
+        applyUnplayable(ctx)
     }
 
     /**

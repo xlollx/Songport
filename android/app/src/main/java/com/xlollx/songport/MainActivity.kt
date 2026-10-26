@@ -90,6 +90,7 @@ import com.xlollx.songport.ui.SyncEditorScreen
 import com.xlollx.songport.ui.TransferScreen
 import com.xlollx.songport.ui.PlaylistsScreen
 import com.xlollx.songport.ui.LibraryScanScreen
+import com.xlollx.songport.ui.UnplayableScreen
 import com.xlollx.songport.ui.SyncsScreen
 import com.xlollx.songport.ui.ToolsScreen
 import com.xlollx.songport.ui.UnmatchedScreen
@@ -104,6 +105,8 @@ class MainActivity : ComponentActivity() {
 
     private val messages = MutableStateFlow<String?>(null)
     private val tabRequests = MutableStateFlow(-1)
+    /** A tool a notification asks to open (TOOL_*), once the Tools tab is up. */
+    private val toolRequests = MutableStateFlow<String?>(null)
     /** Testo arrivato con "Condividi con Songport": contiene (si spera) il link di una playlist. */
     private val sharedText = MutableStateFlow<String?>(null)
     /** Scorciatoia "Nuova sync" dall'icona: apre subito l'editor. */
@@ -136,7 +139,7 @@ class MainActivity : ComponentActivity() {
             val settings by Store.get(this).state.collectAsState()
             AppTheme(mode = ThemeMode.of(settings.settings.themeMode), dynamicColor = settings.settings.dynamicColor) {
                 val isLocked by locked.collectAsState()
-                if (isLocked) LockScreen { requestUnlock() } else MainScreen(messages, tabRequests, sharedText, newSyncRequests)
+                if (isLocked) LockScreen { requestUnlock() } else MainScreen(messages, tabRequests, sharedText, newSyncRequests, toolRequests)
             }
         }
     }
@@ -171,6 +174,7 @@ class MainActivity : ComponentActivity() {
         }
         i?.getStringExtra(EXTRA_MESSAGE)?.let { messages.value = it; i.removeExtra(EXTRA_MESSAGE) }
         if (i?.hasExtra(EXTRA_TAB) == true) { tabRequests.value = i.getIntExtra(EXTRA_TAB, 0); i.removeExtra(EXTRA_TAB) }
+        i?.getStringExtra(EXTRA_TOOL)?.let { toolRequests.value = it; i.removeExtra(EXTRA_TOOL) }
     }
 
     private fun askNotificationPermission() {
@@ -182,6 +186,8 @@ class MainActivity : ComponentActivity() {
     companion object {
         const val EXTRA_MESSAGE = "message"
         const val EXTRA_TAB = "tab"
+        const val EXTRA_TOOL = "tool"
+        const val TOOL_UNPLAYABLE = "unplayable"
         const val ACTION_SYNC_ALL = "com.xlollx.songport.SYNC_ALL"
         const val ACTION_NEW_SYNC = "com.xlollx.songport.NEW_SYNC"
         const val TAB_SYNCS = 0
@@ -202,6 +208,7 @@ private fun MainScreen(
     tabRequests: MutableStateFlow<Int>,
     sharedText: MutableStateFlow<String?>,
     newSyncRequests: MutableStateFlow<Boolean>,
+    toolRequests: MutableStateFlow<String?> = MutableStateFlow(null),
 ) {
     val ctx = LocalContext.current
     val store = remember { Store.get(ctx) }
@@ -217,6 +224,16 @@ private fun MainScreen(
     var transferOpen by rememberSaveable { mutableStateOf(false) }
     var manageProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
     var scanProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
+    var unplayableProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
+    // A notification asked for a tool: the first connected service the tool works with.
+    val toolRequest by toolRequests.collectAsState()
+    LaunchedEffect(toolRequest) {
+        if (toolRequest == MainActivity.TOOL_UNPLAYABLE) {
+            toolRequests.value = null
+            tab = MainActivity.TAB_TOOLS
+            unplayableProvider = Providers.connectors().firstOrNull { it.detectsUnplayable && it.isConnected(ctx) }
+        }
+    }
     var previewJob by rememberSaveable(stateSaver = JobSaver) { mutableStateOf<SyncJob?>(null) }
     // Two playlist links shared at once: "how compatible are we?" in Tools.
     var compareLinks by remember { mutableStateOf<Pair<String, String>?>(null) }
@@ -310,6 +327,7 @@ private fun MainScreen(
     val unmatched = unmatchedReport
     val manage = manageProvider
     val scan = scanProvider
+    val unplayable = unplayableProvider
     val current = editing
     val overlay: String? = when {
         preview != null -> "preview:" + preview.id
@@ -319,6 +337,7 @@ private fun MainScreen(
         logOpen -> "log"
         manage != null -> "manage:" + manage.id
         scan != null -> "scan:" + scan.id
+        unplayable != null -> "unplayable:" + unplayable.id
         transferOpen -> "transfer"
         current != null -> "edit:" + current.id
         else -> null
@@ -333,6 +352,7 @@ private fun MainScreen(
                 logOpen -> LogScreen(data, onClose = { logOpen = false }) { unmatchedReport = it }
                 manage != null -> PlaylistsScreen(manage) { manageProvider = null }
                 scan != null -> LibraryScanScreen(scan) { scanProvider = null }
+                unplayable != null -> UnplayableScreen(unplayable) { unplayableProvider = null }
                 transferOpen -> TransferScreen(onClose = { transferOpen = false }, onDone = { transferOpen = false; tab = MainActivity.TAB_SYNCS })
                 current != null -> SyncEditorScreen(
                     job = current,
@@ -435,7 +455,7 @@ private fun MainScreen(
                     onReview = { unmatchedReport = it },
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
-                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, compareLinks = compareLinks)
+                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks)
                 else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
             } }
             }

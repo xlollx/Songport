@@ -779,4 +779,47 @@
     <string name="settings_dynamic_color">Dynamische Farben (Material You)</string>
     <string name="settings_dynamic_color_desc">Die Farben deines Hintergrunds statt der von Songport. Der Titelbereich behält die Markenfarben.</string>
     <string name="settings_dynamic_color_unavailable">Erfordert Android 12 oder neuer.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Nicht abspielbare Titel</string>
+    <string name="tools_unplayable_desc">Findet die Titel, die ein Dienst noch auflistet, aber nicht mehr abspielt (ausgegraut), und ersetzt sie durch eine abspielbare Version.</string>
+    <string name="unplayable_title">Nicht abspielbare Titel: %1$s</string>
+    <string name="unplayable_unsupported">%1$s sagt nicht, welche Titel es nicht mehr abspielt, deshalb kann Songport hier nicht prüfen.</string>
+    <string name="unplayable_all_playlists">Alle meine Playlists</string>
+    <string name="unplayable_scan">Prüfen</string>
+    <string name="unplayable_scanning">Prüfe %1$s…</string>
+    <string name="unplayable_none">Alles spielt: kein nicht abspielbarer Titel in %1$d Playlists.</string>
+    <string name="unplayable_found">%1$d nicht abspielbare Titel in %2$d Playlists</string>
+    <string name="unplayable_hint">Für jeden schlägt Songport eine abspielbare Version vor. Übernimm sie, suche eine andere, entferne den Eintrag oder überspringe ihn. Nichts ändert sich, bis du anwendest.</string>
+    <string name="unplayable_searching">Suche eine abspielbare Version…</string>
+    <string name="unplayable_no_proposal">Keine überzeugende Version gefunden: Eintrag öffnen und von Hand suchen, oder entfernen.</string>
+    <string name="unplayable_proposal">Ersatz: %1$s (%2$d%% Übereinstimmung)</string>
+    <string name="unplayable_relinked">%1$s spielt der Dienst bereits an seiner Stelle</string>
+    <string name="unplayable_remove_only">Nur entfernen</string>
+    <string name="unplayable_skip">Überspringen</string>
+    <string name="unplayable_undecide">Wahl zurücknehmen</string>
+    <string name="unplayable_decided_replace">Wird ersetzt durch %1$s</string>
+    <string name="unplayable_decided_remove">Wird entfernt</string>
+    <string name="unplayable_apply">%1$d Änderungen anwenden</string>
+    <string name="unplayable_applying">Wende an %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">Änderungen anwenden?</string>
+    <string name="unplayable_confirm_body">%1$d Titel erhalten eine abspielbare Version, %2$d Einträge werden entfernt. Die Originale bleiben im Protokoll von Songport, damit du es rückgängig machen kannst.</string>
+    <string name="unplayable_no_removal">%1$s lässt Apps keine Titel entfernen: Die abspielbare Version wird hinzugefügt, der nicht abspielbare Eintrag bleibt.</string>
+    <string name="unplayable_done">%1$d ersetzt, %2$d entfernt</string>
+    <string name="unplayable_undo">Rückgängig</string>
+    <string name="unplayable_undo_last">Letzte Korrektur rückgängig (%1$d)</string>
+    <string name="unplayable_undone">%1$d Einträge zurückgesetzt</string>
+    <string name="unplayable_reason_market">Nicht in deinem Land</string>
+    <string name="unplayable_reason_product">Nicht in deinem Abo</string>
+    <string name="unplayable_reason_explicit">Explizit-Filter</string>
+    <string name="unplayable_reason_private">Privates Video</string>
+    <string name="unplayable_reason_deleted">Gelöscht</string>
+    <string name="unplayable_reason_unknown">Nicht abspielbar</string>
+    <string name="settings_unplayable">Wöchentliche Prüfung auf nicht abspielbare Titel</string>
+    <string name="settings_unplayable_desc">Einmal pro Woche geht Songport deine Playlists durch und meldet, wenn ein Titel nicht mehr abgespielt werden kann. Von selbst wird nichts geändert.</string>
+    <string name="notif_unplayable_title">Nicht abspielbare Titel</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">%1$d Titel in deinen Playlists kann nicht mehr abgespielt werden. Tippen zum Ersetzen.</item>
+        <item quantity="other">%1$d Titel in deinen Playlists können nicht mehr abgespielt werden. Tippen zum Ersetzen.</item>
+    </plurals>
 </resources>

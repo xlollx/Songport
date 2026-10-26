@@ -6,6 +6,8 @@ import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.ProviderException
 import com.xlollx.songport.model.Track
+import com.xlollx.songport.model.UnplayableEntry
+import com.xlollx.songport.sync.Unplayable
 import com.xlollx.songport.net.Http
 import com.xlollx.songport.net.HttpResponse
 import com.xlollx.songport.net.arr
@@ -187,6 +189,48 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
                 if (t.isNullish || t["is_local"].bool == true) continue
                 if (t["id"].str == null) continue
                 out += toTrack(t).copy(addedAt = Durations.parseInstant(item["added_at"].str))
+            }
+            url = j["next"].str
+        }
+        return out
+    }
+
+    override val detectsUnplayable: Boolean get() = true
+
+    /**
+     * Read with the user's market: Spotify then says of each entry whether it plays (`is_playable`,
+     * with the restriction's reason) and, for a track it relinks, hands the playable edition over
+     * with the listed one in `linked_from`. The plain [tracks] never asks for a market, because a
+     * relinked listing would show other ids to a mirror sync and make it rewrite the playlist.
+     */
+    override suspend fun unplayable(ctx: Env, playlistId: String): List<UnplayableEntry> {
+        if (MusicProvider.isLibrary(playlistId) && playlistId != MusicProvider.LIKED_ID) return emptyList()
+        val fieldsOf = "id,name,uri,duration_ms,is_local,is_playable,restrictions(reason),linked_from(id,uri),external_ids(isrc),artists(name),album(name,release_date)"
+        val out = ArrayList<UnplayableEntry>()
+        var index = 0
+        var url: String? = if (playlistId == MusicProvider.LIKED_ID) "$API/me/tracks?limit=50&market=from_token"
+        else "$API/playlists/$playlistId/items?limit=100&market=from_token&fields=" + Http.enc("next,items(item($fieldsOf),track($fieldsOf))")
+        while (url != null) {
+            val j = try {
+                api(ctx, "GET", url)
+            } catch (e: ProviderException) {
+                if (e.code != 403 || !url.contains("/items?")) throw e
+                api(ctx, "GET", url.replace("/items?", "/tracks?"))
+            }
+            for (item in j["items"].arr) {
+                val t = item["item"].takeUnless { it.isNullish } ?: item["track"]
+                // The same entries [tracks] skips, so the positions agree with its listing.
+                if (t.isNullish || t["is_local"].bool == true || t["id"].str == null) continue
+                val linked = t["linked_from"]
+                if (t["is_playable"].bool == false) {
+                    out += UnplayableEntry(toTrack(t).copy(available = false), index, reason = t["restrictions"]["reason"].str.orEmpty())
+                } else if (linked["id"].str != null) {
+                    // The playlist holds linked_from; what came back is the edition Spotify plays instead.
+                    val deadId = linked["id"].str!!
+                    val dead = toTrack(t).copy(id = deadId, uri = linked["uri"].str ?: "spotify:track:$deadId", available = false)
+                    out += UnplayableEntry(dead, index, reason = Unplayable.REASON_MARKET, relinked = toTrack(t).copy(available = true))
+                }
+                index++
             }
             url = j["next"].str
         }

@@ -797,4 +797,47 @@
     <string name="settings_dynamic_color">Динамические цвета (Material You)</string>
     <string name="settings_dynamic_color_desc">Цвета ваших обоев вместо цветов Songport. Заголовок сохраняет фирменные цвета.</string>
     <string name="settings_dynamic_color_unavailable">Нужен Android 12 или новее.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Недоступные треки</string>
+    <string name="tools_unplayable_desc">Находит треки, которые сервис показывает, но больше не воспроизводит (серые), и заменяет их версией, которая играет.</string>
+    <string name="unplayable_title">Недоступные треки: %1$s</string>
+    <string name="unplayable_unsupported">%1$s не сообщает, какие треки больше не воспроизводит, поэтому Songport не может проверить здесь.</string>
+    <string name="unplayable_all_playlists">Все мои плейлисты</string>
+    <string name="unplayable_scan">Проверить</string>
+    <string name="unplayable_scanning">Проверяю %1$s…</string>
+    <string name="unplayable_none">Всё играет: недоступных треков в %1$d плейлистах нет.</string>
+    <string name="unplayable_found">Недоступных треков: %1$d в %2$d плейлистах</string>
+    <string name="unplayable_hint">Для каждого Songport предлагает версию, которая играет. Примите её, найдите другую, удалите запись или пропустите. Ничего не меняется, пока вы не примените.</string>
+    <string name="unplayable_searching">Ищу версию, которая играет…</string>
+    <string name="unplayable_no_proposal">Убедительной версии нет: откройте запись, чтобы поискать вручную, или удалите её.</string>
+    <string name="unplayable_proposal">Замена: %1$s (совпадение %2$d%%)</string>
+    <string name="unplayable_relinked">%1$s — то, что сервис уже воспроизводит вместо него</string>
+    <string name="unplayable_remove_only">Только удалить</string>
+    <string name="unplayable_skip">Пропустить</string>
+    <string name="unplayable_undecide">Отменить выбор</string>
+    <string name="unplayable_decided_replace">Будет заменён на %1$s</string>
+    <string name="unplayable_decided_remove">Будет удалён</string>
+    <string name="unplayable_apply">Применить изменения: %1$d</string>
+    <string name="unplayable_applying">Применяю %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">Применить изменения?</string>
+    <string name="unplayable_confirm_body">%1$d треков получат играющую версию, %2$d записей будут удалены. Оригиналы остаются в журнале Songport, так что это можно отменить.</string>
+    <string name="unplayable_no_removal">%1$s не позволяет приложениям удалять треки: играющая версия добавляется, а недоступная запись остаётся.</string>
+    <string name="unplayable_done">Заменено %1$d, удалено %2$d</string>
+    <string name="unplayable_undo">Отменить</string>
+    <string name="unplayable_undo_last">Отменить последнее исправление (%1$d)</string>
+    <string name="unplayable_undone">Возвращено записей: %1$d</string>
+    <string name="unplayable_reason_market">Нет в вашей стране</string>
+    <string name="unplayable_reason_product">Нет в вашем тарифе</string>
+    <string name="unplayable_reason_explicit">Фильтр ненормативной лексики</string>
+    <string name="unplayable_reason_private">Приватное видео</string>
+    <string name="unplayable_reason_deleted">Удалено</string>
+    <string name="unplayable_reason_unknown">Не воспроизводится</string>
+    <string name="settings_unplayable">Еженедельная проверка недоступных треков</string>
+    <string name="settings_unplayable_desc">Раз в неделю Songport просматривает ваши плейлисты и сообщает, если трек больше нельзя воспроизвести. Сам ничего не меняет.</string>
+    <string name="notif_unplayable_title">Недоступные треки</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">%1$d трек в ваших плейлистах больше не воспроизводится. Нажмите, чтобы заменить.</item>
+        <item quantity="other">%1$d треков в ваших плейлистах больше не воспроизводятся. Нажмите, чтобы заменить.</item>
+    </plurals>
 </resources>

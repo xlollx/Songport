@@ -731,7 +731,12 @@ class SyncEngine(
      */
     suspend fun searchOnTarget(job: SyncJob, query: String, source: Track? = null): TargetSearch {
         val (_, dst) = providers(job)
-        fun hit(t: Track, kind: TargetSearch.Kind) = TargetSearch.Hit(t, if (source != null) Matcher.score(source, t, job.policy) else 0.0, kind)
+        return searchOn(dst, job.target.playlistId, job.policy, query, source)
+    }
+
+    /** The same search on any service [dst], for a playlist [playlistId] (its kind decides what is searched) under [policy]. */
+    suspend fun searchOn(dst: MusicProvider, playlistId: String?, policy: MatchPolicy, query: String, source: Track? = null): TargetSearch {
+        fun hit(t: Track, kind: TargetSearch.Kind) = TargetSearch.Hit(t, if (source != null) Matcher.score(source, t, policy) else 0.0, kind)
         // Il link del brano incollato: si aggiunge quello, letto dal servizio quando possibile. I link
         // brevi delle app (amzn.eu, spotify.link...) si seguono fino all'indirizzo vero.
         (TrackLinks.parse(query) ?: resolveShortLink(query)?.let { TrackLinks.parse(it) })?.let { ref0 ->
@@ -742,12 +747,12 @@ class SyncEngine(
             val t = runCatching { dst.track(env, ref.trackId) }.getOrNull()
             return TargetSearch(listOf(hit(t ?: dst.rehydrate(Track(id = ref.trackId, title = str("link_track_unknown"), album = ref.trackId)), TargetSearch.Kind.SONG)))
         }
-        val kind = source?.kind?.ifEmpty { null } ?: MusicProvider.libraryKind(job.target.playlistId).orEmpty()
+        val kind = source?.kind?.ifEmpty { null } ?: MusicProvider.libraryKind(playlistId).orEmpty()
         // An artist is searched by name alone: "Artist - Title" splitting would cut a name with a dash.
         val (artists, title) = if (kind == Track.KIND_ARTIST) emptyList<String>() to query.trim() else PlaylistFiles.splitArtistTitle(query)
         var songs = dst.search(env, Track(id = "", title = title, artists = artists, kind = kind))
         // "Artista - Titolo" senza un candidato convincente: il solo titolo a volte lo trova.
-        fun convincing() = source == null || Matcher.bestScored(source, songs, policy = job.policy) != null
+        fun convincing() = source == null || Matcher.bestScored(source, songs, policy = policy) != null
         if (artists.isNotEmpty() && (songs.isEmpty() || !convincing())) {
             songs = (songs + dst.search(env, Track(id = "", title = title, kind = kind))).distinctBy { it.id }
         }

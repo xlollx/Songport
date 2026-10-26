@@ -190,7 +190,7 @@ private fun SectionTitle(text: String) {
 
 /** Riga chiusa: titolo e artista in una riga, freccia a destra. Aperta: le azioni. */
 @Composable
-private fun CollapsibleRow(
+fun CollapsibleRow(
     track: Track, expanded: Boolean, onToggle: () -> Unit, absent: Boolean = false,
     trailing: @Composable () -> Unit = {}, below: (@Composable () -> Unit)? = null, content: @Composable () -> Unit,
 ) {

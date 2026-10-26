@@ -195,8 +195,11 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
             addedAt = j["addedAt"].long ?: 0,
             year = j["year"].long?.toInt() ?: 0,
             kind = kind,
+            available = j["available"].bool,
         )
     }
+
+    override val detectsUnplayable: Boolean get() = BridgePlugin.builtIn
 
     private suspend fun <T> io(ctx: Env, method: String, arg: String? = null, extras: Bundle? = null, map: (JsonElement?) -> T): T =
         withContext(Dispatchers.IO) { map(parseJson(call(ctx, method, arg, extras).getString("json") ?: "")) }
