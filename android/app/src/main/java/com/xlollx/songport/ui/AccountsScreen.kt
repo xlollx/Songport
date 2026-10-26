@@ -26,6 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.heightIn
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -221,7 +222,7 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                     serviceGroups(families.keys.toList(), families).forEach { (groupRes, names) ->
                         if (names.isEmpty()) return@forEach
                         Text(stringResource(groupRes), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 10.dp, bottom = 6.dp))
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                             names.forEach { name ->
                                 val members = families.getValue(name)
                                 val allTaken = members.all { m -> !m.supportsMultipleAccounts && connectors.any { Providers.byId(it)?.serviceId == m.serviceId } }
@@ -548,12 +549,14 @@ private fun ServiceGridTile(p: MusicProvider, name: String, enabled: Boolean, on
         onClick = onClick, enabled = enabled,
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        modifier = Modifier.size(width = 84.dp, height = 96.dp).alpha(if (enabled) 1f else 0.45f),
+        modifier = Modifier.width(84.dp).heightIn(min = 96.dp).alpha(if (enabled) 1f else 0.45f),
     ) {
-        Column(Modifier.padding(6.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        // Logo at the top and every label two lines tall: with names on one line and on two
+        // ("YouTube Music", "Subsonic / Navidrome"), centring moved the logos up and down.
+        Column(Modifier.padding(horizontal = 6.dp, vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
             ServiceLogo(p, 40.dp)
             Spacer(Modifier.height(6.dp))
-            Text(name, style = MaterialTheme.typography.labelMedium, maxLines = 2, textAlign = TextAlign.Center, overflow = TextOverflow.Ellipsis)
+            Text(name, style = MaterialTheme.typography.labelMedium, minLines = 2, maxLines = 2, textAlign = TextAlign.Center, overflow = TextOverflow.Ellipsis)
         }
     }
 }
