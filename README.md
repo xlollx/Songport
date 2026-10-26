@@ -17,9 +17,9 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
   <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="64" alt="Get it on Obtainium"></a>
 </p>
 
-<p align="center"><img src="docs/store/demo.gif" width="200" alt="Creating a sync from Spotify to YouTube Music, then the sync running"></p>
+<p align="center"><img src="docs/store/demo.gif" width="200" alt="A tour of Songport: syncs, a new sync, accounts, tools, a shared track, the compatibility and poster cards, unplayable tracks, settings"></p>
 
-<p align="center"><img src="docs/store/screenshots.png" width="100%" alt="Syncs, new sync, choosing a service, review of tracks not found, tools, settings"></p>
+<p align="center"><img src="docs/store/screenshots.png" width="100%" alt="Syncs with their numbers, a new sync, a shared track going into a playlist, how compatible two playlists are, a playlist poster, unplayable tracks and their replacements"></p>
 
 Songport keeps playlists identical across Spotify, Apple Music, YouTube Music, Amazon Music, TIDAL,
 Deezer, Subsonic/Navidrome, Jellyfin and Plex, with Last.fm and ListenBrainz as sources and playlist

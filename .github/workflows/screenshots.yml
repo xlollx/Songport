@@ -1,0 +1,106 @@
+name: Screenshots
+
+# The store screenshots, taken on an Android emulator from a demo library (no account, no network)
+# by the instrumented test app/src/androidTest/.../StoreScreenshots.kt, then committed back to the
+# branch: fastlane/metadata/android/<locale>/images/phoneScreenshots/<n>.jpg.
+# Runs by hand (workflow_dispatch) on the branch it is started from.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      # Languages to take (app tags); all of the store listing's.
+      LOCALES: en,it,fr,de,es,pt-BR,pl,ru,tr,zh,ja,ko
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
+
+      - name: Installa platform e build-tools
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" > /dev/null
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '8.14.3'
+
+      - name: Build the app and the screenshot test
+        working-directory: android
+        run: gradle assembleFullDebug assembleFullDebugAndroidTest --no-daemon --stacktrace
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Take the screenshots
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          profile: pixel_7
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          working-directory: android
+          script: bash ../.github/scripts/take-screenshots.sh
+
+      - name: Logs
+        if: always()
+        working-directory: android
+        run: |
+          tail -n 60 instrument.log 2>/dev/null || true
+          grep -E " StoreScreenshots:|AndroidRuntime|FATAL" logcat.txt 2>/dev/null | tail -n 200 || true
+          find shots -type f 2>/dev/null | sort | head -200
+
+      - name: Keep the raw pictures
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: shots
+          path: android/shots
+          if-no-files-found: ignore
+
+      - name: Commit the pictures to the branch
+        working-directory: android
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick > /dev/null
+          [ -d shots ] || { echo "no shots"; exit 1; }
+          for dir in shots/*/; do
+            loc=$(basename "$dir")
+            out=../fastlane/metadata/android/$loc/images/phoneScreenshots
+            mkdir -p "$out"
+            rm -f "$out"/*.png "$out"/*.jpg
+            for f in "$dir"*.png; do
+              convert "$f" -strip -quality 86 "$out/$(basename "${f%.png}").jpg"
+            done
+          done
+          cd ..
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fastlane/metadata/android/*/images/phoneScreenshots
+          git commit -m "Screenshots regenerated (CI emulator)" || { echo "nothing new"; exit 0; }
+          git push origin HEAD:${{ github.ref_name }}
