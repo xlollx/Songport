@@ -631,7 +631,7 @@ class SpotifyWebClient(private val ctx: Context) {
             addedAt = addedAt?.let { runCatching { java.time.Instant.parse(it).toEpochMilli() }.getOrNull() },
             year = d["albumOfTrack"]["date"]["year"].long?.toInt(),
             // The player's listing says whether each entry plays here; absent in older page shapes.
-            available = d["playability"]["playable"].bool,
+            available = (d["playability"]["playable"] as? JsonPrimitive)?.content?.toBooleanStrictOrNull(),
         )
     }
 
