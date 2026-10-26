@@ -715,4 +715,21 @@
     <string name="support_prompt_title">%1$s 曲を移しました</string>
     <string name="support_prompt_body">同期「%1$s」で移動しました。Songport は無料で広告もなく、任意の支援で運営されています。時間の節約になったなら、開発者にコーヒーをおごっていただけると嬉しいです。</string>
     <string name="support_prompt_later">今はしない</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">追加先…</string>
+    <string name="share_sheet_from">%1$s から共有</string>
+    <string name="share_sheet_unknown">この曲のタイトルを読み取れませんでした。下で手動で検索してください。</string>
+    <string name="share_sheet_open">%1$s で開く</string>
+    <string name="share_sheet_copy">リンクをコピー</string>
+    <string name="share_sheet_copied">リンクをコピーしました</string>
+    <string name="share_sheet_no_targets">まず「アカウント」でサービスを接続してください。曲はそこにあるプレイリストに追加されます。</string>
+    <string name="share_sheet_target">追加先</string>
+    <string name="share_sheet_looking">%1$s で検索中…</string>
+    <string name="share_sheet_exact">同じ曲（%1$s から取得）</string>
+    <string name="share_sheet_best">%1$s での最有力候補</string>
+    <string name="share_sheet_no_match">%1$s で見つかりませんでした。手動で検索するか、別のサービスを選んでください。</string>
+    <string name="share_sheet_add">プレイリストに追加…</string>
+    <string name="share_sheet_change">変更</string>
+    <string name="settings_music_links">音楽リンクで Songport を候補に出す</string>
+    <string name="settings_music_links_desc">Spotify、Apple Music、YouTube Music、Amazon Music、Deezer、TIDAL のリンクを Songport で開けるようになり、どのサービスのプレイリストにも曲を追加できます。使うアプリは引き続き Android が尋ねるか、リンク設定で決めたアプリが使われます。Songport がリンクを勝手に奪うことはありません。</string>
 </resources>

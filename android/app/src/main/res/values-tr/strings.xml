@@ -721,4 +721,21 @@
     <string name="support_prompt_title">Az önce %1$s parça taşıdınız</string>
     <string name="support_prompt_body">“%1$s” senkronizasyonuyla. Songport ücretsiz ve reklamsızdır, gönüllü katkılarla yaşar: size zaman kazandırdıysa geliştiriciye bir kahve ısmarlayabilirsiniz.</string>
     <string name="support_prompt_later">Şimdi değil</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">Şuraya ekle…</string>
+    <string name="share_sheet_from">%1$s üzerinden paylaşıldı</string>
+    <string name="share_sheet_unknown">Songport bu parçanın adını okuyamadı. Aşağıda elle ara.</string>
+    <string name="share_sheet_open">%1$s içinde aç</string>
+    <string name="share_sheet_copy">Bağlantıyı kopyala</string>
+    <string name="share_sheet_copied">Bağlantı kopyalandı</string>
+    <string name="share_sheet_no_targets">Önce Hesaplar\'da bir servis bağla: parça orada çalma listelerinden birine girecek.</string>
+    <string name="share_sheet_target">Nereye eklensin</string>
+    <string name="share_sheet_looking">%1$s üzerinde aranıyor…</string>
+    <string name="share_sheet_exact">Aynı parça, %1$s üzerinden okundu</string>
+    <string name="share_sheet_best">%1$s üzerindeki en iyi eşleşme</string>
+    <string name="share_sheet_no_match">%1$s üzerinde bulunamadı. Elle ara ya da başka bir servis seç.</string>
+    <string name="share_sheet_add">Çalma listesine ekle…</string>
+    <string name="share_sheet_change">Değiştir</string>
+    <string name="settings_music_links">Müzik bağlantıları için Songport\'u öner</string>
+    <string name="settings_music_links_desc">Bir Spotify, Apple Music, YouTube Music, Amazon Music, Deezer veya TIDAL bağlantısı Songport\'ta açılabilir; Songport parçayı servislerinden herhangi birindeki bir çalma listesine ekler. Android yine hangi uygulamanın kullanılacağını sorar ya da bağlantı ayarlarında seçileni kullanır: Songport bir bağlantıyı asla kendiliğinden almaz.</string>
 </resources>

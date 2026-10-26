@@ -724,4 +724,21 @@
     <string name="support_prompt_title">You just moved %1$s tracks</string>
     <string name="support_prompt_body">With the sync “%1$s”. Songport is free and ad-free, and it lives on voluntary contributions: if it saved you time, you can buy the developer a coffee.</string>
     <string name="support_prompt_later">Not now</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">Add to…</string>
+    <string name="share_sheet_from">Shared from %1$s</string>
+    <string name="share_sheet_unknown">Songport could not read this track’s title. Search for it by hand below.</string>
+    <string name="share_sheet_open">Open in %1$s</string>
+    <string name="share_sheet_copy">Copy link</string>
+    <string name="share_sheet_copied">Link copied</string>
+    <string name="share_sheet_no_targets">Connect a service in Accounts first: the track will then go into one of your playlists there.</string>
+    <string name="share_sheet_target">Where to add it</string>
+    <string name="share_sheet_looking">Finding it on %1$s…</string>
+    <string name="share_sheet_exact">The same track, read from %1$s</string>
+    <string name="share_sheet_best">Best match on %1$s</string>
+    <string name="share_sheet_no_match">Not found on %1$s. Search by hand, or pick another service.</string>
+    <string name="share_sheet_add">Add to playlist…</string>
+    <string name="share_sheet_change">Change</string>
+    <string name="settings_music_links">Offer Songport for music links</string>
+    <string name="settings_music_links_desc">A Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link can then open in Songport, which adds the track to a playlist on any of your services. Android still asks which app to use, or keeps the one set in its link settings: Songport never takes a link by itself.</string>
 </resources>

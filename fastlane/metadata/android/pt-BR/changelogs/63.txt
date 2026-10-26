@@ -1,0 +1,1 @@
+Links compartilhados vão a qualquer lugar: um link de faixa do Spotify, Apple Music, YouTube Music, Amazon Music, Deezer ou TIDAL compartilhado com o Songport agora entra em uma playlist em qualquer um dos seus serviços, incluindo Navidrome, Jellyfin e Plex, com a correspondência mostrada antes de adicionar. Opcional: abrir links de música com o Songport (Configurações).

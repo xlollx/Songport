@@ -169,6 +169,12 @@ interface MusicProvider {
     fun webSearchUrl(ctx: Env, query: String): String? = null
 
     /**
+     * The public page of a track on this service, for "open it there": built from the id, no
+     * request. Null where there is no such page (personal servers, files).
+     */
+    fun trackUrl(ctx: Env, trackId: String): String? = com.xlollx.songport.sync.TrackLinks.url(serviceId, trackId)
+
+    /**
      * Ricerca su un catalogo piu' largo del servizio (per YouTube Music i video di YouTube, che una
      * playlist accetta comunque). Usata solo quando [search] non ha dato nulla di accettabile; vuota
      * per i servizi che non hanno un catalogo del genere.

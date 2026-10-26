@@ -154,6 +154,15 @@ class MainActivity : ComponentActivity() {
             i.getStringExtra(Intent.EXTRA_TEXT)?.let { sharedText.value = it }
             i.action = null
         }
+        // A music link opened with Songport (the MusicLinkActivity alias, off unless the user turns it on
+        // in Settings): the address is handled like a shared one. The app's own callback links stay apart.
+        if (i?.action == Intent.ACTION_VIEW) {
+            val url = i.dataString
+            if (url != null && (com.xlollx.songport.sync.TrackLinks.parse(url) != null || com.xlollx.songport.sync.PlaylistLinks.parse(url) != null)) {
+                sharedText.value = url
+                i.action = null
+            }
+        }
         i?.getStringExtra(EXTRA_MESSAGE)?.let { messages.value = it; i.removeExtra(EXTRA_MESSAGE) }
         if (i?.hasExtra(EXTRA_TAB) == true) { tabRequests.value = i.getIntExtra(EXTRA_TAB, 0); i.removeExtra(EXTRA_TAB) }
     }
@@ -205,6 +214,8 @@ private fun MainScreen(
     var addConnector by remember { mutableStateOf(false) }
     // A single track shared from a service's app: which of your playlists it goes to.
     var sharedTrack by remember { mutableStateOf<Pair<MusicProvider, com.xlollx.songport.model.Track>?>(null) }
+    // A track link from any music app, headed for any connected service (ShareTrackSheet).
+    var sharedLink by remember { mutableStateOf<Pair<String, com.xlollx.songport.sync.TrackLinks.Ref>?>(null) }
 
     val newSync by newSyncRequests.collectAsState()
     LaunchedEffect(newSync) { if (newSync) { newSyncRequests.value = false; tab = MainActivity.TAB_SYNCS; editing = newJob() } }
@@ -221,15 +232,7 @@ private fun MainScreen(
         val lines = if (ref == null && setlist == null && trackRef == null && text.lines().count { it.isNotBlank() } >= 2)
             com.xlollx.songport.sync.PlaylistFiles.parseText(text) else emptyList()
         if (trackRef != null) {
-            val provider = Providers.connectors().firstOrNull {
-                com.xlollx.songport.sync.TrackLinks.matches(trackRef.service, it.serviceId) && it.isConnected(ctx) && it.canWrite
-            }
-            if (provider == null) {
-                snackbar.showSnackbar(ctx.getString(R.string.link_not_connected, trackRef.service.replaceFirstChar { it.uppercase() }))
-            } else {
-                val t = runCatching { provider.track(ctx, trackRef.trackId) }.getOrNull()
-                if (t == null) snackbar.showSnackbar(ctx.getString(R.string.share_invalid)) else sharedTrack = provider to t
-            }
+            sharedLink = text to trackRef
         } else if (lines.size >= 2) {
             tab = MainActivity.TAB_SYNCS
             val name = ctx.getString(R.string.share_file_name) + " " + java.text.SimpleDateFormat("yyyy-MM-dd HH.mm", java.util.Locale.ROOT).format(java.util.Date())
@@ -280,6 +283,14 @@ private fun MainScreen(
     }
     sharedTrack?.let { (p, t) ->
         AddTrackDialog(p, t, onClose = { sharedTrack = null }) { messages.value = it }
+    }
+    sharedLink?.let { (text, ref) ->
+        com.xlollx.songport.ui.ShareTrackSheet(
+            text = text, ref = ref,
+            onClose = { sharedLink = null },
+            onAdd = { p, t -> sharedLink = null; sharedTrack = p to t },
+            onMessage = { messages.value = it },
+        )
     }
     val preview = previewJob
     if (preview != null) {

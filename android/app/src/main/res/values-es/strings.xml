@@ -723,4 +723,21 @@
     <string name="support_prompt_title">Acabas de mover %1$s canciones</string>
     <string name="support_prompt_body">Con la sincronización “%1$s”. Songport es gratis y sin anuncios, y vive de aportaciones voluntarias: si te ha ahorrado tiempo, puedes invitar a un café al desarrollador.</string>
     <string name="support_prompt_later">Ahora no</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">Añadir a…</string>
+    <string name="share_sheet_from">Compartido desde %1$s</string>
+    <string name="share_sheet_unknown">Songport no pudo leer el título de esta pista. Búscala a mano abajo.</string>
+    <string name="share_sheet_open">Abrir en %1$s</string>
+    <string name="share_sheet_copy">Copiar enlace</string>
+    <string name="share_sheet_copied">Enlace copiado</string>
+    <string name="share_sheet_no_targets">Conecta primero un servicio en Cuentas: la pista irá a una de tus listas allí.</string>
+    <string name="share_sheet_target">Dónde añadirla</string>
+    <string name="share_sheet_looking">Buscándola en %1$s…</string>
+    <string name="share_sheet_exact">La misma pista, leída de %1$s</string>
+    <string name="share_sheet_best">Mejor coincidencia en %1$s</string>
+    <string name="share_sheet_no_match">No se encontró en %1$s. Búscala a mano o elige otro servicio.</string>
+    <string name="share_sheet_add">Añadir a una lista…</string>
+    <string name="share_sheet_change">Cambiar</string>
+    <string name="settings_music_links">Ofrecer Songport para enlaces de música</string>
+    <string name="settings_music_links_desc">Un enlace de Spotify, Apple Music, YouTube Music, Amazon Music, Deezer o TIDAL podrá abrirse en Songport, que añade la pista a una lista en cualquiera de tus servicios. Android sigue preguntando qué app usar, o mantiene la fijada en sus ajustes de enlaces: Songport nunca toma un enlace por sí solo.</string>
 </resources>

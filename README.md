@@ -140,7 +140,8 @@ that is exactly what to report.
 | | Full backup of a service | Playlists and likes into local files, with dated versions. |
 | | Duplicate removal | Same track even with a different id or version; keeps the first copy. |
 | Links | Paste or share a public playlist link | Spotify, Apple Music, YouTube, Deezer, TIDAL; short share links too. "From link" is a source of its own in the editor. |
-| | Share a single track or a text list | A track link from a service's app goes into one of your playlists there; several "Artist - Title" lines become a file playlist and a new sync. |
+| | Share a single track or a text list | A track link from any music app goes into one of your playlists on **any** connected service, Navidrome, Jellyfin and Plex included: the same recording is found with the sync's matching, shown with its score before adding, with "Open in…" and "Copy link" next to it. Several "Artist - Title" lines become a file playlist and a new sync. |
+| | Music links open with Songport (optional) | Settings › "Offer Songport for music links": Android then lists Songport among the apps for a Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link. Off by default; Songport never takes a link by itself. |
 | Files | Import/export | Reads CSV, TSV, M3U/M3U8, XSPF, JSPF, OPML (podcasts), Apple Music/iTunes XML, JSON, Shazam exports, plain text lists; writes CSV, M3U, XSPF, JSPF and plain text. |
 | | setlist.fm | Share or paste a setlist.fm link: the concert becomes a playlist to sync anywhere. |
 | Widget and shortcuts | Home widget and long-press on the icon | Last sync, "Sync all", "New sync". |

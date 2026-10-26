@@ -6,6 +6,7 @@ description (architecture, matching, services and their limits) stays in the
 
 **Using the app**
 - [Getting started](getting-started): install, connect a service, the first sync.
+- [Shared links](shared-links): a friend's Spotify link into your YouTube Music, Navidrome or Jellyfin playlist.
 - [Troubleshooting](troubleshooting): the errors people actually meet, and what to do about each.
 - [Reporting a problem](reporting-a-problem): the diagnostic report, and what makes a report useful.
 - [Songport on a server (Docker, alpha)](docker): an early test version. Scheduled syncs on a home server or a NAS, with a web page.

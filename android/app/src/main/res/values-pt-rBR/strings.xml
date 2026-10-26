@@ -723,4 +723,21 @@
     <string name="support_prompt_title">Você acabou de mover %1$s faixas</string>
     <string name="support_prompt_body">Com a sincronização “%1$s”. O Songport é gratuito e sem anúncios, e vive de contribuições voluntárias: se ele te poupou tempo, você pode pagar um café ao desenvolvedor.</string>
     <string name="support_prompt_later">Agora não</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">Adicionar a…</string>
+    <string name="share_sheet_from">Compartilhado do %1$s</string>
+    <string name="share_sheet_unknown">O Songport não conseguiu ler o título desta faixa. Procure-a manualmente abaixo.</string>
+    <string name="share_sheet_open">Abrir no %1$s</string>
+    <string name="share_sheet_copy">Copiar link</string>
+    <string name="share_sheet_copied">Link copiado</string>
+    <string name="share_sheet_no_targets">Conecte um serviço em Contas primeiro: a faixa irá para uma das suas playlists lá.</string>
+    <string name="share_sheet_target">Onde adicionar</string>
+    <string name="share_sheet_looking">Procurando no %1$s…</string>
+    <string name="share_sheet_exact">A mesma faixa, lida do %1$s</string>
+    <string name="share_sheet_best">Melhor correspondência no %1$s</string>
+    <string name="share_sheet_no_match">Não encontrada no %1$s. Procure manualmente ou escolha outro serviço.</string>
+    <string name="share_sheet_add">Adicionar a uma playlist…</string>
+    <string name="share_sheet_change">Alterar</string>
+    <string name="settings_music_links">Oferecer o Songport para links de música</string>
+    <string name="settings_music_links_desc">Um link do Spotify, Apple Music, YouTube Music, Amazon Music, Deezer ou TIDAL poderá abrir no Songport, que adiciona a faixa a uma playlist em qualquer um dos seus serviços. O Android continua perguntando qual app usar, ou mantém o definido nas configurações de links: o Songport nunca toma um link sozinho.</string>
 </resources>

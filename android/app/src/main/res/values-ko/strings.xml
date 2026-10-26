@@ -714,4 +714,21 @@
     <string name="support_prompt_title">방금 %1$s곡을 옮겼어요</string>
     <string name="support_prompt_body">“%1$s” 동기화로요. Songport는 무료에 광고가 없고 자발적인 후원으로 운영돼요. 시간을 아껴 줬다면 개발자에게 커피 한 잔 사 주세요.</string>
     <string name="support_prompt_later">나중에</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">추가 위치…</string>
+    <string name="share_sheet_from">%1$s에서 공유됨</string>
+    <string name="share_sheet_unknown">이 곡의 제목을 읽을 수 없습니다. 아래에서 직접 검색하세요.</string>
+    <string name="share_sheet_open">%1$s에서 열기</string>
+    <string name="share_sheet_copy">링크 복사</string>
+    <string name="share_sheet_copied">링크를 복사했습니다</string>
+    <string name="share_sheet_no_targets">먼저 계정에서 서비스를 연결하세요. 곡이 그곳의 플레이리스트에 추가됩니다.</string>
+    <string name="share_sheet_target">추가할 위치</string>
+    <string name="share_sheet_looking">%1$s에서 찾는 중…</string>
+    <string name="share_sheet_exact">같은 곡 (%1$s에서 가져옴)</string>
+    <string name="share_sheet_best">%1$s에서 가장 잘 맞는 곡</string>
+    <string name="share_sheet_no_match">%1$s에서 찾지 못했습니다. 직접 검색하거나 다른 서비스를 고르세요.</string>
+    <string name="share_sheet_add">플레이리스트에 추가…</string>
+    <string name="share_sheet_change">변경</string>
+    <string name="settings_music_links">음악 링크에 Songport 제안</string>
+    <string name="settings_music_links_desc">Spotify, Apple Music, YouTube Music, Amazon Music, Deezer, TIDAL 링크를 Songport에서 열 수 있게 되며, Songport가 곡을 원하는 서비스의 플레이리스트에 추가합니다. 어떤 앱을 쓸지는 여전히 Android가 묻거나 링크 설정에 정해 둔 앱을 사용합니다. Songport가 링크를 마음대로 가로채지 않습니다.</string>
 </resources>

@@ -1,0 +1,1 @@
+分享的链接可去任何地方：把 Spotify、Apple Music、YouTube Music、Amazon Music、Deezer 或 TIDAL 的歌曲链接分享给 Songport，现在可以添加到你任一服务（包括 Navidrome、Jellyfin 和 Plex）的播放列表，并在添加前显示匹配结果。可选：让音乐链接用 Songport 打开（设置）。

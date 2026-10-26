@@ -723,4 +723,21 @@
     <string name="support_prompt_title">Du hast gerade %1$s Titel übertragen</string>
     <string name="support_prompt_body">Mit dem Sync „%1$s“. Songport ist kostenlos und werbefrei und lebt von freiwilligen Beiträgen: Wenn es dir Zeit gespart hat, kannst du dem Entwickler einen Kaffee spendieren.</string>
     <string name="support_prompt_later">Nicht jetzt</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">Hinzufügen zu …</string>
+    <string name="share_sheet_from">Geteilt von %1$s</string>
+    <string name="share_sheet_unknown">Songport konnte den Titel dieses Stücks nicht lesen. Suche es unten von Hand.</string>
+    <string name="share_sheet_open">In %1$s öffnen</string>
+    <string name="share_sheet_copy">Link kopieren</string>
+    <string name="share_sheet_copied">Link kopiert</string>
+    <string name="share_sheet_no_targets">Verbinde zuerst einen Dienst unter Konten: das Stück landet dann dort in einer deiner Playlists.</string>
+    <string name="share_sheet_target">Wohin damit</string>
+    <string name="share_sheet_looking">Suche auf %1$s …</string>
+    <string name="share_sheet_exact">Dasselbe Stück, gelesen von %1$s</string>
+    <string name="share_sheet_best">Beste Übereinstimmung auf %1$s</string>
+    <string name="share_sheet_no_match">Auf %1$s nicht gefunden. Suche von Hand oder wähle einen anderen Dienst.</string>
+    <string name="share_sheet_add">Zu Playlist hinzufügen …</string>
+    <string name="share_sheet_change">Ändern</string>
+    <string name="settings_music_links">Songport für Musiklinks anbieten</string>
+    <string name="settings_music_links_desc">Ein Link von Spotify, Apple Music, YouTube Music, Amazon Music, Deezer oder TIDAL kann sich dann in Songport öffnen, das das Stück zu einer Playlist auf einem beliebigen deiner Dienste hinzufügt. Android fragt weiterhin, welche App verwendet wird, oder behält die in seinen Link-Einstellungen festgelegte: Songport nimmt sich nie von selbst einen Link.</string>
 </resources>

@@ -98,6 +98,11 @@ fun SettingsScreen(
             SettingRow(stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_desc)) {
                 Switch(checked = data.settings.isrcLookup, onCheckedChange = { v -> store.updateSettings { it.copy(isrcLookup = v) } })
             }
+            // The link alias lives in the package manager, not in the store: read it from there.
+            var musicLinks by remember { mutableStateOf(MusicLinks.enabled(ctx)) }
+            SettingRow(stringResource(R.string.settings_music_links), stringResource(R.string.settings_music_links_desc)) {
+                Switch(checked = musicLinks, onCheckedChange = { v -> MusicLinks.set(ctx, v); musicLinks = v })
+            }
             SettingRow(stringResource(R.string.security_lock), stringResource(R.string.security_lock_desc)) {
                 Switch(checked = data.settings.appLock, onCheckedChange = { v ->
                     if (v && !LockActivity.available(ctx)) {

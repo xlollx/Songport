@@ -44,4 +44,7 @@
     <string name="free_why_body">Trackhop no tiene anuncios, suscripciones ni funciones bloqueadas. Vive de aportaciones voluntarias: si te ahorra tiempo, puedes invitar a un café al desarrollador.</string>
     <string name="support_title">¿Te gusta Trackhop?</string>
     <string name="support_prompt_body">Con la sincronización “%1$s”. Trackhop es gratis y sin anuncios, y vive de aportaciones voluntarias: si te ha ahorrado tiempo, puedes invitar a un café al desarrollador.</string>
+    <string name="share_sheet_unknown">Trackhop no pudo leer el título de esta pista. Búscala a mano abajo.</string>
+    <string name="settings_music_links">Ofrecer Trackhop para enlaces de música</string>
+    <string name="settings_music_links_desc">Un enlace de Spotify, Apple Music, YouTube Music, Amazon Music, Deezer o TIDAL podrá abrirse en Trackhop, que añade la pista a una lista en cualquiera de tus servicios. Android sigue preguntando qué app usar, o mantiene la fijada en sus ajustes de enlaces: Trackhop nunca toma un enlace por sí solo.</string>
 </resources>

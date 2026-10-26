@@ -723,4 +723,21 @@
     <string name="support_prompt_title">Hai appena spostato %1$s brani</string>
     <string name="support_prompt_body">Con la sync «%1$s». Songport è gratis e senza pubblicità, e vive di contributi volontari: se ti ha fatto risparmiare tempo, puoi offrire un caffè allo sviluppatore.</string>
     <string name="support_prompt_later">Non ora</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">Aggiungi a…</string>
+    <string name="share_sheet_from">Condiviso da %1$s</string>
+    <string name="share_sheet_unknown">Songport non è riuscito a leggere il titolo di questo brano. Cercalo a mano qui sotto.</string>
+    <string name="share_sheet_open">Apri in %1$s</string>
+    <string name="share_sheet_copy">Copia link</string>
+    <string name="share_sheet_copied">Link copiato</string>
+    <string name="share_sheet_no_targets">Collega prima un servizio in Account: il brano finirà in una delle tue playlist lì.</string>
+    <string name="share_sheet_target">Dove aggiungerlo</string>
+    <string name="share_sheet_looking">Lo cerco su %1$s…</string>
+    <string name="share_sheet_exact">Lo stesso brano, letto da %1$s</string>
+    <string name="share_sheet_best">Miglior corrispondenza su %1$s</string>
+    <string name="share_sheet_no_match">Non trovato su %1$s. Cercalo a mano, o scegli un altro servizio.</string>
+    <string name="share_sheet_add">Aggiungi a una playlist…</string>
+    <string name="share_sheet_change">Cambia</string>
+    <string name="settings_music_links">Proponi Songport per i link musicali</string>
+    <string name="settings_music_links_desc">Un link di Spotify, Apple Music, YouTube Music, Amazon Music, Deezer o TIDAL potrà aprirsi in Songport, che aggiunge il brano a una playlist su uno qualsiasi dei tuoi servizi. Android continua a chiederti quale app usare, o tiene quella impostata nelle sue impostazioni dei link: Songport non prende mai un link da solo.</string>
 </resources>

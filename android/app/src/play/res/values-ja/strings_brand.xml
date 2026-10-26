@@ -43,4 +43,6 @@
     <string name="free_why_body">Trackhop には広告も、サブスクリプションも、機能制限もありません。任意の支援で運営されています。時間の節約になったなら、開発者にコーヒーをおごっていただけると嬉しいです。</string>
     <string name="support_title">Trackhop を気に入っていただけましたか？</string>
     <string name="support_prompt_body">同期「%1$s」で移動しました。Trackhop は無料で広告もなく、任意の支援で運営されています。時間の節約になったなら、開発者にコーヒーをおごっていただけると嬉しいです。</string>
+    <string name="settings_music_links">音楽リンクで Trackhop を候補に出す</string>
+    <string name="settings_music_links_desc">Spotify、Apple Music、YouTube Music、Amazon Music、Deezer、TIDAL のリンクを Trackhop で開けるようになり、どのサービスのプレイリストにも曲を追加できます。使うアプリは引き続き Android が尋ねるか、リンク設定で決めたアプリが使われます。Trackhop がリンクを勝手に奪うことはありません。</string>
 </resources>

@@ -53,6 +53,8 @@ data class Settings(
     val appOpens: Int = 0,
     /** The open count at which the coffee card was last answered, so it is not shown twice in the same open. */
     val supportNudgeSeen: Int = 0,
+    /** Where a shared track link went last (provider id): the sheet opens on it next time. */
+    val shareTarget: String = "",
 )
 
 /** Unita' di quota consumate in un giorno (chiave = data nel fuso del servizio). */

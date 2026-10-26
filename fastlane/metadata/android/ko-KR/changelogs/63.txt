@@ -1,0 +1,1 @@
+공유 링크를 어디로든: Spotify, Apple Music, YouTube Music, Amazon Music, Deezer, TIDAL 곡 링크를 Songport로 공유하면 이제 Navidrome, Jellyfin, Plex를 포함한 어느 서비스의 플레이리스트에도 추가되며, 추가 전에 일치 결과를 보여 줍니다. 선택 사항: 음악 링크를 Songport로 열기(설정).
