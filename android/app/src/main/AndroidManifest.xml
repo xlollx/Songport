@@ -105,9 +105,11 @@
             android:label="@string/app_name" />
 
         <!-- The cards (compatibility, poster) leave the app as PNG files through the share sheet. -->
+        <!-- Its own subclass: the bridge module declares the plain FileProvider for its captures, and
+             the manifest merger would fold two declarations of the same class into one. -->
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.files"
+            android:name=".ui.CardsFileProvider"
+            android:authorities="${applicationId}.cards"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />

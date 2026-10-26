@@ -268,7 +268,7 @@ object Cards {
         dir.listFiles()?.filter { System.currentTimeMillis() - it.lastModified() > 3_600_000 }?.forEach { it.delete() }
         val file = File(dir, name.replace(Regex("""[^A-Za-z0-9._-]+"""), "_").take(60) + ".png")
         FileOutputStream(file).use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
-        val uri = FileProvider.getUriForFile(ctx, ctx.packageName + ".files", file)
+        val uri = FileProvider.getUriForFile(ctx, ctx.packageName + ".cards", file)
         val send = Intent(Intent.ACTION_SEND).setType("image/png").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         runCatching { ctx.startActivity(Intent.createChooser(send, null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
     }
@@ -278,3 +278,6 @@ object Cards {
         ctx.contentResolver.openOutputStream(uri)?.use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) } != null
     }.getOrDefault(false)
 }
+
+/** The cards' own provider (see the manifest): one class per authority, so the merger keeps both. */
+class CardsFileProvider : FileProvider()
