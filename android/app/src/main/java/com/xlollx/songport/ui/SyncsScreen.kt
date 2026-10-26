@@ -1,7 +1,6 @@
 package com.xlollx.songport.ui
 
 import com.xlollx.songport.providers.*
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -29,6 +28,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.clickable
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -135,8 +135,9 @@ fun SyncsScreen(
             val n = data.jobs.size
             val last = if (lastRun > 0) " · " + stringResource(R.string.hero_last, formatDate(lastRun)) else ""
             HeroHeader(stringResource(R.string.hero_title), ctx.resources.getQuantityString(R.plurals.hero_jobs, n, n) + last) {
+                val haptic = rememberConfirmHaptic()
                 Button(
-                    onClick = onRunAll,
+                    onClick = { haptic(); onRunAll() },
                     enabled = running.isEmpty(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White, contentColor = Brand.Indigo,
@@ -175,12 +176,14 @@ private fun JobCard(
     val dst = Providers.byId(job.target.provider)
     val srcName = playlistDisplayName(job.source.playlistId, job.source.playlistName)
     val dstName = job.target.playlistName.ifBlank { stringResource(R.string.editor_new_playlist) }
+    val haptic = rememberConfirmHaptic()
     Card(
         // While running, a tap opens the live list of tracks processed so far.
-        Modifier.fillMaxWidth().clickable(enabled = isRunning) { liveOpen = true },
+        Modifier.fillMaxWidth().animateContentSize().clickable(enabled = isRunning) { liveOpen = true },
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.width(56.dp).height(36.dp)) {
                     ProviderBadge(src, 34.dp)
@@ -194,13 +197,13 @@ private fun JobCard(
                             Icon(Icons.Filled.AutoAwesome, stringResource(R.string.ai_badge_desc), Modifier.size(16.dp), tint = MaterialTheme.colorScheme.tertiary)
                             Spacer(Modifier.width(4.dp))
                         }
-                        Text(job.name.ifBlank { job.source.playlistName }, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(job.name.ifBlank { job.source.playlistName }, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     Text(
                         (src?.label(ctx) ?: job.source.provider).let { if (job.source.link != null) stringResource(R.string.source_link_label, it) else it } + " · " + srcName +
                             (if (job.linkedJobId != null) "  ↔  " else "  →  ") +
                             (dst?.label(ctx) ?: job.target.provider) + " · " + dstName,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2, overflow = TextOverflow.Ellipsis,
                     )
@@ -237,15 +240,15 @@ private fun JobCard(
                         } + progressText(progress) + (pct?.let { " · $it%" } ?: ""),
                         style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f),
                     )
-                    IconButton(enabled = !stopping, onClick = { if (paused) SyncState.resume(job.id) else SyncState.pause(job.id) }) {
+                    IconButton(enabled = !stopping, modifier = Modifier.size(48.dp), onClick = { if (paused) SyncState.resume(job.id) else SyncState.pause(job.id) }) {
                         Icon(if (paused) Icons.Filled.PlayArrow else Icons.Filled.Pause, stringResource(if (paused) R.string.sync_resume else R.string.sync_pause))
                     }
-                    IconButton(enabled = !stopping, onClick = { SyncState.stop(job.id) }) { Icon(Icons.Filled.Stop, stringResource(R.string.sync_stop)) }
+                    IconButton(enabled = !stopping, modifier = Modifier.size(48.dp), onClick = { SyncState.stop(job.id) }) { Icon(Icons.Filled.Stop, stringResource(R.string.sync_stop)) }
                 }
             } else if (report != null) {
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    Notifications.summary(ctx, report), style = MaterialTheme.typography.bodySmall,
+                    Notifications.summary(ctx, report), style = MaterialTheme.typography.bodyMedium,
                     color = if (report.ok) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                 )
             }
@@ -270,7 +273,7 @@ private fun JobCard(
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
                 )
-                FilledTonalIconButton(onClick = { onRun(job) }, enabled = !isRunning) {
+                FilledTonalIconButton(onClick = { haptic(); onRun(job) }, enabled = !isRunning, modifier = Modifier.size(48.dp)) {
                     Icon(Icons.Filled.PlayArrow, stringResource(R.string.run_now))
                 }
                 OverflowMenu(
@@ -374,7 +377,8 @@ private sealed class Loaded {
 @Composable
 fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJob?) -> Unit) {
     val ctx = LocalContext.current
-    BackHandler { onCancel() }
+    ScreenBackHandler(onCancel)
+    val saveHaptic = rememberConfirmHaptic()
     val isNew = job.name.isEmpty()
     // Solo i connettori aggiunti nella scheda Account: uno tolto di li' non deve piu' essere
     // scegliibile, anche se il token o la sessione nell'app plugin sono ancora validi. I servizi gia'
@@ -610,6 +614,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                             schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
                             linkedJobId = job.id,
                         ) else null
+                        saveHaptic()
                         onSave(main.copy(linkedJobId = reverse?.id), reverse)
                     },
                 ) { Text(stringResource(R.string.save)) }
@@ -629,17 +634,6 @@ private suspend fun loadPlaylists(ctx: android.content.Context, providerId: Stri
         Loaded.Ok(p.libraryEntries(ctx, asTarget = forTarget) + lists)
     } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
         Loaded.Failed(e.message ?: ctx.getString(R.string.error_generic))
-    }
-}
-
-@Composable
-private fun SwitchRow(title: String, subtitle: String?, checked: Boolean, onChange: (Boolean) -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.weight(1f)) {
-            Text(title)
-            if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        Switch(checked = checked, onCheckedChange = onChange)
     }
 }
 

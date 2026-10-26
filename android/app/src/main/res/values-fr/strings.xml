@@ -769,4 +769,14 @@
         <item quantity="one">%1$d titre</item>
         <item quantity="other">%1$d titres</item>
     </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Apparence</string>
+    <string name="settings_theme">Thème</string>
+    <string name="settings_theme_system">Système</string>
+    <string name="settings_theme_light">Clair</string>
+    <string name="settings_theme_dark">Sombre</string>
+    <string name="settings_dynamic_color">Couleurs dynamiques (Material You)</string>
+    <string name="settings_dynamic_color_desc">Les couleurs de votre fond d\'écran à la place de celles de Songport. Le bandeau du titre garde les couleurs de la marque.</string>
+    <string name="settings_dynamic_color_unavailable">Nécessite Android 12 ou plus récent.</string>
 </resources>

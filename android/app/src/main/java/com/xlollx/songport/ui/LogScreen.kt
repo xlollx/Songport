@@ -3,7 +3,6 @@ package com.xlollx.songport.ui
 import com.xlollx.songport.providers.*
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -73,7 +72,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun LogScreen(data: StoreData, onClose: () -> Unit, onResolve: (String) -> Unit) {
     val snackbar = remember { SnackbarHostState() }
-    BackHandler { onClose() }
+    ScreenBackHandler(onClose)
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {

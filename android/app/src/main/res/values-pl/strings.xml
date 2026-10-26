@@ -789,4 +789,14 @@
         <item quantity="many">%1$d utworów</item>
         <item quantity="other">%1$d utworów</item>
     </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Wygląd</string>
+    <string name="settings_theme">Motyw</string>
+    <string name="settings_theme_system">Systemowy</string>
+    <string name="settings_theme_light">Jasny</string>
+    <string name="settings_theme_dark">Ciemny</string>
+    <string name="settings_dynamic_color">Dynamiczne kolory (Material You)</string>
+    <string name="settings_dynamic_color_desc">Kolory tapety zamiast kolorów Songport. Baner tytułowy zachowuje kolory marki.</string>
+    <string name="settings_dynamic_color_unavailable">Wymaga Androida 12 lub nowszego.</string>
 </resources>

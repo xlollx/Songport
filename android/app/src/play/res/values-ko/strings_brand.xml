@@ -46,4 +46,5 @@
     <string name="support_prompt_body">“%1$s” 동기화로요. Trackhop는 무료에 광고가 없고 자발적인 후원으로 운영돼요. 시간을 아껴 줬다면 개발자에게 커피 한 잔 사 주세요.</string>
     <string name="settings_music_links">음악 링크에 Trackhop 제안</string>
     <string name="settings_music_links_desc">Spotify, Apple Music, YouTube Music, Amazon Music, Deezer, TIDAL 링크를 Trackhop에서 열 수 있게 되며, Trackhop가 곡을 원하는 서비스의 플레이리스트에 추가합니다. 어떤 앱을 쓸지는 여전히 Android가 묻거나 링크 설정에 정해 둔 앱을 사용합니다. Trackhop가 링크를 마음대로 가로채지 않습니다.</string>
+    <string name="settings_dynamic_color_desc">Trackhop의 색상 대신 배경화면의 색상을 사용합니다. 제목 배너는 브랜드 색상을 유지합니다.</string>
 </resources>

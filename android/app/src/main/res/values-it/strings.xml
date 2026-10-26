@@ -769,4 +769,14 @@
         <item quantity="one">%1$d brano</item>
         <item quantity="other">%1$d brani</item>
     </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Aspetto</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Chiaro</string>
+    <string name="settings_theme_dark">Scuro</string>
+    <string name="settings_dynamic_color">Colori dinamici (Material You)</string>
+    <string name="settings_dynamic_color_desc">I colori del tuo sfondo al posto di quelli di Songport. Il riquadro del titolo resta nei colori del brand.</string>
+    <string name="settings_dynamic_color_unavailable">Serve Android 12 o successivo.</string>
 </resources>

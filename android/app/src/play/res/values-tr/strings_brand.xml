@@ -47,4 +47,5 @@
     <string name="share_sheet_unknown">Trackhop bu parçanın adını okuyamadı. Aşağıda elle ara.</string>
     <string name="settings_music_links">Müzik bağlantıları için Trackhop\'u öner</string>
     <string name="settings_music_links_desc">Bir Spotify, Apple Music, YouTube Music, Amazon Music, Deezer veya TIDAL bağlantısı Trackhop\'ta açılabilir; Trackhop parçayı servislerinden herhangi birindeki bir çalma listesine ekler. Android yine hangi uygulamanın kullanılacağını sorar ya da bağlantı ayarlarında seçileni kullanır: Trackhop bir bağlantıyı asla kendiliğinden almaz.</string>
+    <string name="settings_dynamic_color_desc">Trackhop\'un renkleri yerine duvar kağıdının renkleri. Başlık alanı marka renklerini korur.</string>
 </resources>

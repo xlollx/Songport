@@ -767,4 +767,14 @@
         <item quantity="one">%1$d parça</item>
         <item quantity="other">%1$d parça</item>
     </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Görünüm</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Sistem</string>
+    <string name="settings_theme_light">Açık</string>
+    <string name="settings_theme_dark">Koyu</string>
+    <string name="settings_dynamic_color">Dinamik renkler (Material You)</string>
+    <string name="settings_dynamic_color_desc">Songport\'un renkleri yerine duvar kağıdının renkleri. Başlık alanı marka renklerini korur.</string>
+    <string name="settings_dynamic_color_unavailable">Android 12 veya daha yenisi gerekir.</string>
 </resources>

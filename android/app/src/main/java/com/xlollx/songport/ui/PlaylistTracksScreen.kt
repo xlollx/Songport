@@ -1,7 +1,6 @@
 package com.xlollx.songport.ui
 
 import com.xlollx.songport.providers.*
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -76,7 +75,7 @@ fun PlaylistTracksScreen(provider: MusicProvider, playlist: Playlist, onClose: (
     var selected by remember { mutableStateOf(setOf<Int>()) }
     var confirming by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
-    BackHandler { onClose() }
+    ScreenBackHandler(onClose)
 
     LaunchedEffect(version) {
         tracks = null; error = null; selected = emptySet()

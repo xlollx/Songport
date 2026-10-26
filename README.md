@@ -149,6 +149,7 @@ that is exactly what to report.
 | Widget and shortcuts | Home widget and long-press on the icon | Last sync, "Sync all", "New sync". |
 | Diagnostics | "Share technical details" in the log | Version, device, services, last runs, error log; no tokens. |
 | | "Test the connection" per account | Account, playlist list and one search, with the service's answer on failure. |
+| Appearance | Theme and Material You | Settings › Appearance: system, light or dark; "Dynamic colours" takes the phone's wallpaper palette (Android 12+) instead of the brand's, off by default. |
 | Security | Connections log | Settings › Developer options lists every host the app has contacted and how often, so "no Songport server" is something to check, not to believe. |
 | | Info sheet before every login, encrypted tokens, fingerprint or PIN lock | See [How logins are protected](#how-logins-are-protected). |
 

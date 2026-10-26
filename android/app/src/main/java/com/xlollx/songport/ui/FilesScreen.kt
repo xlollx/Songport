@@ -2,7 +2,6 @@ package com.xlollx.songport.ui
 
 import com.xlollx.songport.providers.*
 import android.net.Uri
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -75,7 +74,7 @@ fun FilesScreen(onClose: () -> Unit) {
     var query by remember { mutableStateOf("") }
     var openVersions by remember { mutableStateOf<Set<String>>(emptySet()) }
     LaunchedEffect(version) { lists = withContext(Dispatchers.IO) { LocalFilesProvider.entries(ctx) } }
-    BackHandler { onClose() }
+    ScreenBackHandler(onClose)
 
     // One launcher per format: CreateDocument fixes the MIME type when it is built.
     var exporting by remember { mutableStateOf<String?>(null) }

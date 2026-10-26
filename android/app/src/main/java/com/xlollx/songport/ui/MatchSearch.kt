@@ -211,7 +211,7 @@ fun MatchSearch(
         }
         // The few likeliest first, whatever they came from: most fixes are one look and one tap.
         val top = result.hits.take(TOP_HITS)
-        Text(stringResource(R.string.search_top), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+        Text(stringResource(R.string.search_top), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         top.forEachIndexed { i, h -> pick(h, i == 0 && (h.score >= PRIMARY_SCORE || h.track.id == aiPick)) }
         val rest = result.hits.drop(TOP_HITS)
         // Everything else folded by origin: the album (or the news that it is missing), the other

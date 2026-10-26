@@ -75,6 +75,11 @@ import com.xlollx.songport.ui.AccountsScreen
 import com.xlollx.songport.ui.AddTrackDialog
 import com.xlollx.songport.ui.AppTopBar
 import com.xlollx.songport.ui.AppTheme
+import com.xlollx.songport.ui.BackAwareScreen
+import com.xlollx.songport.ui.TabContent
+import com.xlollx.songport.ui.ThemeMode
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.ui.text.style.TextOverflow
 import com.xlollx.songport.ui.LockScreen
 import com.xlollx.songport.ui.LogScreen
 import com.xlollx.songport.ui.OnboardingScreen
@@ -128,7 +133,8 @@ class MainActivity : ComponentActivity() {
             requestUnlock()
         }
         setContent {
-            AppTheme {
+            val settings by Store.get(this).state.collectAsState()
+            AppTheme(mode = ThemeMode.of(settings.settings.themeMode), dynamicColor = settings.settings.dynamicColor) {
                 val isLocked by locked.collectAsState()
                 if (isLocked) LockScreen { requestUnlock() } else MainScreen(messages, tabRequests, sharedText, newSyncRequests)
             }
@@ -202,18 +208,19 @@ private fun MainScreen(
     val data by store.state.collectAsState()
     var tab by rememberSaveable { mutableIntStateOf(0) }
     val snackbar = remember { SnackbarHostState() }
-    var editing by remember { mutableStateOf<SyncJob?>(null) }
-    var wizardFor by remember { mutableStateOf<MusicProvider?>(null) }
-    var unmatchedReport by remember { mutableStateOf<String?>(null) }
-    var filesOpen by remember { mutableStateOf(false) }
-    var logOpen by remember { mutableStateOf(false) }
-    var transferOpen by remember { mutableStateOf(false) }
-    var manageProvider by remember { mutableStateOf<MusicProvider?>(null) }
-    var scanProvider by remember { mutableStateOf<MusicProvider?>(null) }
-    var previewJob by remember { mutableStateOf<SyncJob?>(null) }
+    // The screen on top survives a rotation and a fold: jobs travel as JSON, providers by id.
+    var editing by rememberSaveable(stateSaver = JobSaver) { mutableStateOf<SyncJob?>(null) }
+    var wizardFor by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
+    var unmatchedReport by rememberSaveable { mutableStateOf<String?>(null) }
+    var filesOpen by rememberSaveable { mutableStateOf(false) }
+    var logOpen by rememberSaveable { mutableStateOf(false) }
+    var transferOpen by rememberSaveable { mutableStateOf(false) }
+    var manageProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
+    var scanProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
+    var previewJob by rememberSaveable(stateSaver = JobSaver) { mutableStateOf<SyncJob?>(null) }
     // Two playlist links shared at once: "how compatible are we?" in Tools.
     var compareLinks by remember { mutableStateOf<Pair<String, String>?>(null) }
-    var addConnector by remember { mutableStateOf(false) }
+    var addConnector by rememberSaveable { mutableStateOf(false) }
     // A single track shared from a service's app: which of your playlists it goes to.
     var sharedTrack by remember { mutableStateOf<Pair<MusicProvider, com.xlollx.songport.model.Track>?>(null) }
     // A track link from any music app, headed for any connected service (ShareTrackSheet).
@@ -296,63 +303,58 @@ private fun MainScreen(
             onMessage = { messages.value = it },
         )
     }
+    // One screen on top of the tabs at a time, in this order of precedence. The key names which
+    // one is open, so switching animates and the predictive-back preview knows what to move.
     val preview = previewJob
-    if (preview != null) {
-        PreviewScreen(preview, onClose = { previewJob = null }) { j -> Scheduler.runNow(ctx, j.id); previewJob = null }
-        return
-    }
     val wizard = wizardFor
-    if (wizard != null) {
-        SetupWizardScreen(wizard) { wizardFor = null }
-        return
-    }
     val unmatched = unmatchedReport
-    if (unmatched != null) {
-        UnmatchedScreen(unmatched) { unmatchedReport = null }
-        return
-    }
-    if (filesOpen) {
-        FilesScreen { filesOpen = false }
-        return
-    }
-    if (logOpen) {
-        LogScreen(data, onClose = { logOpen = false }) { unmatchedReport = it }
-        return
-    }
-    manageProvider?.let { p ->
-        PlaylistsScreen(p) { manageProvider = null }
-        return
-    }
-    scanProvider?.let { p ->
-        LibraryScanScreen(p) { scanProvider = null }
-        return
-    }
-    if (transferOpen) {
-        TransferScreen(onClose = { transferOpen = false }, onDone = { transferOpen = false; tab = MainActivity.TAB_SYNCS })
-        return
-    }
-
+    val manage = manageProvider
+    val scan = scanProvider
     val current = editing
-    if (current != null) {
-        SyncEditorScreen(
-            job = current,
-            onCancel = { editing = null },
-            onSave = { job, reverse ->
-                val previous = store.job(job.id)
-                store.upsertJob(job)
-                Scheduler.apply(ctx, job)
-                if (reverse != null) {
-                    store.upsertJob(reverse)
-                    Scheduler.apply(ctx, reverse)
-                } else previous?.linkedJobId?.let { old ->
-                    // Bidirezionale disattivato: la gemella non ha piu' senso.
-                    store.deleteJob(old); Scheduler.cancel(ctx, old)
-                }
-                editing = null
-                // A sync just made: what its first run would do, before it does it.
-                if (previous == null) previewJob = job
-            },
-        )
+    val overlay: String? = when {
+        preview != null -> "preview:" + preview.id
+        wizard != null -> "wizard:" + wizard.id
+        unmatched != null -> "unmatched:$unmatched"
+        filesOpen -> "files"
+        logOpen -> "log"
+        manage != null -> "manage:" + manage.id
+        scan != null -> "scan:" + scan.id
+        transferOpen -> "transfer"
+        current != null -> "edit:" + current.id
+        else -> null
+    }
+    if (overlay != null) {
+        BackAwareScreen(overlay) {
+            when {
+                preview != null -> PreviewScreen(preview, onClose = { previewJob = null }) { j -> Scheduler.runNow(ctx, j.id); previewJob = null }
+                wizard != null -> SetupWizardScreen(wizard) { wizardFor = null }
+                unmatched != null -> UnmatchedScreen(unmatched) { unmatchedReport = null }
+                filesOpen -> FilesScreen { filesOpen = false }
+                logOpen -> LogScreen(data, onClose = { logOpen = false }) { unmatchedReport = it }
+                manage != null -> PlaylistsScreen(manage) { manageProvider = null }
+                scan != null -> LibraryScanScreen(scan) { scanProvider = null }
+                transferOpen -> TransferScreen(onClose = { transferOpen = false }, onDone = { transferOpen = false; tab = MainActivity.TAB_SYNCS })
+                current != null -> SyncEditorScreen(
+                    job = current,
+                    onCancel = { editing = null },
+                    onSave = { job, reverse ->
+                        val previous = store.job(job.id)
+                        store.upsertJob(job)
+                        Scheduler.apply(ctx, job)
+                        if (reverse != null) {
+                            store.upsertJob(reverse)
+                            Scheduler.apply(ctx, reverse)
+                        } else previous?.linkedJobId?.let { old ->
+                            // Bidirezionale disattivato: la gemella non ha piu' senso.
+                            store.deleteJob(old); Scheduler.cancel(ctx, old)
+                        }
+                        editing = null
+                        // A sync just made: what its first run would do, before it does it.
+                        if (previous == null) previewJob = job
+                    },
+                )
+            }
+        }
         return
     }
 
@@ -382,13 +384,18 @@ private fun MainScreen(
             ) {
                 HorizontalDivider(thickness = Dp.Hairline, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
                 AdBanner()
+                // At a large font size the four labels no longer fit side by side: only the
+                // selected tab keeps its label, the others are their icon (still read out by name).
+                val bigText = LocalDensity.current.fontScale > 1.3f
                 NavigationBar(containerColor = Color.Transparent, windowInsets = NavigationBarDefaults.windowInsets) {
                     tabs.forEach { (label, icon, index) ->
+                        val name = stringResource(label)
                         NavigationBarItem(
                             selected = tab == index,
                             onClick = { tab = index },
-                            icon = { Icon(icon, contentDescription = null) },
-                            label = { Text(stringResource(label), maxLines = 1, softWrap = false) },
+                            icon = { Icon(icon, contentDescription = if (bigText) name else null) },
+                            label = { Text(name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                            alwaysShowLabel = !bigText,
                         )
                     }
                 }
@@ -413,7 +420,7 @@ private fun MainScreen(
         // Only the top inset: the content runs under the glass bar, and each screen pads its own list by LocalBottomBarInset.
         CompositionLocalProvider(LocalBottomBarInset provides barInset) {
             Box(Modifier.fillMaxSize().hazeSource(state = haze).padding(top = padding.calculateTopPadding())) {
-            when (tab) {
+            TabContent(tab) { shown -> when (shown) {
                 MainActivity.TAB_SYNCS -> SyncsScreen(
                     data = data,
                     onEdit = { editing = it },
@@ -430,11 +437,23 @@ private fun MainScreen(
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
                 MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, compareLinks = compareLinks)
                 else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
-            }
+            } }
             }
         }
     }
 }
+
+/** A sync job in the saved instance state, as the JSON the store already writes. */
+private val JobSaver = Saver<SyncJob?, String>(
+    save = { it?.let { j -> com.xlollx.songport.net.json.encodeToString(SyncJob.serializer(), j) } },
+    restore = { runCatching { com.xlollx.songport.net.json.decodeFromString(SyncJob.serializer(), it) }.getOrNull() },
+)
+
+/** A provider in the saved instance state, by id. */
+private val ProviderSaver = Saver<MusicProvider?, String>(
+    save = { it?.id },
+    restore = { Providers.byId(it) },
+)
 
 private fun newJob() = SyncJob(
     id = UUID.randomUUID().toString(),

@@ -760,4 +760,14 @@
     <plurals name="card_tracks">
         <item quantity="other">%1$d 首歌曲</item>
     </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">外观</string>
+    <string name="settings_theme">主题</string>
+    <string name="settings_theme_system">跟随系统</string>
+    <string name="settings_theme_light">浅色</string>
+    <string name="settings_theme_dark">深色</string>
+    <string name="settings_dynamic_color">动态颜色（Material You）</string>
+    <string name="settings_dynamic_color_desc">使用壁纸的颜色，而不是 Songport 自己的颜色。标题横幅保留品牌颜色。</string>
+    <string name="settings_dynamic_color_unavailable">需要 Android 12 或更高版本。</string>
 </resources>

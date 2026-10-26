@@ -759,4 +759,14 @@
     <plurals name="card_tracks">
         <item quantity="other">%1$d곡</item>
     </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">모양</string>
+    <string name="settings_theme">테마</string>
+    <string name="settings_theme_system">시스템</string>
+    <string name="settings_theme_light">밝게</string>
+    <string name="settings_theme_dark">어둡게</string>
+    <string name="settings_dynamic_color">다이내믹 색상(Material You)</string>
+    <string name="settings_dynamic_color_desc">Songport의 색상 대신 배경화면의 색상을 사용합니다. 제목 배너는 브랜드 색상을 유지합니다.</string>
+    <string name="settings_dynamic_color_unavailable">Android 12 이상이 필요합니다.</string>
 </resources>

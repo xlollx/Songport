@@ -1,7 +1,6 @@
 package com.xlollx.songport.ui
 
 import com.xlollx.songport.providers.*
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -71,7 +70,7 @@ fun TransferScreen(onClose: () -> Unit, onDone: () -> Unit) {
     val store = remember { Store.get(ctx) }
     val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
-    BackHandler { onClose() }
+    ScreenBackHandler(onClose)
 
     // Come nell'editor: i connettori collegati, piu' "File" (sempre disponibile) come destinazione.
     val connected = remember { Providers.connectors().filter { it.isConnected(ctx) } }

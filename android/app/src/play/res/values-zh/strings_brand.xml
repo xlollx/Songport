@@ -47,4 +47,5 @@
     <string name="share_sheet_unknown">Trackhop 无法读取这首歌的标题。请在下方手动搜索。</string>
     <string name="settings_music_links">为音乐链接提供 Trackhop</string>
     <string name="settings_music_links_desc">Spotify、Apple Music、YouTube Music、Amazon Music、Deezer 或 TIDAL 的链接将可以在 Trackhop 中打开，并把歌曲添加到你任一服务的播放列表。Android 仍会询问使用哪个应用，或沿用其链接设置中指定的应用：Trackhop 绝不会自行接管链接。</string>
+    <string name="settings_dynamic_color_desc">使用壁纸的颜色，而不是 Trackhop 自己的颜色。标题横幅保留品牌颜色。</string>
 </resources>

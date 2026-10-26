@@ -55,6 +55,10 @@ data class Settings(
     val supportNudgeSeen: Int = 0,
     /** Where a shared track link went last (provider id): the sheet opens on it next time. */
     val shareTarget: String = "",
+    /** Light or dark: "SYSTEM" (follow the phone), "LIGHT" or "DARK". */
+    val themeMode: String = "SYSTEM",
+    /** Material You: the phone's own colours instead of the brand palette (Android 12+). */
+    val dynamicColor: Boolean = false,
 )
 
 /** Unita' di quota consumate in un giorno (chiave = data nel fuso del servizio). */

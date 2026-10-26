@@ -787,4 +787,14 @@
         <item quantity="many">%1$d треков</item>
         <item quantity="other">%1$d треков</item>
     </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Внешний вид</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_system">Как в системе</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_dynamic_color">Динамические цвета (Material You)</string>
+    <string name="settings_dynamic_color_desc">Цвета ваших обоев вместо цветов Songport. Заголовок сохраняет фирменные цвета.</string>
+    <string name="settings_dynamic_color_unavailable">Нужен Android 12 или новее.</string>
 </resources>

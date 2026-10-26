@@ -769,4 +769,14 @@
         <item quantity="one">%1$d faixa</item>
         <item quantity="other">%1$d faixas</item>
     </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Aparência</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Escuro</string>
+    <string name="settings_dynamic_color">Cores dinâmicas (Material You)</string>
+    <string name="settings_dynamic_color_desc">As cores do seu papel de parede no lugar das do Songport. O painel do título mantém as cores da marca.</string>
+    <string name="settings_dynamic_color_unavailable">Requer Android 12 ou mais recente.</string>
 </resources>

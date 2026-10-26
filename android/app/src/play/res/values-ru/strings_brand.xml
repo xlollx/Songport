@@ -47,4 +47,5 @@
     <string name="share_sheet_unknown">Trackhop не смог прочитать название этого трека. Найдите его вручную ниже.</string>
     <string name="settings_music_links">Предлагать Trackhop для музыкальных ссылок</string>
     <string name="settings_music_links_desc">Ссылка Spotify, Apple Music, YouTube Music, Amazon Music, Deezer или TIDAL сможет открываться в Trackhop, который добавит трек в плейлист в любом из ваших сервисов. Android по-прежнему спрашивает, какое приложение использовать, или использует заданное в настройках ссылок: Trackhop никогда не перехватывает ссылку сам.</string>
+    <string name="settings_dynamic_color_desc">Цвета ваших обоев вместо цветов Trackhop. Заголовок сохраняет фирменные цвета.</string>
 </resources>

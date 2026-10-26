@@ -8,7 +8,9 @@
     <!-- Schermata di avvio: sfondo del brand e marchio al centro, poi passa al tema normale. -->
     <style name="Theme.Songport.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <!-- The mark with its ring turning once (Android 12+ plays it; older phones show it still). -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_animated</item>
+        <item name="windowSplashScreenAnimationDuration">700</item>
         <item name="postSplashScreenTheme">@style/Theme.Songport</item>
     </style>
 </resources>

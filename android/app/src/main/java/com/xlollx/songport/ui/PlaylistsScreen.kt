@@ -2,7 +2,6 @@ package com.xlollx.songport.ui
 
 import com.xlollx.songport.providers.*
 import android.net.Uri
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -98,7 +97,7 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
         PlaylistTracksScreen(provider, pl, onClose = { viewing = null }, onChanged = { version++ })
         return
     }
-    BackHandler { onClose() }
+    ScreenBackHandler(onClose)
 
     LaunchedEffect(version) {
         lists = null; error = null

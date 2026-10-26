@@ -34,7 +34,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -89,32 +91,24 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         SectionCard(stringResource(R.string.settings_section_general)) {
-            SettingRow(stringResource(R.string.settings_log), stringResource(R.string.settings_log_desc)) {
+            SettingRow(stringResource(R.string.settings_log), stringResource(R.string.settings_log_desc), onClick = onOpenLog) {
                 TextButton(onClick = onOpenLog) { Text(stringResource(R.string.settings_open)) }
             }
-            SettingRow(stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_desc)) {
-                Switch(checked = data.settings.notifyOnSync, onCheckedChange = { v -> store.updateSettings { it.copy(notifyOnSync = v) } })
-            }
-            SettingRow(stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_desc)) {
-                Switch(checked = data.settings.isrcLookup, onCheckedChange = { v -> store.updateSettings { it.copy(isrcLookup = v) } })
-            }
+            SwitchRow(stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_desc), data.settings.notifyOnSync) { v -> store.updateSettings { it.copy(notifyOnSync = v) } }
+            SwitchRow(stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_desc), data.settings.isrcLookup) { v -> store.updateSettings { it.copy(isrcLookup = v) } }
             // The link alias lives in the package manager, not in the store: read it from there.
             var musicLinks by remember { mutableStateOf(MusicLinks.enabled(ctx)) }
-            SettingRow(stringResource(R.string.settings_music_links), stringResource(R.string.settings_music_links_desc)) {
-                Switch(checked = musicLinks, onCheckedChange = { v -> MusicLinks.set(ctx, v); musicLinks = v })
-            }
-            SettingRow(stringResource(R.string.security_lock), stringResource(R.string.security_lock_desc)) {
-                Switch(checked = data.settings.appLock, onCheckedChange = { v ->
-                    if (v && !LockActivity.available(ctx)) {
-                        scope.launch { snackbar.showSnackbar(ctx.getString(R.string.security_lock_unavailable)) }
-                    } else {
-                        store.updateSettings { it.copy(appLock = v) }
-            }
-                })
+            SwitchRow(stringResource(R.string.settings_music_links), stringResource(R.string.settings_music_links_desc), musicLinks) { v -> MusicLinks.set(ctx, v); musicLinks = v }
+            SwitchRow(stringResource(R.string.security_lock), stringResource(R.string.security_lock_desc), data.settings.appLock) { v ->
+                if (v && !LockActivity.available(ctx)) {
+                    scope.launch { snackbar.showSnackbar(ctx.getString(R.string.security_lock_unavailable)) }
+                } else {
+                    store.updateSettings { it.copy(appLock = v) }
+                }
             }
             // Chosen in-app and applied at once (the activity is recreated), also while a sync runs.
             var langOpen by remember { mutableStateOf(false) }
-            SettingRow(stringResource(R.string.settings_language), AppLocale.label(ctx, AppLocale.current(ctx))) {
+            SettingRow(stringResource(R.string.settings_language), AppLocale.label(ctx, AppLocale.current(ctx)), onClick = { langOpen = true }) {
                 TextButton(onClick = { langOpen = true }) { Text(stringResource(R.string.settings_language_open)) }
             }
             if (langOpen) AlertDialog(
@@ -136,6 +130,29 @@ fun SettingsScreen(
             )
         }
 
+        // How the app looks: light or dark, and the phone's own colours instead of the brand's.
+        SectionCard(stringResource(R.string.settings_section_appearance)) {
+            Text(stringResource(R.string.settings_theme), style = MaterialTheme.typography.bodyLarge)
+            val mode = ThemeMode.of(data.settings.themeMode)
+            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                ThemeMode.entries.forEachIndexed { i, m ->
+                    SegmentedButton(
+                        selected = mode == m,
+                        onClick = { store.updateSettings { it.copy(themeMode = m.name) } },
+                        shape = SegmentedButtonDefaults.itemShape(i, ThemeMode.entries.size),
+                        label = {
+                            Text(stringResource(when (m) { ThemeMode.SYSTEM -> R.string.settings_theme_system; ThemeMode.LIGHT -> R.string.settings_theme_light; ThemeMode.DARK -> R.string.settings_theme_dark }), maxLines = 1)
+                        },
+                    )
+                }
+            }
+            SwitchRow(
+                stringResource(R.string.settings_dynamic_color),
+                stringResource(if (dynamicColorAvailable) R.string.settings_dynamic_color_desc else R.string.settings_dynamic_color_unavailable),
+                data.settings.dynamicColor && dynamicColorAvailable, enabled = dynamicColorAvailable,
+            ) { v -> store.updateSettings { it.copy(dynamicColor = v) } }
+        }
+
         SectionCard(stringResource(R.string.backup_folder_title)) {
             // Where the dated backups also go, outside the phone: SD card, Nextcloud, Drive, any folder app.
             val folder = data.settings.backupFolder
@@ -150,6 +167,7 @@ fun SettingsScreen(
             SettingRow(
                 if (folder.isBlank()) stringResource(R.string.backup_folder_none) else com.xlollx.songport.sync.BackupExport.folderLabel(folder),
                 stringResource(R.string.backup_folder_hint),
+                onClick = { pickFolder.launch(null) },
             ) {
                 TextButton(onClick = { pickFolder.launch(null) }) { Text(stringResource(if (folder.isBlank()) R.string.backup_folder_pick else R.string.settings_language_open)) }
             }
@@ -193,7 +211,7 @@ fun SettingsScreen(
             var aiConfig by remember { mutableStateOf(com.xlollx.songport.ai.AiClient.config(ctx)) }
             var aiOpen by remember { mutableStateOf(false) }
             if (aiOpen) AiSetupDialog(aiConfig, onDismiss = { aiOpen = false }) { aiConfig = it; aiOpen = false }
-            SettingRow(aiConfig?.let { "${it.vendor.label} · ${it.model}" } ?: stringResource(R.string.not_configured), stringResource(R.string.settings_ai_desc)) {
+            SettingRow(aiConfig?.let { "${it.vendor.label} · ${it.model}" } ?: stringResource(R.string.not_configured), stringResource(R.string.settings_ai_desc), onClick = { aiOpen = true }) {
                 TextButton(onClick = { aiOpen = true }) { Text(stringResource(if (aiConfig == null) R.string.ai_setup else R.string.ai_setup_change)) }
             }
         }
@@ -263,9 +281,7 @@ fun SettingsScreen(
         }
 
         SectionCard(stringResource(R.string.settings_developer)) {
-            SettingRow(stringResource(R.string.settings_developer_switch), stringResource(R.string.settings_developer_desc)) {
-                Switch(checked = data.settings.developerOptions, onCheckedChange = { v -> store.updateSettings { it.copy(developerOptions = v) } })
-            }
+            SwitchRow(stringResource(R.string.settings_developer_switch), stringResource(R.string.settings_developer_desc), data.settings.developerOptions) { v -> store.updateSettings { it.copy(developerOptions = v) } }
             if (data.settings.developerOptions) {
             // "Nothing leaves your phone except…" made checkable: the hosts this app has talked to.
             var connectionsOpen by remember { mutableStateOf(false) }
@@ -312,17 +328,5 @@ fun SettingsScreen(
             TextButton(onClick = { store.updateSettings { it.copy(onboardingDone = false) } }) { Text(stringResource(R.string.settings_show_onboarding)) }
         }
         Spacer(Modifier.height(24.dp))
-    }
-}
-
-@Composable
-private fun SettingRow(title: String, desc: String, control: @Composable () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge)
-            Text(desc, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        Spacer(Modifier.width(12.dp))
-        control()
     }
 }

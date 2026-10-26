@@ -769,4 +769,14 @@
         <item quantity="one">%1$d Titel</item>
         <item quantity="other">%1$d Titel</item>
     </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Darstellung</string>
+    <string name="settings_theme">Design</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Hell</string>
+    <string name="settings_theme_dark">Dunkel</string>
+    <string name="settings_dynamic_color">Dynamische Farben (Material You)</string>
+    <string name="settings_dynamic_color_desc">Die Farben deines Hintergrunds statt der von Songport. Der Titelbereich behält die Markenfarben.</string>
+    <string name="settings_dynamic_color_unavailable">Erfordert Android 12 oder neuer.</string>
 </resources>

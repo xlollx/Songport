@@ -338,7 +338,7 @@ private fun ProviderCard(
             }
             if (p.usesOwnCredentials(ctx)) {
                 Spacer(Modifier.height(6.dp))
-                Text(stringResource(R.string.setup_using_own), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                Text(stringResource(R.string.setup_using_own), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else if (!configured && !connected) {
                 Spacer(Modifier.height(6.dp))
                 Text(stringResource(p.notConfiguredRes ?: R.string.not_configured_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
@@ -346,11 +346,11 @@ private fun ProviderCard(
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 if (connected) {
-                    Icon(Icons.Filled.Lock, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Filled.Lock, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(14.dp))
                     Spacer(Modifier.width(4.dp))
                     Text(
                         stringResource(R.string.account_encrypted), style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f),
                     )
                 } else Spacer(Modifier.weight(1f))
                 var testing by remember { mutableStateOf(false) }

@@ -47,4 +47,5 @@
     <string name="share_sheet_unknown">O Trackhop não conseguiu ler o título desta faixa. Procure-a manualmente abaixo.</string>
     <string name="settings_music_links">Oferecer o Trackhop para links de música</string>
     <string name="settings_music_links_desc">Um link do Spotify, Apple Music, YouTube Music, Amazon Music, Deezer ou TIDAL poderá abrir no Trackhop, que adiciona a faixa a uma playlist em qualquer um dos seus serviços. O Android continua perguntando qual app usar, ou mantém o definido nas configurações de links: o Trackhop nunca toma um link sozinho.</string>
+    <string name="settings_dynamic_color_desc">As cores do seu papel de parede no lugar das do Trackhop. O painel do título mantém as cores da marca.</string>
 </resources>

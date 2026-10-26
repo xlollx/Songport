@@ -760,4 +760,14 @@
     <plurals name="card_tracks">
         <item quantity="other">%1$d 曲</item>
     </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">外観</string>
+    <string name="settings_theme">テーマ</string>
+    <string name="settings_theme_system">システム</string>
+    <string name="settings_theme_light">ライト</string>
+    <string name="settings_theme_dark">ダーク</string>
+    <string name="settings_dynamic_color">ダイナミックカラー（Material You）</string>
+    <string name="settings_dynamic_color_desc">Songport の配色ではなく、壁紙の色を使います。タイトルのバナーはブランドカラーのままです。</string>
+    <string name="settings_dynamic_color_unavailable">Android 12 以降が必要です。</string>
 </resources>

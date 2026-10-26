@@ -54,7 +54,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
             Box(
                 Modifier.fillMaxWidth()
-                    .background(Brush.linearGradient(listOf(Brand.Indigo, Brand.Violet, Brand.Magenta)))
+                    .background(Brush.linearGradient(listOf(Brand.Indigo, Brand.Violet, Brand.MagentaDeep)))
                     .statusBarsPadding()
                     .padding(horizontal = 24.dp, vertical = 32.dp),
             ) {
@@ -63,7 +63,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     Spacer(Modifier.height(16.dp))
                     Text(stringResource(R.string.onboarding_title), style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(8.dp))
-                    Text(stringResource(R.string.onboarding_intro), style = MaterialTheme.typography.bodyLarge, color = Color.White.copy(alpha = 0.9f))
+                    Text(stringResource(R.string.onboarding_intro), style = MaterialTheme.typography.bodyLarge, color = Color.White)
                 }
             }
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -73,7 +73,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
 
                 SectionCard(stringResource(R.string.security_title)) {
                     Row(verticalAlignment = Alignment.Top) {
-                        Icon(Icons.Filled.Lock, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
+                        Icon(Icons.Filled.Lock, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
                         Spacer(Modifier.width(12.dp))
                         Text(stringResource(R.string.onboarding_security), style = MaterialTheme.typography.bodyMedium)
                     }
