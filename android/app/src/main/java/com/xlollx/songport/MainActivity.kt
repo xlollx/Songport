@@ -211,6 +211,8 @@ private fun MainScreen(
     var manageProvider by remember { mutableStateOf<MusicProvider?>(null) }
     var scanProvider by remember { mutableStateOf<MusicProvider?>(null) }
     var previewJob by remember { mutableStateOf<SyncJob?>(null) }
+    // Two playlist links shared at once: "how compatible are we?" in Tools.
+    var compareLinks by remember { mutableStateOf<Pair<String, String>?>(null) }
     var addConnector by remember { mutableStateOf(false) }
     // A single track shared from a service's app: which of your playlists it goes to.
     var sharedTrack by remember { mutableStateOf<Pair<MusicProvider, com.xlollx.songport.model.Track>?>(null) }
@@ -225,6 +227,8 @@ private fun MainScreen(
     LaunchedEffect(shared) {
         val text = shared ?: return@LaunchedEffect
         sharedText.value = null
+        val links = Regex("""https?://\S+|spotify:playlist:\S+""").findAll(text).map { it.value }.filter { PlaylistLinks.parse(it) != null }.distinct().toList()
+        if (links.size >= 2) { compareLinks = links[0] to links[1]; tab = MainActivity.TAB_TOOLS; return@LaunchedEffect }
         val ref = PlaylistLinks.parse(text)
         val setlist = com.xlollx.songport.sync.SetlistImport.linkIn(text)
         val trackRef = if (ref == null && setlist == null) com.xlollx.songport.sync.TrackLinks.parse(text) else null
@@ -424,7 +428,7 @@ private fun MainScreen(
                     onReview = { unmatchedReport = it },
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
-                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it })
+                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, compareLinks = compareLinks)
                 else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
             }
             }

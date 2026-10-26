@@ -29,6 +29,8 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -93,6 +95,8 @@ private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVecto
     BACKUP(Icons.Filled.Backup, R.string.tools_backup_title, R.string.tools_backup_row_desc, true),
     DEDUPE(Icons.Filled.CleaningServices, R.string.tools_dedupe_title, R.string.tools_dedupe_desc, true),
     SCAN(Icons.Filled.ContentCopy, R.string.tools_scan_title, R.string.tools_scan_desc, true),
+    COMPAT(Icons.Filled.Favorite, R.string.tools_compat_title, R.string.tools_compat_desc, false),
+    POSTER(Icons.Filled.QrCode2, R.string.tools_poster_title, R.string.tools_poster_desc, false),
 }
 
 /**
@@ -101,12 +105,14 @@ private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVecto
  */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}) {
+fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
     val provider = connected.firstOrNull { it.id == selectedId } ?: connected.firstOrNull()
     var open by remember { mutableStateOf<Tool?>(null) }
+    // Two playlist links shared together open the comparison straight away.
+    LaunchedEffect(compareLinks) { if (compareLinks != null) open = Tool.COMPAT }
 
     val current = open
     if (current != null) {
@@ -137,6 +143,8 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
                     Tool.MAKE -> provider?.let { MakePlaylistCard(it, local) }
                     Tool.BACKUP -> provider?.let { BackupCard(it, local) }
                     Tool.DEDUPE -> provider?.let { DedupeCard(it, local) }
+                    Tool.COMPAT -> CompatibilityCard(local, compareLinks)
+                    Tool.POSTER -> PosterCard(local)
                     else -> {}
                 }
             }
@@ -147,6 +155,8 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
     Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + LocalBottomBarInset.current).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         ToolRow(Tool.FILES) { open = Tool.FILES }
         ToolRow(Tool.AI, beta = true) { open = Tool.AI }
+        ToolRow(Tool.COMPAT) { open = Tool.COMPAT }
+        ToolRow(Tool.POSTER) { open = Tool.POSTER }
         Spacer(Modifier.height(8.dp))
         if (provider == null) {
             Text(stringResource(R.string.empty_tools_title), style = MaterialTheme.typography.titleMedium)

@@ -756,4 +756,35 @@
     <string name="share_sheet_change">Изменить</string>
     <string name="settings_music_links">Предлагать Songport для музыкальных ссылок</string>
     <string name="settings_music_links_desc">Ссылка Spotify, Apple Music, YouTube Music, Amazon Music, Deezer или TIDAL сможет открываться в Songport, который добавит трек в плейлист в любом из ваших сервисов. Android по-прежнему спрашивает, какое приложение использовать, или использует заданное в настройках ссылок: Songport никогда не перехватывает ссылку сам.</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">Насколько мы совпадаем?</string>
+    <string name="tools_compat_desc">Сравнивает два плейлиста, даже из разных сервисов: общие треки, общие исполнители, оценка и карточка, которой можно поделиться.</string>
+    <string name="tools_poster_title">Постер плейлиста</string>
+    <string name="tools_poster_desc">Карточка с обложками, названием, цифрами и QR-кодом, открывающим плейлист. Для вечеринки, концерта, стены.</string>
+    <string name="card_compat_eyebrow">Насколько мы совпадаем?</string>
+    <string name="card_compat_subtitle">%1$d общих треков · %2$d общих исполнителей</string>
+    <string name="card_compat_artists">Вы оба слушаете</string>
+    <string name="card_poster_scan">Отсканируйте, чтобы открыть в %1$s</string>
+    <string name="card_unnamed_playlist">Плейлист</string>
+    <string name="card_source_link">Ссылка</string>
+    <string name="card_source_link_hint">Ссылка на публичный плейлист</string>
+    <string name="card_format_story">История</string>
+    <string name="card_format_square">Квадрат</string>
+    <string name="card_share">Поделиться</string>
+    <string name="card_save">Сохранить изображение</string>
+    <string name="card_compat_first">Первый плейлист</string>
+    <string name="card_compat_second">Второй плейлист</string>
+    <string name="card_compat_common_pct">%1$d%% меньшего плейлиста есть и в другом</string>
+    <string name="card_compat_in_common">Общее</string>
+    <string name="card_compat_for">Для «%1$s»</string>
+    <string name="card_compat_run">Сравнить</string>
+    <string name="card_again">Сделать карточку заново</string>
+    <string name="card_poster_no_qr">У этого сервиса нет публичной страницы плейлиста: постер без QR-кода.</string>
+    <string name="card_poster_run">Создать постер</string>
+    <plurals name="card_tracks">
+        <item quantity="one">%1$d трек</item>
+        <item quantity="few">%1$d трека</item>
+        <item quantity="many">%1$d треков</item>
+        <item quantity="other">%1$d треков</item>
+    </plurals>
 </resources>

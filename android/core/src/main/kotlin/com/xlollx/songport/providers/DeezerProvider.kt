@@ -90,9 +90,11 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
 
     /** Chiamata Deezer: token come parametro di query; gli errori arrivano come JSON `error` con HTTP 200. */
     private suspend fun dz(ctx: Env, method: String, path: String, params: Map<String, String?> = emptyMap(), allowNoData: Boolean = false): JsonElement {
-        val t = tokens(ctx)
-        val url = if (path.startsWith("http")) path + (if ('?' in path) "&" else "?") + "access_token=${Http.enc(t.accessToken)}"
-        else "$API$path?" + Http.query(params + ("access_token" to t.accessToken))
+        // Public playlists are readable without an account (the same requests deezer.com makes for
+        // a visitor): a GET goes out without a token when none is stored. Anything else needs it.
+        val t = if (method == "GET" && ctx.tokens.get(id) == null) null else tokens(ctx)
+        val url = if (path.startsWith("http")) path + (t?.let { (if ('?' in path) "&" else "?") + "access_token=${Http.enc(it.accessToken)}" } ?: "")
+        else "$API$path?" + Http.query(if (t == null) params else params + ("access_token" to t.accessToken))
         val resp = Http.send(method, url, mapOf("Accept" to "application/json"))
         if (!resp.ok) throw ProviderException("Deezer API ${resp.code}: ${resp.body.take(200)}")
         val j = parseJson(resp.body)
@@ -140,6 +142,9 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
             explicit = t["explicit_lyrics"].bool,
         )
     }
+
+    /** A public playlist is readable from its link with no account; the library slots need one. */
+    override fun canRead(ctx: Env, playlistId: String): Boolean = isConnected(ctx) || !MusicProvider.isLibrary(playlistId)
 
     override suspend fun playlistInfo(ctx: Env, playlistId: String): Playlist {
         val j = dz(ctx, "GET", "/playlist/$playlistId")

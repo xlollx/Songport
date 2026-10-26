@@ -732,4 +732,32 @@
     <string name="share_sheet_change">変更</string>
     <string name="settings_music_links">音楽リンクで Songport を候補に出す</string>
     <string name="settings_music_links_desc">Spotify、Apple Music、YouTube Music、Amazon Music、Deezer、TIDAL のリンクを Songport で開けるようになり、どのサービスのプレイリストにも曲を追加できます。使うアプリは引き続き Android が尋ねるか、リンク設定で決めたアプリが使われます。Songport がリンクを勝手に奪うことはありません。</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">どれくらい気が合う？</string>
+    <string name="tools_compat_desc">2 つのプレイリストを比較します。サービスが違っても構いません。共通の曲、共通のアーティスト、スコア、共有できるカード。</string>
+    <string name="tools_poster_title">プレイリストのポスター</string>
+    <string name="tools_poster_desc">ジャケット、タイトル、曲数、そしてプレイリストを開く QR コードが入ったカード。パーティー、ライブ、壁に。</string>
+    <string name="card_compat_eyebrow">どれくらい気が合う？</string>
+    <string name="card_compat_subtitle">共通の曲 %1$d · 共通のアーティスト %2$d</string>
+    <string name="card_compat_artists">ふたりとも聴いている</string>
+    <string name="card_poster_scan">スキャンして %1$s で開く</string>
+    <string name="card_unnamed_playlist">プレイリスト</string>
+    <string name="card_source_link">リンク</string>
+    <string name="card_source_link_hint">公開プレイリストのリンク</string>
+    <string name="card_format_story">ストーリー</string>
+    <string name="card_format_square">正方形</string>
+    <string name="card_share">共有</string>
+    <string name="card_save">画像を保存</string>
+    <string name="card_compat_first">1 つ目のプレイリスト</string>
+    <string name="card_compat_second">2 つ目のプレイリスト</string>
+    <string name="card_compat_common_pct">短い方のプレイリストの %1$d%% がもう一方にも入っています</string>
+    <string name="card_compat_in_common">共通</string>
+    <string name="card_compat_for">「%1$s」へ</string>
+    <string name="card_compat_run">比較</string>
+    <string name="card_again">カードを作り直す</string>
+    <string name="card_poster_no_qr">このサービスにはプレイリストの公開ページがないため、ポスターに QR コードはありません。</string>
+    <string name="card_poster_run">ポスターを作る</string>
+    <plurals name="card_tracks">
+        <item quantity="other">%1$d 曲</item>
+    </plurals>
 </resources>

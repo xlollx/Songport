@@ -741,4 +741,33 @@
     <string name="share_sheet_change">Change</string>
     <string name="settings_music_links">Offer Songport for music links</string>
     <string name="settings_music_links_desc">A Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link can then open in Songport, which adds the track to a playlist on any of your services. Android still asks which app to use, or keeps the one set in its link settings: Songport never takes a link by itself.</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">How compatible are we?</string>
+    <string name="tools_compat_desc">Compare two playlists, from any services: tracks in common, shared artists, a score and a card to share.</string>
+    <string name="tools_poster_title">Playlist poster</string>
+    <string name="tools_poster_desc">A card with the covers, the title, the numbers and a QR code that opens the playlist. For a party, a concert, a wall.</string>
+    <string name="card_compat_eyebrow">How compatible are we?</string>
+    <string name="card_compat_subtitle">%1$d tracks in common · %2$d shared artists</string>
+    <string name="card_compat_artists">Both of you listen to</string>
+    <string name="card_poster_scan">Scan to open on %1$s</string>
+    <string name="card_unnamed_playlist">Playlist</string>
+    <string name="card_source_link">Link</string>
+    <string name="card_source_link_hint">Public playlist link</string>
+    <string name="card_format_story">Story</string>
+    <string name="card_format_square">Square</string>
+    <string name="card_share">Share</string>
+    <string name="card_save">Save image</string>
+    <string name="card_compat_first">First playlist</string>
+    <string name="card_compat_second">Second playlist</string>
+    <string name="card_compat_common_pct">%1$d%% of the smaller playlist is in the other one</string>
+    <string name="card_compat_in_common">In common</string>
+    <string name="card_compat_for">For “%1$s”</string>
+    <string name="card_compat_run">Compare</string>
+    <string name="card_again">Make the card again</string>
+    <string name="card_poster_no_qr">This service has no public page for the playlist: the poster has no QR code.</string>
+    <string name="card_poster_run">Make the poster</string>
+    <plurals name="card_tracks">
+        <item quantity="one">%1$d track</item>
+        <item quantity="other">%1$d tracks</item>
+    </plurals>
 </resources>

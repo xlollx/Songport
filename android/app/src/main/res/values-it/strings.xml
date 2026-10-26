@@ -740,4 +740,33 @@
     <string name="share_sheet_change">Cambia</string>
     <string name="settings_music_links">Proponi Songport per i link musicali</string>
     <string name="settings_music_links_desc">Un link di Spotify, Apple Music, YouTube Music, Amazon Music, Deezer o TIDAL potrà aprirsi in Songport, che aggiunge il brano a una playlist su uno qualsiasi dei tuoi servizi. Android continua a chiederti quale app usare, o tiene quella impostata nelle sue impostazioni dei link: Songport non prende mai un link da solo.</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">Quanto siamo compatibili?</string>
+    <string name="tools_compat_desc">Confronta due playlist, anche di servizi diversi: brani in comune, artisti condivisi, un punteggio e una card da condividere.</string>
+    <string name="tools_poster_title">Poster della playlist</string>
+    <string name="tools_poster_desc">Una card con le copertine, il titolo, i numeri e un QR che apre la playlist. Per una festa, un concerto, una parete.</string>
+    <string name="card_compat_eyebrow">Quanto siamo compatibili?</string>
+    <string name="card_compat_subtitle">%1$d brani in comune · %2$d artisti condivisi</string>
+    <string name="card_compat_artists">Ascoltate entrambi</string>
+    <string name="card_poster_scan">Inquadra per aprire su %1$s</string>
+    <string name="card_unnamed_playlist">Playlist</string>
+    <string name="card_source_link">Link</string>
+    <string name="card_source_link_hint">Link di una playlist pubblica</string>
+    <string name="card_format_story">Storia</string>
+    <string name="card_format_square">Quadrata</string>
+    <string name="card_share">Condividi</string>
+    <string name="card_save">Salva immagine</string>
+    <string name="card_compat_first">Prima playlist</string>
+    <string name="card_compat_second">Seconda playlist</string>
+    <string name="card_compat_common_pct">Il %1$d%% della playlist più corta è anche nell’altra</string>
+    <string name="card_compat_in_common">In comune</string>
+    <string name="card_compat_for">Per “%1$s”</string>
+    <string name="card_compat_run">Confronta</string>
+    <string name="card_again">Rifai la card</string>
+    <string name="card_poster_no_qr">Questo servizio non ha una pagina pubblica per la playlist: il poster è senza QR.</string>
+    <string name="card_poster_run">Crea il poster</string>
+    <plurals name="card_tracks">
+        <item quantity="one">%1$d brano</item>
+        <item quantity="other">%1$d brani</item>
+    </plurals>
 </resources>

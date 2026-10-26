@@ -732,4 +732,32 @@
     <string name="share_sheet_change">更改</string>
     <string name="settings_music_links">为音乐链接提供 Songport</string>
     <string name="settings_music_links_desc">Spotify、Apple Music、YouTube Music、Amazon Music、Deezer 或 TIDAL 的链接将可以在 Songport 中打开，并把歌曲添加到你任一服务的播放列表。Android 仍会询问使用哪个应用，或沿用其链接设置中指定的应用：Songport 绝不会自行接管链接。</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">我们有多合拍？</string>
+    <string name="tools_compat_desc">比较两个播放列表，即使来自不同服务：共同的歌曲、共同的艺人、一个分数和一张可分享的卡片。</string>
+    <string name="tools_poster_title">播放列表海报</string>
+    <string name="tools_poster_desc">一张带封面、标题、数字和打开播放列表的二维码的卡片。用于派对、演出、墙面。</string>
+    <string name="card_compat_eyebrow">我们有多合拍？</string>
+    <string name="card_compat_subtitle">%1$d 首共同歌曲 · %2$d 位共同艺人</string>
+    <string name="card_compat_artists">你们都在听</string>
+    <string name="card_poster_scan">扫码在 %1$s 打开</string>
+    <string name="card_unnamed_playlist">播放列表</string>
+    <string name="card_source_link">链接</string>
+    <string name="card_source_link_hint">公开播放列表链接</string>
+    <string name="card_format_story">故事</string>
+    <string name="card_format_square">方形</string>
+    <string name="card_share">分享</string>
+    <string name="card_save">保存图片</string>
+    <string name="card_compat_first">第一个播放列表</string>
+    <string name="card_compat_second">第二个播放列表</string>
+    <string name="card_compat_common_pct">较短播放列表中有 %1$d%% 也在另一个里</string>
+    <string name="card_compat_in_common">共同</string>
+    <string name="card_compat_for">给“%1$s”</string>
+    <string name="card_compat_run">比较</string>
+    <string name="card_again">重新生成卡片</string>
+    <string name="card_poster_no_qr">该服务没有播放列表的公开页面：海报上没有二维码。</string>
+    <string name="card_poster_run">生成海报</string>
+    <plurals name="card_tracks">
+        <item quantity="other">%1$d 首歌曲</item>
+    </plurals>
 </resources>

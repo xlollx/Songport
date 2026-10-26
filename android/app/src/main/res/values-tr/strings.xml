@@ -738,4 +738,33 @@
     <string name="share_sheet_change">Değiştir</string>
     <string name="settings_music_links">Müzik bağlantıları için Songport\'u öner</string>
     <string name="settings_music_links_desc">Bir Spotify, Apple Music, YouTube Music, Amazon Music, Deezer veya TIDAL bağlantısı Songport\'ta açılabilir; Songport parçayı servislerinden herhangi birindeki bir çalma listesine ekler. Android yine hangi uygulamanın kullanılacağını sorar ya da bağlantı ayarlarında seçileni kullanır: Songport bir bağlantıyı asla kendiliğinden almaz.</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">Ne kadar uyumluyuz?</string>
+    <string name="tools_compat_desc">Farklı servislerden bile olsa iki çalma listesini karşılaştırır: ortak parçalar, ortak sanatçılar, bir puan ve paylaşılacak bir kart.</string>
+    <string name="tools_poster_title">Çalma listesi posteri</string>
+    <string name="tools_poster_desc">Kapaklar, başlık, sayılar ve listeyi açan bir QR kodla bir kart. Bir parti, bir konser, bir duvar için.</string>
+    <string name="card_compat_eyebrow">Ne kadar uyumluyuz?</string>
+    <string name="card_compat_subtitle">%1$d ortak parça · %2$d ortak sanatçı</string>
+    <string name="card_compat_artists">İkiniz de dinliyorsunuz</string>
+    <string name="card_poster_scan">%1$s üzerinde açmak için tara</string>
+    <string name="card_unnamed_playlist">Çalma listesi</string>
+    <string name="card_source_link">Bağlantı</string>
+    <string name="card_source_link_hint">Herkese açık çalma listesi bağlantısı</string>
+    <string name="card_format_story">Hikâye</string>
+    <string name="card_format_square">Kare</string>
+    <string name="card_share">Paylaş</string>
+    <string name="card_save">Görseli kaydet</string>
+    <string name="card_compat_first">Birinci çalma listesi</string>
+    <string name="card_compat_second">İkinci çalma listesi</string>
+    <string name="card_compat_common_pct">Kısa listenin %%%1$d’si diğerinde de var</string>
+    <string name="card_compat_in_common">Ortak</string>
+    <string name="card_compat_for">“%1$s” için</string>
+    <string name="card_compat_run">Karşılaştır</string>
+    <string name="card_again">Kartı yeniden yap</string>
+    <string name="card_poster_no_qr">Bu servisin çalma listesi için herkese açık bir sayfası yok: posterde QR kod yok.</string>
+    <string name="card_poster_run">Posteri oluştur</string>
+    <plurals name="card_tracks">
+        <item quantity="one">%1$d parça</item>
+        <item quantity="other">%1$d parça</item>
+    </plurals>
 </resources>
