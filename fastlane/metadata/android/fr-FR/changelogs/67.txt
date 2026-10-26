@@ -1,0 +1,1 @@
+Nouvel outil, Titres illisibles : trouve les titres grisés de vos playlists (retirés du catalogue, indisponibles dans votre pays, vidéos privées ou supprimées) et propose une version lisible, à confirmer avant tout changement ; annulation possible. Spotify, Deezer, TIDAL, YouTube, YouTube Music et Apple Music. Vérification hebdomadaire facultative avec notification.

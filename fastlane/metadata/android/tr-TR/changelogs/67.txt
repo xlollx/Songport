@@ -1,0 +1,1 @@
+Yeni araç, Çalınamayan parçalar: çalma listelerindeki gri parçaları (katalogdan kaldırılmış, ülkende kullanılamayan, gizli veya silinmiş videolar) bulur ve çalan bir sürüm önerir; değişiklikten önce onay ve geri alma var. Spotify, Deezer, TIDAL, YouTube, YouTube Music ve Apple Music. İsteğe bağlı haftalık kontrol ve bildirim.
