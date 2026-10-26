@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.activity.compose.BackHandler
@@ -119,16 +120,24 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
         // The tool's own page: its card, full width, with a snackbar of its own (the tab's is behind us).
         val local = remember { SnackbarHostState() }
         BackHandler { open = null }
+        // Nested in the tab, under its header: the window insets are already taken (no second
+        // status-bar gap), and the end of the page clears the glass bottom bar.
         Scaffold(
             snackbarHost = { SnackbarHost(local) },
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             topBar = {
                 TopAppBar(
                     title = { Text(stringResource(current.titleRes)) },
                     navigationIcon = { IconButton(onClick = { open = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
+                    windowInsets = WindowInsets(0, 0, 0, 0),
                 )
             },
         ) { padding ->
-            Column(Modifier.padding(padding).padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                Modifier.padding(padding).verticalScroll(rememberScrollState())
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + LocalBottomBarInset.current),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 if (current.needsService && provider != null && connected.size > 1) {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         connected.forEach { p ->
