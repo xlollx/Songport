@@ -1,0 +1,1 @@
+Dwa nowe narzędzia do udostępniania: „Jak bardzo jesteśmy zgodni?” porównuje dwie playlisty, nawet z różnych serwisów, i daje wynik ze wspólnymi utworami i artystami jako obraz do relacji. „Plakat playlisty” tworzy kartę z okładkami i kodem QR otwierającym playlistę.
