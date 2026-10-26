@@ -1,0 +1,1 @@
+ La barra in basso in vetro ora sfoca il contenuto in tutte le schede, non solo in Sync.

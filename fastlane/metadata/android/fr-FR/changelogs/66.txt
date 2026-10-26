@@ -1,0 +1,1 @@
+Pochettes sur les cartes à partager : les titres YouTube Music affichent leur propre pochette et les autres services la cherchent dans le catalogue public de Deezer puis d'Apple ; l'affiche et la carte de compatibilité n'utilisent plus de tuiles vides.

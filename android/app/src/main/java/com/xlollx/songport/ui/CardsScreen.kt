@@ -225,7 +225,7 @@ fun CompatibilityCard(snackbar: SnackbarHostState, initialLinks: Pair<String, St
                 val r = withContext(Dispatchers.Default) { Compatibility.compare(ta, tb) }
                 result = r
                 val covers = withContext(Dispatchers.IO) {
-                    coroutineScope { r.common.take(5).map { c -> async { c.a.id to Cards.trackCover(c.a) } }.map { it.await() } }.toMap()
+                    coroutineScope { r.common.take(5).map { c -> async { c.a.id to Cards.trackCover(c.a, pa.provider.serviceId) } }.map { it.await() } }.toMap()
                 }
                 val card = Cards.CompatibilityCard(pa.playlist.name.ifBlank { ctx.getString(R.string.card_unnamed_playlist) }, pb.playlist.name.ifBlank { ctx.getString(R.string.card_unnamed_playlist) }, r, covers)
                 bitmaps = withContext(Dispatchers.Default) { Cards.Format.entries.associateWith { Cards.compatibility(ctx, card, it) } }
@@ -298,7 +298,7 @@ fun PosterCard(snackbar: SnackbarHostState) {
                 val info = if (p.playlist.trackCount >= 0 && p.playlist.name.isNotBlank()) p.playlist else runCatching { p.provider.playlistInfo(ctx, p.playlist.id) }.getOrDefault(p.playlist)
                 val covers: List<Bitmap?> = withContext(Dispatchers.IO) {
                     info.imageUrl?.let { url -> Cards.bitmap(url, 900)?.let { return@withContext listOf(it) } }
-                    coroutineScope { tracks.take(4).map { t -> async { Cards.trackCover(t) } }.map { it.await() } }
+                    coroutineScope { tracks.take(4).map { t -> async { Cards.trackCover(t, p.provider.serviceId) } }.map { it.await() } }
                 }
                 qr = qrUrl(ctx, p)
                 val card = Cards.PosterCard(

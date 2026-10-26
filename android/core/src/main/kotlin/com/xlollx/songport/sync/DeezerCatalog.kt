@@ -45,6 +45,33 @@ object DeezerCatalog {
         return cover(hit["album"])
     }
 
+    /** Thumbnails YouTube serves for any video id without an API call: 1280×720, else 320×180 (no bars). */
+    fun ownCover(id: String, serviceId: String): List<String> =
+        if ((serviceId == "youtube" || serviceId == "ytm") && Regex("[A-Za-z0-9_-]{11}").matches(id))
+            listOf("https://i.ytimg.com/vi/$id/hq720.jpg", "https://i.ytimg.com/vi/$id/mqdefault.jpg")
+        else emptyList()
+
+    /** The iTunes Search API (public, no key): artwork for the best matching song, at 600 px. */
+    suspend fun itunesCover(t: Track): String? {
+        val artist = t.artists.firstOrNull()?.let { Matcher.searchArtist(it) }.orEmpty()
+        val title = Matcher.searchTitle(t.title)
+        if (title.isBlank()) return null
+        val term = listOf(artist, title).filter { it.isNotBlank() }.joinToString(" ")
+        val resp = runCatching { Http.send("GET", "https://itunes.apple.com/search?entity=song&limit=8&term=" + Http.enc(term), maxRateLimitRetries = 0) }.getOrNull() ?: return null
+        if (!resp.ok) return null
+        val hits = parseJson(resp.body)["results"].arr
+        val candidates = hits.mapIndexedNotNull { i, d ->
+            Track(
+                id = i.toString(), title = d["trackName"].str ?: return@mapIndexedNotNull null,
+                artists = listOfNotNull(d["artistName"].str), album = d["collectionName"].str ?: "",
+                durationMs = d["trackTimeMillis"].long ?: 0,
+            )
+        }
+        val best = Matcher.bestScored(t, candidates, 0.0)?.takeIf { it.score >= 0.75 } ?: return null
+        val art = hits.getOrNull(best.track.id.toInt())?.get("artworkUrl100").str ?: return null
+        return art.replace("100x100bb", "600x600bb")
+    }
+
     private fun cover(album: kotlinx.serialization.json.JsonElement?): String? =
         album["cover_big"].str ?: album["cover_medium"].str ?: album["cover"].str
 }

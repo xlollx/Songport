@@ -76,8 +76,12 @@ object Cards {
         bmp
     }
 
-    /** A cover for [t] through Deezer's catalogue, or null. */
-    suspend fun trackCover(t: Track): Bitmap? = DeezerCatalog.coverUrl(t)?.let { bitmap(it, 400) }
+    /** A cover for [t]: the service's own picture when free (YouTube), else Deezer's or iTunes' catalogue; null when none loads. */
+    suspend fun trackCover(t: Track, serviceId: String): Bitmap? {
+        for (url in DeezerCatalog.ownCover(t.id, serviceId)) bitmap(url, 400)?.let { return it }
+        val found = DeezerCatalog.coverUrl(t) ?: DeezerCatalog.itunesCover(t) ?: return null
+        return bitmap(found, 400)
+    }
 
     // ------------------------------------------------------------------ drawing
 
