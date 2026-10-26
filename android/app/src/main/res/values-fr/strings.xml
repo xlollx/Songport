@@ -822,4 +822,17 @@
         <item quantity="one">%1$d titre de vos playlists ne peut plus être lu. Touchez pour le remplacer.</item>
         <item quantity="other">%1$d titres de vos playlists ne peuvent plus être lus. Touchez pour les remplacer.</item>
     </plurals>
+    <string name="services_group_streaming">Streaming</string>
+    <string name="services_group_servers">Votre serveur</string>
+    <string name="services_group_other">Autres</string>
+    <string name="settings_new_look">Nouveau look</string>
+    <string name="settings_new_look_desc">Cartes de synchro avec la dernière exécution en chiffres et l\'historique récent.</string>
+    <string name="stat_added">ajoutés</string>
+    <string name="stat_removed">retirés</string>
+    <string name="stat_not_found">introuvables</string>
+    <string name="stat_tracks">titres</string>
+    <plurals name="stat_history">
+        <item quantity="one">dernière %1$d exécution · %2$d échouées</item>
+        <item quantity="other">%1$d dernières exécutions · %2$d échouées</item>
+    </plurals>
 </resources>

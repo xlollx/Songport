@@ -823,4 +823,17 @@
         <item quantity="one">%1$d track in your playlists can no longer be played. Tap to replace it.</item>
         <item quantity="other">%1$d tracks in your playlists can no longer be played. Tap to replace them.</item>
     </plurals>
+    <string name="services_group_streaming">Streaming</string>
+    <string name="services_group_servers">Your server</string>
+    <string name="services_group_other">Other</string>
+    <string name="settings_new_look">New look</string>
+    <string name="settings_new_look_desc">Sync cards with the last run in numbers and the history of recent runs.</string>
+    <string name="stat_added">added</string>
+    <string name="stat_removed">removed</string>
+    <string name="stat_not_found">not found</string>
+    <string name="stat_tracks">tracks</string>
+    <plurals name="stat_history">
+        <item quantity="one">last %1$d run · %2$d failed</item>
+        <item quantity="other">last %1$d runs · %2$d failed</item>
+    </plurals>
 </resources>

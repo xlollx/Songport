@@ -1,5 +1,12 @@
 package com.xlollx.songport.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.semantics
+import com.xlollx.songport.model.SyncReport
 import com.xlollx.songport.providers.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -245,6 +252,9 @@ private fun JobCard(
                     }
                     IconButton(enabled = !stopping, modifier = Modifier.size(48.dp), onClick = { SyncState.stop(job.id) }) { Icon(Icons.Filled.Stop, stringResource(R.string.sync_stop)) }
                 }
+            } else if (report != null && data.settings.newLook && report.ok) {
+                Spacer(Modifier.height(14.dp))
+                RunStats(report, data.reports.filter { it.jobId == job.id && !it.partial }.sortedBy { it.startedEpoch }.takeLast(10))
             } else if (report != null) {
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -645,24 +655,15 @@ private fun ProviderPicker(
     onSelect: (String) -> Unit,
 ) {
     val ctx = LocalContext.current
-    // Le chip vanno a capo: con gli account multipli e i server personali possono essere molte.
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        available.forEach { p ->
-            FilterChip(
-                selected = p.id == selected && !linkSelected,
-                onClick = { onSelect(p.id) },
-                label = { Text(p.label(ctx)) },
-                leadingIcon = { ProviderDot(p) },
-            )
-        }
-        if (link) FilterChip(
-            selected = linkSelected,
-            onClick = onLink,
-            label = { Text(stringResource(R.string.editor_source_link)) },
-            leadingIcon = { Icon(Icons.Filled.Link, null, Modifier.size(18.dp)) },
-        )
-    }
+    // A row of tiles that scrolls: with several accounts and personal servers there can be many.
+    val linkLabel = stringResource(R.string.editor_source_link)
+    val tiles = available.map { ServiceTile(it.id, it.label(ctx), it) } +
+        (if (link) listOf(ServiceTile(LINK_KEY, linkLabel, icon = Icons.Filled.Link)) else emptyList())
+    ServiceTiles(tiles, if (linkSelected) LINK_KEY else selected, { key -> if (key == LINK_KEY) onLink() else onSelect(key) })
 }
+
+/** The "from a link" tile among the services. */
+private const val LINK_KEY = "link:"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -826,5 +827,50 @@ private fun SupportCard(report: com.xlollx.songport.model.SyncReport) {
                 }
             }
         }
+    }
+}
+
+/**
+ * The last run in numbers: added, removed, not found, and the playlist's size, large enough to
+ * read at a glance; under them the last runs as a strip of marks (filled: ok, red: failed), oldest
+ * on the left, so a sync that keeps failing shows before anyone opens the log.
+ */
+@Composable
+private fun RunStats(r: SyncReport, history: List<SyncReport>) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Stat("+${r.added}", stringResource(R.string.stat_added), Modifier.weight(1f), MaterialTheme.colorScheme.primary)
+        Stat("−${r.removed}", stringResource(R.string.stat_removed), Modifier.weight(1f))
+        Stat("${r.unmatched.size}", stringResource(R.string.stat_not_found), Modifier.weight(1f), if (r.unmatched.isNotEmpty()) MaterialTheme.colorScheme.tertiary else null)
+        Stat("${r.sourceCount}", stringResource(R.string.stat_tracks), Modifier.weight(1f))
+    }
+    if (history.size >= 2) {
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.semantics(mergeDescendants = true) {}) {
+            history.forEach { h ->
+                Box(
+                    Modifier.size(width = 14.dp, height = 6.dp).clip(RoundedCornerShape(3.dp)).background(
+                        if (h.ok) MaterialTheme.colorScheme.primary.copy(alpha = if (h.added + h.removed > 0) 1f else 0.4f)
+                        else MaterialTheme.colorScheme.error,
+                    ),
+                )
+            }
+            Spacer(Modifier.width(6.dp))
+            Text(
+                pluralStringResource(R.plurals.stat_history, history.size, history.size, history.count { !it.ok }),
+                style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun Stat(value: String, label: String, modifier: Modifier, tint: Color? = null) {
+    Column(
+        modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(vertical = 10.dp, horizontal = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(value, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = tint ?: MaterialTheme.colorScheme.onSurface, maxLines = 1)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }

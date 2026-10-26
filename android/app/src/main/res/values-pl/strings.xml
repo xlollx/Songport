@@ -842,4 +842,19 @@
         <item quantity="one">%1$d utwór z twoich playlist nie daje się już odtworzyć. Dotknij, aby go zastąpić.</item>
         <item quantity="other">%1$d utworów z twoich playlist nie daje się już odtworzyć. Dotknij, aby je zastąpić.</item>
     </plurals>
+    <string name="services_group_streaming">Streaming</string>
+    <string name="services_group_servers">Twój serwer</string>
+    <string name="services_group_other">Inne</string>
+    <string name="settings_new_look">Nowy wygląd</string>
+    <string name="settings_new_look_desc">Karty synchronizacji z ostatnim uruchomieniem w liczbach i historią ostatnich uruchomień.</string>
+    <string name="stat_added">dodane</string>
+    <string name="stat_removed">usunięte</string>
+    <string name="stat_not_found">nieznalezione</string>
+    <string name="stat_tracks">utworów</string>
+    <plurals name="stat_history">
+        <item quantity="one">ostatnie %1$d uruchomienie · %2$d nieudanych</item>
+        <item quantity="few">ostatnie %1$d uruchomienia · %2$d nieudanych</item>
+        <item quantity="many">ostatnich %1$d uruchomień · %2$d nieudanych</item>
+        <item quantity="other">ostatnich %1$d uruchomień · %2$d nieudanych</item>
+    </plurals>
 </resources>

@@ -822,4 +822,17 @@
         <item quantity="one">%1$d canción de tus listas ya no se puede reproducir. Toca para sustituirla.</item>
         <item quantity="other">%1$d canciones de tus listas ya no se pueden reproducir. Toca para sustituirlas.</item>
     </plurals>
+    <string name="services_group_streaming">Streaming</string>
+    <string name="services_group_servers">Tu servidor</string>
+    <string name="services_group_other">Otros</string>
+    <string name="settings_new_look">Nuevo aspecto</string>
+    <string name="settings_new_look_desc">Tarjetas de sincronización con la última ejecución en números y el historial reciente.</string>
+    <string name="stat_added">añadidas</string>
+    <string name="stat_removed">quitadas</string>
+    <string name="stat_not_found">no encontradas</string>
+    <string name="stat_tracks">canciones</string>
+    <plurals name="stat_history">
+        <item quantity="one">última %1$d ejecución · %2$d fallidas</item>
+        <item quantity="other">últimas %1$d ejecuciones · %2$d fallidas</item>
+    </plurals>
 </resources>

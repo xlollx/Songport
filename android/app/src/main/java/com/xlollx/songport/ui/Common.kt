@@ -98,32 +98,9 @@ fun ProviderLabel(providerId: String, detail: String? = null, modifier: Modifier
 @Composable
 fun ProviderDot(p: MusicProvider?, sizeDp: Int = 18) = ProviderBadge(p, sizeDp.dp)
 
-/** Cerchio nel colore del servizio con la sua iniziale: si riconosce a colpo d'occhio e si legge con TalkBack. */
+/** The service's mark ([ServiceLogo]): its glyph on its colour, read by TalkBack as its name. */
 @Composable
-fun ProviderBadge(p: MusicProvider?, size: Dp = 36.dp) {
-    val bg = if (p != null) Color(p.brandColor) else MaterialTheme.colorScheme.surfaceVariant
-    val fg = if (bg.luminance() > 0.45f) Color(0xFF1C1B22) else Color.White
-    val letter = p?.displayName?.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
-    val name = p?.displayName ?: ""
-    Box(
-        Modifier.size(size).clip(CircleShape).background(bg)
-            .semantics { if (name.isNotEmpty()) contentDescription = name },
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            letter,
-            color = fg,
-            fontWeight = FontWeight.Bold,
-            style = when {
-                size >= 32.dp -> MaterialTheme.typography.titleMedium
-                size >= 24.dp -> MaterialTheme.typography.labelLarge
-                else -> MaterialTheme.typography.labelSmall
-            },
-            // A letter on an 18dp mark: tighter than the scale, or it will not fit.
-            fontSize = if (size < 24.dp) 10.sp else androidx.compose.ui.unit.TextUnit.Unspecified,
-        )
-    }
-}
+fun ProviderBadge(p: MusicProvider?, size: Dp = 36.dp) = ServiceLogo(p, size)
 
 // ---------------------------------------------------------------------------------------------
 // Blocchi di interfaccia condivisi

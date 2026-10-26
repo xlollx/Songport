@@ -193,9 +193,5 @@ fun TransferScreen(onClose: () -> Unit, onDone: () -> Unit) {
 @Composable
 private fun ServiceChips(available: List<MusicProvider>, selected: String, onSelect: (String) -> Unit) {
     val ctx = LocalContext.current
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        available.forEach { p ->
-            FilterChip(selected = p.id == selected, onClick = { onSelect(p.id) }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
-        }
-    }
+    ServiceTiles(available, selected, onSelect)
 }

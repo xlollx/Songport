@@ -141,11 +141,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 if (current.needsService && provider != null && connected.size > 1) {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        connected.forEach { p ->
-                            FilterChip(selected = p.id == provider.id, onClick = { selectedId = p.id }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
-                        }
-                    }
+                    ServiceTiles(connected, provider.id, { selectedId = it })
                 }
                 when (current) {
                     Tool.FILES -> FilesCard(local, onManage = onManageFiles)
@@ -175,11 +171,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
             return@Column
         }
         Text(stringResource(R.string.tools_pick_service), style = MaterialTheme.typography.titleMedium)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            connected.forEach { p ->
-                FilterChip(selected = p.id == provider.id, onClick = { selectedId = p.id }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
-            }
-        }
+        ServiceTiles(connected, provider.id, { selectedId = it })
         ToolRow(Tool.MANAGE) { onManage(provider) }
         ToolRow(Tool.EXPORT) { open = Tool.EXPORT }
         ToolRow(Tool.MAKE) { open = Tool.MAKE }

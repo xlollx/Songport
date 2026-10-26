@@ -812,4 +812,16 @@
         <item quantity="one">플레이리스트의 곡 %1$d개를 더 이상 재생할 수 없습니다. 탭하여 교체하세요.</item>
         <item quantity="other">플레이리스트의 곡 %1$d개를 더 이상 재생할 수 없습니다. 탭하여 교체하세요.</item>
     </plurals>
+    <string name="services_group_streaming">스트리밍</string>
+    <string name="services_group_servers">내 서버</string>
+    <string name="services_group_other">기타</string>
+    <string name="settings_new_look">새 디자인</string>
+    <string name="settings_new_look_desc">마지막 실행을 숫자로, 최근 실행 기록과 함께 보여 주는 동기화 카드.</string>
+    <string name="stat_added">추가</string>
+    <string name="stat_removed">삭제</string>
+    <string name="stat_not_found">찾지 못함</string>
+    <string name="stat_tracks">곡</string>
+    <plurals name="stat_history">
+        <item quantity="other">최근 %1$d회 · 실패 %2$d회</item>
+    </plurals>
 </resources>

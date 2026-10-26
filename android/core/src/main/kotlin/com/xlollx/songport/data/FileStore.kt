@@ -61,6 +61,8 @@ data class Settings(
     val themeMode: String = "SYSTEM",
     /** Material You: the phone's own colours instead of the brand palette (Android 12+). */
     val dynamicColor: Boolean = false,
+    /** The refreshed sync cards (big numbers, run history): on unless turned off in Appearance. */
+    val newLook: Boolean = true,
 )
 
 /** Unita' di quota consumate in un giorno (chiave = data nel fuso del servizio). */

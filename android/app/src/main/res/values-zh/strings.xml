@@ -813,4 +813,16 @@
         <item quantity="one">你的播放列表中有 %1$d 首曲目已无法播放。点按即可替换。</item>
         <item quantity="other">你的播放列表中有 %1$d 首曲目已无法播放。点按即可替换。</item>
     </plurals>
+    <string name="services_group_streaming">流媒体</string>
+    <string name="services_group_servers">你的服务器</string>
+    <string name="services_group_other">其他</string>
+    <string name="settings_new_look">新外观</string>
+    <string name="settings_new_look_desc">以数字显示上次运行并附带近期运行记录的同步卡片。</string>
+    <string name="stat_added">已添加</string>
+    <string name="stat_removed">已移除</string>
+    <string name="stat_not_found">未找到</string>
+    <string name="stat_tracks">首</string>
+    <plurals name="stat_history">
+        <item quantity="other">最近 %1$d 次 · 失败 %2$d 次</item>
+    </plurals>
 </resources>

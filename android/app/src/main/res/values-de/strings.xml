@@ -822,4 +822,17 @@
         <item quantity="one">%1$d Titel in deinen Playlists kann nicht mehr abgespielt werden. Tippen zum Ersetzen.</item>
         <item quantity="other">%1$d Titel in deinen Playlists können nicht mehr abgespielt werden. Tippen zum Ersetzen.</item>
     </plurals>
+    <string name="services_group_streaming">Streaming</string>
+    <string name="services_group_servers">Eigener Server</string>
+    <string name="services_group_other">Sonstiges</string>
+    <string name="settings_new_look">Neuer Look</string>
+    <string name="settings_new_look_desc">Sync-Karten mit dem letzten Lauf in Zahlen und dem Verlauf der letzten Läufe.</string>
+    <string name="stat_added">hinzugefügt</string>
+    <string name="stat_removed">entfernt</string>
+    <string name="stat_not_found">nicht gefunden</string>
+    <string name="stat_tracks">Titel</string>
+    <plurals name="stat_history">
+        <item quantity="one">letzter %1$d Lauf · %2$d fehlgeschlagen</item>
+        <item quantity="other">letzte %1$d Läufe · %2$d fehlgeschlagen</item>
+    </plurals>
 </resources>

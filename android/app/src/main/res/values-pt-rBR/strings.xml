@@ -822,4 +822,17 @@
         <item quantity="one">%1$d faixa das suas playlists não toca mais. Toque para substituir.</item>
         <item quantity="other">%1$d faixas das suas playlists não tocam mais. Toque para substituir.</item>
     </plurals>
+    <string name="services_group_streaming">Streaming</string>
+    <string name="services_group_servers">Seu servidor</string>
+    <string name="services_group_other">Outros</string>
+    <string name="settings_new_look">Novo visual</string>
+    <string name="settings_new_look_desc">Cards de sincronização com a última execução em números e o histórico recente.</string>
+    <string name="stat_added">adicionadas</string>
+    <string name="stat_removed">removidas</string>
+    <string name="stat_not_found">não encontradas</string>
+    <string name="stat_tracks">faixas</string>
+    <plurals name="stat_history">
+        <item quantity="one">última %1$d execução · %2$d falharam</item>
+        <item quantity="other">últimas %1$d execuções · %2$d falharam</item>
+    </plurals>
 </resources>

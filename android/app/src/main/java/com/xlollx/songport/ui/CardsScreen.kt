@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -114,12 +116,12 @@ private fun PlaylistSource(label: String, initialLink: String?, snackbar: Snackb
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(label, style = MaterialTheme.typography.titleSmall)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                FilterChip(selected = mode == null, onClick = { mode = null; choose(null) }, label = { Text(stringResource(R.string.card_source_link)) })
-                connected.forEach { p ->
-                    FilterChip(selected = mode == p.id, onClick = { mode = p.id; choose(null) }, label = { Text(p.label(ctx)) }, leadingIcon = { ProviderDot(p) })
-                }
-            }
+            val linkLabel = stringResource(R.string.card_source_link)
+            ServiceTiles(
+                listOf(ServiceTile(LINK_TILE, linkLabel, icon = Icons.Filled.Link)) + connected.map { ServiceTile(it.id, it.label(ctx), it) },
+                selected = mode ?: LINK_TILE,
+                onSelect = { key -> mode = if (key == LINK_TILE) null else key; choose(null) },
+            )
             if (mode == null) {
                 OutlinedTextField(
                     value = link, onValueChange = { link = it }, singleLine = true, modifier = Modifier.fillMaxWidth(),
@@ -323,3 +325,6 @@ fun PosterCard(snackbar: SnackbarHostState) {
         CardActions(bitmaps, "songport-poster", busy || pick == null, onRender = { run() }, renderLabel = stringResource(if (bitmaps == null) R.string.card_poster_run else R.string.card_again))
     }
 }
+
+/** The "paste a link" choice next to the services in a source picker. */
+private const val LINK_TILE = "link:"

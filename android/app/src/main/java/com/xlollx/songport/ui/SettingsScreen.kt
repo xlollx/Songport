@@ -153,6 +153,9 @@ fun SettingsScreen(
                 stringResource(if (dynamicColorAvailable) R.string.settings_dynamic_color_desc else R.string.settings_dynamic_color_unavailable),
                 data.settings.dynamicColor && dynamicColorAvailable, enabled = dynamicColorAvailable,
             ) { v -> store.updateSettings { it.copy(dynamicColor = v) } }
+            SwitchRow(stringResource(R.string.settings_new_look), stringResource(R.string.settings_new_look_desc), data.settings.newLook) { v ->
+                store.updateSettings { it.copy(newLook = v) }
+            }
         }
 
         SectionCard(stringResource(R.string.backup_folder_title)) {

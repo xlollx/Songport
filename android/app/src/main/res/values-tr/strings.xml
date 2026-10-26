@@ -820,4 +820,17 @@
         <item quantity="one">Çalma listelerindeki %1$d parça artık çalınamıyor. Değiştirmek için dokun.</item>
         <item quantity="other">Çalma listelerindeki %1$d parça artık çalınamıyor. Değiştirmek için dokun.</item>
     </plurals>
+    <string name="services_group_streaming">Yayın</string>
+    <string name="services_group_servers">Kendi sunucun</string>
+    <string name="services_group_other">Diğer</string>
+    <string name="settings_new_look">Yeni görünüm</string>
+    <string name="settings_new_look_desc">Son çalıştırmayı sayılarla ve son çalıştırmaların geçmişini gösteren senkronizasyon kartları.</string>
+    <string name="stat_added">eklendi</string>
+    <string name="stat_removed">kaldırıldı</string>
+    <string name="stat_not_found">bulunamadı</string>
+    <string name="stat_tracks">parça</string>
+    <plurals name="stat_history">
+        <item quantity="one">son %1$d çalıştırma · %2$d başarısız</item>
+        <item quantity="other">son %1$d çalıştırma · %2$d başarısız</item>
+    </plurals>
 </resources>
