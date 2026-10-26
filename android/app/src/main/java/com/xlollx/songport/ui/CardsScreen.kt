@@ -300,7 +300,7 @@ fun PosterCard(snackbar: SnackbarHostState) {
                 val info = if (p.playlist.trackCount >= 0 && p.playlist.name.isNotBlank()) p.playlist else runCatching { p.provider.playlistInfo(ctx, p.playlist.id) }.getOrDefault(p.playlist)
                 val covers: List<Bitmap?> = withContext(Dispatchers.IO) {
                     info.imageUrl?.let { url -> Cards.bitmap(url, 900)?.let { return@withContext listOf(it) } }
-                    coroutineScope { tracks.take(4).map { t -> async { Cards.trackCover(t, p.provider.serviceId) } }.map { it.await() } }
+                    Cards.distinctCovers(tracks, p.provider.serviceId)
                 }
                 qr = qrUrl(ctx, p)
                 val card = Cards.PosterCard(

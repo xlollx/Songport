@@ -25,6 +25,7 @@ import com.xlollx.songport.sync.Compatibility
 import com.xlollx.songport.sync.DeezerCatalog
 import com.xlollx.songport.sync.QrCode
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import java.io.File
@@ -81,6 +82,27 @@ object Cards {
         for (url in DeezerCatalog.ownCover(t.id, serviceId)) bitmap(url, 400)?.let { return it }
         val found = DeezerCatalog.coverUrl(t) ?: DeezerCatalog.itunesCover(t) ?: return null
         return bitmap(found, 400)
+    }
+
+    /**
+     * Up to [want] covers of different albums, in playlist order: a playlist often opens with
+     * several tracks of one album, and a mosaic of the same picture says nothing. Tracks of an
+     * album already shown are skipped, and so is an image identical to one already picked; at
+     * most [maxLookups] tracks are looked up, four at a time. Fewer than [want] found: the card
+     * shows the first one alone.
+     */
+    suspend fun distinctCovers(tracks: List<Track>, serviceId: String, want: Int = 4, maxLookups: Int = 16): List<Bitmap> {
+        val candidates = tracks.distinctBy { com.xlollx.songport.sync.CoverPicks.albumKey(it) }.take(maxLookups)
+        val picked = ArrayList<Bitmap>()
+        for (batch in candidates.chunked(4)) {
+            val got = kotlinx.coroutines.coroutineScope { batch.map { t -> async { trackCover(t, serviceId) } }.map { it.await() } }
+            for (b in got) {
+                if (b == null || picked.any { it === b || it.sameAs(b) }) continue
+                picked += b
+                if (picked.size == want) return picked
+            }
+        }
+        return picked
     }
 
     // ------------------------------------------------------------------ drawing
