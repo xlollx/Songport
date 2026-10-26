@@ -178,10 +178,16 @@ fun MatchSearch(
             Text(stringResource(R.string.search_paste_link), maxLines = 1)
         }
     }
-    Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        if (busy) { CircularProgressIndicator(Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)) }
+    // Wraps instead of squeezing: with three extra actions in a narrow card, a Row left the
+    // Search button a column of single letters.
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        if (busy) CircularProgressIndicator(Modifier.size(18.dp).align(Alignment.CenterVertically))
         extraActions(busy)
-        Button(enabled = !busy && query.isNotBlank(), onClick = { runSearch() }) { Text(stringResource(R.string.unmatched_search)) }
+        Button(enabled = !busy && query.isNotBlank(), onClick = { runSearch() }) { Text(stringResource(R.string.unmatched_search), maxLines = 1, softWrap = false) }
     }
     aiNote?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary) }
     candidates?.let { result ->
