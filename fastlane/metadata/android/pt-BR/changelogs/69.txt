@@ -1,0 +1,1 @@
+Novo visual, parte final: boas-vindas em três passos, o editor de sincronização em três cards claros (origem, destino, opções) com Salvar sempre à mão e páginas de ferramentas com um só título. Os botões dos cards e de Faixas indisponíveis quebram linha em vez de se espremer com texto grande.

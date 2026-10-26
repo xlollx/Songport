@@ -1,0 +1,1 @@
+Nowy wygląd, ostatnia część: powitanie w trzech krokach, edytor synchronizacji w trzech czytelnych kartach (źródło, cel, opcje) z przyciskiem Zapisz zawsze pod ręką i strony narzędzi z jednym nagłówkiem. Przyciski na kartach i w Utworach nie do odtworzenia przechodzą do nowej linii zamiast się ściskać przy dużym tekście.

@@ -1,0 +1,1 @@
+New look, final part: a three-step welcome, the sync editor in three clear cards (source, target, options) with Save always at hand, and tool pages with a single header. Buttons on the cards and in Unplayable tracks wrap instead of squeezing with large text.

@@ -1,0 +1,1 @@
+Nuovo aspetto, ultima parte: un benvenuto in tre passi, l'editor delle sync in tre card chiare (origine, destinazione, opzioni) con Salva sempre a portata di mano, e pagine degli strumenti con un solo titolo. I pulsanti delle card e dei brani non riproducibili vanno a capo invece di schiacciarsi con i caratteri grandi.

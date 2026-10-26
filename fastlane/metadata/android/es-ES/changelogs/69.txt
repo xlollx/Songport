@@ -1,0 +1,1 @@
+Nuevo aspecto, última parte: una bienvenida en tres pasos, el editor de sincronizaciones en tres tarjetas claras (origen, destino, opciones) con Guardar siempre a mano y páginas de herramientas con un solo título. Los botones de las tarjetas y de Canciones no reproducibles pasan a otra línea en vez de apretarse con texto grande.

@@ -1,0 +1,1 @@
+Yeni görünüm, son bölüm: üç adımlık karşılama, Kaydet düğmesi hep elinin altında olan üç net kartlı senkron düzenleyicisi (kaynak, hedef, seçenekler) ve tek başlıklı araç sayfaları. Kartlardaki ve Çalınamayan parçalardaki düğmeler büyük yazıda sıkışmak yerine alt satıra geçiyor.

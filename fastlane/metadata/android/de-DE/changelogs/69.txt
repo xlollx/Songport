@@ -1,0 +1,1 @@
+Neuer Look, letzter Teil: eine Begrüßung in drei Schritten, der Sync-Editor in drei klaren Karten (Quelle, Ziel, Optionen) mit Speichern immer griffbereit und Werkzeugseiten mit nur einer Überschrift. Knöpfe auf den Karten und bei nicht abspielbaren Titeln brechen bei großer Schrift um, statt gequetscht zu werden.

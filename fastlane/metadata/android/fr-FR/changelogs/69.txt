@@ -1,0 +1,1 @@
+Nouveau look, dernière partie : un accueil en trois étapes, l'éditeur de synchro en trois cartes claires (source, cible, options) avec Enregistrer toujours à portée, et des pages d'outils avec un seul titre. Les boutons des cartes et des titres illisibles passent à la ligne au lieu d'être écrasés avec un grand texte.
