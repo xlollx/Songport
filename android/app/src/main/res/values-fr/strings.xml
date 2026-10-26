@@ -723,4 +723,129 @@
     <string name="support_prompt_title">Vous venez de déplacer %1$s morceaux</string>
     <string name="support_prompt_body">Avec la sync « %1$s ». Songport est gratuite et sans publicité, et vit de contributions volontaires : si elle vous a fait gagner du temps, vous pouvez offrir un café au développeur.</string>
     <string name="support_prompt_later">Pas maintenant</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">Ajouter à…</string>
+    <string name="share_sheet_from">Partagé depuis %1$s</string>
+    <string name="share_sheet_unknown">Songport n’a pas pu lire le titre de ce morceau. Cherchez-le à la main ci-dessous.</string>
+    <string name="share_sheet_open">Ouvrir dans %1$s</string>
+    <string name="share_sheet_copy">Copier le lien</string>
+    <string name="share_sheet_copied">Lien copié</string>
+    <string name="share_sheet_no_targets">Connectez d’abord un service dans Comptes : le morceau ira alors dans une de vos playlists là-bas.</string>
+    <string name="share_sheet_target">Où l’ajouter</string>
+    <string name="share_sheet_looking">Recherche sur %1$s…</string>
+    <string name="share_sheet_exact">Le même morceau, lu depuis %1$s</string>
+    <string name="share_sheet_best">Meilleure correspondance sur %1$s</string>
+    <string name="share_sheet_no_match">Introuvable sur %1$s. Cherchez à la main, ou choisissez un autre service.</string>
+    <string name="share_sheet_add">Ajouter à une playlist…</string>
+    <string name="share_sheet_change">Changer</string>
+    <string name="settings_music_links">Proposer Songport pour les liens musicaux</string>
+    <string name="settings_music_links_desc">Un lien Spotify, Apple Music, YouTube Music, Amazon Music, Deezer ou TIDAL pourra alors s’ouvrir dans Songport, qui ajoute le morceau à une playlist sur n’importe lequel de vos services. Android demande toujours quelle application utiliser, ou garde celle définie dans ses réglages de liens : Songport ne prend jamais un lien de lui-même.</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">Sommes-nous compatibles ?</string>
+    <string name="tools_compat_desc">Compare deux playlists, même de services différents : titres en commun, artistes partagés, un score et une carte à partager.</string>
+    <string name="tools_poster_title">Affiche de la playlist</string>
+    <string name="tools_poster_desc">Une carte avec les pochettes, le titre, les chiffres et un QR code qui ouvre la playlist. Pour une fête, un concert, un mur.</string>
+    <string name="card_compat_eyebrow">Sommes-nous compatibles ?</string>
+    <string name="card_compat_subtitle">%1$d titres en commun · %2$d artistes partagés</string>
+    <string name="card_compat_artists">Vous écoutez tous les deux</string>
+    <string name="card_poster_scan">Scannez pour ouvrir sur %1$s</string>
+    <string name="card_unnamed_playlist">Playlist</string>
+    <string name="card_source_link">Lien</string>
+    <string name="card_source_link_hint">Lien d’une playlist publique</string>
+    <string name="card_format_story">Story</string>
+    <string name="card_format_square">Carré</string>
+    <string name="card_share">Partager</string>
+    <string name="card_save">Enregistrer l’image</string>
+    <string name="card_compat_first">Première playlist</string>
+    <string name="card_compat_second">Deuxième playlist</string>
+    <string name="card_compat_common_pct">%1$d %% de la playlist la plus courte se trouve aussi dans l’autre</string>
+    <string name="card_compat_in_common">En commun</string>
+    <string name="card_compat_for">Pour « %1$s »</string>
+    <string name="card_compat_run">Comparer</string>
+    <string name="card_again">Refaire la carte</string>
+    <string name="card_poster_no_qr">Ce service n’a pas de page publique pour la playlist : l’affiche est sans QR code.</string>
+    <string name="card_poster_run">Créer l’affiche</string>
+    <plurals name="card_tracks">
+        <item quantity="one">%1$d titre</item>
+        <item quantity="other">%1$d titres</item>
+    </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Apparence</string>
+    <string name="settings_theme">Thème</string>
+    <string name="settings_theme_system">Système</string>
+    <string name="settings_theme_light">Clair</string>
+    <string name="settings_theme_dark">Sombre</string>
+    <string name="settings_dynamic_color">Couleurs dynamiques (Material You)</string>
+    <string name="settings_dynamic_color_desc">Les couleurs de votre fond d\'écran à la place de celles de Songport. Le bandeau du titre garde les couleurs de la marque.</string>
+    <string name="settings_dynamic_color_unavailable">Nécessite Android 12 ou plus récent.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Titres injouables</string>
+    <string name="tools_unplayable_desc">Trouve les titres qu\'un service liste encore mais ne lit plus (grisés) et les remplace par une version qui se lit.</string>
+    <string name="unplayable_title">Titres injouables : %1$s</string>
+    <string name="unplayable_unsupported">%1$s ne dit pas quels titres il ne lit plus, Songport ne peut donc pas vérifier ici.</string>
+    <string name="unplayable_all_playlists">Toutes mes playlists</string>
+    <string name="unplayable_scan">Vérifier</string>
+    <string name="unplayable_scanning">Vérification de %1$s…</string>
+    <string name="unplayable_none">Tout se lit : aucun titre injouable dans %1$d playlists.</string>
+    <string name="unplayable_found">%1$d titres injouables dans %2$d playlists</string>
+    <string name="unplayable_hint">Pour chacun, Songport propose une version qui se lit. Acceptez-la, cherchez-en une autre, retirez l\'entrée ou passez. Rien ne change avant d\'appliquer.</string>
+    <string name="unplayable_searching">Recherche d\'une version qui se lit…</string>
+    <string name="unplayable_no_proposal">Aucune version convaincante : ouvrez l\'entrée pour chercher à la main, ou retirez-la.</string>
+    <string name="unplayable_proposal">Remplaçant : %1$s (%2$d %% de correspondance)</string>
+    <string name="unplayable_relinked">%1$s est ce que le service lit déjà à sa place</string>
+    <string name="unplayable_remove_only">Retirer seulement</string>
+    <string name="unplayable_skip">Passer</string>
+    <string name="unplayable_undecide">Annuler le choix</string>
+    <string name="unplayable_decided_replace">Sera remplacé par %1$s</string>
+    <string name="unplayable_decided_remove">Sera retiré</string>
+    <string name="unplayable_apply">Appliquer %1$d modifications</string>
+    <string name="unplayable_applying">Application %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">Appliquer les modifications ?</string>
+    <string name="unplayable_confirm_body">%1$d titres reçoivent une version lisible, %2$d entrées sont retirées. Les originaux restent dans le journal de Songport pour pouvoir annuler.</string>
+    <string name="unplayable_no_removal">%1$s ne laisse pas les applis retirer des titres : la version lisible est ajoutée et l\'entrée injouable reste.</string>
+    <string name="unplayable_done">%1$d remplacés, %2$d retirés</string>
+    <string name="unplayable_undo">Annuler</string>
+    <string name="unplayable_undo_last">Annuler la dernière correction (%1$d)</string>
+    <string name="unplayable_undone">%1$d entrées remises</string>
+    <string name="unplayable_reason_market">Pas dans votre pays</string>
+    <string name="unplayable_reason_product">Pas dans votre offre</string>
+    <string name="unplayable_reason_explicit">Filtre explicite</string>
+    <string name="unplayable_reason_private">Vidéo privée</string>
+    <string name="unplayable_reason_deleted">Supprimé</string>
+    <string name="unplayable_reason_unknown">Injouable</string>
+    <string name="settings_unplayable">Vérification hebdomadaire des titres injouables</string>
+    <string name="settings_unplayable_desc">Une fois par semaine, Songport parcourt vos playlists et vous prévient quand un titre ne peut plus être lu. Rien n\'est changé tout seul.</string>
+    <string name="notif_unplayable_title">Titres injouables</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">%1$d titre de vos playlists ne peut plus être lu. Touchez pour le remplacer.</item>
+        <item quantity="other">%1$d titres de vos playlists ne peuvent plus être lus. Touchez pour les remplacer.</item>
+    </plurals>
+    <string name="services_group_streaming">Streaming</string>
+    <string name="services_group_servers">Votre serveur</string>
+    <string name="services_group_other">Autres</string>
+    <string name="settings_new_look">Nouveau look</string>
+    <string name="settings_new_look_desc">Cartes de synchro avec la dernière exécution en chiffres et l\'historique récent.</string>
+    <string name="stat_added">ajoutés</string>
+    <string name="stat_removed">retirés</string>
+    <string name="stat_not_found">introuvables</string>
+    <string name="stat_tracks">titres</string>
+    <plurals name="stat_history">
+        <item quantity="one">dernière %1$d exécution · %2$d échouées</item>
+        <item quantity="other">%1$d dernières exécutions · %2$d échouées</item>
+    </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Pochette dessinée par votre IA</string>
+    <string name="card_ai_cover_yes">Avec %1$s, sur votre propre clé : cela peut coûter quelques centimes.</string>
+    <string name="card_ai_cover_none">Configurez d\'abord une IA dans le Générateur de playlists (Outils).</string>
+    <string name="card_ai_cover_claude">Claude ne génère pas d\'images : choisissez OpenAI ou Gemini dans le Générateur de playlists.</string>
+    <string name="card_ai_cover_no_images">%1$s ne génère pas d\'images ici : choisissez OpenAI ou Gemini dans le Générateur de playlists.</string>
+    <string name="card_ai_cover_model">Indiquez le modèle d\'images de votre serveur dans les réglages du Générateur de playlists.</string>
+    <string name="card_ai_drawing">Votre IA dessine la pochette…</string>
+    <string name="card_ai_again">Une autre pochette</string>
+    <string name="card_ai_save">Enregistrer la pochette</string>
+    <string name="ai_image_model">Modèle d\'images (facultatif)</string>
+    <string name="ai_image_model_hint">ex. dall-e-3, pour la pochette IA de l\'affiche</string>
 </resources>

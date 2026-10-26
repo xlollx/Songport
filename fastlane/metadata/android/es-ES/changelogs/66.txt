@@ -1,0 +1,1 @@
+Portadas en las tarjetas para compartir: las canciones de YouTube Music muestran su propia portada y los demás servicios la buscan en el catálogo público de Deezer y luego de Apple, así el póster y la tarjeta de compatibilidad ya no usan mosaicos vacíos.

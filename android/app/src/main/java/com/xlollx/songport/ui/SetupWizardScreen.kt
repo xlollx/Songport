@@ -1,8 +1,8 @@
 package com.xlollx.songport.ui
 
+import com.xlollx.songport.providers.*
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
@@ -67,7 +67,7 @@ fun SetupWizardScreen(provider: MusicProvider, onClose: () -> Unit) {
     val ctx = LocalContext.current
     val store = remember { Store.get(ctx) }
     val clipboard = LocalClipboardManager.current
-    BackHandler { onClose() }
+    ScreenBackHandler(onClose)
 
     val settings = store.data.settings
     var clientId by remember { mutableStateOf(settings.clientIds[provider.serviceId].orEmpty()) }

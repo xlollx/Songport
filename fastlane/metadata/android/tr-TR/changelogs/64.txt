@@ -1,0 +1,1 @@
+Paylaşmak için iki yeni araç: "Ne kadar uyumluyuz?" farklı servislerden bile olsa iki çalma listesini karşılaştırır ve ortak parçalar ile sanatçılarla birlikte bir puanı hikâyelerin için görsel olarak verir. "Çalma listesi posteri" kapaklar ve listeyi açan bir QR kodla bir kart oluşturur.

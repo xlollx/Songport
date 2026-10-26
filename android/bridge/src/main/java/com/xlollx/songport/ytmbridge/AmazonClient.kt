@@ -6,6 +6,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import com.xlollx.songport.ytmbridge.BridgeNet.withHook
 import okhttp3.Request
@@ -50,7 +51,23 @@ class AmazonClient(private val ctx: Context) {
     private val http = OkHttpClient.Builder()
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(40, TimeUnit.SECONDS)
+        .addNetworkInterceptor { browserCookies(it) }
         .withHook().build()
+
+    /**
+     * Each hop is sent with the WebView's cookie jar as it is at that moment. The jar is only read
+     * here, never written: what Amazon set in answers to this client (a 401 among them) went into it
+     * in 1.0.51-1.0.54 and left stale copies that even a new sign-in did not remove. Only the
+     * WebView, the real browser, keeps the jar.
+     */
+    private fun browserCookies(chain: Interceptor.Chain): okhttp3.Response {
+        val req = chain.request()
+        val live = if (req.url.host.contains("amazon.")) {
+            runCatching { CookieManager.getInstance().getCookie(req.url.toString()) }.getOrNull()
+        } else null
+        val sent = if (AmazonSession.looksSignedIn(live)) req.newBuilder().header("Cookie", live!!).build() else req
+        return chain.proceed(sent)
+    }
 
     private fun domain(): String = AmazonSession.domain(ctx) ?: throw BridgeException("not connected")
     /**
@@ -105,7 +122,7 @@ class AmazonClient(private val ctx: Context) {
         val req = Request.Builder()
             .url(url)
             .header("Cookie", cookies)
-            .header("User-Agent", BridgeUa.desktop(ctx))
+            .header("User-Agent", AmazonBridge.storedUserAgent(ctx) ?: BridgeUa.desktop(ctx))
             .header("Accept", accept)
             .header("Accept-Language", "en-US,en;q=0.9")
             .header("Referer", "https://${url.substringAfter("https://").substringBefore('/')}/")
@@ -152,8 +169,9 @@ class AmazonClient(private val ctx: Context) {
         while (true) {
             try {
                 http.newCall(req).execute().use { resp ->
-                    keepCookies(resp)
-                    return resp.code to (resp.body?.string() ?: "")
+                    val text = resp.body?.string() ?: ""
+                    if (resp.code == 401 || resp.code == 403) logRefusal(req, resp, text)
+                    return resp.code to text
                 }
             } catch (e: java.io.IOException) {
                 if (attempt >= 2) throw BridgeException("Amazon Music unreachable: ${e.message ?: e.javaClass.simpleName}")
@@ -163,19 +181,33 @@ class AmazonClient(private val ctx: Context) {
         }
     }
 
-    /** What Amazon sets in a response goes into the shared cookie jar, as a browser would keep it. */
-    private fun keepCookies(resp: okhttp3.Response) {
-        val set = resp.headers("Set-Cookie")
-        if (set.isEmpty() || !resp.request.url.host.contains("amazon.")) return
-        runCatching {
-            val cm = CookieManager.getInstance()
-            val url = "https://" + resp.request.url.host
-            set.forEach { cm.setCookie(url, it) }
-            cm.flush()
-        }
+    // ------------------------------------------------------------------ GraphQL
+
+    /** Logs [message] under [key] at most once every ten minutes. */
+    private fun logOnce(key: String, message: String) {
+        val now = System.currentTimeMillis()
+        if (now - (logged[key] ?: 0L) < 600_000) return
+        logged[key] = now
+        BridgeNet.log("amazon", message)
     }
 
-    // ------------------------------------------------------------------ GraphQL
+    /** One header of the player's last mirrored call, or "" when none was seen. */
+    private fun playerHeader(name: String): String = runCatching {
+        (parseJson(AmazonSession.headers(ctx) ?: return "") as? JsonObject)?.get(name).str.orEmpty()
+    }.getOrDefault("")
+
+    /**
+     * What Amazon said when it refused a request, for the diagnostics log: its error type and
+     * message, and the names (never the values) of the headers that went with the request, so a
+     * missing or extra one shows. Anything that looks like a token is cut out of the body.
+     */
+    private fun logRefusal(req: Request, resp: okhttp3.Response, body: String) {
+        val type = listOf("x-amzn-errortype", "x-amzn-error-type", "www-authenticate", "x-amzn-requestid")
+            .mapNotNull { h -> resp.header(h)?.let { "$h=${it.take(80)}" } }
+        val sent = req.headers.names().map { it.lowercase() }.sorted()
+        BridgeNet.log("amazon", "${resp.code} from ${req.url.host}: ${type.joinToString().ifBlank { "no error header" }}; " +
+            "body: ${redact(body).take(200).ifBlank { "empty" }}; sent: ${sent.joinToString(",")}")
+    }
 
     /** One answer: its data, and the error codes GraphQL returned next to it (DUPLICATE_TRACK...). */
     private class Answer(val data: JsonElement?, val codes: List<String>, val messages: List<String>)
@@ -186,6 +218,27 @@ class AmazonClient(private val ctx: Context) {
         if (!c.signedIn) throw BridgeException(
             "Amazon Music served the player to a signed-out visitor: the Amazon session has expired. Accounts, Amazon Music: disconnect and connect again.",
         )
+        val built = baseHeaders(domain, c)
+        if (built["csrf-token"] != null) return built
+        // The configuration no longer carries the CSRF triple where it used to (October 2026: sent
+        // without it, Amazon answers AUTH_INVALID_CUSTOMER_ID): the player's own values fill it.
+        val fromPlayer = listOf("csrf-token", "csrf-rnd", "csrf-ts", "x-amzn-session-id")
+            .mapNotNull { k -> playerHeader(k).takeIf { it.isNotBlank() }?.let { k to it } }.toMap()
+        logOnce("csrf", "page configuration has no CSRF token (csrf field: ${describe(c.raw["csrf"])}); " +
+            if (fromPlayer.isEmpty()) "the player's headers have none either" else "using the player's")
+        return built + fromPlayer
+    }
+
+    /** What a configuration field holds, by shape and key names only, for the diagnostics log. */
+    private fun describe(e: JsonElement?): String = when (e) {
+        null -> "absent"
+        is JsonObject -> "object with " + e.keys.sorted().joinToString(",")
+        is JsonPrimitive -> "a value of ${e.content.length} chars"
+        else -> e.javaClass.simpleName
+    }
+
+    /** The headers every call carries, from the configuration; empty values left out. */
+    private fun baseHeaders(domain: String, c: Config): Map<String, String> {
         val lang = (DOMAINS[domain]?.language ?: "en_US").replace('_', '-')
         return mapOf(
             "x-api-key" to API_KEY,
@@ -196,6 +249,8 @@ class AmazonClient(private val ctx: Context) {
             "csrf-rnd" to c.csrfRnd,
             "csrf-ts" to c.csrfTs,
             "music-territory" to territory(domain),
+            // The player names the subscription with each call; taken from its own headers when seen.
+            "x-amzn-client-subscription-tier" to playerHeader("x-amzn-client-subscription-tier"),
             "x-amzn-feature-flags" to FEATURE_FLAGS,
             "content-language" to lang,
             "accept-language" to lang,
@@ -203,56 +258,141 @@ class AmazonClient(private val ctx: Context) {
     }
 
     /**
-     * Runs a persisted query. Headers come from the page configuration; if Amazon refuses them
-     * (401/403, or an authentication error), the ones the real player sent are captured from a
-     * WebView and the call is made once more with those.
+     * Runs a persisted query. Headers come from the page configuration. When Amazon refuses the
+     * session (401/403, or an authentication error) it is renewed the way a browser renews it, one
+     * step further each time: the player page is fetched again (new CSRF values, renewed cookies),
+     * then the real player is run in a WebView and the call is made with its headers. If Amazon
+     * still refuses our HTTP client, the call is sent by the player page itself, and so are the
+     * following ones for a while: only when the player is refused too is the session really over.
      */
     private fun gql(operation: String, variables: JsonObject): Answer {
         val domain = domain()
-        // A refused session is first refreshed the way a browser does it: the player page is loaded
-        // again (its answer renews the session cookies and the CSRF values), then the call is repeated.
+        if (System.currentTimeMillis() < pageModeUntil && AmazonBridge.pageOpen) {
+            inPage(domain, operation, variables)?.let { return it }
+        }
         val first = runCatching { gqlWith(domain, operation, variables, headersFromConfig(domain)) }
             .recoverCatching { e ->
-                if (e.message?.contains(" 401 ") != true && e.message?.contains(" 403 ") != true) throw e
+                if (!refused(e)) throw e
                 cachedConfig = null
                 gqlWith(domain, operation, variables, headersFromConfig(domain))
             }
         val answer = first.getOrNull()
         if (answer != null && !answer.codes.any { it in AUTH_CODES }) return answer
         val reason = first.exceptionOrNull()?.message ?: answer?.codes?.joinToString()
-        val player = AmazonBridge.player(ctx, domain)
-        if (!player.signedIn) throw BridgeException(
-            "Amazon Music refused the session ($reason) and the player did not hand over its own headers. Accounts, Amazon Music: disconnect and connect again.",
-        )
-        val again = gqlWith(domain, operation, variables, player.headers.filterKeys { it.lowercase() !in SKIPPED_HEADERS })
-        if (again.codes.any { it in AUTH_CODES }) {
-            AmazonBridge.forget()
-            throw BridgeException("Amazon Music refused the session (${again.codes.joinToString()}): Accounts, Amazon Music: disconnect and connect again.")
+        BridgeNet.log("amazon", "$operation refused ($reason) after reloading the page: running the player")
+
+        // Cached or stored player headers carry the same stale session: the player runs again.
+        AmazonBridge.forget()
+        val run = runCatching { AmazonBridge.player(ctx, domain, refresh = true) }
+        val player = run.getOrNull()
+        cachedConfig = null
+        // The player's own headers, over the configuration's for whatever it did not send (a mirrored
+        // set can lack the API key or the language, and Amazon then answers AUTH_INVALID_CLIENT_ID).
+        val headers = player?.takeIf { it.signedIn }?.headers?.filterKeys { it.lowercase() !in SKIPPED_HEADERS }?.let { own ->
+            val base = runCatching { baseHeaders(domain, config(domain)) }.getOrDefault(emptyMap())
+            base.filterKeys { k -> own.keys.none { it.equals(k, ignoreCase = true) } } + own
         }
-        return again
+        val again = runCatching { gqlWith(domain, operation, variables, headers ?: headersFromConfig(domain)) }
+        val last = again.getOrNull()
+        if (last != null && !last.codes.any { it in AUTH_CODES }) return last
+        val e = again.exceptionOrNull()
+        if (e != null && !refused(e) && e.message?.contains("signed-out") != true) throw e
+
+        BridgeNet.log("amazon", "player ${if (player?.signedIn == true) "ran" else "sent no headers"}" +
+            (run.exceptionOrNull()?.message?.let { " (${it.take(120)})" } ?: "") + "; our call with its headers refused: asking the page")
+        // Accepted from the browser only? The player page sends the call.
+        var pageSaid = run.exceptionOrNull()?.message?.let { "player: ${it.take(120)}" } ?: if (player?.signedIn == true) "player ran" else "the player sent no headers"
+        if (player?.signedIn == true) {
+            val (code, text) = AmazonBridge.gqlInPage(ctx, domain, body(operation, variables))
+            val viaPage = runCatching { parse(code, text, operation) }
+            viaPage.getOrNull()?.takeIf { a -> !a.codes.any { it in AUTH_CODES } }?.let {
+                BridgeNet.log("amazon", "$operation accepted from the page")
+                pageModeUntil = System.currentTimeMillis() + PAGE_MODE_MS
+                return it
+            }
+            pageSaid = "the page's call: " + (viaPage.exceptionOrNull()?.message ?: viaPage.getOrNull()?.codes?.joinToString()).orEmpty().take(120)
+        }
+        // Refused for the whole account, or only for this playlist? The library says which.
+        val playlistId = variables["id"].str
+        val library = if (player?.signedIn == true && playlistId != null) libraryInPage(domain) else null
+        if (library != null) {
+            val (count, ids) = library
+            if (playlistId !in ids) throw BridgeException(
+                "Amazon Music: this playlist is no longer in your library (the session works: $count playlists listed). " +
+                    "It was deleted, or it belongs to someone else: edit the sync and pick another destination.",
+            )
+            throw BridgeException(
+                "Amazon Music accepts the session (library: $count playlists, this one included) but refuses to open this playlist ($reason). " +
+                    "Open it once in the Amazon Music app; if it still fails, send a diagnostics report.",
+            )
+        }
+        val dup = AmazonSession.duplicateCookies("https://gql.$domain/")
+        BridgeNet.log("amazon", "$pageSaid; library refused too; cookies sent twice: ${dup.joinToString().ifBlank { "none" }}")
+        AmazonBridge.forget()
+        throw BridgeException(
+            "Amazon Music no longer accepts the session ($reason; again after renewing it; $pageSaid" +
+                (if (player?.signedIn == true && playlistId != null) "; library refused too" else "") + "). " +
+                "Accounts, Amazon Music: disconnect and connect again.",
+        )
+    }
+
+    /** Playlist count and ids of the library, asked through the player page; null when refused. */
+    private fun libraryInPage(domain: String): Pair<Int, Set<String>>? = runCatching {
+        val (code, text) = AmazonBridge.gqlInPage(ctx, domain, body("AddToPlaylistModalUserPlaylists", jsonObj("firstLimit" to PLAYLISTS_LIMIT)))
+        val a = parse(code, text, "playlists")
+        if (a.codes.any { it in AUTH_CODES }) return@runCatching null
+        val ids = a.data["user"]["playlists"]["edges"].arr.mapNotNull { it["node"]["id"].str }.toSet()
+        if (a.data["user"] == null) null else ids.size to ids
+    }.getOrNull()
+
+    /** One call through the open player page; null when the page refused it (the caller starts over). */
+    private fun inPage(domain: String, operation: String, variables: JsonObject): Answer? {
+        val (code, text) = AmazonBridge.gqlInPage(ctx, domain, body(operation, variables))
+        val a = runCatching { parse(code, text, operation) }
+        a.exceptionOrNull()?.let { if (!refused(it) && code != -1) throw it }
+        val answer = a.getOrNull()
+        if (answer == null || answer.codes.any { it in AUTH_CODES }) { pageModeUntil = 0; return null }
+        pageModeUntil = System.currentTimeMillis() + PAGE_MODE_MS
+        return answer
+    }
+
+    private fun refused(e: Throwable) = e.message?.let { it.contains(" 401 ") || it.contains(" 403 ") } == true
+
+    private fun body(operation: String, variables: JsonObject): String {
+        val hash = HASHES[operation] ?: throw BridgeException("Amazon Music: unknown operation $operation")
+        return jsonObj(
+            "operationName" to operation,
+            "variables" to variables,
+            // As the player sends it: Apollo names itself next to the persisted query.
+            "extensions" to jsonObj(
+                "clientLibrary" to jsonObj("name" to "@apollo/client", "version" to "4.1.6"),
+                "persistedQuery" to jsonObj("version" to 1, "sha256Hash" to hash),
+            ),
+        ).toString()
     }
 
     private fun gqlWith(domain: String, operation: String, variables: JsonObject, headers: Map<String, String>): Answer {
-        val hash = HASHES[operation] ?: throw BridgeException("Amazon Music: unknown operation $operation")
-        val body = jsonObj(
-            "operationName" to operation,
-            "variables" to variables,
-            "extensions" to jsonObj("persistedQuery" to jsonObj("version" to 1, "sha256Hash" to hash)),
-        )
         val b = Request.Builder()
             .url("https://gql.$domain/")
-            .post(body.toString().toRequestBody(JSON))
+            .post(body(operation, variables).toRequestBody(JSON))
             .header("Cookie", cookies())
+        b
             .header("Origin", "https://$domain")
             .header("Referer", "https://$domain/")
             .header("User-Agent", AmazonBridge.storedUserAgent(ctx) ?: BridgeUa.desktop(ctx))
             .header("Accept", "application/graphql-response+json, application/json")
         headers.forEach { (k, v) -> b.header(k, v) }
         val (code, text) = send(b.build())
+        return parse(code, text, operation)
+    }
+
+    /** An answer of the GraphQL endpoint, from our client or from the player page (-1: no answer). */
+    private fun parse(code: Int, text: String, operation: String): Answer {
         if (code == 401 || code == 403) {
             cachedConfig = null
-            throw BridgeException("Amazon Music $code on $operation")
+            throw BridgeException("Amazon Music $code on $operation" + redact(text).take(120).let { if (it.isBlank()) "" else ": $it" })
         }
+        if (code == -1) throw BridgeException("Amazon Music: $operation not sent (${text.take(160)})")
         val j = runCatching { parseJson(text) }.getOrNull()
             ?: throw BridgeException("Amazon Music $code on $operation: ${text.take(200)}")
         val errors = j["errors"].arr
@@ -400,6 +540,10 @@ class AmazonClient(private val ctx: Context) {
         )
 
         @Volatile private var cachedConfig: Pair<Long, Config>? = null
+        /** Until when calls go straight through the player page, after it was the only way in. */
+        @Volatile private var pageModeUntil = 0L
+        private val logged = java.util.concurrent.ConcurrentHashMap<String, Long>()
+        private const val PAGE_MODE_MS = 30 * 60_000L
         fun forgetConfig() { cachedConfig = null }
 
         /** Regional web player domains, with the language the player sends. */
@@ -437,3 +581,10 @@ private fun JsonElement?.asText(): String = when (this) {
     null -> ""
     else -> toString()
 }
+
+/** Tokens, JWTs and long opaque values cut out of a text that goes to the diagnostics log. */
+private fun redact(text: String): String = text
+    .replace(Regex("""(Atn[a-z]?|Atza)\|[A-Za-z0-9_\-|.=+/]+"""), "[token]")
+    .replace(Regex("""eyJ[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]*"""), "[jwt]")
+    .replace(Regex("""[A-Za-z0-9+/=_\-]{40,}"""), "[...]")
+    .replace('\n', ' ')

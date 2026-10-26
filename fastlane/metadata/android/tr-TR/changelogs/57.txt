@@ -1,0 +1,1 @@
+Amazon Music: oturum açma ve gizli oynatıcı artık Amazon'a bir uygulamanın içinde çalıştıklarını söylemiyor (Android'in eklediği X-Requested-With başlığı); Amazon bunu artık "401" ile reddediyor. Güncellemeden sonra Amazon Music bağlantısını bir kez kesip yeniden bağlan. YouTube Music: istemcisi sunucuyla paylaşılan bir modüle taşındı, davranış değişmedi.

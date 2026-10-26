@@ -1,0 +1,1 @@
+Due nuovi strumenti da condividere: "Quanto siamo compatibili?" confronta due playlist, anche di servizi diversi, e dà un punteggio con i brani e gli artisti in comune, come immagine per le storie. "Poster della playlist" crea una card con le copertine e un QR che apre la playlist.

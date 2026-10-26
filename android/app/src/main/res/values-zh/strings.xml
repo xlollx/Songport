@@ -715,4 +715,127 @@
     <string name="support_prompt_title">你刚刚转移了 %1$s 首歌曲</string>
     <string name="support_prompt_body">通过同步“%1$s”。Songport 免费且无广告，依靠自愿捐助维持：如果它为你节省了时间，可以请开发者喝杯咖啡。</string>
     <string name="support_prompt_later">以后再说</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">添加到…</string>
+    <string name="share_sheet_from">来自 %1$s 的分享</string>
+    <string name="share_sheet_unknown">Songport 无法读取这首歌的标题。请在下方手动搜索。</string>
+    <string name="share_sheet_open">在 %1$s 中打开</string>
+    <string name="share_sheet_copy">复制链接</string>
+    <string name="share_sheet_copied">链接已复制</string>
+    <string name="share_sheet_no_targets">请先在“账户”中连接一个服务：歌曲会添加到你在那里的播放列表。</string>
+    <string name="share_sheet_target">添加到哪里</string>
+    <string name="share_sheet_looking">正在 %1$s 上查找…</string>
+    <string name="share_sheet_exact">同一首歌，读取自 %1$s</string>
+    <string name="share_sheet_best">%1$s 上的最佳匹配</string>
+    <string name="share_sheet_no_match">在 %1$s 上未找到。请手动搜索，或选择其他服务。</string>
+    <string name="share_sheet_add">添加到播放列表…</string>
+    <string name="share_sheet_change">更改</string>
+    <string name="settings_music_links">为音乐链接提供 Songport</string>
+    <string name="settings_music_links_desc">Spotify、Apple Music、YouTube Music、Amazon Music、Deezer 或 TIDAL 的链接将可以在 Songport 中打开，并把歌曲添加到你任一服务的播放列表。Android 仍会询问使用哪个应用，或沿用其链接设置中指定的应用：Songport 绝不会自行接管链接。</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">我们有多合拍？</string>
+    <string name="tools_compat_desc">比较两个播放列表，即使来自不同服务：共同的歌曲、共同的艺人、一个分数和一张可分享的卡片。</string>
+    <string name="tools_poster_title">播放列表海报</string>
+    <string name="tools_poster_desc">一张带封面、标题、数字和打开播放列表的二维码的卡片。用于派对、演出、墙面。</string>
+    <string name="card_compat_eyebrow">我们有多合拍？</string>
+    <string name="card_compat_subtitle">%1$d 首共同歌曲 · %2$d 位共同艺人</string>
+    <string name="card_compat_artists">你们都在听</string>
+    <string name="card_poster_scan">扫码在 %1$s 打开</string>
+    <string name="card_unnamed_playlist">播放列表</string>
+    <string name="card_source_link">链接</string>
+    <string name="card_source_link_hint">公开播放列表链接</string>
+    <string name="card_format_story">故事</string>
+    <string name="card_format_square">方形</string>
+    <string name="card_share">分享</string>
+    <string name="card_save">保存图片</string>
+    <string name="card_compat_first">第一个播放列表</string>
+    <string name="card_compat_second">第二个播放列表</string>
+    <string name="card_compat_common_pct">较短播放列表中有 %1$d%% 也在另一个里</string>
+    <string name="card_compat_in_common">共同</string>
+    <string name="card_compat_for">给“%1$s”</string>
+    <string name="card_compat_run">比较</string>
+    <string name="card_again">重新生成卡片</string>
+    <string name="card_poster_no_qr">该服务没有播放列表的公开页面：海报上没有二维码。</string>
+    <string name="card_poster_run">生成海报</string>
+    <plurals name="card_tracks">
+        <item quantity="other">%1$d 首歌曲</item>
+    </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">外观</string>
+    <string name="settings_theme">主题</string>
+    <string name="settings_theme_system">跟随系统</string>
+    <string name="settings_theme_light">浅色</string>
+    <string name="settings_theme_dark">深色</string>
+    <string name="settings_dynamic_color">动态颜色（Material You）</string>
+    <string name="settings_dynamic_color_desc">使用壁纸的颜色，而不是 Songport 自己的颜色。标题横幅保留品牌颜色。</string>
+    <string name="settings_dynamic_color_unavailable">需要 Android 12 或更高版本。</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">无法播放的曲目</string>
+    <string name="tools_unplayable_desc">找出服务仍列出但已无法播放的曲目（灰显），并用可播放的版本替换。</string>
+    <string name="unplayable_title">无法播放的曲目：%1$s</string>
+    <string name="unplayable_unsupported">%1$s 不会告知哪些曲目已无法播放，因此 Songport 无法在此检查。</string>
+    <string name="unplayable_all_playlists">我的全部播放列表</string>
+    <string name="unplayable_scan">检查</string>
+    <string name="unplayable_scanning">正在检查 %1$s…</string>
+    <string name="unplayable_none">全部可播放：%1$d 个播放列表中没有无法播放的曲目。</string>
+    <string name="unplayable_found">%2$d 个播放列表中有 %1$d 首无法播放的曲目</string>
+    <string name="unplayable_hint">Songport 会为每一首提议一个可播放的版本。接受它、另行搜索、移除该条目或跳过。在你应用之前不会有任何更改。</string>
+    <string name="unplayable_searching">正在寻找可播放的版本…</string>
+    <string name="unplayable_no_proposal">没有找到可信的版本：展开条目手动搜索，或将其移除。</string>
+    <string name="unplayable_proposal">替换为：%1$s（匹配度 %2$d%%）</string>
+    <string name="unplayable_relinked">%1$s 是服务已在其位置播放的版本</string>
+    <string name="unplayable_remove_only">仅移除</string>
+    <string name="unplayable_skip">跳过</string>
+    <string name="unplayable_undecide">撤销选择</string>
+    <string name="unplayable_decided_replace">将替换为 %1$s</string>
+    <string name="unplayable_decided_remove">将被移除</string>
+    <string name="unplayable_apply">应用 %1$d 项更改</string>
+    <string name="unplayable_applying">正在应用 %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">应用更改？</string>
+    <string name="unplayable_confirm_body">%1$d 首曲目将换成可播放的版本，%2$d 个条目将被移除。原始条目保留在 Songport 的日志中，可以撤销。</string>
+    <string name="unplayable_no_removal">%1$s 不允许应用移除曲目：会添加可播放的版本，无法播放的条目保持不变。</string>
+    <string name="unplayable_done">已替换 %1$d 首，移除 %2$d 个</string>
+    <string name="unplayable_undo">撤销</string>
+    <string name="unplayable_undo_last">撤销上次修复（%1$d）</string>
+    <string name="unplayable_undone">已恢复 %1$d 个条目</string>
+    <string name="unplayable_reason_market">在你所在的国家/地区不可用</string>
+    <string name="unplayable_reason_product">不在你的套餐内</string>
+    <string name="unplayable_reason_explicit">露骨内容过滤</string>
+    <string name="unplayable_reason_private">私享视频</string>
+    <string name="unplayable_reason_deleted">已删除</string>
+    <string name="unplayable_reason_unknown">无法播放</string>
+    <string name="settings_unplayable">每周检查无法播放的曲目</string>
+    <string name="settings_unplayable_desc">Songport 每周查看一次你的播放列表，当有曲目无法再播放时通知你。它不会自行更改任何内容。</string>
+    <string name="notif_unplayable_title">无法播放的曲目</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">你的播放列表中有 %1$d 首曲目已无法播放。点按即可替换。</item>
+        <item quantity="other">你的播放列表中有 %1$d 首曲目已无法播放。点按即可替换。</item>
+    </plurals>
+    <string name="services_group_streaming">流媒体</string>
+    <string name="services_group_servers">你的服务器</string>
+    <string name="services_group_other">其他</string>
+    <string name="settings_new_look">新外观</string>
+    <string name="settings_new_look_desc">以数字显示上次运行并附带近期运行记录的同步卡片。</string>
+    <string name="stat_added">已添加</string>
+    <string name="stat_removed">已移除</string>
+    <string name="stat_not_found">未找到</string>
+    <string name="stat_tracks">首</string>
+    <plurals name="stat_history">
+        <item quantity="other">最近 %1$d 次 · 失败 %2$d 次</item>
+    </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">用你的 AI 生成封面</string>
+    <string name="card_ai_cover_yes">使用 %1$s 和你自己的密钥：可能花费几美分。</string>
+    <string name="card_ai_cover_none">请先在播放列表生成器（工具）中设置 AI。</string>
+    <string name="card_ai_cover_claude">Claude 不生成图片：请在播放列表生成器中选择 OpenAI 或 Gemini。</string>
+    <string name="card_ai_cover_no_images">%1$s 在此不生成图片：请在播放列表生成器中选择 OpenAI 或 Gemini。</string>
+    <string name="card_ai_cover_model">请在播放列表生成器的设置中填写你服务器的图片模型。</string>
+    <string name="card_ai_drawing">你的 AI 正在绘制封面…</string>
+    <string name="card_ai_again">换一张封面</string>
+    <string name="card_ai_save">保存封面</string>
+    <string name="ai_image_model">图片模型（可选）</string>
+    <string name="ai_image_model_hint">例如 dall-e-3，用于海报的 AI 封面</string>
 </resources>

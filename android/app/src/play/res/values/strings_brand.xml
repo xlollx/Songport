@@ -44,4 +44,12 @@
     <string name="free_why_body">Trackhop has no ads, no subscriptions and no locked features. It lives on voluntary contributions: if it saves you time, you can buy the developer a coffee.</string>
     <string name="support_title">Like Trackhop?</string>
     <string name="support_prompt_body">With the sync “%1$s”. Trackhop is free and ad-free, and it lives on voluntary contributions: if it saved you time, you can buy the developer a coffee.</string>
+    <string name="share_sheet_unknown">Trackhop could not read this track’s title. Search for it by hand below.</string>
+    <string name="settings_music_links">Offer Trackhop for music links</string>
+    <string name="settings_music_links_desc">A Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link can then open in Trackhop, which adds the track to a playlist on any of your services. Android still asks which app to use, or keeps the one set in its link settings: Trackhop never takes a link by itself.</string>
+    <string name="settings_dynamic_color_desc">The colours of your wallpaper instead of Trackhop\'s own. The title banner keeps the brand colours.</string>
+    <string name="unplayable_unsupported">%1$s does not say which tracks it can no longer play, so Trackhop cannot check here.</string>
+    <string name="unplayable_hint">For each one Trackhop proposes a version that plays. Accept it, search another, remove the entry or skip it. Nothing changes until you apply.</string>
+    <string name="unplayable_confirm_body">%1$d tracks get a playable version, %2$d entries are removed. The originals stay in Trackhop\'s log so you can undo.</string>
+    <string name="settings_unplayable_desc">Once a week Trackhop looks through your playlists and tells you when a track can no longer be played. Nothing is changed by itself.</string>
 </resources>

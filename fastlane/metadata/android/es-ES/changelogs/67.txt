@@ -1,0 +1,1 @@
+Nueva herramienta, Canciones no reproducibles: encuentra las canciones en gris de tus listas (retiradas del catálogo, no disponibles en tu país, vídeos privados o eliminados) y propone una versión que suena, para confirmar antes de cambiar nada; con deshacer. Spotify, Deezer, TIDAL, YouTube, YouTube Music y Apple Music. Revisión semanal opcional con notificación.

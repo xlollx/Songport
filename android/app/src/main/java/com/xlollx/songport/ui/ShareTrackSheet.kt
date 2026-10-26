@@ -1,0 +1,236 @@
+package com.xlollx.songport.ui
+
+import com.xlollx.songport.providers.*
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.unit.dp
+import com.xlollx.songport.R
+import com.xlollx.songport.data.Store
+import com.xlollx.songport.model.PlaylistRef
+import com.xlollx.songport.model.SyncJob
+import com.xlollx.songport.model.TargetSearch
+import com.xlollx.songport.model.Track
+import com.xlollx.songport.sync.Matcher
+import com.xlollx.songport.sync.SyncEngine
+import com.xlollx.songport.sync.TrackLinks
+import com.xlollx.songport.sync.TrackLookup
+import kotlinx.coroutines.CancellationException
+
+/**
+ * A single track link shared from any music app, headed for any of the user's services: a friend's
+ * Spotify link lands in a YouTube Music, Navidrome or Jellyfin playlist. The sheet reads what the
+ * link is about, lists the connected services as targets (the last one used first), finds the same
+ * recording on the chosen one with the sync's own matching, shows the best match with its score and
+ * the other candidates, and hands the chosen track to [AddTrackDialog] for the playlist. "Open in"
+ * opens the matched track in the target's own app or site; "Copy link" keeps the original address.
+ *
+ * Everything runs on the phone: the link's own service is asked when connected, otherwise song.link
+ * or the service's public page (see [TrackLookup]).
+ */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+fun ShareTrackSheet(
+    text: String,
+    ref: TrackLinks.Ref,
+    onClose: () -> Unit,
+    onAdd: (MusicProvider, Track) -> Unit,
+    onMessage: (String) -> Unit,
+) {
+    val ctx = LocalContext.current
+    val app = ctx.applicationContext
+    val store = remember { Store.get(ctx) }
+    val clipboard = LocalClipboardManager.current
+    val engine = remember { SyncEngine(ctx) }
+    val link = remember(text) { Regex("""https?://\S+""").find(text)?.value ?: text.trim() }
+    val fromName = remember(ref) { serviceName(ref.service) }
+
+    // Every connected service that takes tracks: the link's own one is just one of them.
+    val targets = remember { Providers.connectors().filter { it.requiresAuth && it.canWrite && it.isConnected(app) } }
+    var target by remember {
+        val last = store.data.settings.shareTarget
+        mutableStateOf(targets.firstOrNull { it.id == last } ?: targets.firstOrNull { TrackLinks.matches(ref.service, it.serviceId) } ?: targets.firstOrNull())
+    }
+
+    // What the link is about, read once; null while loading, a title-less Track when nothing answered.
+    var source by remember { mutableStateOf<Track?>(null) }
+    var sourceFailed by remember { mutableStateOf(false) }
+    LaunchedEffect(ref) {
+        source = describe(app, ref, link)
+        if (source == null) { sourceFailed = true; source = Track(id = ref.trackId, title = "") }
+    }
+
+    // The same recording on the target: exact (its own id, read from the service) or the best of a search.
+    var exact by remember { mutableStateOf<Track?>(null) }
+    var best by remember { mutableStateOf<TargetSearch.Hit?>(null) }
+    var searching by remember { mutableStateOf(false) }
+    var changing by remember { mutableStateOf(false) }
+    val src = source
+    val dst = target
+    LaunchedEffect(dst?.id, src) {
+        exact = null; best = null; changing = false
+        if (dst == null || src == null) return@LaunchedEffect
+        searching = true
+        try {
+            exact = exactOn(app, dst, ref, link)
+            if (exact == null && src.title.isNotBlank()) {
+                val job = jobFor(dst)
+                val found = engine.searchOnTarget(job, queryOf(src), src)
+                best = found.hits.maxByOrNull { it.score }?.takeIf { it.score >= Matcher.DEFAULT_THRESHOLD }
+                if (best == null) changing = true
+            } else if (exact == null) changing = true
+        } catch (e: CancellationException) { throw e } catch (e: Exception) {
+            onMessage(e.message ?: ctx.getString(R.string.error_generic)); changing = true
+        }
+        searching = false
+    }
+
+    fun open(p: MusicProvider, t: Track) {
+        val url = p.trackUrl(app, t.id) ?: return
+        runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }.onFailure { onMessage(ctx.getString(R.string.error_generic)) }
+    }
+    fun add(p: MusicProvider, t: Track) {
+        store.updateSettings { it.copy(shareTarget = p.id) }
+        onAdd(p, t)
+    }
+
+    ModalBottomSheet(onDismissRequest = onClose) {
+        Column(Modifier.padding(horizontal = 16.dp).padding(bottom = 24.dp).verticalScroll(rememberScrollState())) {
+            Text(stringResource(R.string.share_sheet_title), style = MaterialTheme.typography.titleLarge)
+            Text(stringResource(R.string.share_sheet_from, fromName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(8.dp))
+            when {
+                src == null -> Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(Modifier.width(20.dp)); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.loading))
+                }
+                src.title.isBlank() -> Text(stringResource(R.string.share_sheet_unknown), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                else -> TrackLine(src, emphasis = true)
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                TrackLinks.url(ref.service, ref.trackId)?.let { url ->
+                    TextButton(onClick = { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } }) { Text(stringResource(R.string.share_sheet_open, fromName)) }
+                }
+                TextButton(onClick = { clipboard.setText(AnnotatedString(link)); onMessage(ctx.getString(R.string.share_sheet_copied)) }) { Text(stringResource(R.string.share_sheet_copy)) }
+            }
+
+            if (targets.isEmpty()) {
+                Text(stringResource(R.string.share_sheet_no_targets), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                return@Column
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(stringResource(R.string.share_sheet_target), style = MaterialTheme.typography.labelLarge)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                targets.forEach { p ->
+                    FilterChip(selected = p.id == dst?.id, onClick = { target = p }, label = { Text(p.label(app)) })
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            if (dst == null || src == null) return@Column
+            val dstName = dst.label(app)
+            when {
+                searching -> Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(Modifier.width(20.dp)); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.share_sheet_looking, dstName))
+                }
+                exact != null -> {
+                    val t = exact!!
+                    Text(stringResource(R.string.share_sheet_exact, dstName), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                    TrackLine(t)
+                    Actions(dst, t, canOpen = dst.trackUrl(app, t.id) != null, onAdd = { add(dst, t) }, onOpen = { open(dst, t) }, onChange = { exact = null; changing = true })
+                }
+                best != null && !changing -> {
+                    val h = best!!
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(R.string.share_sheet_best, dstName), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.review_score, (h.score * 100).toInt()), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.tertiary)
+                    }
+                    TrackLine(h.track)
+                    Actions(dst, h.track, canOpen = dst.trackUrl(app, h.track.id) != null, onAdd = { add(dst, h.track) }, onOpen = { open(dst, h.track) }, onChange = { changing = true })
+                }
+                else -> {
+                    if (best == null && src.title.isNotBlank()) Text(stringResource(R.string.share_sheet_no_match, dstName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    val job = remember(dst.id) { jobFor(dst) }
+                    MatchSearch(
+                        initialQuery = queryOf(src), targetName = dstName, pickLabel = stringResource(R.string.share_sheet_add),
+                        search = { q -> engine.searchOnTarget(job, q, src.takeIf { it.title.isNotBlank() }) },
+                        onPick = { t -> add(dst, t) }, onError = onMessage, autoSearch = src.title.isNotBlank(),
+                        webSearchUrl = { q -> dst.webSearchUrl(app, q) },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Actions(p: MusicProvider, t: Track, canOpen: Boolean, onAdd: () -> Unit, onOpen: () -> Unit, onChange: () -> Unit) {
+    val ctx = LocalContext.current
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+        TextButton(onClick = onChange) { Text(stringResource(R.string.share_sheet_change)) }
+        if (canOpen) TextButton(onClick = onOpen) { Text(stringResource(R.string.share_sheet_open, p.label(ctx))) }
+        FilledTonalButton(onClick = onAdd) { Text(stringResource(R.string.share_sheet_add)) }
+    }
+}
+
+/** A throwaway job on [p] alone: what the engine's target search needs to know (service, policy). */
+private fun jobFor(p: MusicProvider) = SyncJob(id = "share", name = "", source = PlaylistRef(provider = p.id), target = PlaylistRef(provider = p.id))
+
+private fun queryOf(t: Track) = if (t.artists.isEmpty()) t.title else "${t.artistLine} - ${t.title}"
+
+private fun serviceName(service: String) = when (service) {
+    "spotify" -> "Spotify"; "apple" -> "Apple Music"; "youtube" -> "YouTube Music"; "amazon" -> "Amazon Music"
+    "deezer" -> "Deezer"; "tidal" -> "TIDAL"; else -> service.replaceFirstChar { it.uppercase() }
+}
+
+/**
+ * The track behind the link: from a connected account of its own service, else from any connected
+ * service song.link knows it on, else from the service's public endpoints. Null when none answers.
+ */
+private suspend fun describe(app: android.content.Context, ref: TrackLinks.Ref, link: String): Track? {
+    val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(app) }
+    connected.firstOrNull { TrackLinks.matches(ref.service, it.serviceId) }?.let { own ->
+        runCatching { own.track(app, ref.trackId) }.getOrNull()?.takeIf { it.title.isNotBlank() }?.let { return it }
+    }
+    for (p in connected.filter { !TrackLinks.matches(ref.service, it.serviceId) }) {
+        val there = runCatching { TrackLinks.viaOdesli(link, p.serviceId) }.getOrNull() ?: continue
+        runCatching { p.track(app, there.trackId) }.getOrNull()?.takeIf { it.title.isNotBlank() }?.let { return it }
+    }
+    return TrackLookup.describe(ref, link)
+}
+
+/** The very recording on [dst], when its id is known there: the link's own service, or song.link's word. */
+private suspend fun exactOn(app: android.content.Context, dst: MusicProvider, ref: TrackLinks.Ref, link: String): Track? {
+    val id = if (TrackLinks.matches(ref.service, dst.serviceId)) ref.trackId
+        else runCatching { TrackLinks.viaOdesli(link, dst.serviceId) }.getOrNull()?.trackId ?: return null
+    return runCatching { dst.track(app, id) }.getOrNull()?.takeIf { it.title.isNotBlank() }
+}

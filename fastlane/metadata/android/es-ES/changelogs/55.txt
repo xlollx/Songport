@@ -1,0 +1,1 @@
+Amazon Music: cuando Amazon rechaza una lista, Songport ahora revisa tu biblioteca para distinguir una sesión caducada de una lista eliminada o que ya no es tuya, y te dice cuál es.

@@ -1,0 +1,1 @@
+Amazon Music: el inicio de sesión y el reproductor oculto ya no le dicen a Amazon que se ejecutan dentro de una app (la cabecera X-Requested-With que añade Android), algo que Amazon ahora rechaza con "401". Tras actualizar, desconecta y vuelve a conectar Amazon Music una vez. YouTube Music: su cliente pasó a un módulo compartido con el servidor, sin cambios de comportamiento.

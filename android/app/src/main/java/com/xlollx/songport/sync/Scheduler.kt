@@ -1,5 +1,6 @@
 package com.xlollx.songport.sync
 
+import com.xlollx.songport.providers.*
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
@@ -25,65 +26,7 @@ import com.xlollx.songport.data.Store
 import com.xlollx.songport.model.Progress
 import com.xlollx.songport.model.Schedule
 import com.xlollx.songport.model.SyncJob
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.TimeUnit
-
-/** Stato in memoria delle sync in corso (per la UI), con pausa e interruzione richieste dall'utente. */
-object SyncState {
-    private val _running = MutableStateFlow<Map<String, Progress?>>(emptyMap())
-    val running: StateFlow<Map<String, Progress?>> get() = _running
-    private val _paused = MutableStateFlow<Set<String>>(emptySet())
-    val paused: StateFlow<Set<String>> get() = _paused
-    private val _stopping = MutableStateFlow<Set<String>>(emptySet())
-    /** Stop asked for, not yet reached: the engine stops at its next step, the card says so meanwhile. */
-    val stopping: StateFlow<Set<String>> get() = _stopping
-
-    /** What happened to one source track during the run, for the live view. */
-    enum class Outcome { FOUND, CACHED, NOT_FOUND, ADDED, ADD_FAILED, REMOVED }
-    class LiveItem(val source: String, val result: String?, val outcome: Outcome)
-
-    private val _items = MutableStateFlow<Map<String, List<LiveItem>>>(emptyMap())
-    /** Tracks processed so far per running job, newest first (capped). */
-    val items: StateFlow<Map<String, List<LiveItem>>> get() = _items
-
-    fun start(jobId: String) { _running.value = _running.value + (jobId to null); _items.value = _items.value + (jobId to emptyList()) }
-    fun progress(jobId: String, p: Progress) { _running.value = _running.value + (jobId to p) }
-    fun item(jobId: String, item: LiveItem) {
-        val cur = _items.value[jobId].orEmpty()
-        _items.value = _items.value + (jobId to (listOf(item) + cur).take(MAX_ITEMS))
-    }
-    fun finish(jobId: String) {
-        _running.value = _running.value - jobId
-        _paused.value = _paused.value - jobId
-        _items.value = _items.value - jobId
-        _stopping.value = _stopping.value - jobId
-    }
-
-    private const val MAX_ITEMS = 1000
-
-    fun pause(jobId: String) { _paused.value = _paused.value + jobId }
-    fun resume(jobId: String) { _paused.value = _paused.value - jobId }
-    // A paused sync stays shown as paused until it actually stops: checkpoint() lets a stop through a pause.
-    fun stop(jobId: String) { _stopping.value = _stopping.value + jobId }
-    fun isPaused(jobId: String) = jobId in _paused.value
-
-    /**
-     * Chiamato dal motore a ogni passo: attende finche' la sync e' in pausa e interrompe se l'utente
-     * l'ha fermata. Bloccante di proposito: il motore lavora su un thread di WorkManager.
-     */
-    fun checkpoint(ctx: Context, jobId: String) {
-        while (jobId in _paused.value && jobId !in _stopping.value) Thread.sleep(250)
-        stopCheck(ctx, jobId)
-    }
-
-    /** Solo l'interruzione, senza attendere la pausa: per i passi che devono scorrere comunque. */
-    fun stopCheck(ctx: Context, jobId: String) {
-        if (jobId in _stopping.value) throw SyncStoppedException(ctx.getString(R.string.sync_stopped))
-    }
-}
-
-class SyncStoppedException(message: String) : Exception(message)
 
 class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
     override suspend fun doWork(): Result {
@@ -210,9 +153,50 @@ class BackupWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
     }
 }
 
+/** The weekly look for entries the services no longer play (see the Unplayable tracks tool): a notice, never a change. */
+private const val UNPLAYABLE_NOTICE_ID = 4243
+
+class UnplayableWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
+    override suspend fun doWork(): Result {
+        val ctx = applicationContext
+        var count = 0
+        var services = 0
+        val failed = ArrayList<String>()
+        for (p in Providers.connectors().filter { it.detectsUnplayable && it.isConnected(ctx) }) {
+            try {
+                val scan = Tools.scanUnplayable(ctx, p, Tools.unplayableTargets(ctx, p))
+                count += scan.count
+                services++
+                failed += scan.failed.map { it.reason }
+            } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
+                failed += e.message ?: e.javaClass.simpleName
+            }
+        }
+        Diagnostics.log(ctx, "unplayable", "weekly check: $count unplayable in $services services" + (if (failed.isEmpty()) "" else "; ${failed.size} playlists not read"))
+        if (count > 0) Notifications.unplayable(ctx, UNPLAYABLE_NOTICE_ID, count)
+        return if (services == 0 && failed.isNotEmpty() && failed.all { isTransientNetwork(it) }) Result.retry() else Result.success()
+    }
+}
+
 object Scheduler {
     private fun name(jobId: String) = "sync-$jobId"
     private const val BACKUP_WORK = "backup-export"
+    private const val UNPLAYABLE_WORK = "unplayable-check"
+
+    /** Allinea il controllo settimanale dei brani non riproducibili alle impostazioni. */
+    fun applyUnplayable(ctx: Context) {
+        val wm = WorkManager.getInstance(ctx)
+        if (!Store.get(ctx).data.settings.unplayableCheck) {
+            wm.cancelUniqueWork(UNPLAYABLE_WORK)
+            return
+        }
+        com.xlollx.songport.NotificationAsk.onUse()
+        val req = PeriodicWorkRequestBuilder<UnplayableWorker>(7, TimeUnit.DAYS)
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 15, TimeUnit.MINUTES)
+            .build()
+        wm.enqueueUniquePeriodicWork(UNPLAYABLE_WORK, ExistingPeriodicWorkPolicy.UPDATE, req)
+    }
 
     /** Allinea il lavoro periodico di copia dei backup alle impostazioni. */
     fun applyBackup(ctx: Context) {
@@ -255,6 +239,7 @@ object Scheduler {
         val store = Store.get(ctx)
         store.data.jobs.forEach { apply(ctx, it) }
         applyBackup(ctx)
+        applyUnplayable(ctx)
     }
 
     /**

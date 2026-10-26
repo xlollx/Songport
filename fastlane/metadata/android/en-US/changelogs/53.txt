@@ -1,0 +1,1 @@
+Amazon Music: when Amazon refuses the session (401), the app now renews it as a browser does, following the cookies set along the way and running the player once, before asking you to connect again.

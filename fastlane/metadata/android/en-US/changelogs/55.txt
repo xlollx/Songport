@@ -1,0 +1,1 @@
+Amazon Music: when Amazon refuses a playlist, Songport now checks your library to tell an expired session from a playlist that was deleted or is no longer yours, and says which.

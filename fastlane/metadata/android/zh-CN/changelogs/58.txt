@@ -1,0 +1,1 @@
+Amazon Music：登录和隐藏播放器现在以 Android 版 Chrome 的身份出现（与 Amazon 接受该账号的手机浏览器一致），而不再是 Amazon 现在会以“401”拒绝的桌面版 Chrome。更新后，请将 Amazon Music 断开并重新连接一次。

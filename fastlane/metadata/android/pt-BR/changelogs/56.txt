@@ -1,0 +1,1 @@
+Amazon Music: desconectar e conectar de novo agora remove todos os cookies antigos da Amazon, que com uma cópia vencida faziam tudo ser recusado com "401" mesmo logo após conectar. Conexões e desconexões aparecem no log de diagnóstico. Depois de atualizar, desconecte e conecte o Amazon Music uma vez.

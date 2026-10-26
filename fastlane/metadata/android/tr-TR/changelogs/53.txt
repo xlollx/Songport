@@ -1,0 +1,1 @@
+Amazon Music: Amazon oturumu reddettiğinde (401) uygulama artık onu bir tarayıcı gibi yeniliyor; yol boyunca ayarlanan çerezleri izliyor ve oynatıcıyı bir kez çalıştırıyor, ancak sonra yeniden bağlanmanı istiyor.

@@ -1,0 +1,1 @@
+Udostępnione linki trafiają wszędzie: link do utworu ze Spotify, Apple Music, YouTube Music, Amazon Music, Deezera lub TIDAL udostępniony do Songport trafia teraz do playlisty w dowolnej z twoich usług, także w Navidrome, Jellyfin i Plex, a dopasowanie widać przed dodaniem. Opcjonalnie: otwieranie linków muzycznych w Songport (Ustawienia).

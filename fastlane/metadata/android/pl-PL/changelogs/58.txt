@@ -1,0 +1,1 @@
+Amazon Music: logowanie i ukryty odtwarzacz przedstawiają się teraz jako Chrome na Androida — jak przeglądarka telefonu, w której Amazon akceptuje konto — zamiast Chrome na komputer, który Amazon odrzuca teraz błędem „401”. Po aktualizacji raz rozłącz i połącz Amazon Music.

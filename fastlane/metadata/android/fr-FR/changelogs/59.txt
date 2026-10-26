@@ -1,0 +1,1 @@
+Amazon Music : les requêtes ressemblent davantage à celles du lecteur web (en-tête d'abonnement, nom du client) et, quand Amazon en refuse une, le journal de diagnostic note sa réponse, pour comprendre pourquoi il accepte le lecteur et pas Songport.

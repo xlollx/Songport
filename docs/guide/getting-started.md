@@ -42,3 +42,10 @@ not found go to the **review**, where you search the target yourself or pick a s
 remembers your choice.
 
 [All guide pages](./)
+
+## Appearance
+
+Settings › Appearance has the theme (follow the system, light or dark) and **Dynamic colours**: on Android 12 and
+newer the app can take the colours of your wallpaper (Material You) instead of its own indigo and magenta. It is off
+by default; the title banner keeps the brand colours either way. The app follows the system font size, and above
+130% the bottom bar shows the name of the selected tab only.

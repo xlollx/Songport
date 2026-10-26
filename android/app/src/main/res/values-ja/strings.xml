@@ -715,4 +715,127 @@
     <string name="support_prompt_title">%1$s 曲を移しました</string>
     <string name="support_prompt_body">同期「%1$s」で移動しました。Songport は無料で広告もなく、任意の支援で運営されています。時間の節約になったなら、開発者にコーヒーをおごっていただけると嬉しいです。</string>
     <string name="support_prompt_later">今はしない</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">追加先…</string>
+    <string name="share_sheet_from">%1$s から共有</string>
+    <string name="share_sheet_unknown">この曲のタイトルを読み取れませんでした。下で手動で検索してください。</string>
+    <string name="share_sheet_open">%1$s で開く</string>
+    <string name="share_sheet_copy">リンクをコピー</string>
+    <string name="share_sheet_copied">リンクをコピーしました</string>
+    <string name="share_sheet_no_targets">まず「アカウント」でサービスを接続してください。曲はそこにあるプレイリストに追加されます。</string>
+    <string name="share_sheet_target">追加先</string>
+    <string name="share_sheet_looking">%1$s で検索中…</string>
+    <string name="share_sheet_exact">同じ曲（%1$s から取得）</string>
+    <string name="share_sheet_best">%1$s での最有力候補</string>
+    <string name="share_sheet_no_match">%1$s で見つかりませんでした。手動で検索するか、別のサービスを選んでください。</string>
+    <string name="share_sheet_add">プレイリストに追加…</string>
+    <string name="share_sheet_change">変更</string>
+    <string name="settings_music_links">音楽リンクで Songport を候補に出す</string>
+    <string name="settings_music_links_desc">Spotify、Apple Music、YouTube Music、Amazon Music、Deezer、TIDAL のリンクを Songport で開けるようになり、どのサービスのプレイリストにも曲を追加できます。使うアプリは引き続き Android が尋ねるか、リンク設定で決めたアプリが使われます。Songport がリンクを勝手に奪うことはありません。</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">どれくらい気が合う？</string>
+    <string name="tools_compat_desc">2 つのプレイリストを比較します。サービスが違っても構いません。共通の曲、共通のアーティスト、スコア、共有できるカード。</string>
+    <string name="tools_poster_title">プレイリストのポスター</string>
+    <string name="tools_poster_desc">ジャケット、タイトル、曲数、そしてプレイリストを開く QR コードが入ったカード。パーティー、ライブ、壁に。</string>
+    <string name="card_compat_eyebrow">どれくらい気が合う？</string>
+    <string name="card_compat_subtitle">共通の曲 %1$d · 共通のアーティスト %2$d</string>
+    <string name="card_compat_artists">ふたりとも聴いている</string>
+    <string name="card_poster_scan">スキャンして %1$s で開く</string>
+    <string name="card_unnamed_playlist">プレイリスト</string>
+    <string name="card_source_link">リンク</string>
+    <string name="card_source_link_hint">公開プレイリストのリンク</string>
+    <string name="card_format_story">ストーリー</string>
+    <string name="card_format_square">正方形</string>
+    <string name="card_share">共有</string>
+    <string name="card_save">画像を保存</string>
+    <string name="card_compat_first">1 つ目のプレイリスト</string>
+    <string name="card_compat_second">2 つ目のプレイリスト</string>
+    <string name="card_compat_common_pct">短い方のプレイリストの %1$d%% がもう一方にも入っています</string>
+    <string name="card_compat_in_common">共通</string>
+    <string name="card_compat_for">「%1$s」へ</string>
+    <string name="card_compat_run">比較</string>
+    <string name="card_again">カードを作り直す</string>
+    <string name="card_poster_no_qr">このサービスにはプレイリストの公開ページがないため、ポスターに QR コードはありません。</string>
+    <string name="card_poster_run">ポスターを作る</string>
+    <plurals name="card_tracks">
+        <item quantity="other">%1$d 曲</item>
+    </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">外観</string>
+    <string name="settings_theme">テーマ</string>
+    <string name="settings_theme_system">システム</string>
+    <string name="settings_theme_light">ライト</string>
+    <string name="settings_theme_dark">ダーク</string>
+    <string name="settings_dynamic_color">ダイナミックカラー（Material You）</string>
+    <string name="settings_dynamic_color_desc">Songport の配色ではなく、壁紙の色を使います。タイトルのバナーはブランドカラーのままです。</string>
+    <string name="settings_dynamic_color_unavailable">Android 12 以降が必要です。</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">再生できない曲</string>
+    <string name="tools_unplayable_desc">サービスに表示されているのに再生できなくなった曲（グレー表示）を見つけて、再生できるバージョンに置き換えます。</string>
+    <string name="unplayable_title">再生できない曲：%1$s</string>
+    <string name="unplayable_unsupported">%1$s はどの曲が再生できなくなったかを教えてくれないため、Songport はここでは確認できません。</string>
+    <string name="unplayable_all_playlists">自分のプレイリストすべて</string>
+    <string name="unplayable_scan">確認</string>
+    <string name="unplayable_scanning">%1$s を確認中…</string>
+    <string name="unplayable_none">すべて再生できます：%1$d 件のプレイリストに再生できない曲はありません。</string>
+    <string name="unplayable_found">%2$d 件のプレイリストに再生できない曲が %1$d 曲</string>
+    <string name="unplayable_hint">それぞれについて Songport が再生できるバージョンを提案します。採用する、別のものを探す、項目を削除する、スキップする、から選べます。適用するまで何も変わりません。</string>
+    <string name="unplayable_searching">再生できるバージョンを探しています…</string>
+    <string name="unplayable_no_proposal">確かなバージョンが見つかりません。項目を開いて手動で検索するか、削除してください。</string>
+    <string name="unplayable_proposal">置き換え候補：%1$s（一致 %2$d%%）</string>
+    <string name="unplayable_relinked">%1$s はサービスがすでに代わりに再生しているものです</string>
+    <string name="unplayable_remove_only">削除のみ</string>
+    <string name="unplayable_skip">スキップ</string>
+    <string name="unplayable_undecide">選択を取り消す</string>
+    <string name="unplayable_decided_replace">%1$s に置き換えます</string>
+    <string name="unplayable_decided_remove">削除します</string>
+    <string name="unplayable_apply">%1$d 件の変更を適用</string>
+    <string name="unplayable_applying">適用中 %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">変更を適用しますか？</string>
+    <string name="unplayable_confirm_body">%1$d 曲が再生できるバージョンに置き換わり、%2$d 件の項目が削除されます。元の項目は Songport のログに残るので、取り消せます。</string>
+    <string name="unplayable_no_removal">%1$s はアプリによる曲の削除を許可していません。再生できるバージョンを追加し、再生できない項目はそのまま残ります。</string>
+    <string name="unplayable_done">%1$d 曲を置き換え、%2$d 件を削除</string>
+    <string name="unplayable_undo">元に戻す</string>
+    <string name="unplayable_undo_last">前回の修正を元に戻す（%1$d）</string>
+    <string name="unplayable_undone">%1$d 件の項目を戻しました</string>
+    <string name="unplayable_reason_market">お住まいの国では利用不可</string>
+    <string name="unplayable_reason_product">プラン対象外</string>
+    <string name="unplayable_reason_explicit">露骨な表現のフィルター</string>
+    <string name="unplayable_reason_private">非公開動画</string>
+    <string name="unplayable_reason_deleted">削除済み</string>
+    <string name="unplayable_reason_unknown">再生不可</string>
+    <string name="settings_unplayable">再生できない曲の週次チェック</string>
+    <string name="settings_unplayable_desc">週に一度、Songport がプレイリストを確認し、再生できなくなった曲があればお知らせします。勝手に変更することはありません。</string>
+    <string name="notif_unplayable_title">再生できない曲</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">プレイリスト内の %1$d 曲が再生できなくなりました。タップして置き換えます。</item>
+        <item quantity="other">プレイリスト内の %1$d 曲が再生できなくなりました。タップして置き換えます。</item>
+    </plurals>
+    <string name="services_group_streaming">ストリーミング</string>
+    <string name="services_group_servers">自分のサーバー</string>
+    <string name="services_group_other">その他</string>
+    <string name="settings_new_look">新しい見た目</string>
+    <string name="settings_new_look_desc">前回の実行を数字で、最近の実行履歴とあわせて表示する同期カード。</string>
+    <string name="stat_added">追加</string>
+    <string name="stat_removed">削除</string>
+    <string name="stat_not_found">見つからず</string>
+    <string name="stat_tracks">曲</string>
+    <plurals name="stat_history">
+        <item quantity="other">直近 %1$d 回 · 失敗 %2$d 回</item>
+    </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">AI でジャケットを生成</string>
+    <string name="card_ai_cover_yes">%1$s で、自分のキーを使用：数セントかかる場合があります。</string>
+    <string name="card_ai_cover_none">先にプレイリスト生成（ツール）で AI を設定してください。</string>
+    <string name="card_ai_cover_claude">Claude は画像を生成しません。プレイリスト生成で OpenAI か Gemini を選んでください。</string>
+    <string name="card_ai_cover_no_images">%1$s はここでは画像を生成しません。プレイリスト生成で OpenAI か Gemini を選んでください。</string>
+    <string name="card_ai_cover_model">プレイリスト生成の設定で、サーバーの画像モデルを指定してください。</string>
+    <string name="card_ai_drawing">AI がジャケットを描いています…</string>
+    <string name="card_ai_again">別のジャケット</string>
+    <string name="card_ai_save">ジャケットを保存</string>
+    <string name="ai_image_model">画像モデル（任意）</string>
+    <string name="ai_image_model_hint">例：dall-e-3（ポスターの AI ジャケット用）</string>
 </resources>

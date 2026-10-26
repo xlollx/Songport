@@ -1,0 +1,1 @@
+Capas nos cards para compartilhar: as faixas do YouTube Music mostram a própria capa e os outros serviços a buscam no catálogo público do Deezer e depois da Apple, então o pôster e o card de compatibilidade não usam mais blocos vazios.

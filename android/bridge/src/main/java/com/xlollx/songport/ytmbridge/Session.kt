@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.webkit.CookieManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import java.security.MessageDigest
 
 /**
  * The YouTube Music session: the cookies of the login the user completed in the WebView, encrypted
@@ -13,7 +12,7 @@ import java.security.MessageDigest
  * device and are never handed to Songport, which only receives playlists and tracks.
  */
 object Session {
-    const val ORIGIN = "https://music.youtube.com"
+    const val ORIGIN = YtmAuth.ORIGIN
 
     @Volatile private var cached: SharedPreferences? = null
 
@@ -65,21 +64,8 @@ object Session {
     private val COOKIE_DOMAINS = listOf("music.youtube.com", "www.youtube.com", "youtube.com", "accounts.google.com", "www.google.com", "google.com")
 
     /** The cookie that signs requests: SAPISID, or its __Secure-3PAPISID twin. */
-    fun sapisid(cookies: String): String? {
-        val map = cookies.split(';').mapNotNull { part ->
-            val i = part.indexOf('=')
-            if (i <= 0) null else part.substring(0, i).trim() to part.substring(i + 1).trim()
-        }.toMap()
-        return map["SAPISID"] ?: map["__Secure-3PAPISID"]
-    }
+    fun sapisid(cookies: String): String? = YtmAuth.sapisid(cookies)
 
     /** Authorization header in the form the web player itself sends: SAPISIDHASH ts_sha1("ts sapisid origin"). */
-    fun authorization(cookies: String): String {
-        val sid = sapisid(cookies) ?: throw BridgeException("session has no SAPISID cookie")
-        val ts = System.currentTimeMillis() / 1000
-        val digest = MessageDigest.getInstance("SHA-1").digest("$ts $sid $ORIGIN".toByteArray())
-        return "SAPISIDHASH ${ts}_${digest.joinToString("") { "%02x".format(it) }}"
-    }
+    fun authorization(cookies: String): String = YtmAuth.authorization(cookies)
 }
-
-class BridgeException(message: String) : Exception(message)

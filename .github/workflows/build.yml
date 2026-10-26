@@ -73,7 +73,7 @@ jobs:
         run: python3 scripts/play_strings.py --check
 
       - name: Test unitari
-        run: gradle :core:test testFullDebugUnitTest --no-daemon --stacktrace
+        run: gradle :core:test :ytm:test testFullDebugUnitTest --no-daemon --stacktrace
 
       - name: Chiave di debug fissa (se configurata)
         # Con il secret DEBUG_KEYSTORE_BASE64 la firma dell'APK debug resta uguale tra le build,

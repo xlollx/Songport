@@ -1,0 +1,1 @@
+Compilación reproducible para F-Droid: el perfil de inicio, que cambiaba en cada compilación, ya no se incluye. Amazon Music: código del conector ordenado tras la corrección de octubre; YouTube Music: cliente compartido con el servidor.

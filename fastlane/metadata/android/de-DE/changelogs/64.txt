@@ -1,0 +1,1 @@
+Zwei neue Werkzeuge zum Teilen: „Wie kompatibel sind wir?“ vergleicht zwei Playlists, auch von verschiedenen Diensten, und zeigt einen Wert mit den gemeinsamen Titeln und Künstlern als Bild für deine Stories. „Playlist-Poster“ erstellt eine Karte mit den Covern und einem QR-Code, der die Playlist öffnet.

@@ -1,0 +1,1 @@
+Amazon Music: Akzeptiert Amazon die Sitzung nur noch vom eigenen Web-Player, sendet Songport seine Anfragen jetzt aus diesem Player heraus (eine unsichtbare Browserseite), statt mit „401“ abzubrechen.

@@ -43,4 +43,11 @@
     <string name="free_why_body">Trackhop には広告も、サブスクリプションも、機能制限もありません。任意の支援で運営されています。時間の節約になったなら、開発者にコーヒーをおごっていただけると嬉しいです。</string>
     <string name="support_title">Trackhop を気に入っていただけましたか？</string>
     <string name="support_prompt_body">同期「%1$s」で移動しました。Trackhop は無料で広告もなく、任意の支援で運営されています。時間の節約になったなら、開発者にコーヒーをおごっていただけると嬉しいです。</string>
+    <string name="settings_music_links">音楽リンクで Trackhop を候補に出す</string>
+    <string name="settings_music_links_desc">Spotify、Apple Music、YouTube Music、Amazon Music、Deezer、TIDAL のリンクを Trackhop で開けるようになり、どのサービスのプレイリストにも曲を追加できます。使うアプリは引き続き Android が尋ねるか、リンク設定で決めたアプリが使われます。Trackhop がリンクを勝手に奪うことはありません。</string>
+    <string name="settings_dynamic_color_desc">Trackhop の配色ではなく、壁紙の色を使います。タイトルのバナーはブランドカラーのままです。</string>
+    <string name="unplayable_unsupported">%1$s はどの曲が再生できなくなったかを教えてくれないため、Trackhop はここでは確認できません。</string>
+    <string name="unplayable_hint">それぞれについて Trackhop が再生できるバージョンを提案します。採用する、別のものを探す、項目を削除する、スキップする、から選べます。適用するまで何も変わりません。</string>
+    <string name="unplayable_confirm_body">%1$d 曲が再生できるバージョンに置き換わり、%2$d 件の項目が削除されます。元の項目は Trackhop のログに残るので、取り消せます。</string>
+    <string name="settings_unplayable_desc">週に一度、Trackhop がプレイリストを確認し、再生できなくなった曲があればお知らせします。勝手に変更することはありません。</string>
 </resources>

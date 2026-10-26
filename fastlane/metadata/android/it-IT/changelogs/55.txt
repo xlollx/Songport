@@ -1,0 +1,1 @@
+Amazon Music: quando Amazon rifiuta una playlist, Songport ora controlla la tua libreria per distinguere una sessione scaduta da una playlist eliminata o non più tua, e ti dice quale dei due.

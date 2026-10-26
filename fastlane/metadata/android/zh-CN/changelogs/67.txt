@@ -1,0 +1,1 @@
+新工具“无法播放的曲目”：找出播放列表中变灰的曲目（已下架、在你所在地区不可用、私密或已删除的视频），并推荐可播放的版本，修改前需确认，可撤销。支持 Spotify、Deezer、TIDAL、YouTube、YouTube Music 和 Apple Music。可选每周检查并通知。

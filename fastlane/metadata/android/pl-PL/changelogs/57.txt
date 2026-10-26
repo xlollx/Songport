@@ -1,0 +1,1 @@
+Amazon Music: logowanie i ukryty odtwarzacz nie informują już Amazon, że działają w aplikacji (nagłówek X-Requested-With dodawany przez Androida), co Amazon odrzuca teraz błędem „401”. Po aktualizacji raz rozłącz i połącz Amazon Music. YouTube Music: klient trafił do modułu współdzielonego z serwerem, bez zmian w działaniu.

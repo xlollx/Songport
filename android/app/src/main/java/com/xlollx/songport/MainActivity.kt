@@ -1,5 +1,6 @@
 package com.xlollx.songport
 
+import com.xlollx.songport.providers.*
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -74,6 +75,11 @@ import com.xlollx.songport.ui.AccountsScreen
 import com.xlollx.songport.ui.AddTrackDialog
 import com.xlollx.songport.ui.AppTopBar
 import com.xlollx.songport.ui.AppTheme
+import com.xlollx.songport.ui.BackAwareScreen
+import com.xlollx.songport.ui.TabContent
+import com.xlollx.songport.ui.ThemeMode
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.ui.text.style.TextOverflow
 import com.xlollx.songport.ui.LockScreen
 import com.xlollx.songport.ui.LogScreen
 import com.xlollx.songport.ui.OnboardingScreen
@@ -84,6 +90,7 @@ import com.xlollx.songport.ui.SyncEditorScreen
 import com.xlollx.songport.ui.TransferScreen
 import com.xlollx.songport.ui.PlaylistsScreen
 import com.xlollx.songport.ui.LibraryScanScreen
+import com.xlollx.songport.ui.UnplayableScreen
 import com.xlollx.songport.ui.SyncsScreen
 import com.xlollx.songport.ui.ToolsScreen
 import com.xlollx.songport.ui.UnmatchedScreen
@@ -98,6 +105,8 @@ class MainActivity : ComponentActivity() {
 
     private val messages = MutableStateFlow<String?>(null)
     private val tabRequests = MutableStateFlow(-1)
+    /** A tool a notification asks to open (TOOL_*), once the Tools tab is up. */
+    private val toolRequests = MutableStateFlow<String?>(null)
     /** Testo arrivato con "Condividi con Songport": contiene (si spera) il link di una playlist. */
     private val sharedText = MutableStateFlow<String?>(null)
     /** Scorciatoia "Nuova sync" dall'icona: apre subito l'editor. */
@@ -127,9 +136,10 @@ class MainActivity : ComponentActivity() {
             requestUnlock()
         }
         setContent {
-            AppTheme {
+            val settings by Store.get(this).state.collectAsState()
+            AppTheme(mode = ThemeMode.of(settings.settings.themeMode), dynamicColor = settings.settings.dynamicColor) {
                 val isLocked by locked.collectAsState()
-                if (isLocked) LockScreen { requestUnlock() } else MainScreen(messages, tabRequests, sharedText, newSyncRequests)
+                if (isLocked) LockScreen { requestUnlock() } else MainScreen(messages, tabRequests, sharedText, newSyncRequests, toolRequests)
             }
         }
     }
@@ -153,8 +163,18 @@ class MainActivity : ComponentActivity() {
             i.getStringExtra(Intent.EXTRA_TEXT)?.let { sharedText.value = it }
             i.action = null
         }
+        // A music link opened with Songport (the MusicLinkActivity alias, off unless the user turns it on
+        // in Settings): the address is handled like a shared one. The app's own callback links stay apart.
+        if (i?.action == Intent.ACTION_VIEW) {
+            val url = i.dataString
+            if (url != null && (com.xlollx.songport.sync.TrackLinks.parse(url) != null || com.xlollx.songport.sync.PlaylistLinks.parse(url) != null)) {
+                sharedText.value = url
+                i.action = null
+            }
+        }
         i?.getStringExtra(EXTRA_MESSAGE)?.let { messages.value = it; i.removeExtra(EXTRA_MESSAGE) }
         if (i?.hasExtra(EXTRA_TAB) == true) { tabRequests.value = i.getIntExtra(EXTRA_TAB, 0); i.removeExtra(EXTRA_TAB) }
+        i?.getStringExtra(EXTRA_TOOL)?.let { toolRequests.value = it; i.removeExtra(EXTRA_TOOL) }
     }
 
     private fun askNotificationPermission() {
@@ -166,6 +186,8 @@ class MainActivity : ComponentActivity() {
     companion object {
         const val EXTRA_MESSAGE = "message"
         const val EXTRA_TAB = "tab"
+        const val EXTRA_TOOL = "tool"
+        const val TOOL_UNPLAYABLE = "unplayable"
         const val ACTION_SYNC_ALL = "com.xlollx.songport.SYNC_ALL"
         const val ACTION_NEW_SYNC = "com.xlollx.songport.NEW_SYNC"
         const val TAB_SYNCS = 0
@@ -186,24 +208,40 @@ private fun MainScreen(
     tabRequests: MutableStateFlow<Int>,
     sharedText: MutableStateFlow<String?>,
     newSyncRequests: MutableStateFlow<Boolean>,
+    toolRequests: MutableStateFlow<String?> = MutableStateFlow(null),
 ) {
     val ctx = LocalContext.current
     val store = remember { Store.get(ctx) }
     val data by store.state.collectAsState()
     var tab by rememberSaveable { mutableIntStateOf(0) }
     val snackbar = remember { SnackbarHostState() }
-    var editing by remember { mutableStateOf<SyncJob?>(null) }
-    var wizardFor by remember { mutableStateOf<MusicProvider?>(null) }
-    var unmatchedReport by remember { mutableStateOf<String?>(null) }
-    var filesOpen by remember { mutableStateOf(false) }
-    var logOpen by remember { mutableStateOf(false) }
-    var transferOpen by remember { mutableStateOf(false) }
-    var manageProvider by remember { mutableStateOf<MusicProvider?>(null) }
-    var scanProvider by remember { mutableStateOf<MusicProvider?>(null) }
-    var previewJob by remember { mutableStateOf<SyncJob?>(null) }
-    var addConnector by remember { mutableStateOf(false) }
+    // The screen on top survives a rotation and a fold: jobs travel as JSON, providers by id.
+    var editing by rememberSaveable(stateSaver = JobSaver) { mutableStateOf<SyncJob?>(null) }
+    var wizardFor by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
+    var unmatchedReport by rememberSaveable { mutableStateOf<String?>(null) }
+    var filesOpen by rememberSaveable { mutableStateOf(false) }
+    var logOpen by rememberSaveable { mutableStateOf(false) }
+    var transferOpen by rememberSaveable { mutableStateOf(false) }
+    var manageProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
+    var scanProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
+    var unplayableProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
+    // A notification asked for a tool: the first connected service the tool works with.
+    val toolRequest by toolRequests.collectAsState()
+    LaunchedEffect(toolRequest) {
+        if (toolRequest == MainActivity.TOOL_UNPLAYABLE) {
+            toolRequests.value = null
+            tab = MainActivity.TAB_TOOLS
+            unplayableProvider = Providers.connectors().firstOrNull { it.detectsUnplayable && it.isConnected(ctx) }
+        }
+    }
+    var previewJob by rememberSaveable(stateSaver = JobSaver) { mutableStateOf<SyncJob?>(null) }
+    // Two playlist links shared at once: "how compatible are we?" in Tools.
+    var compareLinks by remember { mutableStateOf<Pair<String, String>?>(null) }
+    var addConnector by rememberSaveable { mutableStateOf(false) }
     // A single track shared from a service's app: which of your playlists it goes to.
     var sharedTrack by remember { mutableStateOf<Pair<MusicProvider, com.xlollx.songport.model.Track>?>(null) }
+    // A track link from any music app, headed for any connected service (ShareTrackSheet).
+    var sharedLink by remember { mutableStateOf<Pair<String, com.xlollx.songport.sync.TrackLinks.Ref>?>(null) }
 
     val newSync by newSyncRequests.collectAsState()
     LaunchedEffect(newSync) { if (newSync) { newSyncRequests.value = false; tab = MainActivity.TAB_SYNCS; editing = newJob() } }
@@ -213,6 +251,8 @@ private fun MainScreen(
     LaunchedEffect(shared) {
         val text = shared ?: return@LaunchedEffect
         sharedText.value = null
+        val links = Regex("""https?://\S+|spotify:playlist:\S+""").findAll(text).map { it.value }.filter { PlaylistLinks.parse(it) != null }.distinct().toList()
+        if (links.size >= 2) { compareLinks = links[0] to links[1]; tab = MainActivity.TAB_TOOLS; return@LaunchedEffect }
         val ref = PlaylistLinks.parse(text)
         val setlist = com.xlollx.songport.sync.SetlistImport.linkIn(text)
         val trackRef = if (ref == null && setlist == null) com.xlollx.songport.sync.TrackLinks.parse(text) else null
@@ -220,15 +260,7 @@ private fun MainScreen(
         val lines = if (ref == null && setlist == null && trackRef == null && text.lines().count { it.isNotBlank() } >= 2)
             com.xlollx.songport.sync.PlaylistFiles.parseText(text) else emptyList()
         if (trackRef != null) {
-            val provider = Providers.connectors().firstOrNull {
-                com.xlollx.songport.sync.TrackLinks.matches(trackRef.service, it.serviceId) && it.isConnected(ctx) && it.canWrite
-            }
-            if (provider == null) {
-                snackbar.showSnackbar(ctx.getString(R.string.link_not_connected, trackRef.service.replaceFirstChar { it.uppercase() }))
-            } else {
-                val t = runCatching { provider.track(ctx, trackRef.trackId) }.getOrNull()
-                if (t == null) snackbar.showSnackbar(ctx.getString(R.string.share_invalid)) else sharedTrack = provider to t
-            }
+            sharedLink = text to trackRef
         } else if (lines.size >= 2) {
             tab = MainActivity.TAB_SYNCS
             val name = ctx.getString(R.string.share_file_name) + " " + java.text.SimpleDateFormat("yyyy-MM-dd HH.mm", java.util.Locale.ROOT).format(java.util.Date())
@@ -280,63 +312,69 @@ private fun MainScreen(
     sharedTrack?.let { (p, t) ->
         AddTrackDialog(p, t, onClose = { sharedTrack = null }) { messages.value = it }
     }
-    val preview = previewJob
-    if (preview != null) {
-        PreviewScreen(preview, onClose = { previewJob = null }) { j -> Scheduler.runNow(ctx, j.id); previewJob = null }
-        return
-    }
-    val wizard = wizardFor
-    if (wizard != null) {
-        SetupWizardScreen(wizard) { wizardFor = null }
-        return
-    }
-    val unmatched = unmatchedReport
-    if (unmatched != null) {
-        UnmatchedScreen(unmatched) { unmatchedReport = null }
-        return
-    }
-    if (filesOpen) {
-        FilesScreen { filesOpen = false }
-        return
-    }
-    if (logOpen) {
-        LogScreen(data, onClose = { logOpen = false }) { unmatchedReport = it }
-        return
-    }
-    manageProvider?.let { p ->
-        PlaylistsScreen(p) { manageProvider = null }
-        return
-    }
-    scanProvider?.let { p ->
-        LibraryScanScreen(p) { scanProvider = null }
-        return
-    }
-    if (transferOpen) {
-        TransferScreen(onClose = { transferOpen = false }, onDone = { transferOpen = false; tab = MainActivity.TAB_SYNCS })
-        return
-    }
-
-    val current = editing
-    if (current != null) {
-        SyncEditorScreen(
-            job = current,
-            onCancel = { editing = null },
-            onSave = { job, reverse ->
-                val previous = store.job(job.id)
-                store.upsertJob(job)
-                Scheduler.apply(ctx, job)
-                if (reverse != null) {
-                    store.upsertJob(reverse)
-                    Scheduler.apply(ctx, reverse)
-                } else previous?.linkedJobId?.let { old ->
-                    // Bidirezionale disattivato: la gemella non ha piu' senso.
-                    store.deleteJob(old); Scheduler.cancel(ctx, old)
-                }
-                editing = null
-                // A sync just made: what its first run would do, before it does it.
-                if (previous == null) previewJob = job
-            },
+    sharedLink?.let { (text, ref) ->
+        com.xlollx.songport.ui.ShareTrackSheet(
+            text = text, ref = ref,
+            onClose = { sharedLink = null },
+            onAdd = { p, t -> sharedLink = null; sharedTrack = p to t },
+            onMessage = { messages.value = it },
         )
+    }
+    // One screen on top of the tabs at a time, in this order of precedence. The key names which
+    // one is open, so switching animates and the predictive-back preview knows what to move.
+    val preview = previewJob
+    val wizard = wizardFor
+    val unmatched = unmatchedReport
+    val manage = manageProvider
+    val scan = scanProvider
+    val unplayable = unplayableProvider
+    val current = editing
+    val overlay: String? = when {
+        preview != null -> "preview:" + preview.id
+        wizard != null -> "wizard:" + wizard.id
+        unmatched != null -> "unmatched:$unmatched"
+        filesOpen -> "files"
+        logOpen -> "log"
+        manage != null -> "manage:" + manage.id
+        scan != null -> "scan:" + scan.id
+        unplayable != null -> "unplayable:" + unplayable.id
+        transferOpen -> "transfer"
+        current != null -> "edit:" + current.id
+        else -> null
+    }
+    if (overlay != null) {
+        BackAwareScreen(overlay) {
+            when {
+                preview != null -> PreviewScreen(preview, onClose = { previewJob = null }) { j -> Scheduler.runNow(ctx, j.id); previewJob = null }
+                wizard != null -> SetupWizardScreen(wizard) { wizardFor = null }
+                unmatched != null -> UnmatchedScreen(unmatched) { unmatchedReport = null }
+                filesOpen -> FilesScreen { filesOpen = false }
+                logOpen -> LogScreen(data, onClose = { logOpen = false }) { unmatchedReport = it }
+                manage != null -> PlaylistsScreen(manage) { manageProvider = null }
+                scan != null -> LibraryScanScreen(scan) { scanProvider = null }
+                unplayable != null -> UnplayableScreen(unplayable) { unplayableProvider = null }
+                transferOpen -> TransferScreen(onClose = { transferOpen = false }, onDone = { transferOpen = false; tab = MainActivity.TAB_SYNCS })
+                current != null -> SyncEditorScreen(
+                    job = current,
+                    onCancel = { editing = null },
+                    onSave = { job, reverse ->
+                        val previous = store.job(job.id)
+                        store.upsertJob(job)
+                        Scheduler.apply(ctx, job)
+                        if (reverse != null) {
+                            store.upsertJob(reverse)
+                            Scheduler.apply(ctx, reverse)
+                        } else previous?.linkedJobId?.let { old ->
+                            // Bidirezionale disattivato: la gemella non ha piu' senso.
+                            store.deleteJob(old); Scheduler.cancel(ctx, old)
+                        }
+                        editing = null
+                        // A sync just made: what its first run would do, before it does it.
+                        if (previous == null) previewJob = job
+                    },
+                )
+            }
+        }
         return
     }
 
@@ -366,13 +404,18 @@ private fun MainScreen(
             ) {
                 HorizontalDivider(thickness = Dp.Hairline, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
                 AdBanner()
+                // At a large font size the four labels no longer fit side by side: only the
+                // selected tab keeps its label, the others are their icon (still read out by name).
+                val bigText = LocalDensity.current.fontScale > 1.3f
                 NavigationBar(containerColor = Color.Transparent, windowInsets = NavigationBarDefaults.windowInsets) {
                     tabs.forEach { (label, icon, index) ->
+                        val name = stringResource(label)
                         NavigationBarItem(
                             selected = tab == index,
                             onClick = { tab = index },
-                            icon = { Icon(icon, contentDescription = null) },
-                            label = { Text(stringResource(label), maxLines = 1, softWrap = false) },
+                            icon = { Icon(icon, contentDescription = if (bigText) name else null) },
+                            label = { Text(name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                            alwaysShowLabel = !bigText,
                         )
                     }
                 }
@@ -397,7 +440,7 @@ private fun MainScreen(
         // Only the top inset: the content runs under the glass bar, and each screen pads its own list by LocalBottomBarInset.
         CompositionLocalProvider(LocalBottomBarInset provides barInset) {
             Box(Modifier.fillMaxSize().hazeSource(state = haze).padding(top = padding.calculateTopPadding())) {
-            when (tab) {
+            TabContent(tab) { shown -> when (shown) {
                 MainActivity.TAB_SYNCS -> SyncsScreen(
                     data = data,
                     onEdit = { editing = it },
@@ -412,13 +455,25 @@ private fun MainScreen(
                     onReview = { unmatchedReport = it },
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
-                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it })
+                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks)
                 else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
-            }
+            } }
             }
         }
     }
 }
+
+/** A sync job in the saved instance state, as the JSON the store already writes. */
+private val JobSaver = Saver<SyncJob?, String>(
+    save = { it?.let { j -> com.xlollx.songport.net.json.encodeToString(SyncJob.serializer(), j) } },
+    restore = { runCatching { com.xlollx.songport.net.json.decodeFromString(SyncJob.serializer(), it) }.getOrNull() },
+)
+
+/** A provider in the saved instance state, by id. */
+private val ProviderSaver = Saver<MusicProvider?, String>(
+    save = { it?.id },
+    restore = { Providers.byId(it) },
+)
 
 private fun newJob() = SyncJob(
     id = UUID.randomUUID().toString(),

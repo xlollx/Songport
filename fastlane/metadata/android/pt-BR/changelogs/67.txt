@@ -1,0 +1,1 @@
+Nova ferramenta, Faixas indisponíveis: encontra as faixas em cinza nas suas playlists (retiradas do catálogo, indisponíveis no seu país, vídeos privados ou excluídos) e propõe uma versão que toca, para confirmar antes de mudar algo; com desfazer. Spotify, Deezer, TIDAL, YouTube, YouTube Music e Apple Music. Verificação semanal opcional com notificação.

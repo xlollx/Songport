@@ -723,4 +723,129 @@
     <string name="support_prompt_title">Você acabou de mover %1$s faixas</string>
     <string name="support_prompt_body">Com a sincronização “%1$s”. O Songport é gratuito e sem anúncios, e vive de contribuições voluntárias: se ele te poupou tempo, você pode pagar um café ao desenvolvedor.</string>
     <string name="support_prompt_later">Agora não</string>
+    <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
+    <string name="share_sheet_title">Adicionar a…</string>
+    <string name="share_sheet_from">Compartilhado do %1$s</string>
+    <string name="share_sheet_unknown">O Songport não conseguiu ler o título desta faixa. Procure-a manualmente abaixo.</string>
+    <string name="share_sheet_open">Abrir no %1$s</string>
+    <string name="share_sheet_copy">Copiar link</string>
+    <string name="share_sheet_copied">Link copiado</string>
+    <string name="share_sheet_no_targets">Conecte um serviço em Contas primeiro: a faixa irá para uma das suas playlists lá.</string>
+    <string name="share_sheet_target">Onde adicionar</string>
+    <string name="share_sheet_looking">Procurando no %1$s…</string>
+    <string name="share_sheet_exact">A mesma faixa, lida do %1$s</string>
+    <string name="share_sheet_best">Melhor correspondência no %1$s</string>
+    <string name="share_sheet_no_match">Não encontrada no %1$s. Procure manualmente ou escolha outro serviço.</string>
+    <string name="share_sheet_add">Adicionar a uma playlist…</string>
+    <string name="share_sheet_change">Alterar</string>
+    <string name="settings_music_links">Oferecer o Songport para links de música</string>
+    <string name="settings_music_links_desc">Um link do Spotify, Apple Music, YouTube Music, Amazon Music, Deezer ou TIDAL poderá abrir no Songport, que adiciona a faixa a uma playlist em qualquer um dos seus serviços. O Android continua perguntando qual app usar, ou mantém o definido nas configurações de links: o Songport nunca toma um link sozinho.</string>
+    <!-- Cards: "how compatible are we?" and the playlist poster. -->
+    <string name="tools_compat_title">Quanto combinamos?</string>
+    <string name="tools_compat_desc">Compare duas playlists, mesmo de serviços diferentes: faixas em comum, artistas compartilhados, uma pontuação e um card para compartilhar.</string>
+    <string name="tools_poster_title">Pôster da playlist</string>
+    <string name="tools_poster_desc">Um card com as capas, o título, os números e um QR code que abre a playlist. Para uma festa, um show, uma parede.</string>
+    <string name="card_compat_eyebrow">Quanto combinamos?</string>
+    <string name="card_compat_subtitle">%1$d faixas em comum · %2$d artistas compartilhados</string>
+    <string name="card_compat_artists">Vocês dois ouvem</string>
+    <string name="card_poster_scan">Escaneie para abrir no %1$s</string>
+    <string name="card_unnamed_playlist">Playlist</string>
+    <string name="card_source_link">Link</string>
+    <string name="card_source_link_hint">Link de uma playlist pública</string>
+    <string name="card_format_story">Story</string>
+    <string name="card_format_square">Quadrado</string>
+    <string name="card_share">Compartilhar</string>
+    <string name="card_save">Salvar imagem</string>
+    <string name="card_compat_first">Primeira playlist</string>
+    <string name="card_compat_second">Segunda playlist</string>
+    <string name="card_compat_common_pct">%1$d%% da playlist menor também está na outra</string>
+    <string name="card_compat_in_common">Em comum</string>
+    <string name="card_compat_for">Para “%1$s”</string>
+    <string name="card_compat_run">Comparar</string>
+    <string name="card_again">Refazer o card</string>
+    <string name="card_poster_no_qr">Este serviço não tem página pública para a playlist: o pôster fica sem QR code.</string>
+    <string name="card_poster_run">Criar o pôster</string>
+    <plurals name="card_tracks">
+        <item quantity="one">%1$d faixa</item>
+        <item quantity="other">%1$d faixas</item>
+    </plurals>
+
+    <!-- Appearance -->
+    <string name="settings_section_appearance">Aparência</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Escuro</string>
+    <string name="settings_dynamic_color">Cores dinâmicas (Material You)</string>
+    <string name="settings_dynamic_color_desc">As cores do seu papel de parede no lugar das do Songport. O painel do título mantém as cores da marca.</string>
+    <string name="settings_dynamic_color_unavailable">Requer Android 12 ou mais recente.</string>
+
+    <!-- Unplayable tracks tool -->
+    <string name="tools_unplayable_title">Faixas que não tocam</string>
+    <string name="tools_unplayable_desc">Encontra as faixas que um serviço lista mas não toca mais (em cinza) e as substitui por uma versão que toca.</string>
+    <string name="unplayable_title">Faixas que não tocam: %1$s</string>
+    <string name="unplayable_unsupported">%1$s não diz quais faixas não toca mais, então o Songport não consegue verificar aqui.</string>
+    <string name="unplayable_all_playlists">Todas as minhas playlists</string>
+    <string name="unplayable_scan">Verificar</string>
+    <string name="unplayable_scanning">Verificando %1$s…</string>
+    <string name="unplayable_none">Tudo toca: nenhuma faixa indisponível em %1$d playlists.</string>
+    <string name="unplayable_found">%1$d faixas que não tocam em %2$d playlists</string>
+    <string name="unplayable_hint">Para cada uma o Songport propõe uma versão que toca. Aceite, procure outra, remova a entrada ou pule. Nada muda até você aplicar.</string>
+    <string name="unplayable_searching">Procurando uma versão que toca…</string>
+    <string name="unplayable_no_proposal">Nenhuma versão convincente: abra a entrada para procurar à mão, ou remova.</string>
+    <string name="unplayable_proposal">Substituta: %1$s (%2$d%% de correspondência)</string>
+    <string name="unplayable_relinked">%1$s é o que o serviço já toca no lugar</string>
+    <string name="unplayable_remove_only">Só remover</string>
+    <string name="unplayable_skip">Pular</string>
+    <string name="unplayable_undecide">Desfazer escolha</string>
+    <string name="unplayable_decided_replace">Será substituída por %1$s</string>
+    <string name="unplayable_decided_remove">Será removida</string>
+    <string name="unplayable_apply">Aplicar %1$d alterações</string>
+    <string name="unplayable_applying">Aplicando %1$d/%2$d…</string>
+    <string name="unplayable_confirm_title">Aplicar as alterações?</string>
+    <string name="unplayable_confirm_body">%1$d faixas recebem uma versão que toca, %2$d entradas são removidas. Os originais ficam no log do Songport para você desfazer.</string>
+    <string name="unplayable_no_removal">%1$s não deixa apps removerem faixas: a versão que toca é adicionada e a entrada indisponível fica.</string>
+    <string name="unplayable_done">%1$d substituídas, %2$d removidas</string>
+    <string name="unplayable_undo">Desfazer</string>
+    <string name="unplayable_undo_last">Desfazer última correção (%1$d)</string>
+    <string name="unplayable_undone">%1$d entradas recolocadas</string>
+    <string name="unplayable_reason_market">Não no seu país</string>
+    <string name="unplayable_reason_product">Não no seu plano</string>
+    <string name="unplayable_reason_explicit">Filtro de explícitas</string>
+    <string name="unplayable_reason_private">Vídeo privado</string>
+    <string name="unplayable_reason_deleted">Excluído</string>
+    <string name="unplayable_reason_unknown">Não toca</string>
+    <string name="settings_unplayable">Verificação semanal de faixas que não tocam</string>
+    <string name="settings_unplayable_desc">Uma vez por semana o Songport percorre suas playlists e avisa quando uma faixa não pode mais ser tocada. Nada é alterado sozinho.</string>
+    <string name="notif_unplayable_title">Faixas que não tocam</string>
+    <plurals name="notif_unplayable_text">
+        <item quantity="one">%1$d faixa das suas playlists não toca mais. Toque para substituir.</item>
+        <item quantity="other">%1$d faixas das suas playlists não tocam mais. Toque para substituir.</item>
+    </plurals>
+    <string name="services_group_streaming">Streaming</string>
+    <string name="services_group_servers">Seu servidor</string>
+    <string name="services_group_other">Outros</string>
+    <string name="settings_new_look">Novo visual</string>
+    <string name="settings_new_look_desc">Cards de sincronização com a última execução em números e o histórico recente.</string>
+    <string name="stat_added">adicionadas</string>
+    <string name="stat_removed">removidas</string>
+    <string name="stat_not_found">não encontradas</string>
+    <string name="stat_tracks">faixas</string>
+    <plurals name="stat_history">
+        <item quantity="one">última %1$d execução · %2$d falharam</item>
+        <item quantity="other">últimas %1$d execuções · %2$d falharam</item>
+    </plurals>
+
+    <!-- Poster: cover drawn by the user's AI -->
+    <string name="card_ai_cover">Capa desenhada pela sua IA</string>
+    <string name="card_ai_cover_yes">Com %1$s, usando sua própria chave: pode custar alguns centavos.</string>
+    <string name="card_ai_cover_none">Configure primeiro uma IA no Gerador de playlists (Ferramentas).</string>
+    <string name="card_ai_cover_claude">O Claude não gera imagens: escolha OpenAI ou Gemini no Gerador de playlists.</string>
+    <string name="card_ai_cover_no_images">%1$s não gera imagens aqui: escolha OpenAI ou Gemini no Gerador de playlists.</string>
+    <string name="card_ai_cover_model">Informe o modelo de imagens do seu servidor nas configurações do Gerador de playlists.</string>
+    <string name="card_ai_drawing">Sua IA está desenhando a capa…</string>
+    <string name="card_ai_again">Outra capa</string>
+    <string name="card_ai_save">Salvar capa</string>
+    <string name="ai_image_model">Modelo de imagens (opcional)</string>
+    <string name="ai_image_model_hint">ex. dall-e-3, para a capa por IA do pôster</string>
 </resources>

@@ -1,0 +1,1 @@
+Amazon Music: Lehnt Amazon eine Playlist ab, prüft Songport jetzt deine Bibliothek, um eine abgelaufene Sitzung von einer gelöschten oder fremden Playlist zu unterscheiden, und sagt dir, was zutrifft.

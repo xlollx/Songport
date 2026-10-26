@@ -1,0 +1,1 @@
+共有リンクをどこへでも：Spotify、Apple Music、YouTube Music、Amazon Music、Deezer、TIDAL の曲のリンクを Songport に共有すると、Navidrome、Jellyfin、Plex を含むどのサービスのプレイリストにも追加できるようになりました。追加前に一致候補を表示します。任意：音楽リンクを Songport で開く（設定）。

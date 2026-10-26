@@ -1,7 +1,7 @@
 package com.xlollx.songport.ui
 
+import com.xlollx.songport.providers.*
 import android.content.Intent
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -81,7 +81,7 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var expanded by remember { mutableStateOf<String?>(null) }
-    BackHandler { onClose() }
+    ScreenBackHandler(onClose)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
@@ -190,7 +190,7 @@ private fun SectionTitle(text: String) {
 
 /** Riga chiusa: titolo e artista in una riga, freccia a destra. Aperta: le azioni. */
 @Composable
-private fun CollapsibleRow(
+fun CollapsibleRow(
     track: Track, expanded: Boolean, onToggle: () -> Unit, absent: Boolean = false,
     trailing: @Composable () -> Unit = {}, below: (@Composable () -> Unit)? = null, content: @Composable () -> Unit,
 ) {
@@ -281,7 +281,7 @@ private fun UnmatchedRow(
     val proposal: (@Composable () -> Unit)? = if (suggestion != null && !expanded) {
         {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
-                Text(stringResource(R.string.search_suggested), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                Text(stringResource(R.string.search_suggested), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.width(8.dp))
                 TrackLine(suggestion, Modifier.weight(1f))
                 FilledTonalButton(enabled = !accepting, onClick = {

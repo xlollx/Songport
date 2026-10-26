@@ -46,6 +46,10 @@ move. Songport is for keeping playlists in step over time, without handing your 
 - **[Obtainium](https://github.com/ImranR98/Obtainium)**: add `https://github.com/xlollx/Songport` and
   each release reaches the phone by itself.
 - **[Releases](https://github.com/xlollx/Songport/releases/latest)**: the signed APK of every version.
+- **Server (Docker, ⚠️ alpha)**: an early test version, expect rough edges. The same engine on a home server or a NAS, with a web page and
+  scheduled syncs: `docker run -p 8080:8080 -v songport-data:/data ghcr.io/xlollx/songport`. Official
+  APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
+  [Docker guide](https://xlollx.github.io/Songport/guide/docker).
 
 Android 8.0 or newer. Languages: English, Italian, French, German, Spanish, Portuguese (Brazil), Polish,
 Russian, Turkish, Chinese, Japanese, Korean.
@@ -135,13 +139,18 @@ that is exactly what to report.
 | | Backup to a folder | The dated backups also copied to a folder you pick (SD card, Nextcloud, Drive…), daily or weekly. |
 | | Full backup of a service | Playlists and likes into local files, with dated versions. |
 | | Duplicate removal | Same track even with a different id or version; keeps the first copy. |
+| | "How compatible are we?" | Two playlists, from any services or public links: tracks in common, shared artists, a 0–100 score and "for you" picks, as a shareable card (story or square). Share two playlist links at once to open it. |
+| | Playlist poster | Covers (four different albums), title, numbers and a QR code that opens the playlist on its service, as a card to share or save. The QR is made on the phone. Optional: a cover drawn by your own AI (OpenAI or Gemini, or an OpenAI-compatible server with an image model), on your key; only the title, the main artists and the description are sent. |
+| | Unplayable tracks | The tracks a service lists but can no longer play (greyed out: pulled from the catalogue, not licensed in your country): found across your playlists, each with a playable version proposed by the same matching the sync uses (ISRC, then title, artist, duration), to accept, change, remove or skip; put back in the dead entry's spot where the service can move tracks; undoable. Spotify, Deezer, TIDAL, Apple Music library, YouTube, YouTube Music. An optional weekly check notifies, never changes anything. |
 | Links | Paste or share a public playlist link | Spotify, Apple Music, YouTube, Deezer, TIDAL; short share links too. "From link" is a source of its own in the editor. |
-| | Share a single track or a text list | A track link from a service's app goes into one of your playlists there; several "Artist - Title" lines become a file playlist and a new sync. |
+| | Share a single track or a text list | A track link from any music app goes into one of your playlists on **any** connected service, Navidrome, Jellyfin and Plex included: the same recording is found with the sync's matching, shown with its score before adding, with "Open in…" and "Copy link" next to it. Several "Artist - Title" lines become a file playlist and a new sync. |
+| | Music links open with Songport (optional) | Settings › "Offer Songport for music links": Android then lists Songport among the apps for a Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link. Off by default; Songport never takes a link by itself. |
 | Files | Import/export | Reads CSV, TSV, M3U/M3U8, XSPF, JSPF, OPML (podcasts), Apple Music/iTunes XML, JSON, Shazam exports, plain text lists; writes CSV, M3U, XSPF, JSPF and plain text. |
 | | setlist.fm | Share or paste a setlist.fm link: the concert becomes a playlist to sync anywhere. |
 | Widget and shortcuts | Home widget and long-press on the icon | Last sync, "Sync all", "New sync". |
 | Diagnostics | "Share technical details" in the log | Version, device, services, last runs, error log; no tokens. |
 | | "Test the connection" per account | Account, playlist list and one search, with the service's answer on failure. |
+| Appearance | Theme and Material You | Settings › Appearance: system, light or dark; "Dynamic colours" takes the phone's wallpaper palette (Android 12+) instead of the brand's, off by default. |
 | Security | Connections log | Settings › Developer options lists every host the app has contacted and how often, so "no Songport server" is something to check, not to believe. |
 | | Info sheet before every login, encrypted tokens, fingerprint or PIN lock | See [How logins are protected](#how-logins-are-protected). |
 
@@ -287,9 +296,14 @@ Songport/
 │   ├── play-store-listing.md      # store texts, Data safety answers, release checklist
 │   ├── deezer-redirect.html       # https page → songport://callback
 │   ├── google-shared-client.md    # shipping a shared Google client: verification and quota
+│   ├── guide/                     # the guide on the site (getting started, troubleshooting, Docker…)
 │   └── store/                     # 512×512 icon and 1024×500 feature graphic (en/it)
+├── server/                        # Songport on a server: JVM build on android/core and android/ytm, web page, Dockerfile
 └── android/
     ├── build.gradle, settings.gradle, gradle.properties
+    ├── core/                      # the engine without Android (model, matching, connectors, sync), shared with server/
+    ├── ytm/                       # the YouTube Music web client without Android, shared by bridge/ and server/
+    ├── bridge/                    # the built-in web connectors (GitHub/F-Droid build): WebView sign-ins and players
     └── app/
         ├── build.gradle           # build parameters: client IDs, AdMob, release signing from env/secrets
         ├── proguard-rules.pro

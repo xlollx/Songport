@@ -1,0 +1,1 @@
+Two new tools to share: "How compatible are we?" compares two playlists, even from different services, and gives a score with the tracks and artists in common, as an image for your stories. "Playlist poster" makes a card with the covers and a QR code that opens the playlist.

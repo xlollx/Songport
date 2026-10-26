@@ -1,0 +1,1 @@
+Amazon Music：Amazon 把安全令牌移出了播放器页面的设置，导致 Songport 的请求不带令牌而被以“无效客户”拒绝；现在改为从播放器获取。登录和隐藏播放器改回 Amazon 接受其请求的桌面版 Chrome，日志会显示 Amazon 对播放器自身请求的回应。更新后，请将 Amazon Music 断开并重新连接一次。

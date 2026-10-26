@@ -1,0 +1,1 @@
+Neues Werkzeug „Nicht abspielbare Titel“: findet ausgegraute Titel in deinen Playlists (aus dem Katalog entfernt, in deinem Land nicht verfügbar, private oder gelöschte Videos) und schlägt eine abspielbare Version vor – erst nach Bestätigung, mit Rückgängig. Spotify, Deezer, TIDAL, YouTube, YouTube Music und Apple Music. Optionale wöchentliche Prüfung mit Benachrichtigung.

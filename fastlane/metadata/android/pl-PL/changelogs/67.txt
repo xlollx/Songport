@@ -1,0 +1,1 @@
+Nowe narzędzie „Utwory nie do odtworzenia”: znajduje wyszarzone utwory w playlistach (wycofane z katalogu, niedostępne w twoim kraju, prywatne lub usunięte filmy) i proponuje wersję, która gra — do potwierdzenia przed zmianą, z cofnięciem. Spotify, Deezer, TIDAL, YouTube, YouTube Music i Apple Music. Opcjonalne cotygodniowe sprawdzanie z powiadomieniem.

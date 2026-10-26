@@ -1,0 +1,1 @@
+Amazon Music: the sign-in and the hidden player now introduce themselves as Chrome for Android, like the phone's own browser where Amazon accepts the account, instead of desktop Chrome, which Amazon now refuses with "401". Disconnect and connect Amazon Music once after updating.

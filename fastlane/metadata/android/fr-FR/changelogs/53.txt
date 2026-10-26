@@ -1,0 +1,1 @@
+Amazon Music : quand Amazon refuse la session (401), l'app la renouvelle désormais comme un navigateur, en suivant les cookies définis en chemin et en lançant une fois le lecteur, avant de vous demander de vous reconnecter.

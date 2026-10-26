@@ -44,4 +44,12 @@
     <string name="free_why_body">Trackhop hat keine Werbung, kein Abo und keine gesperrten Funktionen. Es lebt von freiwilligen Beiträgen: Wenn es dir Zeit spart, kannst du dem Entwickler einen Kaffee spendieren.</string>
     <string name="support_title">Gefällt dir Trackhop?</string>
     <string name="support_prompt_body">Mit dem Sync „%1$s“. Trackhop ist kostenlos und werbefrei und lebt von freiwilligen Beiträgen: Wenn es dir Zeit gespart hat, kannst du dem Entwickler einen Kaffee spendieren.</string>
+    <string name="share_sheet_unknown">Trackhop konnte den Titel dieses Stücks nicht lesen. Suche es unten von Hand.</string>
+    <string name="settings_music_links">Trackhop für Musiklinks anbieten</string>
+    <string name="settings_music_links_desc">Ein Link von Spotify, Apple Music, YouTube Music, Amazon Music, Deezer oder TIDAL kann sich dann in Trackhop öffnen, das das Stück zu einer Playlist auf einem beliebigen deiner Dienste hinzufügt. Android fragt weiterhin, welche App verwendet wird, oder behält die in seinen Link-Einstellungen festgelegte: Trackhop nimmt sich nie von selbst einen Link.</string>
+    <string name="settings_dynamic_color_desc">Die Farben deines Hintergrunds statt der von Trackhop. Der Titelbereich behält die Markenfarben.</string>
+    <string name="unplayable_unsupported">%1$s sagt nicht, welche Titel es nicht mehr abspielt, deshalb kann Trackhop hier nicht prüfen.</string>
+    <string name="unplayable_hint">Für jeden schlägt Trackhop eine abspielbare Version vor. Übernimm sie, suche eine andere, entferne den Eintrag oder überspringe ihn. Nichts ändert sich, bis du anwendest.</string>
+    <string name="unplayable_confirm_body">%1$d Titel erhalten eine abspielbare Version, %2$d Einträge werden entfernt. Die Originale bleiben im Protokoll von Trackhop, damit du es rückgängig machen kannst.</string>
+    <string name="settings_unplayable_desc">Einmal pro Woche geht Trackhop deine Playlists durch und meldet, wenn ein Titel nicht mehr abgespielt werden kann. Von selbst wird nichts geändert.</string>
 </resources>

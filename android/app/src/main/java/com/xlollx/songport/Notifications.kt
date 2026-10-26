@@ -1,5 +1,6 @@
 package com.xlollx.songport
 
+import com.xlollx.songport.providers.*
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -115,6 +116,27 @@ object Notifications {
         val n = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setContentIntent(pi)
+            .setAutoCancel(true)
+            .build()
+        ContextCompat.getSystemService(context, NotificationManager::class.java)?.notify(id, n)
+    }
+
+    /** "N tracks can no longer be played": opens the Unplayable tracks tool. */
+    fun unplayable(context: Context, id: Int, count: Int) {
+        if (!canPost(context)) return
+        val open = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra(MainActivity.EXTRA_TAB, MainActivity.TAB_TOOLS)
+            putExtra(MainActivity.EXTRA_TOOL, MainActivity.TOOL_UNPLAYABLE)
+        }
+        val pi = PendingIntent.getActivity(context, id, open, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        val text = context.resources.getQuantityString(R.plurals.notif_unplayable_text, count, count)
+        val n = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(context.getString(R.string.notif_unplayable_title))
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setContentIntent(pi)
