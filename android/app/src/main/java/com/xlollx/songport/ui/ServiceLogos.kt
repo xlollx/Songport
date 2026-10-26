@@ -167,7 +167,7 @@ fun ServiceTiles(tiles: List<ServiceTile>, selected: String?, onSelect: (String)
 
 /** The usual service tiles for a list of connected providers. */
 @Composable
-fun ServiceTiles(providers: List<MusicProvider>, selectedId: String?, onSelect: (String) -> Unit, modifier: Modifier = Modifier) {
+fun ServicePicker(providers: List<MusicProvider>, selectedId: String?, onSelect: (String) -> Unit, modifier: Modifier = Modifier) {
     val ctx = androidx.compose.ui.platform.LocalContext.current
     ServiceTiles(providers.map { ServiceTile(it.id, it.label(ctx), it) }, selectedId, onSelect, modifier)
 }

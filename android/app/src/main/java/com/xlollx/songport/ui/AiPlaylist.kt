@@ -234,7 +234,7 @@ fun AiPlaylistCard(snackbar: SnackbarHostState, onSyncStarted: () -> Unit) {
             AiCountField(d.count.toInt()) { d.count = it.toFloat(); d.persist(ctx) }
             Text(stringResource(R.string.ai_target), style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(4.dp))
-            ServiceTiles(targets, target.id, { d.targetId = it; d.persist(ctx) })
+            ServicePicker(targets, target.id, { d.targetId = it; d.persist(ctx) })
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(
                 value = d.name, onValueChange = { d.name = it; d.persist(ctx) }, singleLine = true,

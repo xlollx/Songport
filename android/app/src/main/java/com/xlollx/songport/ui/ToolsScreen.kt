@@ -141,7 +141,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 if (current.needsService && provider != null && connected.size > 1) {
-                    ServiceTiles(connected, provider.id, { selectedId = it })
+                    ServicePicker(connected, provider.id, { selectedId = it })
                 }
                 when (current) {
                     Tool.FILES -> FilesCard(local, onManage = onManageFiles)
@@ -171,7 +171,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
             return@Column
         }
         Text(stringResource(R.string.tools_pick_service), style = MaterialTheme.typography.titleMedium)
-        ServiceTiles(connected, provider.id, { selectedId = it })
+        ServicePicker(connected, provider.id, { selectedId = it })
         ToolRow(Tool.MANAGE) { onManage(provider) }
         ToolRow(Tool.EXPORT) { open = Tool.EXPORT }
         ToolRow(Tool.MAKE) { open = Tool.MAKE }

@@ -193,5 +193,5 @@ fun TransferScreen(onClose: () -> Unit, onDone: () -> Unit) {
 @Composable
 private fun ServiceChips(available: List<MusicProvider>, selected: String, onSelect: (String) -> Unit) {
     val ctx = LocalContext.current
-    ServiceTiles(available, selected, onSelect)
+    ServicePicker(available, selected, onSelect)
 }
