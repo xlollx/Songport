@@ -1,0 +1,1 @@
+Adicionar um serviço: os logos da grade ficam alinhados, seja qual for o tamanho do nome do serviço.

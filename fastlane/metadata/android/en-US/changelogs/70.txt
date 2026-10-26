@@ -1,0 +1,1 @@
+Add a service: the logos in the grid line up, whatever the length of the service's name.

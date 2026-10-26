@@ -1,0 +1,1 @@
+Aggiungi un servizio: i loghi nella griglia sono allineati, qualunque sia la lunghezza del nome del servizio.

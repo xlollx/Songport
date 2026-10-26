@@ -1,0 +1,1 @@
+Servis ekle: ızgaradaki logolar, servis adının uzunluğu ne olursa olsun hizalı.

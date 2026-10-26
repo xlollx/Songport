@@ -1,0 +1,1 @@
+Dienst hinzufügen: Die Logos im Raster stehen in einer Linie, egal wie lang der Name des Dienstes ist.

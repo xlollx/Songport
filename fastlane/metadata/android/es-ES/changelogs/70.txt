@@ -1,0 +1,1 @@
+Añadir un servicio: los logotipos de la cuadrícula quedan alineados, sea cual sea la longitud del nombre del servicio.

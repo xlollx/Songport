@@ -1,0 +1,1 @@
+Dodaj serwis: logo w siatce są wyrównane bez względu na długość nazwy serwisu.

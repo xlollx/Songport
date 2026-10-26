@@ -1,0 +1,1 @@
+Ajouter un service : les logos de la grille sont alignés, quelle que soit la longueur du nom du service.
