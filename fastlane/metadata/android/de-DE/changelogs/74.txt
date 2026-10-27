@@ -1,0 +1,1 @@
+Jellyfin: Die Suche findet deine Titel wieder, und das Entfernen einer Kopie eines doppelten Titels behält die anderen. Navidrome: ISRCs der Titel werden jetzt gelesen, für genauere Zuordnung.

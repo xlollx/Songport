@@ -1,0 +1,1 @@
+Jellyfin: wyszukiwanie znów znajduje Twoje utwory, a usunięcie jednej kopii zduplikowanego utworu zachowuje pozostałe. Navidrome: kody ISRC utworów są teraz odczytywane, dla dokładniejszego dopasowania.

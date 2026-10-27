@@ -1,0 +1,1 @@
+Jellyfin: la ricerca trova di nuovo i tuoi brani, e rimuovere una copia di un brano duplicato non cancella le altre. Navidrome: ora vengono letti gli ISRC dei brani, per abbinamenti più precisi.

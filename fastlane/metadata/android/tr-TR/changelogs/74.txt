@@ -1,0 +1,1 @@
+Jellyfin: arama şarkılarınızı yeniden buluyor ve yinelenen bir şarkının bir kopyasını kaldırmak diğerlerini koruyor. Navidrome: daha hassas eşleştirme için şarkıların ISRC kodları artık okunuyor.

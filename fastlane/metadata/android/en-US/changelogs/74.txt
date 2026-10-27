@@ -1,0 +1,1 @@
+Jellyfin: search finds your songs again, and removing one copy of a duplicated song keeps the others. Navidrome: song ISRCs are now read, for more precise matching.

@@ -1,0 +1,1 @@
+Jellyfin : la recherche retrouve vos titres, et retirer une copie d'un titre en double garde les autres. Navidrome : les ISRC des titres sont désormais lus, pour des correspondances plus précises.
