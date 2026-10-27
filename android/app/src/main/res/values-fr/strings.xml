@@ -888,4 +888,51 @@
         <item quantity="many">%d synchros en cours</item>
         <item quantity="other">%d synchros en cours</item>
     </plurals>
+    <string name="stats_title">Songport en chiffres</string>
+    <string name="stats_row_desc">Ce que vos synchros ont fait jusqu’ici, en une carte à partager</string>
+    <string name="stats_hero_link">Vos chiffres</string>
+    <string name="stats_tracks_moved">Titres transférés</string>
+    <string name="stats_this_month">Transférés ce mois-ci</string>
+    <string name="stats_syncs_done">Synchros terminées</string>
+    <string name="stats_services">Services connectés</string>
+    <string name="stats_match_rate">Taux de correspondance</string>
+    <string name="stats_time_saved">Temps gagné (estimation)</string>
+    <string name="stats_top_route">Trajet le plus utilisé</string>
+    <string name="stats_longest">Plus longue playlist synchronisée</string>
+    <string name="stats_top_artists">Artistes les plus ajoutés</string>
+    <plurals name="stats_since">
+        <item quantity="one">Sur %1$d synchro depuis le %2$s</item>
+        <item quantity="many">Sur %1$d synchros depuis le %2$s</item>
+        <item quantity="other">Sur %1$d synchros depuis le %2$s</item>
+    </plurals>
+    <string name="stats_card_since">depuis le %1$s</string>
+    <plurals name="stats_n_syncs">
+        <item quantity="one">%1$d synchro</item>
+        <item quantity="many">%1$d synchros</item>
+        <item quantity="other">%1$d synchros</item>
+    </plurals>
+    <string name="stats_route_desc">de %1$s vers %2$s</string>
+    <string name="stats_hours_short">%1$s h</string>
+    <string name="stats_minutes_short">%1$s min</string>
+    <plurals name="stats_time_note">
+        <item quantity="one">Le temps gagné est une estimation : %1$d seconde par titre transféré, à peu près le temps de le chercher et de l’ajouter à la main.</item>
+        <item quantity="many">Le temps gagné est une estimation : %1$d secondes par titre transféré, à peu près le temps de le chercher et de l’ajouter à la main.</item>
+        <item quantity="other">Le temps gagné est une estimation : %1$d secondes par titre transféré, à peu près le temps de le chercher et de l’ajouter à la main.</item>
+    </plurals>
+    <string name="stats_match_note">Taux de correspondance : les titres trouvés sur l’autre service, parmi ceux recherchés, lors de la dernière exécution de chaque synchro.</string>
+    <plurals name="stats_artists_note">
+        <item quantity="one">Calculé sur %1$d titre listé dans les rapports de synchro récents.</item>
+        <item quantity="many">Calculé sur %1$d titres listés dans les rapports de synchro récents ; les exécutions plus anciennes n’ont gardé que le nombre.</item>
+        <item quantity="other">Calculé sur %1$d titres listés dans les rapports de synchro récents ; les exécutions plus anciennes n’ont gardé que le nombre.</item>
+    </plurals>
+    <plurals name="stats_history_cap">
+        <item quantity="one">Seule la dernière synchro (%1$d) est gardée sur ce téléphone : les plus anciennes ne sont pas dans ces chiffres.</item>
+        <item quantity="many">Seules les %1$d dernières synchros sont gardées sur ce téléphone : les plus anciennes ne sont pas dans ces chiffres.</item>
+        <item quantity="other">Seules les %1$d dernières synchros sont gardées sur ce téléphone : les plus anciennes ne sont pas dans ces chiffres.</item>
+    </plurals>
+    <string name="stats_local_note">Calculé sur ce téléphone, à partir de l’historique des synchros que Songport garde déjà. Rien n’est envoyé, sauf si vous partagez la carte.</string>
+    <string name="stats_empty_title">Pas encore de chiffres</string>
+    <string name="stats_empty_body">Ils apparaissent après votre première synchro terminée, calculés à partir de l’historique gardé sur ce téléphone.</string>
+    <string name="stats_share_title">Partagez vos chiffres</string>
+    <string name="stats_card_preview">Aperçu de la carte à partager</string>
 </resources>

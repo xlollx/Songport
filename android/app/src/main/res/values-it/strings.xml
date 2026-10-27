@@ -887,4 +887,46 @@
         <item quantity="one">%d sync in corso</item>
         <item quantity="other">%d sync in corso</item>
     </plurals>
+    <string name="stats_title">Songport in numeri</string>
+    <string name="stats_row_desc">Cosa hanno fatto finora le tue sync, in una card da condividere</string>
+    <string name="stats_hero_link">I tuoi numeri</string>
+    <string name="stats_tracks_moved">Brani spostati</string>
+    <string name="stats_this_month">Spostati questo mese</string>
+    <string name="stats_syncs_done">Sync completate</string>
+    <string name="stats_services">Servizi collegati</string>
+    <string name="stats_match_rate">Tasso di abbinamento</string>
+    <string name="stats_time_saved">Tempo risparmiato (stima)</string>
+    <string name="stats_top_route">Percorso più usato</string>
+    <string name="stats_longest">Playlist più lunga tenuta in sync</string>
+    <string name="stats_top_artists">Artisti più aggiunti</string>
+    <plurals name="stats_since">
+        <item quantity="one">Su %1$d sync, dal %2$s</item>
+        <item quantity="other">Su %1$d sync, dal %2$s</item>
+    </plurals>
+    <string name="stats_card_since">dal %1$s</string>
+    <plurals name="stats_n_syncs">
+        <item quantity="one">%1$d sync</item>
+        <item quantity="other">%1$d sync</item>
+    </plurals>
+    <string name="stats_route_desc">da %1$s a %2$s</string>
+    <string name="stats_hours_short">%1$s h</string>
+    <string name="stats_minutes_short">%1$s min</string>
+    <plurals name="stats_time_note">
+        <item quantity="one">Il tempo risparmiato è una stima: %1$d secondo per brano spostato, più o meno quanto serve per cercarne e aggiungerne uno a mano.</item>
+        <item quantity="other">Il tempo risparmiato è una stima: %1$d secondi per brano spostato, più o meno quanto serve per cercarne e aggiungerne uno a mano.</item>
+    </plurals>
+    <string name="stats_match_note">Tasso di abbinamento: i brani trovati sull\'altro servizio, su quelli cercati, nell\'ultima esecuzione di ogni sync.</string>
+    <plurals name="stats_artists_note">
+        <item quantity="one">Contati su %1$d brano elencato nei report recenti delle sync.</item>
+        <item quantity="other">Contati su %1$d brani elencati nei report recenti delle sync; le esecuzioni più vecchie hanno salvato solo il numero.</item>
+    </plurals>
+    <plurals name="stats_history_cap">
+        <item quantity="one">Su questo telefono resta solo l\'ultima sync (%1$d): quelle più vecchie non sono in questi numeri.</item>
+        <item quantity="other">Su questo telefono restano solo le ultime %1$d sync: quelle più vecchie non sono in questi numeri.</item>
+    </plurals>
+    <string name="stats_local_note">Contati su questo telefono, dalla cronologia delle sync che Songport conserva già. Non viene inviato nulla, a meno che tu non condivida la card.</string>
+    <string name="stats_empty_title">Ancora nessun numero</string>
+    <string name="stats_empty_body">Compaiono dopo la prima sync completata, contati dalla cronologia salvata su questo telefono.</string>
+    <string name="stats_share_title">Condividi i tuoi numeri</string>
+    <string name="stats_card_preview">Anteprima della card da condividere</string>
 </resources>

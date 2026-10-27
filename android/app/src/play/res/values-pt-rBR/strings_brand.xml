@@ -53,4 +53,6 @@
     <string name="unplayable_confirm_body">%1$d faixas recebem uma versão que toca, %2$d entradas são removidas. Os originais ficam no log do Trackhop para você desfazer.</string>
     <string name="settings_unplayable_desc">Uma vez por semana o Trackhop percorre suas playlists e avisa quando uma faixa não pode mais ser tocada. Nada é alterado sozinho.</string>
     <string name="soundcloud_player_changed">O SoundCloud mudou o player web; o Trackhop precisa de uma atualização</string>
+    <string name="stats_title">Trackhop em números</string>
+    <string name="stats_local_note">Contado neste celular, a partir do histórico de sincronizações que o Trackhop já guarda. Nada é enviado, a não ser que você compartilhe o cartão.</string>
 </resources>

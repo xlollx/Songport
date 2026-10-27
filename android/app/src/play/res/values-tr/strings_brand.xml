@@ -53,4 +53,6 @@
     <string name="unplayable_confirm_body">%1$d parça çalan bir sürüm alacak, %2$d kayıt kaldırılacak. Orijinaller Trackhop günlüğünde kalır, böylece geri alabilirsin.</string>
     <string name="settings_unplayable_desc">Trackhop haftada bir çalma listelerini tarar ve bir parça artık çalınamadığında haber verir. Kendi başına hiçbir şeyi değiştirmez.</string>
     <string name="soundcloud_player_changed">SoundCloud web oynatıcısını değiştirdi; Trackhop\'un güncellenmesi gerekiyor</string>
+    <string name="stats_title">Rakamlarla Trackhop</string>
+    <string name="stats_local_note">Trackhop\'un zaten sakladığı eşitleme geçmişinden bu telefonda sayıldı. Kartı paylaşmadığınız sürece hiçbir şey gönderilmez.</string>
 </resources>

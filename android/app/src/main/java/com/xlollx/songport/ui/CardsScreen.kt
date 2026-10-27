@@ -171,26 +171,30 @@ private fun PlaylistSource(label: String, initialLink: String?, snackbar: Snackb
     }
 }
 
-/** Share and save buttons for a rendered card, with the story/square switch. */
+/**
+ * Share and save buttons for a rendered card, with the story/square switch. [onRender] null: the
+ * card draws itself (no "make the card" button). [previewDescription] is what TalkBack reads for
+ * the preview.
+ */
 @Composable
-private fun CardActions(bitmaps: Map<Cards.Format, Bitmap>?, name: String, busy: Boolean, onRender: () -> Unit, renderLabel: String) {
+internal fun CardActions(bitmaps: Map<Cards.Format, Bitmap>?, name: String, busy: Boolean, onRender: (() -> Unit)?, renderLabel: String, previewDescription: String? = null) {
     val ctx = LocalContext.current
     var format by remember { mutableStateOf(Cards.Format.STORY) }
     val bmp = bitmaps?.get(format)
     val save = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("image/png")) { uri ->
         if (uri != null && bmp != null) Cards.save(ctx, bmp, uri)
     }
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    if (onRender != null) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         if (busy) CircularProgressIndicator(Modifier.size(18.dp))
         Button(enabled = !busy, onClick = onRender) { Text(renderLabel) }
-    }
+    } else if (busy) CircularProgressIndicator(Modifier.size(18.dp))
     if (bmp != null) {
         androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             FilterChip(selected = format == Cards.Format.STORY, onClick = { format = Cards.Format.STORY }, label = { Text(stringResource(R.string.card_format_story)) })
             FilterChip(selected = format == Cards.Format.SQUARE, onClick = { format = Cards.Format.SQUARE }, label = { Text(stringResource(R.string.card_format_square)) })
         }
         Image(
-            bmp.asImageBitmap(), contentDescription = null,
+            bmp.asImageBitmap(), contentDescription = previewDescription,
             modifier = Modifier.fillMaxWidth().aspectRatio(format.width.toFloat() / format.height).clip(RoundedCornerShape(16.dp)),
         )
         // Wraps at a large font size instead of squeezing a button into a column of letters.

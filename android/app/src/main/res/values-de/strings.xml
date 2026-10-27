@@ -887,4 +887,46 @@
         <item quantity="one">%d Synchronisierung läuft</item>
         <item quantity="other">%d Synchronisierungen laufen</item>
     </plurals>
+    <string name="stats_title">Songport in Zahlen</string>
+    <string name="stats_row_desc">Was deine Synchronisierungen bisher geschafft haben, als Karte zum Teilen</string>
+    <string name="stats_hero_link">Deine Zahlen</string>
+    <string name="stats_tracks_moved">Übertragene Titel</string>
+    <string name="stats_this_month">Diesen Monat übertragen</string>
+    <string name="stats_syncs_done">Abgeschlossene Synchronisierungen</string>
+    <string name="stats_services">Verbundene Dienste</string>
+    <string name="stats_match_rate">Trefferquote</string>
+    <string name="stats_time_saved">Gesparte Zeit (Schätzung)</string>
+    <string name="stats_top_route">Meistgenutzte Route</string>
+    <string name="stats_longest">Längste synchronisierte Playlist</string>
+    <string name="stats_top_artists">Am häufigsten hinzugefügte Künstler</string>
+    <plurals name="stats_since">
+        <item quantity="one">Aus %1$d Synchronisierung seit %2$s</item>
+        <item quantity="other">Aus %1$d Synchronisierungen seit %2$s</item>
+    </plurals>
+    <string name="stats_card_since">seit %1$s</string>
+    <plurals name="stats_n_syncs">
+        <item quantity="one">%1$d Synchronisierung</item>
+        <item quantity="other">%1$d Synchronisierungen</item>
+    </plurals>
+    <string name="stats_route_desc">%1$s nach %2$s</string>
+    <string name="stats_hours_short">%1$s Std.</string>
+    <string name="stats_minutes_short">%1$s Min.</string>
+    <plurals name="stats_time_note">
+        <item quantity="one">Die gesparte Zeit ist eine Schätzung: %1$d Sekunde pro übertragenem Titel, etwa so lange, wie es dauert, einen von Hand zu suchen und hinzuzufügen.</item>
+        <item quantity="other">Die gesparte Zeit ist eine Schätzung: %1$d Sekunden pro übertragenem Titel, etwa so lange, wie es dauert, einen von Hand zu suchen und hinzuzufügen.</item>
+    </plurals>
+    <string name="stats_match_note">Trefferquote: die auf dem anderen Dienst gefundenen Titel im Verhältnis zu den gesuchten, beim jeweils letzten Lauf jeder Synchronisierung.</string>
+    <plurals name="stats_artists_note">
+        <item quantity="one">Gezählt über %1$d Titel aus den letzten Synchronisierungsberichten.</item>
+        <item quantity="other">Gezählt über %1$d Titel aus den letzten Synchronisierungsberichten; ältere Läufe haben nur die Anzahl gespeichert.</item>
+    </plurals>
+    <plurals name="stats_history_cap">
+        <item quantity="one">Auf diesem Telefon wird nur die letzte Synchronisierung (%1$d) aufbewahrt: ältere sind in diesen Zahlen nicht enthalten.</item>
+        <item quantity="other">Auf diesem Telefon werden nur die letzten %1$d Synchronisierungen aufbewahrt: ältere sind in diesen Zahlen nicht enthalten.</item>
+    </plurals>
+    <string name="stats_local_note">Auf diesem Telefon gezählt, aus dem Synchronisierungsverlauf, den Songport ohnehin speichert. Es wird nichts gesendet, außer du teilst die Karte.</string>
+    <string name="stats_empty_title">Noch keine Zahlen</string>
+    <string name="stats_empty_body">Sie erscheinen nach deiner ersten abgeschlossenen Synchronisierung, gezählt aus dem Verlauf auf diesem Telefon.</string>
+    <string name="stats_share_title">Teile deine Zahlen</string>
+    <string name="stats_card_preview">Vorschau der Karte zum Teilen</string>
 </resources>

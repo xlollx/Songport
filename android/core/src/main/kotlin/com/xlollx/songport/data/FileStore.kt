@@ -209,7 +209,7 @@ open class FileStore(dir: File) {
     }
 
     companion object {
-        private const val MAX_REPORTS = 200
+        const val MAX_REPORTS = 200
         private const val WRITE_DELAY_MS = 500L
         private const val MAX_CACHE = 20_000
         /** Una ricerca fallita si ripete dopo una settimana: i cataloghi cambiano, ma non ogni giorno. */

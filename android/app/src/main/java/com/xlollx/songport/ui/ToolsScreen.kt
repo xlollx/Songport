@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Insights
 import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.CardDefaults
@@ -100,6 +101,7 @@ private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVecto
     SCAN(Icons.Filled.ContentCopy, R.string.tools_scan_title, R.string.tools_scan_desc, true),
     COMPAT(Icons.Filled.Favorite, R.string.tools_compat_title, R.string.tools_compat_desc, false),
     POSTER(Icons.Filled.QrCode2, R.string.tools_poster_title, R.string.tools_poster_desc, false),
+    STATS(Icons.Filled.Insights, R.string.stats_title, R.string.stats_row_desc, false),
     UNPLAYABLE(Icons.Filled.MusicOff, R.string.tools_unplayable_title, R.string.tools_unplayable_desc, true),
 }
 
@@ -109,7 +111,7 @@ private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVecto
  */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, onUnplayable: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null, onSubpage: (Boolean) -> Unit = {}) {
+fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, onUnplayable: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null, onSubpage: (Boolean) -> Unit = {}, onStats: () -> Unit = {}) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
@@ -171,6 +173,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
         ToolRow(Tool.AI, beta = true) { open = Tool.AI }
         ToolRow(Tool.COMPAT) { open = Tool.COMPAT }
         ToolRow(Tool.POSTER) { open = Tool.POSTER }
+        ToolRow(Tool.STATS) { onStats() }
         Spacer(Modifier.height(8.dp))
         if (provider == null) {
             Text(stringResource(R.string.empty_tools_title), style = MaterialTheme.typography.titleMedium)
