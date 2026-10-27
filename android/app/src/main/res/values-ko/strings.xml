@@ -778,8 +778,6 @@
     <string name="unplayable_all_playlists">내 모든 플레이리스트</string>
     <string name="unplayable_scan">확인</string>
     <string name="unplayable_scanning">%1$s 확인 중…</string>
-    <string name="unplayable_none">모두 재생됩니다: 플레이리스트 %1$d개에 재생할 수 없는 곡이 없습니다.</string>
-    <string name="unplayable_found">플레이리스트 %2$d개에 재생할 수 없는 곡 %1$d곡</string>
     <string name="unplayable_hint">각 곡마다 Songport가 재생되는 버전을 제안합니다. 수락하거나, 다른 버전을 찾거나, 항목을 삭제하거나, 건너뛰세요. 적용하기 전에는 아무것도 바뀌지 않습니다.</string>
     <string name="unplayable_searching">재생되는 버전을 찾는 중…</string>
     <string name="unplayable_no_proposal">확실한 버전이 없습니다. 항목을 열어 직접 검색하거나 삭제하세요.</string>
@@ -843,4 +841,13 @@
     <string name="onboarding_next">다음</string>
     <string name="onboarding_page">%2$d페이지 중 %1$d페이지</string>
     <string name="editor_step_options">옵션</string>
+    <plurals name="unplayable_tracks_count">
+        <item quantity="other">재생할 수 없는 곡 %1$d곡</item>
+    </plurals>
+    <plurals name="unplayable_found_in">
+        <item quantity="other">플레이리스트 %2$d개에 %1$s</item>
+    </plurals>
+    <plurals name="unplayable_none_in">
+        <item quantity="other">모두 재생됩니다: 플레이리스트 %1$d개에 재생할 수 없는 곡이 없습니다.</item>
+    </plurals>
 </resources>

@@ -1,0 +1,1 @@
+Piccole correzioni: "Aggiungi a…" per un brano condiviso sceglie il servizio con i riquadri dei loghi, e Brani non riproducibili usa il singolare o il plurale giusto per brani e playlist.

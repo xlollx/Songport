@@ -788,8 +788,6 @@
     <string name="unplayable_all_playlists">Todas mis listas</string>
     <string name="unplayable_scan">Comprobar</string>
     <string name="unplayable_scanning">Comprobando %1$s…</string>
-    <string name="unplayable_none">Todo suena: ninguna canción no reproducible en %1$d listas.</string>
-    <string name="unplayable_found">%1$d canciones no reproducibles en %2$d listas</string>
     <string name="unplayable_hint">Para cada una Songport propone una versión que suena. Acéptala, busca otra, quita la entrada u omítela. Nada cambia hasta que apliques.</string>
     <string name="unplayable_searching">Buscando una versión que suene…</string>
     <string name="unplayable_no_proposal">Ninguna versión convincente: abre la entrada para buscar a mano, o quítala.</string>
@@ -854,4 +852,16 @@
     <string name="onboarding_next">Siguiente</string>
     <string name="onboarding_page">Página %1$d de %2$d</string>
     <string name="editor_step_options">Opciones</string>
+    <plurals name="unplayable_tracks_count">
+        <item quantity="one">%1$d canción no reproducible</item>
+        <item quantity="other">%1$d canciones no reproducibles</item>
+    </plurals>
+    <plurals name="unplayable_found_in">
+        <item quantity="one">%1$s en %2$d lista</item>
+        <item quantity="other">%1$s en %2$d listas</item>
+    </plurals>
+    <plurals name="unplayable_none_in">
+        <item quantity="one">Todo suena: ninguna canción no reproducible en %1$d lista.</item>
+        <item quantity="other">Todo suena: ninguna canción no reproducible en %1$d listas.</item>
+    </plurals>
 </resources>

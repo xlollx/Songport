@@ -788,8 +788,6 @@
     <string name="unplayable_all_playlists">Alle meine Playlists</string>
     <string name="unplayable_scan">Prüfen</string>
     <string name="unplayable_scanning">Prüfe %1$s…</string>
-    <string name="unplayable_none">Alles spielt: kein nicht abspielbarer Titel in %1$d Playlists.</string>
-    <string name="unplayable_found">%1$d nicht abspielbare Titel in %2$d Playlists</string>
     <string name="unplayable_hint">Für jeden schlägt Songport eine abspielbare Version vor. Übernimm sie, suche eine andere, entferne den Eintrag oder überspringe ihn. Nichts ändert sich, bis du anwendest.</string>
     <string name="unplayable_searching">Suche eine abspielbare Version…</string>
     <string name="unplayable_no_proposal">Keine überzeugende Version gefunden: Eintrag öffnen und von Hand suchen, oder entfernen.</string>
@@ -854,4 +852,16 @@
     <string name="onboarding_next">Weiter</string>
     <string name="onboarding_page">Seite %1$d von %2$d</string>
     <string name="editor_step_options">Optionen</string>
+    <plurals name="unplayable_tracks_count">
+        <item quantity="one">%1$d nicht abspielbarer Titel</item>
+        <item quantity="other">%1$d nicht abspielbare Titel</item>
+    </plurals>
+    <plurals name="unplayable_found_in">
+        <item quantity="one">%1$s in %2$d Playlist</item>
+        <item quantity="other">%1$s in %2$d Playlists</item>
+    </plurals>
+    <plurals name="unplayable_none_in">
+        <item quantity="one">Alles spielt: kein nicht abspielbarer Titel in %1$d Playlist.</item>
+        <item quantity="other">Alles spielt: kein nicht abspielbarer Titel in %1$d Playlists.</item>
+    </plurals>
 </resources>

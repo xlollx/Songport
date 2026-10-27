@@ -6,7 +6,6 @@ import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -150,11 +148,8 @@ fun ShareTrackSheet(
             }
             Spacer(Modifier.height(4.dp))
             Text(stringResource(R.string.share_sheet_target), style = MaterialTheme.typography.labelLarge)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                targets.forEach { p ->
-                    FilterChip(selected = p.id == dst?.id, onClick = { target = p }, label = { Text(p.label(app)) })
-                }
-            }
+            // The same logo tiles as the other service pickers: a row that scrolls sideways.
+            ServicePicker(targets, dst?.id, onSelect = { id -> targets.firstOrNull { it.id == id }?.let { target = it } })
             Spacer(Modifier.height(8.dp))
             if (dst == null || src == null) return@Column
             val dstName = dst.label(app)

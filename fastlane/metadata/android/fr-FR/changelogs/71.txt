@@ -1,0 +1,1 @@
+Petites corrections : « Ajouter à… » pour un titre partagé choisit le service avec les tuiles de logos, et Titres illisibles accorde titres et playlists au singulier ou au pluriel.

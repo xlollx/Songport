@@ -808,8 +808,6 @@
     <string name="unplayable_all_playlists">Wszystkie moje playlisty</string>
     <string name="unplayable_scan">Sprawdź</string>
     <string name="unplayable_scanning">Sprawdzam %1$s…</string>
-    <string name="unplayable_none">Wszystko gra: brak nieodtwarzalnych utworów w %1$d playlistach.</string>
-    <string name="unplayable_found">%1$d nieodtwarzalnych utworów w %2$d playlistach</string>
     <string name="unplayable_hint">Dla każdego Songport proponuje działającą wersję. Zaakceptuj ją, poszukaj innej, usuń wpis albo pomiń. Nic się nie zmieni, dopóki nie zastosujesz.</string>
     <string name="unplayable_searching">Szukam działającej wersji…</string>
     <string name="unplayable_no_proposal">Brak przekonującej wersji: otwórz wpis, aby poszukać ręcznie, albo go usuń.</string>
@@ -876,4 +874,22 @@
     <string name="onboarding_next">Dalej</string>
     <string name="onboarding_page">Strona %1$d z %2$d</string>
     <string name="editor_step_options">Opcje</string>
+    <plurals name="unplayable_tracks_count">
+        <item quantity="one">%1$d nieodtwarzalny utwór</item>
+        <item quantity="few">%1$d nieodtwarzalne utwory</item>
+        <item quantity="many">%1$d nieodtwarzalnych utworów</item>
+        <item quantity="other">%1$d nieodtwarzalnego utworu</item>
+    </plurals>
+    <plurals name="unplayable_found_in">
+        <item quantity="one">%1$s w %2$d playliście</item>
+        <item quantity="few">%1$s w %2$d playlistach</item>
+        <item quantity="many">%1$s w %2$d playlistach</item>
+        <item quantity="other">%1$s w %2$d playlistach</item>
+    </plurals>
+    <plurals name="unplayable_none_in">
+        <item quantity="one">Wszystko gra: brak nieodtwarzalnych utworów w %1$d playliście.</item>
+        <item quantity="few">Wszystko gra: brak nieodtwarzalnych utworów w %1$d playlistach.</item>
+        <item quantity="many">Wszystko gra: brak nieodtwarzalnych utworów w %1$d playlistach.</item>
+        <item quantity="other">Wszystko gra: brak nieodtwarzalnych utworów w %1$d playlistach.</item>
+    </plurals>
 </resources>

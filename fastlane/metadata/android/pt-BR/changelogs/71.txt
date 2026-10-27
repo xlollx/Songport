@@ -1,0 +1,1 @@
+Pequenas correções: "Adicionar a…" para uma faixa compartilhada escolhe o serviço com os blocos de logos, e Faixas indisponíveis usa o singular ou o plural certo para faixas e playlists.

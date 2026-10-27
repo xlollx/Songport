@@ -50,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -271,9 +272,11 @@ fun UnplayableScreen(provider: MusicProvider, onClose: () -> Unit) {
             val r = scan
             if (r != null) {
                 item {
-                    if (r.count == 0) Text(stringResource(R.string.unplayable_none, r.playlists), style = MaterialTheme.typography.bodyMedium)
+                    if (r.count == 0) Text(pluralStringResource(R.plurals.unplayable_none_in, r.playlists, r.playlists), style = MaterialTheme.typography.bodyMedium)
                     else {
-                        Text(stringResource(R.string.unplayable_found, r.count, r.found.size), style = MaterialTheme.typography.titleMedium)
+                        // Two counts, each with its own plural: the tracks, then the playlists they are in.
+                        val tracks = pluralStringResource(R.plurals.unplayable_tracks_count, r.count, r.count)
+                        Text(pluralStringResource(R.plurals.unplayable_found_in, r.found.size, tracks, r.found.size), style = MaterialTheme.typography.titleMedium)
                         Text(stringResource(R.string.unplayable_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     r.failed.forEach { Text("${it.name}: ${it.reason}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }

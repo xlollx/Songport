@@ -788,8 +788,6 @@
     <string name="unplayable_all_playlists">Tutte le mie playlist</string>
     <string name="unplayable_scan">Controlla</string>
     <string name="unplayable_scanning">Controllo %1$s…</string>
-    <string name="unplayable_none">Si ascolta tutto: nessun brano non riproducibile in %1$d playlist.</string>
-    <string name="unplayable_found">%1$d brani non riproducibili in %2$d playlist</string>
     <string name="unplayable_hint">Per ognuno Songport propone una versione che si ascolta. Accettala, cercane un\'altra, togli la voce o saltala. Non cambia nulla finché non applichi.</string>
     <string name="unplayable_searching">Cerco una versione che si ascolta…</string>
     <string name="unplayable_no_proposal">Nessuna versione convincente: apri la voce per cercare a mano, oppure toglila.</string>
@@ -854,4 +852,16 @@
     <string name="onboarding_next">Avanti</string>
     <string name="onboarding_page">Pagina %1$d di %2$d</string>
     <string name="editor_step_options">Opzioni</string>
+    <plurals name="unplayable_tracks_count">
+        <item quantity="one">%1$d brano non riproducibile</item>
+        <item quantity="other">%1$d brani non riproducibili</item>
+    </plurals>
+    <plurals name="unplayable_found_in">
+        <item quantity="one">%1$s in %2$d playlist</item>
+        <item quantity="other">%1$s in %2$d playlist</item>
+    </plurals>
+    <plurals name="unplayable_none_in">
+        <item quantity="one">Si ascolta tutto: nessun brano non riproducibile in %1$d playlist.</item>
+        <item quantity="other">Si ascolta tutto: nessun brano non riproducibile in %1$d playlist.</item>
+    </plurals>
 </resources>

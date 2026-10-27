@@ -789,8 +789,6 @@
     <string name="unplayable_all_playlists">All my playlists</string>
     <string name="unplayable_scan">Check</string>
     <string name="unplayable_scanning">Checking %1$s…</string>
-    <string name="unplayable_none">Everything plays: no unplayable track in %1$d playlists.</string>
-    <string name="unplayable_found">%1$d unplayable tracks in %2$d playlists</string>
     <string name="unplayable_hint">For each one Songport proposes a version that plays. Accept it, search another, remove the entry or skip it. Nothing changes until you apply.</string>
     <string name="unplayable_searching">Looking for a version that plays…</string>
     <string name="unplayable_no_proposal">No convincing version found: open the entry to search by hand, or remove it.</string>
@@ -855,4 +853,16 @@
     <string name="onboarding_next">Next</string>
     <string name="onboarding_page">Page %1$d of %2$d</string>
     <string name="editor_step_options">Options</string>
+    <plurals name="unplayable_tracks_count">
+        <item quantity="one">%1$d unplayable track</item>
+        <item quantity="other">%1$d unplayable tracks</item>
+    </plurals>
+    <plurals name="unplayable_found_in">
+        <item quantity="one">%1$s in %2$d playlist</item>
+        <item quantity="other">%1$s in %2$d playlists</item>
+    </plurals>
+    <plurals name="unplayable_none_in">
+        <item quantity="one">Everything plays: no unplayable track in %1$d playlist.</item>
+        <item quantity="other">Everything plays: no unplayable track in %1$d playlists.</item>
+    </plurals>
 </resources>

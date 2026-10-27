@@ -779,8 +779,6 @@
     <string name="unplayable_all_playlists">我的全部播放列表</string>
     <string name="unplayable_scan">检查</string>
     <string name="unplayable_scanning">正在检查 %1$s…</string>
-    <string name="unplayable_none">全部可播放：%1$d 个播放列表中没有无法播放的曲目。</string>
-    <string name="unplayable_found">%2$d 个播放列表中有 %1$d 首无法播放的曲目</string>
     <string name="unplayable_hint">Songport 会为每一首提议一个可播放的版本。接受它、另行搜索、移除该条目或跳过。在你应用之前不会有任何更改。</string>
     <string name="unplayable_searching">正在寻找可播放的版本…</string>
     <string name="unplayable_no_proposal">没有找到可信的版本：展开条目手动搜索，或将其移除。</string>
@@ -844,4 +842,13 @@
     <string name="onboarding_next">下一步</string>
     <string name="onboarding_page">第 %1$d 页，共 %2$d 页</string>
     <string name="editor_step_options">选项</string>
+    <plurals name="unplayable_tracks_count">
+        <item quantity="other">有 %1$d 首无法播放的曲目</item>
+    </plurals>
+    <plurals name="unplayable_found_in">
+        <item quantity="other">%2$d 个播放列表中%1$s</item>
+    </plurals>
+    <plurals name="unplayable_none_in">
+        <item quantity="other">全部可播放：%1$d 个播放列表中没有无法播放的曲目。</item>
+    </plurals>
 </resources>

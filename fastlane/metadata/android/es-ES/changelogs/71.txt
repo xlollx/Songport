@@ -1,0 +1,1 @@
+Pequeños arreglos: "Añadir a…" para una canción compartida elige el servicio con los mosaicos de logotipos, y Canciones no reproducibles usa el singular o el plural correcto para canciones y listas.

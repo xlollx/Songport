@@ -1,0 +1,1 @@
+Drobne poprawki: „Dodaj do…” dla udostępnionego utworu wybiera serwis kafelkami z logo, a Utwory nie do odtworzenia odmieniają poprawnie liczbę utworów i playlist.

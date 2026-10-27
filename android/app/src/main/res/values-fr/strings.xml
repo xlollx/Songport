@@ -788,8 +788,6 @@
     <string name="unplayable_all_playlists">Toutes mes playlists</string>
     <string name="unplayable_scan">Vérifier</string>
     <string name="unplayable_scanning">Vérification de %1$s…</string>
-    <string name="unplayable_none">Tout se lit : aucun titre injouable dans %1$d playlists.</string>
-    <string name="unplayable_found">%1$d titres injouables dans %2$d playlists</string>
     <string name="unplayable_hint">Pour chacun, Songport propose une version qui se lit. Acceptez-la, cherchez-en une autre, retirez l\'entrée ou passez. Rien ne change avant d\'appliquer.</string>
     <string name="unplayable_searching">Recherche d\'une version qui se lit…</string>
     <string name="unplayable_no_proposal">Aucune version convaincante : ouvrez l\'entrée pour chercher à la main, ou retirez-la.</string>
@@ -854,4 +852,16 @@
     <string name="onboarding_next">Suivant</string>
     <string name="onboarding_page">Page %1$d sur %2$d</string>
     <string name="editor_step_options">Options</string>
+    <plurals name="unplayable_tracks_count">
+        <item quantity="one">%1$d titre injouable</item>
+        <item quantity="other">%1$d titres injouables</item>
+    </plurals>
+    <plurals name="unplayable_found_in">
+        <item quantity="one">%1$s dans %2$d playlist</item>
+        <item quantity="other">%1$s dans %2$d playlists</item>
+    </plurals>
+    <plurals name="unplayable_none_in">
+        <item quantity="one">Tout se lit : aucun titre injouable dans %1$d playlist.</item>
+        <item quantity="other">Tout se lit : aucun titre injouable dans %1$d playlists.</item>
+    </plurals>
 </resources>

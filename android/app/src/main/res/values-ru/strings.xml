@@ -806,8 +806,6 @@
     <string name="unplayable_all_playlists">Все мои плейлисты</string>
     <string name="unplayable_scan">Проверить</string>
     <string name="unplayable_scanning">Проверяю %1$s…</string>
-    <string name="unplayable_none">Всё играет: недоступных треков в %1$d плейлистах нет.</string>
-    <string name="unplayable_found">Недоступных треков: %1$d в %2$d плейлистах</string>
     <string name="unplayable_hint">Для каждого Songport предлагает версию, которая играет. Примите её, найдите другую, удалите запись или пропустите. Ничего не меняется, пока вы не примените.</string>
     <string name="unplayable_searching">Ищу версию, которая играет…</string>
     <string name="unplayable_no_proposal">Убедительной версии нет: откройте запись, чтобы поискать вручную, или удалите её.</string>
@@ -874,4 +872,22 @@
     <string name="onboarding_next">Далее</string>
     <string name="onboarding_page">Страница %1$d из %2$d</string>
     <string name="editor_step_options">Параметры</string>
+    <plurals name="unplayable_tracks_count">
+        <item quantity="one">%1$d недоступный трек</item>
+        <item quantity="few">%1$d недоступных трека</item>
+        <item quantity="many">%1$d недоступных треков</item>
+        <item quantity="other">%1$d недоступного трека</item>
+    </plurals>
+    <plurals name="unplayable_found_in">
+        <item quantity="one">%1$s в %2$d плейлисте</item>
+        <item quantity="few">%1$s в %2$d плейлистах</item>
+        <item quantity="many">%1$s в %2$d плейлистах</item>
+        <item quantity="other">%1$s в %2$d плейлистах</item>
+    </plurals>
+    <plurals name="unplayable_none_in">
+        <item quantity="one">Всё играет: недоступных треков в %1$d плейлисте нет.</item>
+        <item quantity="few">Всё играет: недоступных треков в %1$d плейлистах нет.</item>
+        <item quantity="many">Всё играет: недоступных треков в %1$d плейлистах нет.</item>
+        <item quantity="other">Всё играет: недоступных треков в %1$d плейлистах нет.</item>
+    </plurals>
 </resources>

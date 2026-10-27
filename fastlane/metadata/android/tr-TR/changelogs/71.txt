@@ -1,0 +1,1 @@
+Küçük düzeltmeler: paylaşılan bir parça için "Ekle…" servisi logo kutularıyla seçiyor ve Çalınamayan parçalar sayıları doğru gösteriyor.

@@ -786,8 +786,6 @@
     <string name="unplayable_all_playlists">Tüm çalma listelerim</string>
     <string name="unplayable_scan">Kontrol et</string>
     <string name="unplayable_scanning">%1$s kontrol ediliyor…</string>
-    <string name="unplayable_none">Her şey çalıyor: %1$d çalma listesinde çalınamayan parça yok.</string>
-    <string name="unplayable_found">%2$d çalma listesinde %1$d çalınamayan parça</string>
     <string name="unplayable_hint">Her biri için Songport çalan bir sürüm önerir. Kabul et, başkasını ara, kaydı kaldır ya da atla. Uygulayana kadar hiçbir şey değişmez.</string>
     <string name="unplayable_searching">Çalan bir sürüm aranıyor…</string>
     <string name="unplayable_no_proposal">İkna edici bir sürüm bulunamadı: elle aramak için kaydı aç ya da kaldır.</string>
@@ -852,4 +850,16 @@
     <string name="onboarding_next">İleri</string>
     <string name="onboarding_page">Sayfa %1$d / %2$d</string>
     <string name="editor_step_options">Seçenekler</string>
+    <plurals name="unplayable_tracks_count">
+        <item quantity="one">%1$d çalınamayan parça</item>
+        <item quantity="other">%1$d çalınamayan parça</item>
+    </plurals>
+    <plurals name="unplayable_found_in">
+        <item quantity="one">%2$d çalma listesinde %1$s</item>
+        <item quantity="other">%2$d çalma listesinde %1$s</item>
+    </plurals>
+    <plurals name="unplayable_none_in">
+        <item quantity="one">Her şey çalıyor: %1$d çalma listesinde çalınamayan parça yok.</item>
+        <item quantity="other">Her şey çalıyor: %1$d çalma listesinde çalınamayan parça yok.</item>
+    </plurals>
 </resources>

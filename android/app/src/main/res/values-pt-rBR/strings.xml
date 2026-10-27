@@ -788,8 +788,6 @@
     <string name="unplayable_all_playlists">Todas as minhas playlists</string>
     <string name="unplayable_scan">Verificar</string>
     <string name="unplayable_scanning">Verificando %1$s…</string>
-    <string name="unplayable_none">Tudo toca: nenhuma faixa indisponível em %1$d playlists.</string>
-    <string name="unplayable_found">%1$d faixas que não tocam em %2$d playlists</string>
     <string name="unplayable_hint">Para cada uma o Songport propõe uma versão que toca. Aceite, procure outra, remova a entrada ou pule. Nada muda até você aplicar.</string>
     <string name="unplayable_searching">Procurando uma versão que toca…</string>
     <string name="unplayable_no_proposal">Nenhuma versão convincente: abra a entrada para procurar à mão, ou remova.</string>
@@ -854,4 +852,16 @@
     <string name="onboarding_next">Avançar</string>
     <string name="onboarding_page">Página %1$d de %2$d</string>
     <string name="editor_step_options">Opções</string>
+    <plurals name="unplayable_tracks_count">
+        <item quantity="one">%1$d faixa que não toca</item>
+        <item quantity="other">%1$d faixas que não tocam</item>
+    </plurals>
+    <plurals name="unplayable_found_in">
+        <item quantity="one">%1$s em %2$d playlist</item>
+        <item quantity="other">%1$s em %2$d playlists</item>
+    </plurals>
+    <plurals name="unplayable_none_in">
+        <item quantity="one">Tudo toca: nenhuma faixa indisponível em %1$d playlist.</item>
+        <item quantity="other">Tudo toca: nenhuma faixa indisponível em %1$d playlists.</item>
+    </plurals>
 </resources>
