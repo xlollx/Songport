@@ -56,4 +56,6 @@
     <string name="shazam_share_hint">经常用 Shazam？在 Shazam 设置中连接 Spotify 或 Apple Music：识别到的每首歌都会进入“My Shazam Tracks”歌单。Trackhop 可以把它同步到你的任何服务。</string>
     <string name="stats_title">Trackhop 数据一览</string>
     <string name="stats_local_note">根据 Trackhop 已保存的同步记录在此手机上统计。除非你分享卡片，否则不会发送任何内容。</string>
+    <string name="settings_music_links_summary">让 Spotify、Apple Music 等的音乐链接在 Trackhop 中打开，把歌曲加入歌单。</string>
+    <string name="settings_security_summary">加密且可撤销的登录信息只保存在本机；Trackhop 没有服务器。</string>
 </resources>

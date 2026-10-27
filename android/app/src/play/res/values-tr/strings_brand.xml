@@ -56,4 +56,6 @@
     <string name="shazam_share_hint">Shazam\'ı sık mı kullanıyorsunuz? Shazam ayarlarında Spotify veya Apple Music\'i bağlayın: tanıdığınız her şarkı “My Shazam Tracks” çalma listesine eklenir. Trackhop onu tüm hizmetlerinizde eşitleyebilir.</string>
     <string name="stats_title">Rakamlarla Trackhop</string>
     <string name="stats_local_note">Trackhop\'un zaten sakladığı eşitleme geçmişinden bu telefonda sayıldı. Kartı paylaşmadığınız sürece hiçbir şey gönderilmez.</string>
+    <string name="settings_music_links_summary">Spotify, Apple Music ve diğerlerinin müzik bağlantıları Trackhop\'ta açılsın, şarkıyı bir çalma listesine eklemek için.</string>
+    <string name="settings_security_summary">Bu telefonda şifreli, iptal edilebilir oturumlar; Trackhop sunucusu yok.</string>
 </resources>

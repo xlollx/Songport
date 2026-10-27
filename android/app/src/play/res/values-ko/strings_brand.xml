@@ -55,4 +55,6 @@
     <string name="shazam_share_hint">Shazam을 자주 쓰시나요? Shazam 설정에서 Spotify나 Apple Music을 연결하면 인식한 모든 곡이 “My Shazam Tracks” 플레이리스트에 들어갑니다. Trackhop가 이를 어떤 서비스에든 동기화할 수 있습니다.</string>
     <string name="stats_title">숫자로 보는 Trackhop</string>
     <string name="stats_local_note">이미 보관 중인 Trackhop 동기화 기록으로 이 휴대폰에서 집계합니다. 카드를 공유하지 않는 한 아무것도 전송되지 않습니다.</string>
+    <string name="settings_music_links_summary">Spotify, Apple Music 등의 음악 링크를 Trackhop에서 열어 곡을 플레이리스트에 추가합니다.</string>
+    <string name="settings_security_summary">이 휴대폰에 암호화되고 취소 가능한 로그인만 저장; Trackhop 서버는 없습니다.</string>
 </resources>

@@ -3,41 +3,58 @@ package com.xlollx.songport.ui
 import com.xlollx.songport.providers.*
 import android.app.Activity
 import android.content.Intent
-import com.xlollx.songport.sync.Scheduler
-import com.xlollx.songport.model.Schedule
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.compose.rememberLauncherForActivityResult
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.BatteryAlert
+import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.ColorLens
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.DeveloperMode
+import androidx.compose.material.icons.filled.EditNotifications
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.LinkOff
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.filled.MusicOff
+import androidx.compose.material.icons.filled.NetworkCheck
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Policy
+import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.filled.VolunteerActivism
+import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -59,8 +76,11 @@ import com.xlollx.songport.ads.Ads
 import com.xlollx.songport.auth.LockActivity
 import com.xlollx.songport.data.Store
 import com.xlollx.songport.data.StoreData
+import com.xlollx.songport.model.Schedule
 import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.Providers
+import com.xlollx.songport.sync.BackupExport
+import com.xlollx.songport.sync.Scheduler
 import kotlinx.coroutines.launch
 
 /** Apre la pagina Ko-fi: donazione volontaria, nessuna funzione legata. */
@@ -73,7 +93,21 @@ private fun openUrl(ctx: android.content.Context, url: String) {
     runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }
 
-@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+private const val SOURCE_URL = "https://github.com/xlollx/Songport"
+
+/** The little arrow of a row that leaves the app (browser, system settings). */
+@Composable
+private fun ExternalMark() = Icon(Icons.AutoMirrored.Filled.OpenInNew, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+
+/** The arrow of a row that opens in place. */
+@Composable
+private fun ExpandMark(open: Boolean) = Icon(if (open) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+
+/**
+ * Settings, in groups read from the top down by how often they are wanted: how the app looks,
+ * how it syncs, what it tells you, the backup folder, privacy, then the advanced corner (log,
+ * keys, developer tools) and the about box. Every row says its current value under its name.
+ */
 @Composable
 fun SettingsScreen(
     data: StoreData,
@@ -84,83 +118,91 @@ fun SettingsScreen(
 ) {
     val ctx = LocalContext.current
     val privacyRequired by Ads.privacyOptionsRequired.collectAsState()
-    var advanced by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val settings = data.settings
 
     Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp + LocalBottomBarInset.current),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp + LocalBottomBarInset.current),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        SectionCard(stringResource(R.string.settings_section_general)) {
-            SettingRow(stringResource(R.string.settings_log), stringResource(R.string.settings_log_desc), onClick = onOpenLog) {
-                TextButton(onClick = onOpenLog) { Text(stringResource(R.string.settings_open)) }
+        // ---------------------------------------------------------------- Appearance
+        PrefSection(stringResource(R.string.settings_section_appearance)) {
+            val mode = ThemeMode.of(settings.themeMode)
+            val themeLabels = ThemeMode.entries.map {
+                it to stringResource(when (it) { ThemeMode.SYSTEM -> R.string.settings_theme_system; ThemeMode.LIGHT -> R.string.settings_theme_light; ThemeMode.DARK -> R.string.settings_theme_dark })
             }
-            SwitchRow(stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_desc), data.settings.notifyOnSync) { v -> store.updateSettings { it.copy(notifyOnSync = v) } }
-            SwitchRow(stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_desc), data.settings.isrcLookup) { v -> store.updateSettings { it.copy(isrcLookup = v) } }
-            SwitchRow(stringResource(R.string.settings_unplayable), stringResource(R.string.settings_unplayable_desc), data.settings.unplayableCheck) { v -> store.updateSettings { it.copy(unplayableCheck = v) }; Scheduler.applyUnplayable(ctx) }
-            // The link alias lives in the package manager, not in the store: read it from there.
-            var musicLinks by remember { mutableStateOf(MusicLinks.enabled(ctx)) }
-            SwitchRow(stringResource(R.string.settings_music_links), stringResource(R.string.settings_music_links_desc), musicLinks) { v -> MusicLinks.set(ctx, v); musicLinks = v }
-            SwitchRow(stringResource(R.string.security_lock), stringResource(R.string.security_lock_desc), data.settings.appLock) { v ->
-                if (v && !LockActivity.available(ctx)) {
-                    scope.launch { snackbar.showSnackbar(ctx.getString(R.string.security_lock_unavailable)) }
-                } else {
-                    store.updateSettings { it.copy(appLock = v) }
-                }
+            var themeOpen by remember { mutableStateOf(false) }
+            PrefRow(Icons.Filled.Palette, stringResource(R.string.settings_theme), themeLabels.first { it.first == mode }.second) { themeOpen = true }
+            if (themeOpen) ChoiceDialog(stringResource(R.string.settings_theme), themeLabels, mode, onDismiss = { themeOpen = false }) { m ->
+                themeOpen = false
+                store.updateSettings { it.copy(themeMode = m.name) }
             }
-            // Chosen in-app and applied at once (the activity is recreated), also while a sync runs.
-            var langOpen by remember { mutableStateOf(false) }
-            SettingRow(stringResource(R.string.settings_language), AppLocale.label(ctx, AppLocale.current(ctx)), onClick = { langOpen = true }) {
-                TextButton(onClick = { langOpen = true }) { Text(stringResource(R.string.settings_language_open)) }
-            }
-            if (langOpen) AlertDialog(
-                onDismissRequest = { langOpen = false },
-                title = { Text(stringResource(R.string.settings_language)) },
-                text = {
-                    Column {
-                        AppLocale.CHOICES.forEach { tag ->
-                            Row(
-                                Modifier.fillMaxWidth().clickable {
-                                    langOpen = false
-                                    (ctx as? Activity)?.let { AppLocale.set(it, tag) }
-                                }.padding(vertical = 10.dp),
-                            ) { Text(AppLocale.label(ctx, tag), style = MaterialTheme.typography.bodyLarge) }
-                        }
-            }
-                },
-                confirmButton = { TextButton(onClick = { langOpen = false }) { Text(stringResource(R.string.cancel)) } },
-            )
-        }
-
-        // How the app looks: light or dark, and the phone's own colours instead of the brand's.
-        SectionCard(stringResource(R.string.settings_section_appearance)) {
-            Text(stringResource(R.string.settings_theme), style = MaterialTheme.typography.bodyLarge)
-            val mode = ThemeMode.of(data.settings.themeMode)
-            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-                ThemeMode.entries.forEachIndexed { i, m ->
-                    SegmentedButton(
-                        selected = mode == m,
-                        onClick = { store.updateSettings { it.copy(themeMode = m.name) } },
-                        shape = SegmentedButtonDefaults.itemShape(i, ThemeMode.entries.size),
-                        label = {
-                            Text(stringResource(when (m) { ThemeMode.SYSTEM -> R.string.settings_theme_system; ThemeMode.LIGHT -> R.string.settings_theme_light; ThemeMode.DARK -> R.string.settings_theme_dark }), maxLines = 1)
-                        },
-                    )
-                }
-            }
-            SwitchRow(
+            PrefSwitch(
+                Icons.Filled.ColorLens,
                 stringResource(R.string.settings_dynamic_color),
                 stringResource(if (dynamicColorAvailable) R.string.settings_dynamic_color_desc else R.string.settings_dynamic_color_unavailable),
-                data.settings.dynamicColor && dynamicColorAvailable, enabled = dynamicColorAvailable,
+                settings.dynamicColor && dynamicColorAvailable, enabled = dynamicColorAvailable,
             ) { v -> store.updateSettings { it.copy(dynamicColor = v) } }
-            SwitchRow(stringResource(R.string.settings_new_look), stringResource(R.string.settings_new_look_desc), data.settings.newLook) { v ->
+            // Chosen in-app and applied at once (the activity is recreated), also while a sync runs.
+            var langOpen by remember { mutableStateOf(false) }
+            val currentTag = AppLocale.current(ctx)
+            PrefRow(Icons.Filled.Language, stringResource(R.string.settings_language), AppLocale.label(ctx, currentTag)) { langOpen = true }
+            if (langOpen) ChoiceDialog(
+                stringResource(R.string.settings_language),
+                AppLocale.CHOICES.map { it to AppLocale.label(ctx, it) },
+                currentTag,
+                onDismiss = { langOpen = false },
+            ) { tag ->
+                langOpen = false
+                if (tag != currentTag) (ctx as? Activity)?.let { AppLocale.set(it, tag) }
+            }
+            PrefSwitch(Icons.Filled.Dashboard, stringResource(R.string.settings_new_look), stringResource(R.string.settings_new_look_desc), settings.newLook) { v ->
                 store.updateSettings { it.copy(newLook = v) }
             }
         }
 
-        SectionCard(stringResource(R.string.backup_folder_title)) {
-            // Where the dated backups also go, outside the phone: SD card, Nextcloud, Drive, any folder app.
-            val folder = data.settings.backupFolder
+        // ---------------------------------------------------------------- Syncing
+        PrefSection(stringResource(R.string.settings_section_syncing)) {
+            PrefSwitch(Icons.Filled.Verified, stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_summary), settings.isrcLookup) { v ->
+                store.updateSettings { it.copy(isrcLookup = v) }
+            }
+            // The link alias lives in the package manager, not in the store: read it from there.
+            var musicLinks by remember { mutableStateOf(MusicLinks.enabled(ctx)) }
+            PrefSwitch(Icons.Filled.Link, stringResource(R.string.settings_music_links), stringResource(R.string.settings_music_links_summary), musicLinks) { v ->
+                MusicLinks.set(ctx, v); musicLinks = v
+            }
+            PrefRow(
+                Icons.Filled.BatteryAlert, stringResource(R.string.settings_battery), stringResource(R.string.settings_battery_desc),
+                trailing = { ExternalMark() },
+            ) {
+                // Apre l'elenco di sistema (nessun permesso speciale): l'utente sceglie Songport e lo esclude.
+                runCatching { ctx.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) }
+            }
+        }
+
+        // ---------------------------------------------------------------- Notifications
+        PrefSection(stringResource(R.string.settings_section_notifications)) {
+            PrefSwitch(Icons.Filled.Notifications, stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_desc), settings.notifyOnSync) { v ->
+                store.updateSettings { it.copy(notifyOnSync = v) }
+            }
+            PrefSwitch(Icons.Filled.MusicOff, stringResource(R.string.settings_unplayable), stringResource(R.string.settings_unplayable_summary), settings.unplayableCheck) { v ->
+                store.updateSettings { it.copy(unplayableCheck = v) }; Scheduler.applyUnplayable(ctx)
+            }
+            PrefRow(
+                Icons.Filled.EditNotifications, stringResource(R.string.settings_notifications_system), stringResource(R.string.settings_notifications_system_desc),
+                trailing = { ExternalMark() },
+            ) {
+                runCatching {
+                    ctx.startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, ctx.packageName))
+                }
+            }
+        }
+
+        // ---------------------------------------------------------------- Backups
+        // Where the dated backups also go, outside the phone: SD card, Nextcloud, Drive, any folder app.
+        val folder = settings.backupFolder
+        PrefSection(stringResource(R.string.settings_section_backups), footer = if (folder.isBlank()) stringResource(R.string.backup_folder_desc) else null) {
             val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
                 if (uri != null) {
                     runCatching { ctx.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION) }
@@ -168,170 +210,174 @@ fun SettingsScreen(
                     Scheduler.applyBackup(ctx)
                 }
             }
-            Text(stringResource(R.string.backup_folder_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            SettingRow(
-                if (folder.isBlank()) stringResource(R.string.backup_folder_none) else com.xlollx.songport.sync.BackupExport.folderLabel(folder),
-                stringResource(R.string.backup_folder_hint),
-                onClick = { pickFolder.launch(null) },
-            ) {
-                TextButton(onClick = { pickFolder.launch(null) }) { Text(stringResource(if (folder.isBlank()) R.string.backup_folder_pick else R.string.settings_language_open)) }
-            }
+            PrefRow(
+                Icons.Filled.Folder, stringResource(R.string.backup_folder_title),
+                if (folder.isBlank()) stringResource(R.string.backup_folder_none) else BackupExport.folderLabel(folder),
+                trailing = if (folder.isBlank()) { { TextButton(onClick = { pickFolder.launch(null) }) { Text(stringResource(R.string.backup_folder_pick)) } } } else null,
+            ) { pickFolder.launch(null) }
             if (folder.isNotBlank()) {
                 // What the last copy did: a date, or the reason it could not (the folder gone, for one).
                 var stateVersion by remember { mutableIntStateOf(0) }
-                val state = remember(stateVersion, folder) { com.xlollx.songport.sync.BackupExport.state(ctx) }
+                val state = remember(stateVersion, folder) { BackupExport.state(ctx) }
+                val lastError = state.lastError
                 when {
-                    state.lastError != null -> Text(state.lastError, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-                    state.lastOk > 0 -> Text(stringResource(R.string.backup_last_ok, formatDate(state.lastOk)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    lastError != null -> PrefBlock { Text(lastError, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
+                    state.lastOk > 0 -> PrefBlock { Text(stringResource(R.string.backup_last_ok, formatDate(state.lastOk)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
                 }
-                Text(stringResource(R.string.editor_schedule), style = MaterialTheme.typography.labelLarge)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    listOf(Schedule.MANUAL, Schedule.DAILY, Schedule.WEEKLY).forEach { s ->
-                        FilterChip(selected = data.settings.backupSchedule == s, onClick = { store.updateSettings { it.copy(backupSchedule = s) }; Scheduler.applyBackup(ctx) }, label = { Text(scheduleLabel(s)) })
-            }
+                var scheduleOpen by remember { mutableStateOf(false) }
+                PrefRow(Icons.Filled.Schedule, stringResource(R.string.editor_schedule), scheduleLabel(settings.backupSchedule)) { scheduleOpen = true }
+                if (scheduleOpen) ChoiceDialog(
+                    stringResource(R.string.editor_schedule),
+                    listOf(Schedule.MANUAL, Schedule.DAILY, Schedule.WEEKLY).map { it to scheduleLabel(it) },
+                    settings.backupSchedule,
+                    onDismiss = { scheduleOpen = false },
+                ) { s ->
+                    scheduleOpen = false
+                    store.updateSettings { it.copy(backupSchedule = s) }; Scheduler.applyBackup(ctx)
                 }
                 var exporting by remember { mutableStateOf(false) }
                 var exportStep by remember { mutableStateOf("") }
-                if (exporting) Row(verticalAlignment = Alignment.CenterVertically) {
-                    CircularProgressIndicator(Modifier.size(16.dp)); Spacer(Modifier.width(8.dp)); Text(exportStep, style = MaterialTheme.typography.bodySmall)
+                PrefRow(
+                    Icons.Filled.CloudUpload, stringResource(R.string.backup_folder_now),
+                    if (exporting && exportStep.isNotBlank()) exportStep else stringResource(R.string.backup_folder_hint),
+                    enabled = !exporting,
+                    chevron = false,
+                    trailing = if (exporting) { { CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) } } else null,
+                ) {
+                    exporting = true
+                    scope.launch {
+                        val r = BackupExport.run(ctx) { exportStep = it }
+                        exporting = false
+                        stateVersion++
+                        snackbar.showSnackbar(if (r.folderMissing) r.failed.first() else ctx.getString(R.string.backup_folder_done, r.services, r.copied) + (if (r.failed.isNotEmpty()) " · " + r.failed.first() else ""))
+                    }
                 }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedButton(enabled = !exporting, onClick = {
-                        exporting = true
-                        scope.launch {
-                            val r = com.xlollx.songport.sync.BackupExport.run(ctx) { exportStep = it }
-                            exporting = false
-                            stateVersion++
-                            snackbar.showSnackbar(if (r.folderMissing) r.failed.first() else ctx.getString(R.string.backup_folder_done, r.services, r.copied) + (if (r.failed.isNotEmpty()) " · " + r.failed.first() else ""))
-                        }
-                    }) { Text(stringResource(R.string.backup_folder_now)) }
-                    Spacer(Modifier.weight(1f))
-                    TextButton(onClick = { store.updateSettings { it.copy(backupFolder = "", backupSchedule = Schedule.MANUAL) }; Scheduler.applyBackup(ctx) }) { Text(stringResource(R.string.backup_folder_forget), color = MaterialTheme.colorScheme.error) }
+                PrefRow(Icons.Filled.LinkOff, stringResource(R.string.backup_folder_stop), null, enabled = !exporting, danger = true, chevron = false) {
+                    store.updateSettings { it.copy(backupFolder = "", backupSchedule = Schedule.MANUAL) }; Scheduler.applyBackup(ctx)
                 }
             }
         }
 
-        SectionCard(stringResource(R.string.ai_title)) {
-            // Same dialog as the Tools card: key and model live in the encrypted token store.
+        // ---------------------------------------------------------------- Privacy and security
+        PrefSection(
+            stringResource(R.string.settings_section_privacy),
+            footer = stringResource(if (Ads.enabled) R.string.settings_ads_note else R.string.settings_free_note),
+        ) {
+            PrefSwitch(Icons.Filled.Lock, stringResource(R.string.security_lock), stringResource(R.string.security_lock_desc), settings.appLock) { v ->
+                if (v && !LockActivity.available(ctx)) {
+                    scope.launch { snackbar.showSnackbar(ctx.getString(R.string.security_lock_unavailable)) }
+                } else {
+                    store.updateSettings { it.copy(appLock = v) }
+                }
+            }
+            var factsOpen by remember { mutableStateOf(false) }
+            PrefRow(Icons.Filled.Security, stringResource(R.string.security_title), stringResource(R.string.settings_security_summary)) { factsOpen = true }
+            if (factsOpen) AlertDialog(
+                onDismissRequest = { factsOpen = false },
+                title = { Text(stringResource(R.string.security_title)) },
+                text = {
+                    Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        listOf(R.string.security_fact_1, R.string.security_fact_2, R.string.security_fact_3, R.string.security_fact_4).forEach {
+                            Row(verticalAlignment = Alignment.Top) {
+                                Icon(Icons.Filled.Lock, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 2.dp).size(18.dp))
+                                Spacer(Modifier.width(10.dp))
+                                Text(stringResource(it), style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
+                    }
+                },
+                confirmButton = { TextButton(onClick = { factsOpen = false }) { Text(stringResource(R.string.ok)) } },
+            )
+            // Play build only, and only where the consent rules ask for it (UMP decides).
+            if (privacyRequired) {
+                PrefRow(Icons.Filled.PrivacyTip, stringResource(R.string.settings_privacy_options), null, trailing = { ExternalMark() }) {
+                    (ctx as? Activity)?.let { Ads.showPrivacyOptions(it) }
+                }
+            }
+        }
+
+        // ---------------------------------------------------------------- Advanced
+        PrefSection(stringResource(R.string.settings_section_advanced)) {
+            PrefRow(Icons.Filled.History, stringResource(R.string.settings_log), stringResource(R.string.settings_log_desc), onClick = onOpenLog)
+            // Same dialog as the generator in Tools: key and model live in the encrypted token store.
             var aiConfig by remember { mutableStateOf(com.xlollx.songport.ai.AiClient.config(ctx)) }
             var aiOpen by remember { mutableStateOf(false) }
             if (aiOpen) AiSetupDialog(aiConfig, onDismiss = { aiOpen = false }) { aiConfig = it; aiOpen = false }
-            SettingRow(aiConfig?.let { "${it.vendor.label} · ${it.model}" } ?: stringResource(R.string.not_configured), stringResource(R.string.settings_ai_desc), onClick = { aiOpen = true }) {
-                TextButton(onClick = { aiOpen = true }) { Text(stringResource(if (aiConfig == null) R.string.ai_setup else R.string.ai_setup_change)) }
-            }
-        }
+            val ai = aiConfig
+            PrefRow(
+                Icons.Filled.AutoAwesome, stringResource(R.string.ai_setup_title),
+                if (ai != null) "${ai.vendor.label} · ${ai.model}" else stringResource(R.string.not_configured) + " · " + stringResource(R.string.settings_ai_desc),
+            ) { aiOpen = true }
 
-        SectionCard(stringResource(R.string.settings_advanced)) {
-            Text(stringResource(R.string.settings_advanced_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (advanced) {
+            var keysOpen by remember { mutableStateOf(false) }
+            PrefRow(Icons.Filled.VpnKey, stringResource(R.string.settings_advanced), stringResource(R.string.settings_keys_summary), trailing = { ExpandMark(keysOpen) }) { keysOpen = !keysOpen }
+            if (keysOpen) {
+                PrefBlock { Text(stringResource(R.string.settings_advanced_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
                 Providers.all().filter { it.setupGuide != null && it.slot.isEmpty() }.forEach { p ->
                     val configured = remember(p.id, data.settings) { p.isConfigured(ctx) }
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                        ProviderBadge(p, 28.dp)
-                        Spacer(Modifier.width(10.dp))
-                        Column(Modifier.weight(1f)) {
-                            Text(p.displayName, style = MaterialTheme.typography.bodyLarge)
-                            Text(
-                                stringResource(if (configured) R.string.setup_using_own else R.string.not_configured),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = if (configured) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
+                    PrefRow(
+                        null, p.displayName,
+                        stringResource(if (configured) R.string.setup_using_own else R.string.not_configured),
+                        leading = { ProviderBadge(p, 40.dp) },
+                        trailing = {
+                            Text(stringResource(if (configured) R.string.edit else R.string.setup_now), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                        },
+                    ) { onSetup(p) }
+                }
+            }
+
+            PrefSwitch(Icons.Filled.DeveloperMode, stringResource(R.string.settings_developer_switch), stringResource(R.string.settings_developer_desc), settings.developerOptions) { v ->
+                store.updateSettings { it.copy(developerOptions = v) }
+            }
+            if (settings.developerOptions) {
+                // "Nothing leaves your phone except…" made checkable: the hosts this app has talked to.
+                var connectionsOpen by remember { mutableStateOf(false) }
+                var connectionsVersion by remember { mutableIntStateOf(0) }
+                PrefRow(Icons.Filled.NetworkCheck, stringResource(R.string.security_connections), stringResource(R.string.security_connections_desc), trailing = { ExpandMark(connectionsOpen) }) {
+                    connectionsOpen = !connectionsOpen
+                }
+                if (connectionsOpen) PrefBlock {
+                    val entries = remember(connectionsVersion) { com.xlollx.songport.net.HostLog.entries() }
+                    if (com.xlollx.songport.providers.BuiltIn.available) Text(stringResource(R.string.security_connections_web), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (entries.isEmpty()) Text(stringResource(R.string.security_connections_none), style = MaterialTheme.typography.bodySmall)
+                    entries.forEach { e ->
+                        Column {
+                            Text(e.host, style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(R.string.security_connections_count, e.count, formatDate(e.lastAt)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                        Spacer(Modifier.width(8.dp))
-                        OutlinedButton(onClick = { onSetup(p) }) {
-                            Text(stringResource(if (configured) R.string.edit else R.string.setup_now))
-                        }
-            }
-                }
-            }
-            TextButton(onClick = { advanced = !advanced }) {
-                Text(stringResource(if (advanced) R.string.hide_details else R.string.show_details))
-            }
-        }
-
-        SectionCard(stringResource(R.string.security_title)) {
-            listOf(R.string.security_fact_1, R.string.security_fact_2, R.string.security_fact_3, R.string.security_fact_4).forEach {
-                Row(verticalAlignment = Alignment.Top) {
-                    Icon(Icons.Filled.Lock, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp).padding(top = 2.dp))
-                    Spacer(Modifier.width(10.dp))
-                    Text(stringResource(it), style = MaterialTheme.typography.bodyMedium)
+                    }
+                    if (entries.isNotEmpty()) TextButton(onClick = { com.xlollx.songport.net.HostLog.clear(); connectionsVersion++ }, modifier = Modifier.heightIn(min = 48.dp)) {
+                        Text(stringResource(R.string.security_connections_clear))
+                    }
                 }
             }
         }
 
-        SectionCard(stringResource(R.string.support_title)) {
-            Text(stringResource(R.string.support_body), style = MaterialTheme.typography.bodyMedium)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (BuildConfig.KOFI_URL.isNotBlank()) {
-                    FilledTonalButton(onClick = { openSupport(ctx) }) {
-                        Icon(Icons.Filled.Favorite, null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.support_button))
-            }
-                }
-                // Per chi ha un account GitHub: anche un contributo mensile.
-                if (BuildConfig.SPONSORS_URL.isNotBlank()) {
-                    OutlinedButton(onClick = { openSponsors(ctx) }) { Text(stringResource(R.string.support_sponsors)) }
-                }
-            }
-            Text(stringResource(if (Ads.enabled) R.string.settings_ads_note else R.string.settings_free_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-
-        SectionCard(stringResource(R.string.settings_battery)) {
-            Text(stringResource(R.string.settings_battery_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            OutlinedButton(onClick = {
-                // Apre l'elenco di sistema (nessun permesso speciale): l'utente sceglie Songport e lo esclude.
-                runCatching { ctx.startActivity(Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) }
-            }) { Text(stringResource(R.string.settings_battery_button)) }
-        }
-
-        SectionCard(stringResource(R.string.settings_developer)) {
-            SwitchRow(stringResource(R.string.settings_developer_switch), stringResource(R.string.settings_developer_desc), data.settings.developerOptions) { v -> store.updateSettings { it.copy(developerOptions = v) } }
-            if (data.settings.developerOptions) {
-            // "Nothing leaves your phone except…" made checkable: the hosts this app has talked to.
-            var connectionsOpen by remember { mutableStateOf(false) }
-            var connectionsVersion by remember { mutableIntStateOf(0) }
-            TextButton(onClick = { connectionsOpen = !connectionsOpen }) {
-                Text(stringResource(if (connectionsOpen) R.string.hide_details else R.string.security_connections))
-            }
-            if (connectionsOpen) {
-                val entries = remember(connectionsVersion) { com.xlollx.songport.net.HostLog.entries() }
-                Text(stringResource(R.string.security_connections_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (com.xlollx.songport.providers.BuiltIn.available) Text(stringResource(R.string.security_connections_web), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (entries.isEmpty()) Text(stringResource(R.string.security_connections_none), style = MaterialTheme.typography.bodySmall)
-                entries.forEach { e ->
-                    Column(Modifier.padding(vertical = 2.dp)) {
-                        Text(e.host, style = MaterialTheme.typography.bodyMedium)
-                        Text(stringResource(R.string.security_connections_count, e.count, formatDate(e.lastAt)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-                }
-                if (entries.isNotEmpty()) TextButton(onClick = { com.xlollx.songport.net.HostLog.clear(); connectionsVersion++ }) { Text(stringResource(R.string.security_connections_clear)) }
-            }
-            }
-        }
-
-        SectionCard(stringResource(R.string.settings_about)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                BrandMark(28.dp)
-                Spacer(Modifier.width(10.dp))
-                Text(stringResource(R.string.settings_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.PRIVACY_POLICY_URL))) }) {
-                    Text(stringResource(R.string.settings_privacy_policy))
-                }
-                if (privacyRequired) {
-                    OutlinedButton(onClick = { (ctx as? Activity)?.let { Ads.showPrivacyOptions(it) } }) {
-                        Text(stringResource(R.string.settings_privacy_options))
-            }
-                }
-            }
+        // ---------------------------------------------------------------- About
+        val supportNote = if (BuildConfig.KOFI_URL.isNotBlank()) stringResource(R.string.support_body) else null
+        PrefSection(stringResource(R.string.settings_about), footer = supportNote) {
+            PrefRow(
+                null, stringResource(R.string.app_name), stringResource(R.string.settings_version, BuildConfig.VERSION_NAME),
+                leading = { BrandMark(40.dp) },
+            )
             // Open source: the repository holds the code, the docs and the connector-plugin page.
-            TextButton(onClick = { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/xlollx/Songport"))) } }) {
-                Text(stringResource(R.string.settings_source_code))
+            PrefRow(Icons.Filled.Code, stringResource(R.string.settings_source_code), SOURCE_URL.removePrefix("https://"), trailing = { ExternalMark() }) {
+                runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(SOURCE_URL))) }
             }
-            TextButton(onClick = { store.updateSettings { it.copy(onboardingDone = false) } }) { Text(stringResource(R.string.settings_show_onboarding)) }
+            PrefRow(Icons.Filled.Policy, stringResource(R.string.settings_privacy_policy), null, trailing = { ExternalMark() }) {
+                runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.PRIVACY_POLICY_URL))) }
+            }
+            PrefRow(Icons.Filled.Replay, stringResource(R.string.settings_show_onboarding), null) {
+                store.updateSettings { it.copy(onboardingDone = false) }
+            }
+            if (BuildConfig.KOFI_URL.isNotBlank()) {
+                PrefRow(Icons.Filled.Favorite, stringResource(R.string.support_button), null, trailing = { ExternalMark() }) { openSupport(ctx) }
+            }
+            // Per chi ha un account GitHub: anche un contributo mensile.
+            if (BuildConfig.SPONSORS_URL.isNotBlank()) {
+                PrefRow(Icons.Filled.VolunteerActivism, stringResource(R.string.support_sponsors), null, trailing = { ExternalMark() }) { openSponsors(ctx) }
+            }
         }
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(8.dp))
     }
 }
