@@ -1,0 +1,1 @@
+End-to-end test of the server's web page (Playwright, docker, Navidrome and Jellyfin; not run in CI): `server/e2e/run.sh` from the repository root, optionally with phase names (`auth setup sync ...`, listed at the end of `e2e.js`) and `SONGPORT_E2E_SHOTS=<dir>` for screenshots at desktop and phone width.

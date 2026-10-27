@@ -80,7 +80,7 @@ up() {
     [ $((i % 10)) = 0 ] && [ "${j:-0}" = 0 ] && curl -s -o /dev/null -H "Authorization: $auth" -X POST "$JF/Library/Refresh"
     n=$(curl -s "$ND/rest/search3?u=admin&p=$PASS&v=1.16.1&c=it&f=json&query=&songCount=50" | json '["subsonic-response"].get("searchResult3",{}).get("song",[]).__len__()' 2>/dev/null || echo 0)
     j=$(curl -s -H "Authorization: $auth" "$JF/Items?IncludeItemTypes=Audio&Recursive=true&Limit=0" | json '["TotalRecordCount"]' 2>/dev/null || echo 0)
-    [ "$n" = 12 ] && [ "$j" = 12 ] && break
+    [ "$n" -ge 12 ] && [ "$j" -ge 12 ] && break
     sleep 2
   done
   echo "Navidrome $(curl -s "$ND/rest/ping?u=admin&p=$PASS&v=1.16.1&c=it&f=json" | json '["subsonic-response"].get("serverVersion")') ($n songs), Jellyfin $(curl -s "$JF/System/Info/Public" | json '["Version"]') ($j songs)" >&2

@@ -29,9 +29,12 @@ class Runner(private val env: ServerEnv) {
 
     fun isRunning(jobId: String) = jobId in SyncState.running.value
 
-    /** Starts [job] now unless it is already running. */
+    /** Starts [job] now unless it is already running (checked and marked at once: posts come in parallel). */
+    @Synchronized
     fun start(job: SyncJob, scheduled: Boolean = false) {
         if (isRunning(job.id)) return
+        // A Stop or Pause posted after the previous run had ended must not reach this one.
+        SyncState.finish(job.id)
         SyncState.start(job.id)
         scope.launch {
             slots.withPermit { run(job, scheduled) }
