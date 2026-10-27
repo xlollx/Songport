@@ -1,0 +1,1 @@
+Give each sync its own colour to tell them apart at a glance. Sync all is now a pill pinned at the top. Tap the added, removed and not-found figures to see the tracks, or the track count to open the playlist.

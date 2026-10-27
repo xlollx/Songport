@@ -1,0 +1,1 @@
+Gib jeder Synchronisierung eine eigene Farbe, um sie auf einen Blick zu erkennen. Alle synchronisieren ist jetzt eine oben fixierte Pille. Tippe auf Hinzugefügt, Entfernt und Nicht gefunden, um die Titel zu sehen, oder auf die Titelanzahl, um die Playlist zu öffnen.

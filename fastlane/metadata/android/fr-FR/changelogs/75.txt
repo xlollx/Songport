@@ -1,0 +1,1 @@
+Donnez à chaque synchro sa couleur pour les reconnaître d'un coup d'œil. Tout synchroniser est désormais une pastille fixée en haut. Touchez ajoutés, retirés et introuvables pour voir les titres, ou le nombre de titres pour ouvrir la playlist.
