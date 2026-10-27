@@ -68,6 +68,7 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
             // newer client version. Its own version is in the answer; once per call, then remembered.
             val older = olderVersion(r, version)
             if (older != null) { version = older; onVersion(older); continue }
+            if (isAmpacheWrongPassword(r)) throw ProviderException(ctx.text("error_ampache_subsonic_password"))
             throw ProviderException("$displayName: ${r["error"]["message"].str ?: "error ${r["error"]["code"].int}"}")
         }
     }
@@ -204,6 +205,14 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
          * could not be removed there; "00" reads as 0 everywhere (Go, Java, Python, PHP).
          */
         internal fun removalIndex(index: String): String = if (index == "0") "00" else index
+
+        /**
+         * Error 40 from a server that says it is Ampache: Ampache checks the md5+salt token against the
+         * user's separate "Subsonic password" (or API key), never the account password, so the account
+         * password is refused even when it is right.
+         */
+        internal fun isAmpacheWrongPassword(r: JsonElement?): Boolean =
+            r["error"]["code"].int == 40 && r["type"].str.equals("ampache", ignoreCase = true)
 
         /** The version to retry with when [r] is the "server must upgrade" refusal of a call made with [sent]. */
         internal fun olderVersion(r: JsonElement?, sent: String): String? =

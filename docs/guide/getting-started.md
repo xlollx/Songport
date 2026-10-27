@@ -21,6 +21,8 @@ Android 8.0 or newer.
   key in your own name; the app walks you through it in about two minutes, step by step.
 
 Personal servers (Navidrome/Subsonic, Jellyfin, Plex) need only the server address and your login.
+On **Ampache**, connected as a Subsonic server, the password is not your account password: see
+[Troubleshooting](troubleshooting#personal-servers).
 Files need nothing.
 
 After connecting, *⋮ → Test connection* on the account checks sign-in, playlists and search in one go.

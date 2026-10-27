@@ -178,6 +178,8 @@ up_plex() {
   run plex -p "127.0.0.1:$PLEX_PORT:32400" -e ALLOWED_NETWORKS=0.0.0.0/0 -e TZ=UTC \
     -v "$DIR/media:/music:ro" -v "$DIR/plex/config:/config" -v "$DIR/plex/transcode:/transcode" "${HUB}plexinc/pms-docker:latest"
   wait_for "$u/identity"
+  # /identity answers while the plugins still load ("startState"), and a library added then is refused (400).
+  for _ in $(seq 120); do curl -s -H 'Accept: application/json' "$u/identity" | grep -q startState || break; sleep 1; done
   for _ in $(seq 60); do curl -sf -o /dev/null "$u/library/sections" && break; sleep 1; done
   if ! curl -s "$u/library/sections" | grep -q 'title="Music"'; then
     # The files' own tags: nothing is fetched from Plex's metadata servers.

@@ -121,26 +121,15 @@ class LiveServersIT {
         protected fun <T : Comparable<T>> assertEntries(message: String, server: LiveServer, expected: List<T>, actual: List<T>) =
             if (server.keepsOrder) assertEquals(message, expected, actual) else assertEquals(message, expected.sorted(), actual.sorted())
 
-        /** A new playlist, removed after the test. Plex's connector cannot create one: made here as a user would in Plex. */
+        /** A new playlist, removed after the test. */
         protected suspend fun newPlaylist(p: MusicProvider, name: String): Playlist {
-            val pl = if (p is PlexProvider) plexPlaylist(p, name) else p.createPlaylist(ctx, name, "")
+            val pl = p.createPlaylist(ctx, name, "")
             made += p to pl.id
             return pl
         }
 
         protected fun forget(p: MusicProvider, id: String) { made.remove(p to id) }
         protected fun keep(p: MusicProvider, id: String) { made += p to id }
-
-        private suspend fun plexPlaylist(p: PlexProvider, name: String): Playlist {
-            val t = ctx.tokens.get(p.id)!!
-            val uri = "server://${t.extra["machine"]}/com.plexapp.plugins.library"
-            val r = Http.send(
-                "POST", "${t.extra["url"]}/playlists?type=audio&smart=0&title=${Http.enc(name)}&uri=${Http.enc(uri)}",
-                mapOf("X-Plex-Token" to t.accessToken, "Accept" to "application/json"),
-            )
-            assertTrue("Plex: playlist not made (${r.code})", r.ok)
-            return Playlist(parseJson(r.body)["MediaContainer"]["Metadata"][0]["ratingKey"].str!!, name, 0)
-        }
 
         protected fun job(src: MusicProvider, srcId: String, dst: MusicProvider, dstId: String?, mirror: Boolean): SyncJob {
             val j = SyncJob(
@@ -221,6 +210,17 @@ class LiveServersIT {
         @Test fun readsIsrc() = runBlocking {
             assumeTrue("$server does not list ISRCs", server.listsIsrc)
             assertEquals("$server lists the ISRC of the file (OpenSubsonic)", "USEE10001001", song(p, "Metallica", "Battery").isrc)
+        }
+    }
+
+    // ------------------------------------------------------------------ Ampache's own sign-in rule
+
+    class AmpacheLogin : Harness() {
+        /** Ampache answers error 40 with type "ampache": the login says where its Subsonic password is set. */
+        @Test fun wrongPasswordNamesTheSubsonicPassword() = runBlocking {
+            assumeTrue("Ampache not configured", AMPACHE.configured)
+            val e = runCatching { SubsonicProvider("ampache-wrong").login(ctx, AMPACHE.env("URL"), AMPACHE.env("USER"), "not-the-subsonic-password") }.exceptionOrNull()
+            assertEquals("error_ampache_subsonic_password", e?.message)
         }
     }
 
@@ -351,6 +351,32 @@ class LiveServersIT {
         @Test fun m3uPathsOnlyToJellyfin() = filesTo(JELLYFIN) { importFile("IT paths.m3u", m3uPathsOnly) }
         @Test fun plsToSubsonic() = filesTo(SUBSONIC) { importFile("IT list.pls", pls) }
         @Test fun m3u8ToPlex() = filesTo(PLEX) { importFile("IT extinf.m3u8", m3uExtinf) }
+
+        /**
+         * A sync to "a new playlist" on Plex: the connector makes it under the name asked for, with
+         * Songport's description as its summary, and the engine fills it; a second run changes nothing.
+         */
+        @Test fun newPlaylistOnPlex() = runBlocking {
+            val (plex) = connect(PLEX)
+            val fileId = importFile("IT new on plex.m3u8", m3uExtinf)
+            assertTrue("Plex makes its own playlists", plex.canCreatePlaylists)
+            val j = job(LocalFilesProvider, fileId, plex, null, mirror = true)
+            val first = SyncEngine(ctx).run(j)
+            val why = "error=${first.error} notes=${first.notes} unmatched=${first.unmatched} review=${first.reviewTracks.size}"
+            assertEquals(why, null, first.error)
+            assertEquals(why, 6, first.added)
+            val target = ctx.store.job(j.id)!!.target.playlistId!!
+            keep(plex, target)
+            val listed = plex.playlists(ctx).single { it.id == target }
+            assertEquals("IT $run target", listed.name)
+            assertEquals(6, listed.trackCount)
+            assertEquals(expected, names(plex.tracks(ctx, target)))
+            val t = ctx.tokens.get(plex.id)!!
+            val summary = Http.send("GET", "${t.extra["url"]}/playlists/$target", mapOf("X-Plex-Token" to t.accessToken, "Accept" to "application/json"))
+                .let { parseJson(it.body)["MediaContainer"]["Metadata"][0]["summary"].str }
+            assertEquals("the description", MusicProvider.description(ctx.text("app_name")), summary)
+            assertEquals(0, SyncEngine(ctx).run(ctx.store.job(j.id)!!).let { it.added + it.removed })
+        }
 
         /** A server playlist to a file, exported as M3U and imported again: the same six songs. */
         @Test fun plexToFileAndBack() = runBlocking {

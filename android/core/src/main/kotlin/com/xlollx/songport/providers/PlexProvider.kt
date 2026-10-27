@@ -17,8 +17,8 @@ import kotlinx.serialization.json.JsonElement
 
 /**
  * Plex Media Server. Si accede con l'indirizzo del server e il proprio X-Plex-Token (Plex
- * documenta come trovarlo). Plex non permette di creare una playlist vuota via API: la
- * destinazione va creata nell'app Plex e poi scelta qui.
+ * documenta come trovarlo). A new playlist is made empty, pointed at the server's library
+ * (checked on Plex 1.43): the engine then adds the tracks as on any other target.
  */
 class PlexProvider(override val slot: String = "") : CredentialsProvider() {
     override val serviceId = SERVICE
@@ -27,9 +27,6 @@ class PlexProvider(override val slot: String = "") : CredentialsProvider() {
     override val brandColor = 0xFFE5A00D
     override val noteName = "provider_note_plex"
     override val beta = true
-    override val canCreatePlaylists = false
-    override val canRenamePlaylists: Boolean get() = true
-    override val canDeletePlaylists: Boolean get() = true
     override val loginForm = LoginForm(needsUrl = true, needsUser = false, needsSecret = true, secretLabelName = "login_token", hintName = "login_hint_plex")
 
     override suspend fun login(ctx: Env, url: String, user: String, secret: String) {
@@ -74,8 +71,18 @@ class PlexProvider(override val slot: String = "") : CredentialsProvider() {
         return Matcher.byArtist(track, hubs.filter { it["type"].str == "track" }.flatMap { it["Metadata"].arr }.mapNotNull { toTrack(it) }).take(5)
     }
 
-    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist =
-        throw ProviderException(ctx.text("error_create_unsupported", displayName))
+    override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist {
+        val t = creds(ctx)
+        val machine = t.extra["machine"] ?: throw ProviderException("$displayName: reconnect")
+        // An empty audio playlist: the uri names the library only, no item (Plex wants a uri even then).
+        val uri = "server://$machine/com.plexapp.plugins.library"
+        val made = api(ctx, "POST", "/playlists?type=audio&title=${Http.enc(name)}&smart=0&uri=${Http.enc(uri)}", t)
+        val id = made["MediaContainer"]["Metadata"][0]["ratingKey"].str
+            ?: throw ProviderException("$displayName: playlist not created")
+        // The description is Plex's "summary": a nicety, never a reason to fail the new playlist.
+        if (description.isNotBlank()) runCatching { api(ctx, "PUT", "/playlists/$id?summary=${Http.enc(description)}", t) }
+        return Playlist(id, name, 0)
+    }
 
     override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         api(ctx, "PUT", "/playlists/$playlistId?title=${Http.enc(name)}")

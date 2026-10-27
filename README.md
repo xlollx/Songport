@@ -167,9 +167,9 @@ that is exactly what to report.
 | Amazon Music | complete, built in (GitHub/F-Droid) or via the [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Amazon sign-in on Amazon's page | nothing | Amazon's official Web API is a closed beta for approved partners, so the Bridge uses the web player's interface (library playlists, playlist rows with their entry ids, search, create, add, remove, rename, delete). Not an official API, may break without notice. |
 | TIDAL | beta | OAuth PKCE | `TIDAL_CLIENT_ID` | API v2 (JSON:API) still evolving; endpoints isolated in `TidalProvider.kt`. Beta: limited real-world use. |
 | Deezer | beta | OAuth implicit | `DEEZER_APP_ID` and an https redirect page (`docs/deezer-redirect.html`) | Registration of new apps may be closed. Playlists read from Deezer carry no ISRC. Beta: limited real-world use. |
-| Subsonic / Navidrome (Airsonic, Gonic, LMS, Funkwhale) | complete, beta | server URL, user, password (md5+salt token) | nothing | Starred tracks = likes. |
+| Subsonic / Navidrome (Airsonic, Gonic, Ampache, LMS, Funkwhale) | complete, beta | server URL, user, password (md5+salt token) | nothing | Starred tracks = likes. Ampache checks the token against the separate *Subsonic password* (or the API key) from *Preferences → Account*, not the account password; the app says so when Ampache refuses the login. |
 | Jellyfin | complete, beta | server URL, user, password | nothing | Favourites supported. |
-| Plex | no playlist creation, beta | server URL and X-Plex-Token | nothing | The API does not create empty playlists: create it in Plex and pick it in the app. |
+| Plex | complete, beta | server URL and X-Plex-Token | nothing | Music playlists only. A new playlist is created empty on the server's library, then filled (checked on Plex 1.43). |
 | Last.fm | read-only, beta | username | `LASTFM_API_KEY` or a key entered by the user | Loved tracks only, source only. |
 | ListenBrainz | read-only, beta | username | nothing | Playlists and loved tracks, source only. |
 | Files | complete | | | Import/export through the system file picker, or "Paste a list". |

@@ -467,7 +467,7 @@
     <string name="beta_note">베타 커넥터예요. 작동하지만 다른 커넥터보다 덜 쓰였어요. 문제가 생기면 신고해 주세요.</string>
     <string name="provider_note_subsonic">내 음악 서버: Navidrome, Airsonic, Gonic, LMS, Funkwhale 등 Subsonic API를 쓰는 모든 서버. 등록도 할당량도 없어요. 별표한 곡은 좋아요 표시한 곡으로 취급해요.</string>
     <string name="provider_note_jellyfin">내 Jellyfin 서버. 등록도 할당량도 없어요. 즐겨찾기는 좋아요 표시한 곡으로 취급해요.</string>
-    <string name="provider_note_plex">X-Plex-Token으로 연결하는 내 Plex Media Server. Plex는 API로 빈 플레이리스트를 만들 수 없으니, Plex에서 만든 뒤 여기서 고르세요.</string>
+    <string name="provider_note_plex">X-Plex-Token으로 연결하는 내 Plex Media Server. 음악 플레이리스트를 서버에서 읽고, 만들고, 업데이트해요.</string>
     <string name="provider_note_lastfm">Last.fm 프로필의 좋아하는 트랙, 원본으로만 사용. 무료 Last.fm API 키가 필요해요.</string>
     <string name="provider_note_listenbrainz">ListenBrainz 사용자의 플레이리스트와 좋아하는 트랙. 사용자 토큰이 있으면 좋아하는 트랙을 쓸 수도 있어요(대상으로 좋아요 표시한 곡).</string>
     <string name="login_title">%1$s에 로그인</string>
@@ -478,7 +478,7 @@
     <string name="login_submit">확인 후 저장</string>
     <string name="login_checking">확인 중…</string>
     <string name="login_trust_server">자격 증명은 이 휴대폰에 암호화되어 보관돼요. Songport는 여기에 입력한 서버와만 통신해요.</string>
-    <string name="login_hint_subsonic">Navidrome, Airsonic 등 Subsonic 호환 서버의 주소(예: https://music.example.com), 사용자 이름, 비밀번호를 입력하세요. 비밀번호는 그대로 전송되지 않고 요청마다 솔트를 더한 해시를 사용해요.</string>
+    <string name="login_hint_subsonic">Navidrome, Airsonic 등 Subsonic 호환 서버의 주소(예: https://music.example.com), 사용자 이름, 비밀번호를 입력하세요. 비밀번호는 그대로 전송되지 않고 요청마다 솔트를 더한 해시를 사용해요. Ampache는 계정 비밀번호가 아니라 환경설정 → 계정에서 설정한 Subsonic 비밀번호나 API 키를 입력하세요.</string>
     <string name="login_hint_jellyfin">Jellyfin 서버의 주소(예: https://jellyfin.example.com), 사용자 이름, 비밀번호를 입력하세요.</string>
     <string name="login_hint_plex">Plex Media Server의 주소(예: http://192.168.1.10:32400)와 X-Plex-Token을 입력하세요. 토큰 찾는 방법은 Plex 지원 페이지(“Finding an authentication token”)에 있어요.</string>
     <string name="login_hint_lastfm">좋아하는 트랙을 읽을 Last.fm 사용자 이름을 입력하세요. 프로필이 공개여야 해요.</string>
@@ -872,4 +872,5 @@
     <plurals name="syncs_running">
         <item quantity="other">동기화 %d개 실행 중</item>
     </plurals>
+    <string name="error_ampache_subsonic_password">Ampache가 비밀번호를 거부했어요. Ampache는 Subsonic 앱에서 계정 비밀번호를 받지 않아요. Ampache에서 환경설정 → 계정을 열고 Subsonic 비밀번호를 설정(또는 API 키를 복사)한 뒤 여기에 비밀번호로 입력하세요.</string>
 </resources>

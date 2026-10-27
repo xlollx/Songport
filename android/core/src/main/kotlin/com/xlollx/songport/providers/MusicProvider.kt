@@ -75,7 +75,7 @@ interface MusicProvider {
 
     /** False per le sorgenti in sola lettura (Last.fm, ListenBrainz): mai come destinazione. */
     val canWrite: Boolean get() = true
-    /** False dove la playlist va creata nell'app del servizio (Plex). */
+    /** False where a new playlist cannot be made through the API: read-only sources (ListenBrainz, SoundCloud). */
     val canCreatePlaylists: Boolean get() = true
     /** True se ha senso collegare piu' account dello stesso servizio. */
     val supportsMultipleAccounts: Boolean get() = requiresAuth

@@ -468,7 +468,7 @@
     <string name="beta_note">ベータ版のコネクタです。動作はしますが、他のコネクタほど使われていません。問題があればご報告ください。</string>
     <string name="provider_note_subsonic">ご自身の音楽サーバー：Navidrome、Airsonic、Gonic、LMS、Funkwhale など、Subsonic API に対応したサーバー。登録も割り当ても不要です。スターを付けた曲はお気に入りの曲として扱われます。</string>
     <string name="provider_note_jellyfin">ご自身の Jellyfin サーバー。登録も割り当ても不要です。お気に入りはお気に入りの曲として扱われます。</string>
-    <string name="provider_note_plex">ご自身の Plex Media Server に X-Plex-Token で接続します。Plex では API から空のプレイリストを作成できないため、Plex で作成してからここで選択してください。</string>
+    <string name="provider_note_plex">ご自身の Plex Media Server に X-Plex-Token で接続します。音楽プレイリストをサーバー上で読み込み、作成、更新できます。</string>
     <string name="provider_note_lastfm">Last.fm プロフィールの Love した曲（同期元専用）。無料の Last.fm API キーが必要です。</string>
     <string name="provider_note_listenbrainz">ListenBrainz ユーザーのプレイリストと Love した曲。ユーザートークンがあれば Love した曲の書き込みもできます（お気に入りを転送先に）。</string>
     <string name="login_title">%1$s にログイン</string>
@@ -479,7 +479,7 @@
     <string name="login_submit">確認して保存</string>
     <string name="login_checking">確認中…</string>
     <string name="login_trust_server">認証情報はこの端末上で暗号化して保存されます。Songport はここで入力したサーバーとのみ通信します。</string>
-    <string name="login_hint_subsonic">Navidrome、Airsonic などの Subsonic 互換サーバーのアドレス（例：https://music.example.com）、ユーザー名、パスワードを入力してください。パスワードがそのまま送信されることはなく、各リクエストにはソルト付きハッシュが使われます。</string>
+    <string name="login_hint_subsonic">Navidrome、Airsonic などの Subsonic 互換サーバーのアドレス（例：https://music.example.com）、ユーザー名、パスワードを入力してください。パスワードがそのまま送信されることはなく、各リクエストにはソルト付きハッシュが使われます。Ampache の場合は、アカウントのパスワードではなく、「設定」→「アカウント」で設定した Subsonic パスワードまたは API キーを使ってください。</string>
     <string name="login_hint_jellyfin">Jellyfin サーバーのアドレス（例：https://jellyfin.example.com）、ユーザー名、パスワードを入力してください。</string>
     <string name="login_hint_plex">Plex Media Server のアドレス（例：http://192.168.1.10:32400）と X-Plex-Token を入力してください。トークンの確認方法は Plex のサポートページ（「Finding an authentication token」）で説明されています。</string>
     <string name="login_hint_lastfm">Love した曲を読み込む Last.fm のユーザー名を入力してください。プロフィールは公開されている必要があります。</string>
@@ -873,4 +873,5 @@
     <plurals name="syncs_running">
         <item quantity="other">%d 件の同期を実行中</item>
     </plurals>
+    <string name="error_ampache_subsonic_password">Ampache がパスワードを拒否しました。Ampache は Subsonic アプリからのアカウントのパスワードを受け付けません。Ampache で「設定」→「アカウント」を開き、Subsonic パスワードを設定して（または API キーをコピーして）、ここでパスワードとして入力してください。</string>
 </resources>

@@ -41,6 +41,17 @@ later runs only search what is new.
 **Official route: "quota exceeded".** The YouTube Data API allows about 100 searches a day per key.
 Use the quick route for big playlists.
 
+## Personal servers
+
+**Ampache: "Ampache refused the password".** Songport connects to Ampache through its Subsonic
+API, with *Subsonic / Navidrome*. Ampache checks those sign-ins against a separate **Subsonic
+password**, never against the password you use on its web page. In Ampache open *Preferences →
+Account*, set a *Subsonic Password* (or copy your *API key*), save with *Update Account*, and enter
+that in Songport as the password. The username stays the same.
+
+**Plex: where does a new playlist go?** A sync to "create a new playlist" makes a music playlist on
+the server, as Plex's own apps do; it shows up under *Playlists* in Plex.
+
 ## Scheduled syncs do not run
 
 Some phones (Samsung, Xiaomi, Huawei, Oppo) stop background apps. *Settings → Battery* excludes

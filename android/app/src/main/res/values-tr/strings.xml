@@ -473,7 +473,7 @@
     <string name="beta_note">Beta bağlayıcı: çalışır, ancak diğerlerinden daha az kullanıldı. Bir sorun çıkarsa lütfen bildirin.</string>
     <string name="provider_note_subsonic">Kendi müzik sunucunuz: Navidrome, Airsonic, Gonic, LMS, Funkwhale ve Subsonic API konuşan her şey. Kayıt yok, kota yok. Yıldızlı şarkılar beğenilen şarkı sayılır.</string>
     <string name="provider_note_jellyfin">Jellyfin sunucunuz. Kayıt yok, kota yok. Favoriler beğenilen şarkı sayılır.</string>
-    <string name="provider_note_plex">X-Plex-Token\'ınızla Plex Media Server\'ınız. Plex, API üzerinden boş çalma listesi oluşturamaz: Plex\'te oluşturup burada seçin.</string>
+    <string name="provider_note_plex">X-Plex-Token\'ınızla Plex Media Server\'ınız. Müzik çalma listeleri sunucuda okunur, oluşturulur ve güncellenir.</string>
     <string name="provider_note_lastfm">Bir Last.fm profilinin sevilen parçaları, yalnızca kaynak olarak. Ücretsiz bir Last.fm API anahtarı gerektirir.</string>
     <string name="provider_note_listenbrainz">Bir ListenBrainz kullanıcısının çalma listeleri ve sevilen parçaları. Kullanıcı jetonunuzla sevilen parçalar yazılabilir de (hedef olarak beğenilen şarkılar).</string>
     <string name="login_title">%1$s hesabında oturum aç</string>
@@ -484,7 +484,7 @@
     <string name="login_submit">Kontrol et ve kaydet</string>
     <string name="login_checking">Kontrol ediliyor…</string>
     <string name="login_trust_server">Kimlik bilgileriniz bu telefonda şifreli olarak kalır. Songport yalnızca burada girdiğiniz sunucuyla konuşur.</string>
-    <string name="login_hint_subsonic">Navidrome, Airsonic veya başka bir Subsonic uyumlu sunucunuzun adresini (örneğin https://music.example.com), kullanıcı adınızı ve şifrenizi girin. Şifre asla olduğu gibi gönderilmez: her istek tuzlanmış bir hash kullanır.</string>
+    <string name="login_hint_subsonic">Navidrome, Airsonic veya başka bir Subsonic uyumlu sunucunuzun adresini (örneğin https://music.example.com), kullanıcı adınızı ve şifrenizi girin. Şifre asla olduğu gibi gönderilmez: her istek tuzlanmış bir hash kullanır. Ampache: hesap şifrenizi değil, Tercihler → Hesap bölümünde belirlediğiniz Subsonic şifresini veya API anahtarını kullanın.</string>
     <string name="login_hint_jellyfin">Jellyfin sunucunuzun adresini (örneğin https://jellyfin.example.com), kullanıcı adınızı ve şifrenizi girin.</string>
     <string name="login_hint_plex">Plex Media Server adresinizi (örneğin http://192.168.1.10:32400) ve X-Plex-Token\'ınızı girin. Plex, jetonu nasıl bulacağınızı destek sayfalarında açıklar (\"Finding an authentication token\").</string>
     <string name="login_hint_lastfm">Sevilen parçalarını okumak istediğiniz Last.fm kullanıcı adını girin. Profil herkese açık olmalıdır.</string>
@@ -885,4 +885,5 @@
         <item quantity="one">%d eşitleme sürüyor</item>
         <item quantity="other">%d eşitleme sürüyor</item>
     </plurals>
+    <string name="error_ampache_subsonic_password">Ampache şifreyi reddetti. Ampache, Subsonic uygulamaları için hesap şifrenizi kabul etmez: Ampache\'de Tercihler → Hesap\'ı açın, bir Subsonic şifresi belirleyin (veya API anahtarınızı kopyalayın) ve burada şifre olarak girin.</string>
 </resources>

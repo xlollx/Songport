@@ -473,7 +473,7 @@
     <string name="beta_note">Conector em beta: funciona, mas foi menos usado que os outros. Se algo der errado, por favor reporte.</string>
     <string name="provider_note_subsonic">Seu próprio servidor de música: Navidrome, Airsonic, Gonic, LMS, Funkwhale e qualquer um que fale a API Subsonic. Sem cadastro, sem cota. Músicas com estrela contam como curtidas.</string>
     <string name="provider_note_jellyfin">Seu servidor Jellyfin. Sem cadastro, sem cota. Favoritos contam como músicas curtidas.</string>
-    <string name="provider_note_plex">Seu Plex Media Server, com seu X-Plex-Token. O Plex não consegue criar uma playlist vazia pela API: crie-a no Plex e escolha-a aqui.</string>
+    <string name="provider_note_plex">Seu Plex Media Server, com seu X-Plex-Token. As playlists de música são lidas, criadas e atualizadas no servidor.</string>
     <string name="provider_note_lastfm">Faixas amadas de um perfil Last.fm, só como origem. Precisa de uma chave de API gratuita do Last.fm.</string>
     <string name="provider_note_listenbrainz">Playlists e faixas amadas de um usuário ListenBrainz. Com seu token de usuário, as faixas amadas também podem ser gravadas (músicas curtidas como destino).</string>
     <string name="login_title">Entrar no %1$s</string>
@@ -484,7 +484,7 @@
     <string name="login_submit">Verificar e salvar</string>
     <string name="login_checking">Verificando…</string>
     <string name="login_trust_server">Suas credenciais ficam criptografadas neste celular. O Songport só fala com o servidor que você informar aqui.</string>
-    <string name="login_hint_subsonic">Informe o endereço do seu servidor Navidrome, Airsonic ou outro compatível com Subsonic (por exemplo https://music.example.com), seu nome de usuário e senha. A senha nunca é enviada como está: cada requisição usa um hash com salt.</string>
+    <string name="login_hint_subsonic">Informe o endereço do seu servidor Navidrome, Airsonic ou outro compatível com Subsonic (por exemplo https://music.example.com), seu nome de usuário e senha. A senha nunca é enviada como está: cada requisição usa um hash com salt. Ampache: use a senha do Subsonic ou a chave de API definidas em Preferências → Conta, não a senha da sua conta.</string>
     <string name="login_hint_jellyfin">Informe o endereço do seu servidor Jellyfin (por exemplo https://jellyfin.example.com), seu nome de usuário e senha.</string>
     <string name="login_hint_plex">Informe o endereço do seu Plex Media Server (por exemplo http://192.168.1.10:32400) e seu X-Plex-Token. O Plex explica como encontrar o token nas páginas de suporte (\"Finding an authentication token\").</string>
     <string name="login_hint_lastfm">Informe o nome de usuário Last.fm cujas faixas amadas você quer ler. O perfil precisa ser público.</string>
@@ -888,4 +888,5 @@
         <item quantity="many">%d sincronizações em andamento</item>
         <item quantity="other">%d sincronizações em andamento</item>
     </plurals>
+    <string name="error_ampache_subsonic_password">O Ampache recusou a senha. Para apps Subsonic, o Ampache não aceita a senha da sua conta: no Ampache, abra Preferências → Conta, defina uma senha do Subsonic (ou copie sua chave de API) e informe-a aqui como senha.</string>
 </resources>

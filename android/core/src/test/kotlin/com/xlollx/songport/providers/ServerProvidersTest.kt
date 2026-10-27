@@ -123,6 +123,14 @@ class FakeServerProvidersTest {
         assertEquals(1, requests.size)
     }
 
+    @Test fun subsonicExplainsAmpachesSubsonicPassword() = runBlocking {
+        // Ampache 8.3, the account password as token: error 40, and the answer says it is Ampache.
+        answer = { 200 to """{"subsonic-response":{"status":"failed","version":"1.16.1","type":"ampache","serverVersion":"8.3.0","openSubsonic":true,"error":{"code":40,"message":"Wrong username or password.","helpUrl":"https://ampache.org/api/subsonic"}}}""" }
+        val e = runCatching { SubsonicProvider().login(ctx, url, "it", "account-password") }.exceptionOrNull()
+        assertEquals("error_ampache_subsonic_password", e?.message)
+        assertEquals(1, requests.size)
+    }
+
     @Test fun subsonicSearchesTheTitleAloneWhenArtistAndTitleFindNothing() = runBlocking {
         // Gonic matches the query against titles: "metallica battery" finds nothing, "home" both Homes.
         answer = { r ->
@@ -158,6 +166,51 @@ class FakeServerProvidersTest {
         p.login(ctx, url, "", "token")
         assertEquals(listOf("7", "5"), p.search(ctx, Track(id = "q", title = "Home", artists = listOf("Beyoncé"))).map { it.id })
         assertEquals(listOf("home"), requests.filter { it.path == "/hubs/search" }.map { it.query["query"]?.single() })
+    }
+
+    @Test fun plexCreatesAnEmptyPlaylistOnTheLibrary() = runBlocking {
+        // Plex 1.43: POST /playlists with the library's uri and no item makes an empty audio playlist.
+        answer = { r ->
+            when {
+                r.path == "/identity" -> 200 to """{"MediaContainer":{"machineIdentifier":"abc"}}"""
+                r.path == "/playlists" && r.method == "POST" ->
+                    200 to """{"MediaContainer":{"size":1,"Metadata":[{"ratingKey":"21","type":"playlist","title":"${r.query["title"]?.single()}","smart":false,"playlistType":"audio","leafCount":0}]}}"""
+                r.path == "/playlists/21" && r.method == "PUT" -> 200 to ""
+                else -> 404 to ""
+            }
+        }
+        val p = PlexProvider()
+        assertTrue(p.canCreatePlaylists && p.canRenamePlaylists && p.canDeletePlaylists)
+        p.login(ctx, url, "", "token")
+        val pl = p.createPlaylist(ctx, "Café & Co", "Made with Songport")
+        assertEquals("21" to "Café & Co", pl.id to pl.name)
+        val post = requests.single { it.method == "POST" }
+        assertEquals(listOf("audio"), post.query["type"])
+        assertEquals(listOf("0"), post.query["smart"])
+        assertEquals(listOf("Café & Co"), post.query["title"])
+        assertEquals(listOf("server://abc/com.plexapp.plugins.library"), post.query["uri"])
+        assertEquals(listOf("Made with Songport"), requests.single { it.method == "PUT" }.query["summary"])
+    }
+
+    @Test fun plexCreatesThePlaylistEvenWhenTheSummaryIsRefused() = runBlocking {
+        answer = { r ->
+            when {
+                r.path == "/identity" -> 200 to """{"MediaContainer":{"machineIdentifier":"abc"}}"""
+                r.path == "/playlists" && r.method == "POST" -> 200 to """{"MediaContainer":{"Metadata":[{"ratingKey":"9","title":"Mix"}]}}"""
+                else -> 400 to ""
+            }
+        }
+        val p = PlexProvider()
+        p.login(ctx, url, "", "token")
+        assertEquals("9", p.createPlaylist(ctx, "Mix", "x").id)
+    }
+
+    @Test fun plexSaysSoWhenThePlaylistIsNotMade() = runBlocking {
+        answer = { r -> if (r.path == "/identity") 200 to """{"MediaContainer":{"machineIdentifier":"abc"}}""" else 400 to "Bad Request" }
+        val p = PlexProvider()
+        p.login(ctx, url, "", "token")
+        val e = runCatching { p.createPlaylist(ctx, "Mix", "") }.exceptionOrNull()
+        assertTrue(e?.message, e?.message?.contains("400") == true)
     }
 
     // ------------------------------------------------------------------ Jellyfin 10.8
