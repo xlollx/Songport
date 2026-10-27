@@ -40,7 +40,15 @@ import org.junit.runner.RunWith
 class ChromeFlowTest : FlowTest() {
     private val tabs by lazy { listOf(R.string.tab_syncs, R.string.tab_accounts, R.string.tab_tools, R.string.tab_settings) }
 
-    @After fun dayAgain() { shell("cmd uimode night no") }
+    @After fun dayAgain() { night(false) }
+
+    /** The phone's night mode, waited for until the app's configuration has it (else the activity started next is recreated under the test). */
+    private fun night(on: Boolean) {
+        shell("cmd uimode night ${if (on) "yes" else "no"}")
+        val end = System.currentTimeMillis() + 10_000
+        while (System.currentTimeMillis() < end && app.resources.configuration.isNightModeActive != on) Thread.sleep(100)
+        Thread.sleep(500)
+    }
 
     private fun seedJobs(n: Int) {
         val now = System.currentTimeMillis()
@@ -116,7 +124,7 @@ class ChromeFlowTest : FlowTest() {
 
     @Test
     fun darkModeFollowsThePhoneAndEveryTabStillWorks() {
-        shell("cmd uimode night yes")
+        night(true)
         store.updateSettings { it.copy(themeMode = "SYSTEM") }
         seedJobs(2)
         launch(tabIntent(MainActivity.TAB_SYNCS))
@@ -129,7 +137,7 @@ class ChromeFlowTest : FlowTest() {
 
     @Test
     fun forcedDarkThemeOnALightPhoneHasLightStatusBarIcons() {
-        shell("cmd uimode night no")
+        night(false)
         store.updateSettings { it.copy(themeMode = "DARK") }
         launch(tabIntent(MainActivity.TAB_SETTINGS))
         waitText(s(R.string.settings_theme))
@@ -139,7 +147,7 @@ class ChromeFlowTest : FlowTest() {
 
     @Test
     fun forcedLightThemeOnADarkPhoneHasDarkStatusBarIcons() {
-        shell("cmd uimode night yes")
+        night(true)
         store.updateSettings { it.copy(themeMode = "LIGHT") }
         launch(tabIntent(MainActivity.TAB_SETTINGS))
         waitText(s(R.string.settings_theme))
