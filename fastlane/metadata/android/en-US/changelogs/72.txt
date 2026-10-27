@@ -1,0 +1,1 @@
+Spotify (web): making a playlist public or private works again (it failed with HTTP 400), and so does adding a playlist Songport creates to your library.

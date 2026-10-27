@@ -1,0 +1,1 @@
+Spotify (web): ustawianie playlisty jako publicznej lub prywatnej znów działa (kończyło się błędem HTTP 400), podobnie jak dodawanie do biblioteki playlist utworzonych przez Songport.

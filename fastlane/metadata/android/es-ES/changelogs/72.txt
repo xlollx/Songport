@@ -1,0 +1,1 @@
+Spotify (web): hacer pública o privada una lista vuelve a funcionar (fallaba con HTTP 400), igual que añadir a tu biblioteca las listas que crea Songport.

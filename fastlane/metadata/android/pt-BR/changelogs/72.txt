@@ -1,0 +1,1 @@
+Spotify (web): tornar uma playlist pública ou privada volta a funcionar (falhava com HTTP 400), assim como adicionar à sua biblioteca as playlists criadas pelo Songport.

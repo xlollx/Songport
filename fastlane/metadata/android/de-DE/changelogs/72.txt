@@ -1,0 +1,1 @@
+Spotify (Web): Eine Playlist öffentlich oder privat zu machen funktioniert wieder (es scheiterte mit HTTP 400), ebenso das Hinzufügen von Songport erstellter Playlists zur Bibliothek.

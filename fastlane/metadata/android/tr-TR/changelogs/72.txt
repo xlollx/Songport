@@ -1,0 +1,1 @@
+Spotify (web): bir çalma listesini herkese açık veya gizli yapmak yeniden çalışıyor (HTTP 400 hatası veriyordu); Songport'un oluşturduğu listeleri kitaplığa eklemek de öyle.
