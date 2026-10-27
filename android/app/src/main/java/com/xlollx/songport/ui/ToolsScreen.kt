@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.ChevronRight
@@ -87,29 +89,45 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** Which tool is open in its own page; null = the list. */
+/**
+ * Which tool is open in its own page; null = the list. The names are ids: keep them stable (a
+ * notification asks for a tool by name, see MainActivity.TOOL_UNPLAYABLE). [descRes] is the one
+ * line under the tool's name in the list; each tool's page explains itself at more length.
+ */
 private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVector, val titleRes: Int, val descRes: Int, val needsService: Boolean) {
-    FILES(Icons.Filled.Folder, R.string.files_title, R.string.files_row_desc, false),
+    FILES(Icons.Filled.Folder, R.string.files_title, R.string.tools_row_files, false),
     AI(Icons.Filled.AutoAwesome, R.string.ai_title, R.string.ai_row_desc, false),
-    MANAGE(Icons.Filled.Edit, R.string.tools_manage_title, R.string.tools_manage_desc, true),
-    EXPORT(Icons.Filled.Download, R.string.tools_export_title, R.string.tools_export_desc, true),
-    MAKE(Icons.Filled.PlaylistAdd, R.string.tools_make_title, R.string.tools_make_desc, true),
-    TRANSFER(Icons.Filled.SwapHoriz, R.string.tools_transfer_title, R.string.tools_transfer_desc, true),
+    MANAGE(Icons.Filled.Edit, R.string.tools_manage_title, R.string.tools_row_manage, true),
+    EXPORT(Icons.Filled.Download, R.string.tools_export_title, R.string.tools_row_export, true),
+    MAKE(Icons.Filled.PlaylistAdd, R.string.tools_make_title, R.string.tools_row_make, true),
+    TRANSFER(Icons.Filled.SwapHoriz, R.string.tools_transfer_title, R.string.tools_row_transfer, true),
     BACKUP(Icons.Filled.Backup, R.string.tools_backup_title, R.string.tools_backup_row_desc, true),
-    DEDUPE(Icons.Filled.CleaningServices, R.string.tools_dedupe_title, R.string.tools_dedupe_desc, true),
-    SCAN(Icons.Filled.ContentCopy, R.string.tools_scan_title, R.string.tools_scan_desc, true),
-    COMPAT(Icons.Filled.Favorite, R.string.tools_compat_title, R.string.tools_compat_desc, false),
-    POSTER(Icons.Filled.QrCode2, R.string.tools_poster_title, R.string.tools_poster_desc, false),
-    UNPLAYABLE(Icons.Filled.MusicOff, R.string.tools_unplayable_title, R.string.tools_unplayable_desc, true),
+    DEDUPE(Icons.Filled.CleaningServices, R.string.tools_dedupe_title, R.string.tools_row_dedupe, true),
+    SCAN(Icons.Filled.ContentCopy, R.string.tools_scan_title, R.string.tools_row_scan, true),
+    COMPAT(Icons.Filled.Favorite, R.string.tools_compat_title, R.string.tools_row_compat, false),
+    POSTER(Icons.Filled.QrCode2, R.string.tools_poster_title, R.string.tools_row_poster, false),
+    UNPLAYABLE(Icons.Filled.MusicOff, R.string.tools_unplayable_title, R.string.tools_row_unplayable, true);
+
+    /** Works on the service chosen at the top of the list (Transfer picks its own two). */
+    val usesSelectedService: Boolean get() = needsService && this != TRANSFER
+
+    /** False when the chosen service cannot do what the tool needs. */
+    fun availableOn(p: MusicProvider): Boolean = when (this) {
+        MAKE -> p.canCreatePlaylists
+        DEDUPE -> p.canRemoveTracks
+        UNPLAYABLE -> p.detectsUnplayable
+        else -> true
+    }
 }
 
 /**
- * Strumenti: un elenco di voci, ognuna con la sua pagina. Con dieci strumenti le schede una sotto
- * l'altra erano diventate una parete di testo; qui si legge il titolo e si apre solo cio' che serve.
+ * Strumenti, grouped by what you want to do: see your music, move and copy it, clean it up, share
+ * it, keep it safe. Most tools work on one service, picked once at the top (its logo then marks
+ * the tools that use it); with no service connected those tools say so and point to Accounts.
  */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, onUnplayable: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null, onSubpage: (Boolean) -> Unit = {}) {
+fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, onUnplayable: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null, onSubpage: (Boolean) -> Unit = {}, onGoToAccounts: () -> Unit = {}) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
@@ -137,7 +155,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
             topBar = {
                 TopAppBar(
                     title = { Text(stringResource(current.titleRes)) },
-                    navigationIcon = { IconButton(onClick = { open = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
+                    navigationIcon = { IconButton(onClick = { open = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
                     windowInsets = WindowInsets(0, 0, 0, 0),
                 )
             },
@@ -166,47 +184,89 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
         return
     }
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + LocalBottomBarInset.current), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        ToolRow(Tool.FILES) { open = Tool.FILES }
-        ToolRow(Tool.AI, beta = true) { open = Tool.AI }
-        ToolRow(Tool.COMPAT) { open = Tool.COMPAT }
-        ToolRow(Tool.POSTER) { open = Tool.POSTER }
-        Spacer(Modifier.height(8.dp))
+    Column(
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp + LocalBottomBarInset.current),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+    ) {
+        // The service the playlist tools work on, chosen once, in plain sight.
         if (provider == null) {
-            Text(stringResource(R.string.empty_tools_title), style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(R.string.empty_tools_body), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            return@Column
+            PrefSection(stringResource(R.string.tools_service_title)) {
+                Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(stringResource(R.string.empty_tools_title), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.empty_tools_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(Modifier.height(4.dp))
+                    Button(onClick = onGoToAccounts, modifier = Modifier.heightIn(min = 48.dp)) {
+                        Icon(Icons.Filled.AccountCircle, null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.tools_go_accounts))
+                    }
+                }
+            }
+        } else {
+            PrefSection(stringResource(R.string.tools_service_title), description = stringResource(R.string.tools_service_hint)) {
+                ServicePicker(connected, provider.id, { selectedId = it }, Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
+            }
         }
-        Text(stringResource(R.string.tools_pick_service), style = MaterialTheme.typography.titleMedium)
-        ServicePicker(connected, provider.id, { selectedId = it })
-        ToolRow(Tool.MANAGE) { onManage(provider) }
-        ToolRow(Tool.EXPORT) { open = Tool.EXPORT }
-        ToolRow(Tool.MAKE) { open = Tool.MAKE }
-        ToolRow(Tool.TRANSFER) { onTransfer() }
-        ToolRow(Tool.BACKUP) { open = Tool.BACKUP }
-        ToolRow(Tool.DEDUPE) { open = Tool.DEDUPE }
-        ToolRow(Tool.SCAN) { onScan(provider) }
-        ToolRow(Tool.UNPLAYABLE) { onUnplayable(provider) }
+
+        PrefSection(stringResource(R.string.tools_section_music), description = stringResource(R.string.tools_section_music_desc)) {
+            ToolRow(Tool.MANAGE, provider) { onManage(it!!) }
+            ToolRow(Tool.SCAN, provider) { onScan(it!!) }
+            // "Songport in numbers" (stats and a shareable image) belongs here, as the first row.
+        }
+
+        PrefSection(stringResource(R.string.tools_section_move), description = stringResource(R.string.tools_section_move_desc)) {
+            ToolRow(Tool.TRANSFER, provider) { onTransfer() }
+            ToolRow(Tool.EXPORT, provider) { open = Tool.EXPORT }
+            ToolRow(Tool.MAKE, provider) { open = Tool.MAKE }
+            ToolRow(Tool.FILES, provider) { open = Tool.FILES }
+        }
+
+        PrefSection(stringResource(R.string.tools_section_clean), description = stringResource(R.string.tools_section_clean_desc)) {
+            ToolRow(Tool.DEDUPE, provider) { open = Tool.DEDUPE }
+            ToolRow(Tool.UNPLAYABLE, provider) { onUnplayable(it!!) }
+        }
+
+        PrefSection(stringResource(R.string.tools_section_share), description = stringResource(R.string.tools_section_share_desc)) {
+            ToolRow(Tool.COMPAT, provider) { open = Tool.COMPAT }
+            ToolRow(Tool.POSTER, provider) { open = Tool.POSTER }
+            ToolRow(Tool.AI, provider, beta = true) { open = Tool.AI }
+        }
+
+        PrefSection(stringResource(R.string.tools_section_safety), description = stringResource(R.string.tools_section_safety_desc)) {
+            ToolRow(Tool.BACKUP, provider) { open = Tool.BACKUP }
+        }
     }
 }
 
-/** One tool in the list: icon, name, a line or two of what it does, a chevron. */
+/**
+ * One tool in the list: icon, name, one line of what it does. A tool that works on the chosen
+ * service ends with that service's logo; with no service, or one that cannot do it, the row is
+ * dimmed and says why instead. [onClick] gets the chosen service (null only for tools without one).
+ */
 @Composable
-private fun ToolRow(tool: Tool, beta: Boolean = false, onClick: () -> Unit) {
-    Card(Modifier.fillMaxWidth().clickable(onClick = onClick), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-        Row(Modifier.padding(horizontal = 14.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(tool.icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
-            Spacer(Modifier.width(14.dp))
-            Column(Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(tool.titleRes), style = MaterialTheme.typography.titleSmall)
-                    if (beta) { Spacer(Modifier.width(8.dp)); StatusPill(stringResource(R.string.beta), Tone.Neutral) }
-                }
-                Text(stringResource(tool.descRes), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-            }
-            Icon(Icons.Filled.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
+private fun ToolRow(tool: Tool, provider: MusicProvider?, beta: Boolean = false, onClick: (MusicProvider?) -> Unit) {
+    val reason: String? = when {
+        !tool.needsService -> null
+        provider == null -> stringResource(R.string.tools_none)
+        !tool.availableOn(provider) -> stringResource(R.string.tools_unavailable_on, provider.displayName)
+        else -> null
     }
+    val showService = reason == null && provider != null && tool.usesSelectedService
+    PrefRow(
+        tool.icon,
+        stringResource(tool.titleRes),
+        reason ?: stringResource(tool.descRes),
+        enabled = reason == null,
+        badge = if (beta) { { StatusPill(stringResource(R.string.beta), Tone.Neutral) } } else null,
+        trailing = if (showService) { {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                ProviderBadge(provider, 24.dp)
+                Spacer(Modifier.width(4.dp))
+                Icon(Icons.Filled.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        } } else null,
+    ) { onClick(provider) }
 }
 
 /** Una playlist qualsiasi del servizio diventa un file CSV o M3U scelto dal selettore di sistema. */

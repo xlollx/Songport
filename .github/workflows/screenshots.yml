@@ -3,9 +3,16 @@ name: Screenshots
 # The store screenshots, taken on an Android emulator from a demo library (no account, no network)
 # by the instrumented test app/src/androidTest/.../StoreScreenshots.kt, then committed back to the
 # branch: fastlane/metadata/android/<locale>/images/phoneScreenshots/<n>.jpg.
-# Runs by hand (workflow_dispatch) on the branch it is started from.
+# Runs by hand (workflow_dispatch) on the branch it is started from. With "review" on it takes
+# only the Settings and Tools pictures used to check a layout (English, dark and light, large
+# font) and uploads them as the "review" artifact, committing nothing.
 on:
   workflow_dispatch:
+    inputs:
+      review:
+        description: Only the Settings/Tools review pictures, uploaded as an artifact (no commit)
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -21,6 +28,7 @@ jobs:
     env:
       # Languages to take (app tags); all of the store listing's.
       LOCALES: en,it,fr,de,es,pt-BR,pl,ru,tr,zh,ja,ko
+      REVIEW: ${{ inputs.review && 'true' || 'false' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -76,8 +84,16 @@ jobs:
           grep -E " StoreScreenshots:|AndroidRuntime|FATAL" logcat.txt 2>/dev/null | tail -n 200 || true
           find shots -type f 2>/dev/null | sort | head -200
 
+      - name: Keep the review pictures
+        if: always() && inputs.review
+        uses: actions/upload-artifact@v7
+        with:
+          name: review
+          path: android/review
+          if-no-files-found: ignore
+
       - name: Keep the raw pictures
-        if: always()
+        if: always() && !inputs.review
         uses: actions/upload-artifact@v7
         with:
           name: shots
@@ -85,6 +101,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Commit the pictures to the branch
+        if: ${{ !inputs.review }}
         working-directory: android
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick > /dev/null

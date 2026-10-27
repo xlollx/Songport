@@ -23,8 +23,9 @@ adb shell am broadcast -a com.android.systemui.demo -e command network -e wifi s
 adb shell am broadcast -a com.android.systemui.demo -e command network -e mobile show -e datatype none -e level 4
 adb shell am broadcast -a com.android.systemui.demo -e command notifications -e visible false
 adb logcat -G 16M || true
-adb shell am instrument -w -e class com.xlollx.songport.StoreScreenshots -e locales "${LOCALES:-en,it}" \
+adb shell am instrument -w -e class com.xlollx.songport.StoreScreenshots -e locales "${LOCALES:-en,it}" -e review "${REVIEW:-false}" \
   com.xlollx.songport.test/androidx.test.runner.AndroidJUnitRunner | tee instrument.log
 adb pull /sdcard/Android/data/com.xlollx.songport/files/shots shots || true
+[ "${REVIEW:-false}" = "true" ] && { adb pull /sdcard/Android/data/com.xlollx.songport/files/review review || true; }
 adb logcat -d -s StoreScreenshots:* AndroidRuntime:E TestRunner:* > logcat.txt || true
 grep -q "OK (1 test)" instrument.log

@@ -53,4 +53,6 @@
     <string name="unplayable_confirm_body">%1$d brani ricevono una versione riproducibile, %2$d voci vengono tolte. Gli originali restano nel registro di Trackhop, così puoi annullare.</string>
     <string name="settings_unplayable_desc">Una volta a settimana Trackhop scorre le tue playlist e ti avvisa quando un brano non si può più ascoltare. Non cambia nulla da solo.</string>
     <string name="soundcloud_player_changed">SoundCloud ha cambiato il suo player web; Trackhop va aggiornato</string>
+    <string name="settings_music_links_summary">I link musicali di Spotify, Apple Music e altri si aprono in Trackhop, per aggiungere il brano a una playlist.</string>
+    <string name="settings_security_summary">Accessi cifrati e revocabili su questo telefono; nessun server di Trackhop.</string>
 </resources>

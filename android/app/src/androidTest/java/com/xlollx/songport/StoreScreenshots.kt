@@ -74,6 +74,13 @@ class StoreScreenshots {
     @Test
     fun takeAll() {
         installDemo()
+        // -e review true: only the pictures for checking the Settings and Tools layout (English,
+        // dark and light, a large font, Tools with no service), kept apart from the store's.
+        if (InstrumentationRegistry.getArguments().getString("review") == "true") {
+            setLanguage("en")
+            shootReview()
+            return
+        }
         val only = InstrumentationRegistry.getArguments().getString("locales")?.split(',')?.map { it.trim() }?.toSet()
         for ((tag, folder) in locales) {
             if (only != null && tag !in only) continue
@@ -306,6 +313,66 @@ class StoreScreenshots {
         Store.get(app).updateSettings { it.copy(onboardingDone = false) }
         open(main()) { snap(2000) }
         Store.get(app).updateSettings { it.copy(onboardingDone = true) }
+        resumed()?.let { a -> instr.runOnMainSync { a.finish() } }
+    }
+
+    /** Settings and Tools from top to bottom, for review: review/<name>.png, never a store picture. */
+    private fun shootReview() {
+        val dir = File(app.getExternalFilesDir(null), "review").apply { mkdirs() }
+        val store = Store.get(app)
+        fun snap(name: String, settle: Long = 1200) {
+            compose.waitForIdle(); Thread.sleep(settle); compose.waitForIdle()
+            val bmp = instr.uiAutomation.takeScreenshot() ?: return
+            File(dir, "$name.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            android.util.Log.i("StoreScreenshots", "review $name")
+        }
+        fun tab(t: Int, body: () -> Unit) {
+            val before = resumed()
+            app.startActivity(Intent(app, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_TAB, t))
+            val end = System.currentTimeMillis() + 30_000
+            while (System.currentTimeMillis() < end) {
+                val now = resumed()
+                if (now is MainActivity && now !== before) break
+                Thread.sleep(200)
+            }
+            compose.waitForIdle()
+            step("review tab $t") { body() }
+        }
+        fun scrollTo(text: String) = compose.onAllNodesWithText(text).onFirst().performScrollTo()
+        fun settingsPages(theme: String) {
+            tab(MainActivity.TAB_SETTINGS) {
+                compose.waitUntil(15_000) { compose.onAllNodesWithText(s(R.string.settings_theme)).fetchSemanticsNodes().isNotEmpty() }
+                snap("settings_${theme}_1")
+                scrollTo(s(R.string.settings_section_privacy)); snap("settings_${theme}_2")
+                scrollTo(s(R.string.settings_section_advanced)); snap("settings_${theme}_3")
+                scrollTo(s(R.string.settings_show_onboarding)); snap("settings_${theme}_4")
+            }
+        }
+        fun toolsPages(theme: String) {
+            tab(MainActivity.TAB_TOOLS) {
+                compose.waitUntil(15_000) { compose.onAllNodesWithText(s(R.string.tools_poster_title)).fetchSemanticsNodes().isNotEmpty() }
+                snap("tools_${theme}_1")
+                scrollTo(s(R.string.tools_section_clean)); snap("tools_${theme}_2")
+                scrollTo(s(R.string.tools_backup_title)); snap("tools_${theme}_3")
+            }
+        }
+        for (theme in listOf("DARK", "LIGHT")) {
+            store.updateSettings { it.copy(themeMode = theme) }; store.flush()
+            val t = theme.lowercase()
+            settingsPages(t)
+            toolsPages(t)
+        }
+        // A large font: nothing cut, nothing under the bottom bar.
+        store.updateSettings { it.copy(themeMode = "DARK") }; store.flush()
+        step("font") { instr.uiAutomation.executeShellCommand("settings put system font_scale 1.5").close(); Thread.sleep(1500) }
+        tab(MainActivity.TAB_SETTINGS) { snap("settings_bigfont_1"); scrollTo(s(R.string.settings_section_backups)); snap("settings_bigfont_2") }
+        tab(MainActivity.TAB_TOOLS) { snap("tools_bigfont_1"); scrollTo(s(R.string.tools_section_share)); snap("tools_bigfont_2") }
+        step("font back") { instr.uiAutomation.executeShellCommand("settings put system font_scale 1.0").close(); Thread.sleep(1500) }
+        // Tools with no service connected: the way to Accounts.
+        val connectors = store.data.settings.connectors
+        store.updateSettings { it.copy(connectors = emptyList()) }; store.flush()
+        tab(MainActivity.TAB_TOOLS) { snap("tools_noservice_dark") }
+        store.updateSettings { it.copy(connectors = connectors) }; store.flush()
         resumed()?.let { a -> instr.runOnMainSync { a.finish() } }
     }
 

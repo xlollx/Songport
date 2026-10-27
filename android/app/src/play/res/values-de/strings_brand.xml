@@ -53,4 +53,6 @@
     <string name="unplayable_confirm_body">%1$d Titel erhalten eine abspielbare Version, %2$d Einträge werden entfernt. Die Originale bleiben im Protokoll von Trackhop, damit du es rückgängig machen kannst.</string>
     <string name="settings_unplayable_desc">Einmal pro Woche geht Trackhop deine Playlists durch und meldet, wenn ein Titel nicht mehr abgespielt werden kann. Von selbst wird nichts geändert.</string>
     <string name="soundcloud_player_changed">SoundCloud hat seinen Web-Player geändert; Trackhop braucht ein Update</string>
+    <string name="settings_music_links_summary">Musiklinks von Spotify, Apple Music und anderen in Trackhop öffnen, um den Song zu einer Playlist hinzuzufügen.</string>
+    <string name="settings_security_summary">Verschlüsselte, widerrufbare Anmeldungen auf diesem Handy; kein Trackhop-Server.</string>
 </resources>

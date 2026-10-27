@@ -53,4 +53,6 @@
     <string name="unplayable_confirm_body">%1$d 首曲目将换成可播放的版本，%2$d 个条目将被移除。原始条目保留在 Trackhop 的日志中，可以撤销。</string>
     <string name="settings_unplayable_desc">Trackhop 每周查看一次你的播放列表，当有曲目无法再播放时通知你。它不会自行更改任何内容。</string>
     <string name="soundcloud_player_changed">SoundCloud 更改了网页播放器；Trackhop 需要更新</string>
+    <string name="settings_music_links_summary">让 Spotify、Apple Music 等的音乐链接在 Trackhop 中打开，把歌曲加入歌单。</string>
+    <string name="settings_security_summary">加密且可撤销的登录信息只保存在本机；Trackhop 没有服务器。</string>
 </resources>

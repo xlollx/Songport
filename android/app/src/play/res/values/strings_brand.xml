@@ -53,4 +53,6 @@
     <string name="unplayable_confirm_body">%1$d tracks get a playable version, %2$d entries are removed. The originals stay in Trackhop\'s log so you can undo.</string>
     <string name="settings_unplayable_desc">Once a week Trackhop looks through your playlists and tells you when a track can no longer be played. Nothing is changed by itself.</string>
     <string name="soundcloud_player_changed">SoundCloud changed its web player; Trackhop needs an update</string>
+    <string name="settings_music_links_summary">Let music links from Spotify, Apple Music and others open in Trackhop, to add the track to a playlist.</string>
+    <string name="settings_security_summary">Encrypted, revocable sign-ins on this phone; no Trackhop server.</string>
 </resources>

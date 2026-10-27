@@ -53,4 +53,6 @@
     <string name="unplayable_confirm_body">%1$d canciones reciben una versión reproducible y se quitan %2$d entradas. Los originales quedan en el registro de Trackhop para poder deshacer.</string>
     <string name="settings_unplayable_desc">Una vez a la semana Trackhop revisa tus listas y te avisa cuando una canción ya no se puede reproducir. No cambia nada por sí solo.</string>
     <string name="soundcloud_player_changed">SoundCloud ha cambiado su reproductor web; Trackhop necesita una actualización</string>
+    <string name="settings_music_links_summary">Abre en Trackhop los enlaces de música de Spotify, Apple Music y otros, para añadir la canción a una playlist.</string>
+    <string name="settings_security_summary">Inicios de sesión cifrados y revocables en este teléfono; sin servidor de Trackhop.</string>
 </resources>
