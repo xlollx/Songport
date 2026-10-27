@@ -276,6 +276,9 @@ class AmazonClient(private val ctx: Context) {
                 cachedConfig = null
                 gqlWith(domain, operation, variables, headersFromConfig(domain))
             }
+        // Only a refused session is renewed: an outage or an unknown query is said as it is, without
+        // running the player and sending the call again.
+        first.exceptionOrNull()?.let { e -> if (!refused(e) && e.message?.contains("signed-out") != true) throw e }
         val answer = first.getOrNull()
         if (answer != null && !answer.codes.any { it in AUTH_CODES }) return answer
         val reason = first.exceptionOrNull()?.message ?: answer?.codes?.joinToString()

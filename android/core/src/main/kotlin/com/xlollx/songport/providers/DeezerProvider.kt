@@ -95,17 +95,21 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
         val t = if (method == "GET" && ctx.tokens.get(id) == null) null else tokens(ctx)
         val url = if (path.startsWith("http")) path + (t?.let { (if ('?' in path) "&" else "?") + "access_token=${Http.enc(it.accessToken)}" } ?: "")
         else "$API$path?" + Http.query(if (t == null) params else params + ("access_token" to t.accessToken))
-        val resp = Http.send(method, url, mapOf("Accept" to "application/json"))
-        if (!resp.ok) throw ProviderException("Deezer API ${resp.code}: ${resp.body.take(200)}")
-        val j = parseJson(resp.body)
-        val err = j["error"]
-        if (!err.isNullish) {
+        var attempt = 0
+        while (true) {
+            val resp = Http.send(method, url, mapOf("Accept" to "application/json"))
+            if (!resp.ok) throw ProviderException("Deezer API ${resp.code}: ${resp.body.take(200)}")
+            val j = parseJson(resp.body)
+            val err = j["error"]
+            if (err.isNullish) return j
             val code = err["code"].int ?: 0
             if (allowNoData && code == 800) return JsonNull
+            // Error 4, "Quota limit exceeded": Deezer allows 50 requests every 5 seconds. Waiting out
+            // the window is enough; a few windows in a row mean something else is wrong.
+            if (code == QUOTA && attempt < QUOTA_RETRIES) { attempt++; Http.pause(QUOTA_WINDOW_MS); continue }
             if (code == 300 || code == 200) ctx.tokens.clear(id) // token non valido / permesso mancante
             throw ProviderException("Deezer: ${err["message"].str ?: err.toString()}")
         }
-        return j
     }
 
     override suspend fun playlists(ctx: Env): List<Playlist> {
@@ -319,5 +323,8 @@ class DeezerProvider(override val slot: String = "") : OAuthProvider() {
     companion object {
         const val SERVICE = "deezer"
         private const val API = "https://api.deezer.com"
+        private const val QUOTA = 4
+        private const val QUOTA_RETRIES = 3
+        private const val QUOTA_WINDOW_MS = 5_000L
     }
 }

@@ -68,7 +68,7 @@ class TidalProvider(override val slot: String = "") : OAuthProvider() {
     }
 
     override fun errorMessage(resp: HttpResponse): String =
-        parseJson(resp.body)["errors"][0]["detail"].str ?: super.errorMessage(resp)
+        runCatching { parseJson(resp.body)["errors"][0]["detail"].str }.getOrNull() ?: super.errorMessage(resp)
 
     private suspend fun cc(ctx: Env) = tokens(ctx).extra["country"] ?: "US"
 
