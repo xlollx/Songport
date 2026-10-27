@@ -53,6 +53,8 @@
     <string name="unplayable_confirm_body">%1$d треков получат играющую версию, %2$d записей будут удалены. Оригиналы остаются в журнале Trackhop, так что это можно отменить.</string>
     <string name="settings_unplayable_desc">Раз в неделю Trackhop просматривает ваши плейлисты и сообщает, если трек больше нельзя воспроизвести. Сам ничего не меняет.</string>
     <string name="soundcloud_player_changed">SoundCloud изменил свой веб-плеер; Trackhop нужно обновить</string>
-    <string name="settings_music_links_summary">Музыкальные ссылки Spotify, Apple Music и других открываются в Trackhop, чтобы добавить трек в плейлист.</string>
+    <string name="settings_music_links_summary">Открывайте музыкальные ссылки в Trackhop, чтобы добавить трек в плейлист.</string>
     <string name="settings_security_summary">Зашифрованные, отзываемые входы на этом телефоне; никакого сервера Trackhop.</string>
+    <string name="settings_battery_summary">Некоторые телефоны останавливают фоновые приложения: исключите Trackhop из оптимизации батареи.</string>
+    <string name="settings_dynamic_color_summary">Цвета ваших обоев вместо цветов Trackhop.</string>
 </resources>

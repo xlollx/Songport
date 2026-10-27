@@ -893,9 +893,9 @@
     <string name="settings_section_privacy">Privacidade e segurança</string>
     <string name="settings_section_backups">Backups</string>
     <string name="settings_section_advanced">Avançado</string>
-    <string name="settings_isrc_summary">Procura códigos ISRC ausentes no catálogo público do Deezer, para a gravação exata e não uma parecida.</string>
-    <string name="settings_music_links_summary">Abra no Songport links de música do Spotify, Apple Music e outros, para adicionar a faixa a uma playlist.</string>
-    <string name="settings_unplayable_summary">Uma vez por semana avisa sobre faixas que não podem mais ser tocadas. Não muda nada.</string>
+    <string name="settings_isrc_summary">Procura no Deezer códigos ISRC ausentes, para correspondências exatas.</string>
+    <string name="settings_music_links_summary">Abra links de música no Songport para adicionar a faixa a uma playlist.</string>
+    <string name="settings_unplayable_summary">Avisa sobre faixas que deixaram de tocar. Não muda nada.</string>
     <string name="settings_notifications_system">Configurações de notificação do sistema</string>
     <string name="settings_notifications_system_desc">Som, vibração e quais notificações o Android mostra.</string>
     <string name="settings_security_summary">Logins criptografados e revogáveis neste celular; nenhum servidor do Songport.</string>
@@ -926,4 +926,10 @@
     <string name="tools_row_compat">Compare duas playlists e ganhe uma pontuação para compartilhar.</string>
     <string name="tools_row_poster">Um cartão para compartilhar com capas e um código QR.</string>
     <string name="tools_row_unplayable">Encontre faixas em cinza e troque por versões que tocam.</string>
+    <string name="settings_battery_summary">Alguns celulares param apps em segundo plano: tire o Songport da otimização de bateria.</string>
+    <string name="settings_dynamic_color_summary">As cores do seu papel de parede em vez das do Songport.</string>
+    <string name="settings_notifications_summary">Quando uma sincronização agendada muda faixas ou falha.</string>
+    <string name="settings_developer_summary">Registro de conexões, relatório técnico, captura de tráfego.</string>
+    <string name="settings_new_look_summary">Cartões de sincronização com números e histórico recente.</string>
+    <string name="settings_log_summary">Resultados recentes e detalhes técnicos.</string>
 </resources>

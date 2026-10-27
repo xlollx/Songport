@@ -890,9 +890,9 @@
     <string name="settings_section_privacy">Gizlilik ve güvenlik</string>
     <string name="settings_section_backups">Yedekler</string>
     <string name="settings_section_advanced">Gelişmiş</string>
-    <string name="settings_isrc_summary">Eksik ISRC kodlarını Deezer\'ın herkese açık kataloğunda arar; benzeri değil, tam kaydı bulmak için.</string>
-    <string name="settings_music_links_summary">Spotify, Apple Music ve diğerlerinin müzik bağlantıları Songport\'ta açılsın, şarkıyı bir çalma listesine eklemek için.</string>
-    <string name="settings_unplayable_summary">Haftada bir, artık çalınamayan şarkıları bildirir. Hiçbir şeyi değiştirmez.</string>
+    <string name="settings_isrc_summary">Eksik ISRC kodlarını Deezer\'da arar, tam eşleşmeler için.</string>
+    <string name="settings_music_links_summary">Şarkıyı bir çalma listesine eklemek için müzik bağlantılarını Songport\'ta aç.</string>
+    <string name="settings_unplayable_summary">Çalmayı bırakan şarkıları bildirir. Hiçbir şeyi değiştirmez.</string>
     <string name="settings_notifications_system">Sistem bildirim ayarları</string>
     <string name="settings_notifications_system_desc">Ses, titreşim ve Android\'in hangi bildirimleri gösterdiği.</string>
     <string name="settings_security_summary">Bu telefonda şifreli, iptal edilebilir oturumlar; Songport sunucusu yok.</string>
@@ -923,4 +923,10 @@
     <string name="tools_row_compat">İki çalma listesini karşılaştır ve paylaşılacak bir puan al.</string>
     <string name="tools_row_poster">Kapaklar ve QR kodlu, paylaşılabilir bir kart.</string>
     <string name="tools_row_unplayable">Gri görünen şarkıları bul, çalınabilen sürümlerle değiştir.</string>
+    <string name="settings_battery_summary">Bazı telefonlar arka plandaki uygulamaları durdurur: Songport\'u pil optimizasyonundan çıkarın.</string>
+    <string name="settings_dynamic_color_summary">Songport\'un renkleri yerine duvar kağıdının renkleri.</string>
+    <string name="settings_notifications_summary">Zamanlanmış bir senkronizasyon şarkıları değiştirdiğinde veya başarısız olduğunda.</string>
+    <string name="settings_developer_summary">Bağlantı günlüğü, teknik rapor, trafik kaydı.</string>
+    <string name="settings_new_look_summary">Sayılar ve son çalıştırma geçmişiyle senkronizasyon kartları.</string>
+    <string name="settings_log_summary">Son senkronizasyon sonuçları ve teknik ayrıntılar.</string>
 </resources>

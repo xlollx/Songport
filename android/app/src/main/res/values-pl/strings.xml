@@ -922,9 +922,9 @@
     <string name="settings_section_privacy">Prywatność i bezpieczeństwo</string>
     <string name="settings_section_backups">Kopie zapasowe</string>
     <string name="settings_section_advanced">Zaawansowane</string>
-    <string name="settings_isrc_summary">Szuka brakujących kodów ISRC w publicznym katalogu Deezera, by trafić w dokładne nagranie, a nie podobne.</string>
-    <string name="settings_music_links_summary">Linki muzyczne ze Spotify, Apple Music i innych otwierają się w Songport, by dodać utwór do playlisty.</string>
-    <string name="settings_unplayable_summary">Raz w tygodniu informuje o utworach, których nie da się już odtworzyć. Niczego nie zmienia.</string>
+    <string name="settings_isrc_summary">Szuka w Deezerze brakujących kodów ISRC, dla dokładnych dopasowań.</string>
+    <string name="settings_music_links_summary">Otwieraj linki muzyczne w Songport, by dodać utwór do playlisty.</string>
+    <string name="settings_unplayable_summary">Informuje o utworach, które przestały grać. Niczego nie zmienia.</string>
     <string name="settings_notifications_system">Systemowe ustawienia powiadomień</string>
     <string name="settings_notifications_system_desc">Dźwięk, wibracje i to, które powiadomienia pokazuje Android.</string>
     <string name="settings_security_summary">Szyfrowane, odwoływalne logowania na tym telefonie; brak serwera Songport.</string>
@@ -955,4 +955,10 @@
     <string name="tools_row_compat">Porównaj dwie playlisty i zdobądź wynik do udostępnienia.</string>
     <string name="tools_row_poster">Karta do udostępnienia z okładkami i kodem QR.</string>
     <string name="tools_row_unplayable">Znajdź wyszarzone utwory i zamień je na wersje, które grają.</string>
+    <string name="settings_battery_summary">Niektóre telefony zatrzymują aplikacje w tle: wyłącz optymalizację baterii dla Songport.</string>
+    <string name="settings_dynamic_color_summary">Kolory Twojej tapety zamiast kolorów Songport.</string>
+    <string name="settings_notifications_summary">Gdy zaplanowana synchronizacja zmienia utwory lub się nie uda.</string>
+    <string name="settings_developer_summary">Dziennik połączeń, raport techniczny, przechwytywanie ruchu.</string>
+    <string name="settings_new_look_summary">Karty synchronizacji z liczbami i historią ostatnich uruchomień.</string>
+    <string name="settings_log_summary">Ostatnie wyniki synchronizacji i szczegóły techniczne.</string>
 </resources>

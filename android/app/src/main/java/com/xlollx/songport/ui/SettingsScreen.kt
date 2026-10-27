@@ -25,7 +25,7 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.ColorLens
+import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.EditNotifications
@@ -139,9 +139,9 @@ fun SettingsScreen(
                 store.updateSettings { it.copy(themeMode = m.name) }
             }
             PrefSwitch(
-                Icons.Filled.ColorLens,
+                Icons.Filled.Wallpaper,
                 stringResource(R.string.settings_dynamic_color),
-                stringResource(if (dynamicColorAvailable) R.string.settings_dynamic_color_desc else R.string.settings_dynamic_color_unavailable),
+                stringResource(if (dynamicColorAvailable) R.string.settings_dynamic_color_summary else R.string.settings_dynamic_color_unavailable),
                 settings.dynamicColor && dynamicColorAvailable, enabled = dynamicColorAvailable,
             ) { v -> store.updateSettings { it.copy(dynamicColor = v) } }
             // Chosen in-app and applied at once (the activity is recreated), also while a sync runs.
@@ -157,7 +157,7 @@ fun SettingsScreen(
                 langOpen = false
                 if (tag != currentTag) (ctx as? Activity)?.let { AppLocale.set(it, tag) }
             }
-            PrefSwitch(Icons.Filled.Dashboard, stringResource(R.string.settings_new_look), stringResource(R.string.settings_new_look_desc), settings.newLook) { v ->
+            PrefSwitch(Icons.Filled.Dashboard, stringResource(R.string.settings_new_look), stringResource(R.string.settings_new_look_summary), settings.newLook) { v ->
                 store.updateSettings { it.copy(newLook = v) }
             }
         }
@@ -173,7 +173,7 @@ fun SettingsScreen(
                 MusicLinks.set(ctx, v); musicLinks = v
             }
             PrefRow(
-                Icons.Filled.BatteryAlert, stringResource(R.string.settings_battery), stringResource(R.string.settings_battery_desc),
+                Icons.Filled.BatteryAlert, stringResource(R.string.settings_battery), stringResource(R.string.settings_battery_summary),
                 trailing = { ExternalMark() },
             ) {
                 // Apre l'elenco di sistema (nessun permesso speciale): l'utente sceglie Songport e lo esclude.
@@ -183,7 +183,7 @@ fun SettingsScreen(
 
         // ---------------------------------------------------------------- Notifications
         PrefSection(stringResource(R.string.settings_section_notifications)) {
-            PrefSwitch(Icons.Filled.Notifications, stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_desc), settings.notifyOnSync) { v ->
+            PrefSwitch(Icons.Filled.Notifications, stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_summary), settings.notifyOnSync) { v ->
                 store.updateSettings { it.copy(notifyOnSync = v) }
             }
             PrefSwitch(Icons.Filled.MusicOff, stringResource(R.string.settings_unplayable), stringResource(R.string.settings_unplayable_summary), settings.unplayableCheck) { v ->
@@ -298,7 +298,7 @@ fun SettingsScreen(
 
         // ---------------------------------------------------------------- Advanced
         PrefSection(stringResource(R.string.settings_section_advanced)) {
-            PrefRow(Icons.Filled.History, stringResource(R.string.settings_log), stringResource(R.string.settings_log_desc), onClick = onOpenLog)
+            PrefRow(Icons.Filled.History, stringResource(R.string.settings_log), stringResource(R.string.settings_log_summary), onClick = onOpenLog)
             // Same dialog as the generator in Tools: key and model live in the encrypted token store.
             var aiConfig by remember { mutableStateOf(com.xlollx.songport.ai.AiClient.config(ctx)) }
             var aiOpen by remember { mutableStateOf(false) }
@@ -326,7 +326,7 @@ fun SettingsScreen(
                 }
             }
 
-            PrefSwitch(Icons.Filled.DeveloperMode, stringResource(R.string.settings_developer_switch), stringResource(R.string.settings_developer_desc), settings.developerOptions) { v ->
+            PrefSwitch(Icons.Filled.DeveloperMode, stringResource(R.string.settings_developer_switch), stringResource(R.string.settings_developer_summary), settings.developerOptions) { v ->
                 store.updateSettings { it.copy(developerOptions = v) }
             }
             if (settings.developerOptions) {

@@ -892,9 +892,9 @@
     <string name="settings_section_privacy">Privacy e sicurezza</string>
     <string name="settings_section_backups">Backup</string>
     <string name="settings_section_advanced">Avanzate</string>
-    <string name="settings_isrc_summary">Cerca i codici ISRC mancanti nel catalogo pubblico di Deezer, per avere la registrazione esatta e non una simile.</string>
-    <string name="settings_music_links_summary">I link musicali di Spotify, Apple Music e altri si aprono in Songport, per aggiungere il brano a una playlist.</string>
-    <string name="settings_unplayable_summary">Una volta a settimana ti avvisa dei brani che non si possono più riprodurre. Non cambia nulla.</string>
+    <string name="settings_isrc_summary">Cerca su Deezer i codici ISRC mancanti, per abbinamenti esatti.</string>
+    <string name="settings_music_links_summary">Apri i link musicali in Songport per aggiungere il brano a una playlist.</string>
+    <string name="settings_unplayable_summary">Ti avvisa dei brani che non si riproducono più. Non cambia nulla.</string>
     <string name="settings_notifications_system">Impostazioni di notifica di sistema</string>
     <string name="settings_notifications_system_desc">Suono, vibrazione e quali notifiche mostra Android.</string>
     <string name="settings_security_summary">Accessi cifrati e revocabili su questo telefono; nessun server di Songport.</string>
@@ -925,4 +925,10 @@
     <string name="tools_row_compat">Confronta due playlist e ottieni un punteggio da condividere.</string>
     <string name="tools_row_poster">Una scheda da condividere con copertine e codice QR.</string>
     <string name="tools_row_unplayable">Trova i brani in grigio e sostituiscili con versioni che si riproducono.</string>
+    <string name="settings_battery_summary">Alcuni telefoni fermano le app in background: escludi Songport dall\'ottimizzazione batteria.</string>
+    <string name="settings_dynamic_color_summary">I colori del tuo sfondo al posto di quelli di Songport.</string>
+    <string name="settings_notifications_summary">Quando una sync programmata cambia brani o non riesce.</string>
+    <string name="settings_developer_summary">Registro connessioni, rapporto tecnico, cattura traffico.</string>
+    <string name="settings_new_look_summary">Schede delle sync con i numeri e la cronologia recente.</string>
+    <string name="settings_log_summary">Esiti delle ultime sync e dettagli tecnici.</string>
 </resources>

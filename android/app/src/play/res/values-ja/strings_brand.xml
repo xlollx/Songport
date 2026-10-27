@@ -51,6 +51,8 @@
     <string name="unplayable_confirm_body">%1$d 曲が再生できるバージョンに置き換わり、%2$d 件の項目が削除されます。元の項目は Trackhop のログに残るので、取り消せます。</string>
     <string name="settings_unplayable_desc">週に一度、Trackhop がプレイリストを確認し、再生できなくなった曲があればお知らせします。勝手に変更することはありません。</string>
     <string name="soundcloud_player_changed">SoundCloud のウェブプレーヤーが変更されました。Trackhop のアップデートが必要です</string>
-    <string name="settings_music_links_summary">Spotify や Apple Music などの音楽リンクを Trackhop で開き、曲をプレイリストに追加できます。</string>
+    <string name="settings_music_links_summary">音楽リンクを Trackhop で開き、曲をプレイリストに追加します。</string>
     <string name="settings_security_summary">暗号化され、取り消せるログインをこの端末に保存。Trackhop のサーバーはありません。</string>
+    <string name="settings_battery_summary">一部の端末はバックグラウンドのアプリを停止します。Trackhop を電池の最適化から除外してください。</string>
+    <string name="settings_dynamic_color_summary">Trackhop の色の代わりに壁紙の色を使います。</string>
 </resources>

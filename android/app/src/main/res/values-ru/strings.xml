@@ -920,9 +920,9 @@
     <string name="settings_section_privacy">Конфиденциальность и безопасность</string>
     <string name="settings_section_backups">Резервные копии</string>
     <string name="settings_section_advanced">Дополнительно</string>
-    <string name="settings_isrc_summary">Ищет недостающие коды ISRC в открытом каталоге Deezer, чтобы найти точную запись, а не похожую.</string>
-    <string name="settings_music_links_summary">Музыкальные ссылки Spotify, Apple Music и других открываются в Songport, чтобы добавить трек в плейлист.</string>
-    <string name="settings_unplayable_summary">Раз в неделю сообщает о треках, которые больше нельзя воспроизвести. Ничего не меняет.</string>
+    <string name="settings_isrc_summary">Ищет недостающие коды ISRC в Deezer для точных совпадений.</string>
+    <string name="settings_music_links_summary">Открывайте музыкальные ссылки в Songport, чтобы добавить трек в плейлист.</string>
+    <string name="settings_unplayable_summary">Сообщает о треках, которые перестали играть. Ничего не меняет.</string>
     <string name="settings_notifications_system">Системные настройки уведомлений</string>
     <string name="settings_notifications_system_desc">Звук, вибрация и какие уведомления показывает Android.</string>
     <string name="settings_security_summary">Зашифрованные, отзываемые входы на этом телефоне; никакого сервера Songport.</string>
@@ -953,4 +953,10 @@
     <string name="tools_row_compat">Сравните два плейлиста и получите оценку, которой можно поделиться.</string>
     <string name="tools_row_poster">Карточка с обложками и QR-кодом, чтобы поделиться.</string>
     <string name="tools_row_unplayable">Найдите серые треки и замените их версиями, которые играют.</string>
+    <string name="settings_battery_summary">Некоторые телефоны останавливают фоновые приложения: исключите Songport из оптимизации батареи.</string>
+    <string name="settings_dynamic_color_summary">Цвета ваших обоев вместо цветов Songport.</string>
+    <string name="settings_notifications_summary">Когда синхронизация по расписанию меняет треки или завершается ошибкой.</string>
+    <string name="settings_developer_summary">Журнал подключений, технический отчёт, запись трафика.</string>
+    <string name="settings_new_look_summary">Карточки синхронизаций с цифрами и недавней историей.</string>
+    <string name="settings_log_summary">Последние результаты синхронизаций и технические детали.</string>
 </resources>

@@ -53,6 +53,8 @@
     <string name="unplayable_confirm_body">%1$d faixas recebem uma versão que toca, %2$d entradas são removidas. Os originais ficam no log do Trackhop para você desfazer.</string>
     <string name="settings_unplayable_desc">Uma vez por semana o Trackhop percorre suas playlists e avisa quando uma faixa não pode mais ser tocada. Nada é alterado sozinho.</string>
     <string name="soundcloud_player_changed">O SoundCloud mudou o player web; o Trackhop precisa de uma atualização</string>
-    <string name="settings_music_links_summary">Abra no Trackhop links de música do Spotify, Apple Music e outros, para adicionar a faixa a uma playlist.</string>
+    <string name="settings_music_links_summary">Abra links de música no Trackhop para adicionar a faixa a uma playlist.</string>
     <string name="settings_security_summary">Logins criptografados e revogáveis neste celular; nenhum servidor do Trackhop.</string>
+    <string name="settings_battery_summary">Alguns celulares param apps em segundo plano: tire o Trackhop da otimização de bateria.</string>
+    <string name="settings_dynamic_color_summary">As cores do seu papel de parede em vez das do Trackhop.</string>
 </resources>
