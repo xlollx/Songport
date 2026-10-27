@@ -42,8 +42,22 @@ class ChromeFlowTest : FlowTest() {
 
     @After fun dayAgain() { night(false) }
 
+    private fun aliveActivities(): Int {
+        var n = 0
+        instr.runOnMainSync {
+            val reg = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+            n = listOf(androidx.test.runner.lifecycle.Stage.CREATED, androidx.test.runner.lifecycle.Stage.STARTED, androidx.test.runner.lifecycle.Stage.RESUMED, androidx.test.runner.lifecycle.Stage.PAUSED, androidx.test.runner.lifecycle.Stage.STOPPED)
+                .sumOf { reg.getActivitiesInStage(it).size }
+        }
+        return n
+    }
+
     /** The phone's night mode, waited for until the app's configuration has it (else the activity started next is recreated under the test). */
     private fun night(on: Boolean) {
+        // No activity alive while the mode flips: one recreated under the next test's frames breaks it.
+        resumed()?.let { a -> instr.runOnMainSync { a.finish() } }
+        val gone = System.currentTimeMillis() + 10_000
+        while (System.currentTimeMillis() < gone && aliveActivities() > 0) Thread.sleep(100)
         shell("cmd uimode night ${if (on) "yes" else "no"}")
         val end = System.currentTimeMillis() + 10_000
         while (System.currentTimeMillis() < end && app.resources.configuration.isNightModeActive != on) Thread.sleep(100)
