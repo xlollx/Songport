@@ -40,7 +40,7 @@ header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;padding:14px
 header nav{display:flex;gap:16px;flex-wrap:wrap}
 a{color:var(--link)}
 .brand{font-weight:700;font-size:18px;text-decoration:none;background:linear-gradient(120deg,#4338ca,#7c3aed 50%,#db2777);-webkit-background-clip:text;background-clip:text;color:transparent}
-main{max-width:920px;margin:0 auto;padding:16px}
+main{max-width:920px;margin:0 auto;padding:16px;overflow-wrap:anywhere}
 h1{font-size:24px;margin:8px 0 16px}
 h2{font-size:18px;margin:24px 0 8px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin:0 0 12px}

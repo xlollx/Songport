@@ -23,6 +23,21 @@ import java.util.UUID
 import java.util.concurrent.Executors
 
 /**
+ * True when a POST comes from this server's own pages: its Origin is the address the browser used
+ * (Host) or [baseUrl] (SONGPORT_URL, for a reverse proxy that rewrites Host). "Origin: null" is
+ * refused. Without an Origin (older browsers), the fetch metadata or the Referer decide; with none of
+ * them it is not a browser's cross-site form, and the password is still asked.
+ */
+internal fun sameOrigin(header: (String) -> String?, baseUrl: String): Boolean {
+    fun hostOf(url: String) = url.substringAfter("://", "").substringBefore('/').lowercase()
+    val allowed = setOfNotNull(header("Host")?.lowercase(), hostOf(baseUrl).ifEmpty { null })
+    header("Origin")?.let { return hostOf(it) in allowed }
+    header("Sec-Fetch-Site")?.let { return it == "same-origin" || it == "none" }
+    header("Referer")?.let { return hostOf(it) in allowed }
+    return true
+}
+
+/**
  * The web interface: services, syncs, runs and the log, as plain pages and forms. Served by the
  * JDK's own HTTP server; with SONGPORT_PASSWORD every page asks for it (HTTP basic auth).
  */
@@ -33,7 +48,8 @@ class Web(
     private val password: String?,
     private val version: String,
 ) {
-    fun start(port: Int) {
+    /** Serves the pages on [port] (0: any free port, for tests); returns the running server. */
+    fun start(port: Int): HttpServer {
         val server = HttpServer.create(InetSocketAddress(port), 0)
         server.executor = Executors.newFixedThreadPool(8)
         server.createContext("/") { ex ->
@@ -47,7 +63,8 @@ class Web(
             }
         }
         server.start()
-        env.log("web", "listening on port $port, reachable as ${env.baseUrl}")
+        env.log("web", "listening on port ${server.address.port}, reachable as ${env.baseUrl}")
+        return server
     }
 
     // ------------------------------------------------------------------ plumbing
@@ -64,7 +81,7 @@ class Web(
         }
         val method = ex.requestMethod.uppercase()
         // A form posted from another site is refused: every change comes from these pages.
-        if (method == "POST" && !sameOrigin(ex)) return send(ex, 403, "Cross-site request refused", "text/plain")
+        if (method == "POST" && !sameOrigin({ ex.requestHeaders.getFirst(it) }, env.baseUrl)) return send(ex, 403, "Cross-site request refused", "text/plain")
         val form = if (method == "POST") parseForm(String(ex.requestBody.readBytes(), StandardCharsets.UTF_8)) else emptyMap()
         val r = Req(ex, method, path, parseForm(ex.requestURI.rawQuery ?: ""), form)
         when {
@@ -87,11 +104,6 @@ class Web(
         return MessageDigest.isEqual(given.toByteArray(), pw.toByteArray())
     }
 
-    private fun sameOrigin(ex: HttpExchange): Boolean {
-        val origin = ex.requestHeaders.getFirst("Origin") ?: return true
-        val host = ex.requestHeaders.getFirst("Host") ?: return false
-        return origin.substringAfter("://").trimEnd('/') == host
-    }
 
     private fun decode(s: String) = URLDecoder.decode(s, StandardCharsets.UTF_8)
 
@@ -104,7 +116,9 @@ class Web(
         ex.responseHeaders.set("Content-Type", "$type; charset=utf-8")
         ex.responseHeaders.set("Cache-Control", "no-store")
         ex.responseHeaders.set("X-Frame-Options", "DENY")
-        ex.responseHeaders.set("Referrer-Policy", "no-referrer")
+        // Not "no-referrer": with it browsers send "Origin: null" on this page's own forms, which
+        // [sameOrigin] must refuse. "same-origin" still tells other sites nothing.
+        ex.responseHeaders.set("Referrer-Policy", "same-origin")
         ex.sendResponseHeaders(code, bytes.size.toLong())
         ex.responseBody.use { it.write(bytes) }
     }
@@ -188,6 +202,8 @@ class Web(
         }
         val provider = Providers.byId(rest[0]) ?: return send(r.ex, 404, page("Unknown service", "<p><a href=\"/connectors\">Back</a></p>"))
         val back = "/connectors/${q(provider.id)}"
+        // Every action changes something: POST only, so a link or an image on another site can't.
+        if (rest.size > 1 && r.method != "POST") return send(r.ex, 405, page("Not allowed", "<p><a href=\"$back\">Back</a></p>"))
         when (rest.getOrNull(1)) {
             null -> connectorPage(r, provider)
             "settings" -> {
@@ -440,9 +456,17 @@ ${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input 
         } else null
         val srcId = linked?.id ?: r.form["srcPlaylist"].orEmpty().ifBlank { return redirect(r.ex, "$back&err=${q("Pick a playlist.")}") }
         val dstId = r.form["dstPlaylist"].orEmpty().ifBlank { null }
-        // Names as the services list them; a library entry (liked songs...) keeps its label.
-        val srcName = linked?.name ?: runCatching { runBlocking { (src.libraryEntries(env, false) + src.playlists(env)).firstOrNull { it.id == srcId }?.name } }.getOrNull() ?: srcId
-        val dstName = dstId?.let { id -> runCatching { runBlocking { (dst.libraryEntries(env, true) + dst.playlists(env)).firstOrNull { it.id == id }?.name } }.getOrNull() } ?: srcName
+        // Only playlists the services list, as the form offered them: an id is also a path or a URL
+        // part for some connectors (a CSV file name), never something typed in.
+        val srcName = linked?.name ?: runCatching { runBlocking { (src.libraryEntries(env, false) + src.playlists(env)).firstOrNull { it.id == srcId }?.name } }
+            .getOrElse { return redirect(r.ex, "$back&err=${q("${src.label(env)}: ${it.message}")}") }
+            ?: return redirect(r.ex, "$back&err=${q("Pick a playlist.")}")
+        if (dstId == null && !dst.canCreatePlaylists) return redirect(r.ex, "$back&err=${q("Pick a playlist.")}")
+        val dstName = dstId?.let { id ->
+            runCatching { runBlocking { (dst.libraryEntries(env, true) + dst.playlists(env).filter { it.ownedByMe }).firstOrNull { it.id == id }?.name } }
+                .getOrElse { return redirect(r.ex, "$back&err=${q("${dst.label(env)}: ${it.message}")}") }
+                ?: return redirect(r.ex, "$back&err=${q("Pick a playlist.")}")
+        } ?: srcName
         val job = SyncJob(
             id = UUID.randomUUID().toString(),
             name = r.form["name"].orEmpty().ifBlank { srcName },
@@ -480,8 +504,9 @@ ${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input 
             rep.notes.forEach { body.append("""<p class="muted">${h(it)}</p>""") }
             if (rep.unmatched.isNotEmpty()) {
                 body.append("""<details><summary>${rep.unmatched.size} not found</summary><ul>""")
-                rep.unmatchedTracks.ifEmpty { null }?.forEach { t -> body.append("<li>${h(t.artistLine)} — ${h(t.title)}</li>") }
-                    ?: rep.unmatched.forEach { body.append("<li>${h(it)}</li>") }
+                rep.unmatchedTracks.forEach { t -> body.append("<li>${h(t.artistLine)} — ${h(t.title)}</li>") }
+                // After the tracks not found, the ones the destination refused (with its error).
+                rep.unmatched.drop(rep.unmatchedTracks.size).forEach { body.append("<li>${h(it)}</li>") }
                 body.append("</ul></details>")
             }
             body.append("</div>")

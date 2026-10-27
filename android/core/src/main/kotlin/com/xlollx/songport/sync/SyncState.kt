@@ -4,6 +4,7 @@ import com.xlollx.songport.model.Progress
 import com.xlollx.songport.platform.Env
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
 /** Stato in memoria delle sync in corso (per la UI), con pausa e interruzione richieste dall'utente. */
 object SyncState {
@@ -23,25 +24,26 @@ object SyncState {
     /** Tracks processed so far per running job, newest first (capped). */
     val items: StateFlow<Map<String, List<LiveItem>>> get() = _items
 
-    fun start(jobId: String) { _running.value = _running.value + (jobId to null); _items.value = _items.value + (jobId to emptyList()) }
-    fun progress(jobId: String, p: Progress) { _running.value = _running.value + (jobId to p) }
+    // Every change is an atomic update: syncs run on several threads at once, and a lost write
+    // would bring a finished sync back as running for good.
+    fun start(jobId: String) { _running.update { it + (jobId to null) }; _items.update { it + (jobId to emptyList()) } }
+    fun progress(jobId: String, p: Progress) { _running.update { it + (jobId to p) } }
     fun item(jobId: String, item: LiveItem) {
-        val cur = _items.value[jobId].orEmpty()
-        _items.value = _items.value + (jobId to (listOf(item) + cur).take(MAX_ITEMS))
+        _items.update { all -> all + (jobId to (listOf(item) + all[jobId].orEmpty()).take(MAX_ITEMS)) }
     }
     fun finish(jobId: String) {
-        _running.value = _running.value - jobId
-        _paused.value = _paused.value - jobId
-        _items.value = _items.value - jobId
-        _stopping.value = _stopping.value - jobId
+        _running.update { it - jobId }
+        _paused.update { it - jobId }
+        _items.update { it - jobId }
+        _stopping.update { it - jobId }
     }
 
     private const val MAX_ITEMS = 1000
 
-    fun pause(jobId: String) { _paused.value = _paused.value + jobId }
-    fun resume(jobId: String) { _paused.value = _paused.value - jobId }
+    fun pause(jobId: String) { _paused.update { it + jobId } }
+    fun resume(jobId: String) { _paused.update { it - jobId } }
     // A paused sync stays shown as paused until it actually stops: checkpoint() lets a stop through a pause.
-    fun stop(jobId: String) { _stopping.value = _stopping.value + jobId }
+    fun stop(jobId: String) { _stopping.update { it + jobId } }
     fun isPaused(jobId: String) = jobId in _paused.value
 
     /**
