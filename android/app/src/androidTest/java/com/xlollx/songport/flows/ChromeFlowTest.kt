@@ -14,6 +14,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.text.TextLayoutResult
@@ -92,7 +93,8 @@ class ChromeFlowTest : FlowTest() {
                 // Glass: the scrolling content runs under the bar...
                 assertTrue("${s(tab)}: content stops above the bar (${list.boundsInRoot.bottom} <= $top), the bar is not over it", list.boundsInRoot.bottom > top)
                 // ...and at the end of the list the last control clears it.
-                repeat(8) { compose.onAllNodes(verticalScroll)[verticalScrollerIndex()].performTouchInput { swipeUp() } }
+                // To the end by the list's own scroll action: a swipe from its bottom edge would start on the bar.
+                repeat(6) { compose.onAllNodes(verticalScroll)[verticalScrollerIndex()].performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, 5000f) } }
                 compose.waitForIdle()
             }
             // The control lowest on the page (the tabs and the floating button aside) clears the bar.
