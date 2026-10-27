@@ -40,6 +40,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -109,6 +115,7 @@ import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.sync.SyncState
 import java.util.UUID
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun SyncsScreen(
     data: StoreData,
@@ -119,6 +126,7 @@ fun SyncsScreen(
     onDelete: (SyncJob) -> Unit,
     onGoToAccounts: () -> Unit,
     onReview: (String) -> Unit = {},
+    onOpenTarget: (SyncJob) -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val running by SyncState.running.collectAsState()
@@ -135,34 +143,61 @@ fun SyncsScreen(
         return
     }
     val lastRun = data.jobs.maxOfOrNull { it.lastRunEpoch } ?: 0L
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val support = SupportPrompt.pending(Store.get(ctx))
+    // One open in ten: a small card that goes away by itself at the next open.
+    val nudge = support == null && data.settings.appOpens > 0 && SupportPrompt.nudge(Store.get(ctx))
     LazyColumn(
+        state = listState,
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 100.dp + LocalBottomBarInset.current),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item(key = "hero") {
             val n = data.jobs.size
             val last = if (lastRun > 0) " · " + stringResource(R.string.hero_last, formatDate(lastRun)) else ""
-            HeroHeader(stringResource(R.string.hero_title), ctx.resources.getQuantityString(R.plurals.hero_jobs, n, n) + last) {
-                val haptic = rememberConfirmHaptic()
-                Button(
-                    onClick = { haptic(); onRunAll() },
-                    enabled = running.isEmpty(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White, contentColor = Brand.Indigo,
-                        disabledContainerColor = Color.White.copy(alpha = 0.5f), disabledContentColor = Brand.Indigo.copy(alpha = 0.6f),
-                    ),
-                ) {
-                    Icon(Icons.Filled.PlayArrow, null); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.sync_all))
-                }
+            HeroHeader(stringResource(R.string.hero_title), ctx.resources.getQuantityString(R.plurals.hero_jobs, n, n) + last)
+        }
+        // "Sync all": a pill centred under the header that stays at the top while the list scrolls.
+        // While syncs run it says how many, and a tap brings the first running card into view.
+        if (data.jobs.size >= 2) stickyHeader(key = "runall") {
+            val firstRunning = data.jobs.indexOfFirst { running.containsKey(it.id) }
+            RunAllPill(running.size) {
+                if (firstRunning >= 0) scope.launch { listState.animateScrollToItem(2 + (if (support != null || nudge) 1 else 0) + firstRunning) }
+                else onRunAll()
             }
         }
         // Una volta sola, dopo la prima sync grande: il momento in cui si vede quanto tempo ha fatto risparmiare.
-        val support = SupportPrompt.pending(Store.get(ctx))
         if (support != null) item(key = "support") { SupportCard(support) }
-        // One open in ten: a small card that goes away by itself at the next open.
-        else if (data.settings.appOpens > 0 && SupportPrompt.nudge(Store.get(ctx))) item(key = "nudge") { CoffeeCard() }
+        else if (nudge) item(key = "nudge") { CoffeeCard() }
         items(data.jobs, key = { it.id }) { job ->
-            JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview)
+            JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget)
+        }
+    }
+}
+
+/** The "sync all" pill: filled and inviting when idle, a quiet progress state while syncs run. */
+@Composable
+private fun RunAllPill(runningCount: Int, onClick: () -> Unit) {
+    val haptic = rememberConfirmHaptic()
+    val busy = runningCount > 0
+    Box(Modifier.fillMaxWidth().padding(vertical = 4.dp), contentAlignment = Alignment.Center) {
+        androidx.compose.material3.Surface(
+            onClick = { if (!busy) haptic(); onClick() },
+            shape = RoundedCornerShape(50),
+            color = if (busy) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary,
+            contentColor = if (busy) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimary,
+            shadowElevation = 6.dp,
+        ) {
+            Row(Modifier.heightIn(min = 48.dp).padding(horizontal = 22.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                else Icon(Icons.Filled.PlayArrow, null, Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    if (busy) pluralStringResource(R.plurals.syncs_running, runningCount, runningCount) else stringResource(R.string.sync_all),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
         }
     }
 }
@@ -171,9 +206,17 @@ fun SyncsScreen(
 private fun JobCard(
     job: SyncJob, data: StoreData, progress: Progress?, isRunning: Boolean,
     onEdit: (SyncJob) -> Unit, onPreview: (SyncJob) -> Unit, onRun: (SyncJob) -> Unit, onDelete: (SyncJob) -> Unit,
-    onReview: (String) -> Unit = {},
+    onReview: (String) -> Unit = {}, onOpenTarget: (SyncJob) -> Unit = {},
 ) {
     val ctx = LocalContext.current
+    var colorOpen by remember { mutableStateOf(false) }
+    if (colorOpen) JobColorDialog(job.color, onDismiss = { colorOpen = false }) { c ->
+        // A two-way sync is one sync to the user: both halves take the colour.
+        val store = Store.get(ctx)
+        data.jobs.filter { it.id == job.id || it.id == job.linkedJobId || it.linkedJobId == job.id }.forEach { store.upsertJob(it.copy(color = c)) }
+    }
+    var listOpen by remember { mutableStateOf<StatList?>(null) }
+    listOpen?.let { l -> StatListSheet(l) { listOpen = null } }
     var confirmDelete by remember { mutableStateOf(false) }
     var liveOpen by remember { mutableStateOf(false) }
     if (liveOpen && isRunning) LiveSheet(job) { liveOpen = false }
@@ -189,9 +232,19 @@ private fun JobCard(
         // While running, a tap opens the live list of tracks processed so far.
         Modifier.fillMaxWidth().animateContentSize().clickable(enabled = isRunning) { liveOpen = true },
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        colors = CardDefaults.cardColors(containerColor = jobContainer(job.color)),
     ) {
-        Column(Modifier.padding(20.dp)) {
+        val accent = jobAccent(job.color)
+        val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+        Column(
+            Modifier.drawBehind {
+                // The chosen colour as a band along the card's leading edge, like a calendar's.
+                if (accent != null) {
+                    val w = 6.dp.toPx()
+                    drawRect(accent, topLeft = Offset(if (rtl) size.width - w else 0f, 0f), size = Size(w, size.height))
+                }
+            }.padding(20.dp),
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.width(56.dp).height(36.dp)) {
                     ProviderBadge(src, 34.dp)
@@ -255,7 +308,16 @@ private fun JobCard(
                 }
             } else if (report != null && data.settings.newLook && report.ok) {
                 Spacer(Modifier.height(14.dp))
-                RunStats(report, data.reports.filter { it.jobId == job.id && !it.partial }.sortedBy { it.startedEpoch }.takeLast(10))
+                RunStats(
+                    report, data.reports.filter { it.jobId == job.id && !it.partial }.sortedBy { it.startedEpoch }.takeLast(10),
+                    onAdded = { listOpen = StatList(StatList.Kind.ADDED, report) },
+                    onRemoved = { listOpen = StatList(StatList.Kind.REMOVED, report) },
+                    onNotFound = {
+                        if (report.unmatchedTracks.isNotEmpty() || report.reviewTracks.isNotEmpty()) onReview(report.id)
+                        else listOpen = StatList(StatList.Kind.NOT_FOUND, report)
+                    },
+                    onTracks = if (job.target.playlistId != null) ({ onOpenTarget(job) }) else null,
+                )
             } else if (report != null) {
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -292,6 +354,7 @@ private fun JobCard(
                         if (job.aiPrompt != null) MenuAction(stringResource(R.string.ai_extend), { extendOpen = true }) else null,
                         MenuAction(stringResource(R.string.preview), { onPreview(job) }),
                         MenuAction(stringResource(R.string.edit), { onEdit(job) }),
+                        MenuAction(stringResource(R.string.job_color), { colorOpen = true }),
                         MenuAction(stringResource(R.string.delete), { confirmDelete = true }, destructive = true),
                     ),
                     enabled = !isRunning,
@@ -417,6 +480,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
     var keepOrder by remember { mutableStateOf(job.keepOrder) }
     var wifiOnly by remember { mutableStateOf(job.wifiOnly) }
     var enabled by remember { mutableStateOf(job.enabled) }
+    var color by remember { mutableStateOf(job.color) }
     var bidirectional by remember { mutableStateOf(job.linkedJobId != null) }
     var policy by remember { mutableStateOf(job.policy) }
     var matchingOpen by remember { mutableStateOf(job.policy != com.xlollx.songport.model.MatchPolicy()) }
@@ -469,7 +533,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
             source = source,
             target = target,
             schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
-            keepOrder = keepOrder,
+            keepOrder = keepOrder, color = color,
         )
         val reverse = if (bidirectional && !createNew && dp != null) SyncJob(
             id = job.linkedJobId ?: UUID.randomUUID().toString(),
@@ -477,7 +541,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
             source = target,
             target = source,
             schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
-            linkedJobId = job.id,
+            linkedJobId = job.id, color = color,
         ) else null
         saveHaptic()
         onSave(main.copy(linkedJobId = reverse?.id), reverse)
@@ -563,6 +627,8 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                 OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.editor_name)) },
                     singleLine = true, modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
+                Text(stringResource(R.string.job_color), style = MaterialTheme.typography.labelLarge)
+                JobColorPicker(color) { color = it }
                 Text(stringResource(R.string.editor_schedule), style = MaterialTheme.typography.labelLarge)
                 // I chip vanno a capo da soli, quante righe servono per lo schermo.
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
@@ -869,12 +935,16 @@ private fun SupportCard(report: com.xlollx.songport.model.SyncReport) {
  * on the left, so a sync that keeps failing shows before anyone opens the log.
  */
 @Composable
-private fun RunStats(r: SyncReport, history: List<SyncReport>) {
+private fun RunStats(
+    r: SyncReport, history: List<SyncReport>,
+    onAdded: () -> Unit, onRemoved: () -> Unit, onNotFound: () -> Unit, onTracks: (() -> Unit)?,
+) {
+    // Each figure opens what it counts: the tracks added, removed or not found, or the playlist itself.
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Stat("+${r.added}", stringResource(R.string.stat_added), Modifier.weight(1f), MaterialTheme.colorScheme.primary)
-        Stat("−${r.removed}", stringResource(R.string.stat_removed), Modifier.weight(1f))
-        Stat("${r.unmatched.size}", stringResource(R.string.stat_not_found), Modifier.weight(1f), if (r.unmatched.isNotEmpty()) MaterialTheme.colorScheme.tertiary else null)
-        Stat("${r.sourceCount}", stringResource(R.string.stat_tracks), Modifier.weight(1f))
+        Stat("+${r.added}", stringResource(R.string.stat_added), Modifier.weight(1f), MaterialTheme.colorScheme.primary, onAdded.takeIf { r.added > 0 })
+        Stat("−${r.removed}", stringResource(R.string.stat_removed), Modifier.weight(1f), onClick = onRemoved.takeIf { r.removed > 0 })
+        Stat("${r.unmatched.size}", stringResource(R.string.stat_not_found), Modifier.weight(1f), if (r.unmatched.isNotEmpty()) MaterialTheme.colorScheme.tertiary else null, onNotFound.takeIf { r.unmatched.isNotEmpty() })
+        Stat("${r.sourceCount}", stringResource(R.string.stat_tracks), Modifier.weight(1f), onClick = onTracks)
     }
     if (history.size >= 2) {
         Spacer(Modifier.height(10.dp))
@@ -898,12 +968,46 @@ private fun RunStats(r: SyncReport, history: List<SyncReport>) {
 }
 
 @Composable
-private fun Stat(value: String, label: String, modifier: Modifier, tint: Color? = null) {
+private fun Stat(value: String, label: String, modifier: Modifier, tint: Color? = null, onClick: (() -> Unit)? = null) {
     Column(
-        modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(vertical = 10.dp, horizontal = 8.dp),
+        modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .let { if (onClick != null) it.clickable(onClickLabel = label, onClick = onClick) else it }
+            .padding(vertical = 10.dp, horizontal = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(value, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = tint ?: MaterialTheme.colorScheme.onSurface, maxLines = 1)
         Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
+}
+
+/** Which list a figure on the card opens, from which run. */
+private data class StatList(val kind: Kind, val report: SyncReport) {
+    enum class Kind { ADDED, REMOVED, NOT_FOUND }
+}
+
+/** The tracks behind a figure: what the last run added, removed or could not find. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun StatListSheet(list: StatList, onDismiss: () -> Unit) {
+    val r = list.report
+    val (title, lines, total) = when (list.kind) {
+        StatList.Kind.ADDED -> Triple(stringResource(R.string.stat_list_added), r.addedTracks.map { it.toString() }, r.added)
+        StatList.Kind.REMOVED -> Triple(stringResource(R.string.stat_list_removed), r.removedTracks.map { it.toString() }, r.removed)
+        StatList.Kind.NOT_FOUND -> Triple(stringResource(R.string.stat_list_not_found), r.unmatched, r.unmatched.size)
+    }
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(Modifier.padding(horizontal = 16.dp).padding(bottom = 24.dp)) {
+            Text(title, style = MaterialTheme.typography.titleLarge)
+            Text(formatDate(r.startedEpoch), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(12.dp))
+            // Reports from before this list existed only kept the count.
+            if (lines.isEmpty()) Text(stringResource(R.string.stat_list_unavailable), style = MaterialTheme.typography.bodyMedium)
+            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 480.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(lines.size) { i -> Text(lines[i], style = MaterialTheme.typography.bodyMedium, maxLines = 2, overflow = TextOverflow.Ellipsis) }
+                if (lines.isNotEmpty() && total > lines.size) item {
+                    Text(stringResource(R.string.stat_list_more, total - lines.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
     }
 }

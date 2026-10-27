@@ -866,4 +866,23 @@
     <string name="provider_note_soundcloud">Herkese açık SoundCloud setleri ve beğeni sayfaları, yalnızca okuma ve oturum açmadan: bağlantıyı bir eşitlemenin kaynağı olarak yapıştırın. Resmî bir arayüz değil: SoundCloud sitesini değiştirdiğinde çalışmayı bırakabilir.</string>
     <string name="soundcloud_not_public">Bu SoundCloud çalma listesi gizli veya mevcut değil: yalnızca herkese açık bağlantılar çalışır</string>
     <string name="soundcloud_player_changed">SoundCloud web oynatıcısını değiştirdi; Songport\'un güncellenmesi gerekiyor</string>
+    <string name="job_color">Renk</string>
+    <string name="job_color_default">Varsayılan</string>
+    <string name="color_red">Kırmızı</string>
+    <string name="color_orange">Turuncu</string>
+    <string name="color_yellow">Sarı</string>
+    <string name="color_green">Yeşil</string>
+    <string name="color_teal">Turkuaz</string>
+    <string name="color_blue">Mavi</string>
+    <string name="color_purple">Mor</string>
+    <string name="color_pink">Pembe</string>
+    <string name="stat_list_added">Son eşitlemede eklenenler</string>
+    <string name="stat_list_removed">Son eşitlemede kaldırılanlar</string>
+    <string name="stat_list_not_found">Son eşitlemede bulunamayanlar</string>
+    <string name="stat_list_unavailable">Bu çalışmada yalnızca sayı saklandı: liste bir sonraki eşitlemeden itibaren kaydedilir.</string>
+    <string name="stat_list_more">…ve %1$d tane daha</string>
+    <plurals name="syncs_running">
+        <item quantity="one">%d eşitleme sürüyor</item>
+        <item quantity="other">%d eşitleme sürüyor</item>
+    </plurals>
 </resources>

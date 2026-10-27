@@ -868,4 +868,24 @@
     <string name="provider_note_soundcloud">Listas y páginas de «me gusta» públicas de SoundCloud, solo lectura y sin iniciar sesión: pega el enlace como origen de una sincronización. No es una interfaz oficial: puede dejar de funcionar cuando SoundCloud cambie su web.</string>
     <string name="soundcloud_not_public">Esta lista de SoundCloud es privada o no existe: solo funcionan los enlaces públicos</string>
     <string name="soundcloud_player_changed">SoundCloud ha cambiado su reproductor web; Songport necesita una actualización</string>
+    <string name="job_color">Color</string>
+    <string name="job_color_default">Predeterminado</string>
+    <string name="color_red">Rojo</string>
+    <string name="color_orange">Naranja</string>
+    <string name="color_yellow">Amarillo</string>
+    <string name="color_green">Verde</string>
+    <string name="color_teal">Turquesa</string>
+    <string name="color_blue">Azul</string>
+    <string name="color_purple">Morado</string>
+    <string name="color_pink">Rosa</string>
+    <string name="stat_list_added">Añadidas en la última sincronización</string>
+    <string name="stat_list_removed">Quitadas en la última sincronización</string>
+    <string name="stat_list_not_found">No encontradas en la última sincronización</string>
+    <string name="stat_list_unavailable">De esta ejecución solo se guardó el número: la lista se guarda a partir de la próxima sincronización.</string>
+    <string name="stat_list_more">…y %1$d más</string>
+    <plurals name="syncs_running">
+        <item quantity="one">%d sincronización en curso</item>
+        <item quantity="many">%d sincronizaciones en curso</item>
+        <item quantity="other">%d sincronizaciones en curso</item>
+    </plurals>
 </resources>

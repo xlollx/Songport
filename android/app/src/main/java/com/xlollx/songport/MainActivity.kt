@@ -235,6 +235,8 @@ private fun MainScreen(
         }
     }
     var previewJob by rememberSaveable(stateSaver = JobSaver) { mutableStateOf<SyncJob?>(null) }
+    // A sync's target playlist, opened from the track count on its card.
+    var targetJob by rememberSaveable(stateSaver = JobSaver) { mutableStateOf<SyncJob?>(null) }
     // Two playlist links shared at once: "how compatible are we?" in Tools.
     var compareLinks by remember { mutableStateOf<Pair<String, String>?>(null) }
     // A tool page open in Tools: it brings its own top bar.
@@ -336,8 +338,12 @@ private fun MainScreen(
     val scan = scanProvider
     val unplayable = unplayableProvider
     val current = editing
+    val targetOf = targetJob
+    val targetProvider = targetOf?.let { Providers.byId(it.target.provider) }
+    val targetId = targetOf?.target?.playlistId
     val overlay: String? = when {
         preview != null -> "preview:" + preview.id
+        targetOf != null && targetProvider != null && targetId != null -> "target:" + targetOf.id
         wizard != null -> "wizard:" + wizard.id
         unmatched != null -> "unmatched:$unmatched"
         filesOpen -> "files"
@@ -353,6 +359,10 @@ private fun MainScreen(
         BackAwareScreen(overlay) {
             when {
                 preview != null -> PreviewScreen(preview, onClose = { previewJob = null }) { j -> Scheduler.runNow(ctx, j.id); previewJob = null }
+                targetOf != null && targetProvider != null && targetId != null -> com.xlollx.songport.ui.PlaylistTracksScreen(
+                    targetProvider, com.xlollx.songport.model.Playlist(targetId, targetOf.target.playlistName),
+                    onClose = { targetJob = null }, onChanged = {},
+                )
                 wizard != null -> SetupWizardScreen(wizard) { wizardFor = null }
                 unmatched != null -> UnmatchedScreen(unmatched) { unmatchedReport = null }
                 filesOpen -> FilesScreen { filesOpen = false }
@@ -463,6 +473,7 @@ private fun MainScreen(
                     },
                     onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS },
                     onReview = { unmatchedReport = it },
+                    onOpenTarget = { targetJob = it },
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
                 MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks, onSubpage = { toolSubpage = it })

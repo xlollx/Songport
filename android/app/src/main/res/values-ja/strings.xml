@@ -855,4 +855,22 @@
     <string name="provider_note_soundcloud">SoundCloud の公開セットといいねページを、ログインなし・読み取り専用で使えます。リンクを同期の元として貼り付けてください。公式のインターフェースではないため、SoundCloud がサイトを変更すると動かなくなることがあります。</string>
     <string name="soundcloud_not_public">この SoundCloud プレイリストは非公開か存在しません。使えるのは公開リンクだけです</string>
     <string name="soundcloud_player_changed">SoundCloud のウェブプレーヤーが変更されました。Songport のアップデートが必要です</string>
+    <string name="job_color">色</string>
+    <string name="job_color_default">デフォルト</string>
+    <string name="color_red">赤</string>
+    <string name="color_orange">オレンジ</string>
+    <string name="color_yellow">黄</string>
+    <string name="color_green">緑</string>
+    <string name="color_teal">ティール</string>
+    <string name="color_blue">青</string>
+    <string name="color_purple">紫</string>
+    <string name="color_pink">ピンク</string>
+    <string name="stat_list_added">前回の同期で追加</string>
+    <string name="stat_list_removed">前回の同期で削除</string>
+    <string name="stat_list_not_found">前回の同期で見つからなかった曲</string>
+    <string name="stat_list_unavailable">この実行では件数のみ保存されています。一覧は次回の同期から保存されます。</string>
+    <string name="stat_list_more">…ほか %1$d 件</string>
+    <plurals name="syncs_running">
+        <item quantity="other">%d 件の同期を実行中</item>
+    </plurals>
 </resources>

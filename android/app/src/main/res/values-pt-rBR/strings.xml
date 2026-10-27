@@ -868,4 +868,24 @@
     <string name="provider_note_soundcloud">Sets e páginas de curtidas públicos do SoundCloud, somente leitura e sem login: cole o link como origem de uma sincronização. Não é uma interface oficial: pode parar de funcionar quando o SoundCloud mudar o site.</string>
     <string name="soundcloud_not_public">Esta playlist do SoundCloud é privada ou não existe: só links públicos funcionam</string>
     <string name="soundcloud_player_changed">O SoundCloud mudou o player web; o Songport precisa de uma atualização</string>
+    <string name="job_color">Cor</string>
+    <string name="job_color_default">Padrão</string>
+    <string name="color_red">Vermelho</string>
+    <string name="color_orange">Laranja</string>
+    <string name="color_yellow">Amarelo</string>
+    <string name="color_green">Verde</string>
+    <string name="color_teal">Turquesa</string>
+    <string name="color_blue">Azul</string>
+    <string name="color_purple">Roxo</string>
+    <string name="color_pink">Rosa</string>
+    <string name="stat_list_added">Adicionadas na última sincronização</string>
+    <string name="stat_list_removed">Removidas na última sincronização</string>
+    <string name="stat_list_not_found">Não encontradas na última sincronização</string>
+    <string name="stat_list_unavailable">Desta execução só foi guardado o número: a lista é salva a partir da próxima sincronização.</string>
+    <string name="stat_list_more">…e mais %1$d</string>
+    <plurals name="syncs_running">
+        <item quantity="one">%d sincronização em andamento</item>
+        <item quantity="many">%d sincronizações em andamento</item>
+        <item quantity="other">%d sincronizações em andamento</item>
+    </plurals>
 </resources>

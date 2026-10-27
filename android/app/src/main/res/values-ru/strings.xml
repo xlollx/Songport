@@ -894,4 +894,25 @@
     <string name="provider_note_soundcloud">Публичные сеты и страницы лайков SoundCloud, только чтение и без входа: вставьте ссылку как источник синхронизации. Это неофициальный интерфейс: он может перестать работать, когда SoundCloud изменит свой сайт.</string>
     <string name="soundcloud_not_public">Этот плейлист SoundCloud приватный или не существует: работают только публичные ссылки</string>
     <string name="soundcloud_player_changed">SoundCloud изменил свой веб-плеер; Songport нужно обновить</string>
+    <string name="job_color">Цвет</string>
+    <string name="job_color_default">По умолчанию</string>
+    <string name="color_red">Красный</string>
+    <string name="color_orange">Оранжевый</string>
+    <string name="color_yellow">Жёлтый</string>
+    <string name="color_green">Зелёный</string>
+    <string name="color_teal">Бирюзовый</string>
+    <string name="color_blue">Синий</string>
+    <string name="color_purple">Фиолетовый</string>
+    <string name="color_pink">Розовый</string>
+    <string name="stat_list_added">Добавлено при последней синхронизации</string>
+    <string name="stat_list_removed">Удалено при последней синхронизации</string>
+    <string name="stat_list_not_found">Не найдено при последней синхронизации</string>
+    <string name="stat_list_unavailable">Для этого запуска сохранено только число: список сохраняется начиная со следующей синхронизации.</string>
+    <string name="stat_list_more">…и ещё %1$d</string>
+    <plurals name="syncs_running">
+        <item quantity="one">%d синхронизация выполняется</item>
+        <item quantity="few">%d синхронизации выполняются</item>
+        <item quantity="many">%d синхронизаций выполняется</item>
+        <item quantity="other">%d синхронизации выполняется</item>
+    </plurals>
 </resources>

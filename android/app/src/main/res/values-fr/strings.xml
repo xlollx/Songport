@@ -868,4 +868,24 @@
     <string name="provider_note_soundcloud">Sets et pages de « J\'aime » publics de SoundCloud, en lecture seule et sans connexion : collez le lien comme source d\'une synchronisation. Interface non officielle : elle peut cesser de fonctionner quand SoundCloud modifie son site.</string>
     <string name="soundcloud_not_public">Cette playlist SoundCloud est privée ou n\'existe pas : seuls les liens publics fonctionnent</string>
     <string name="soundcloud_player_changed">SoundCloud a modifié son lecteur web ; Songport doit être mis à jour</string>
+    <string name="job_color">Couleur</string>
+    <string name="job_color_default">Par défaut</string>
+    <string name="color_red">Rouge</string>
+    <string name="color_orange">Orange</string>
+    <string name="color_yellow">Jaune</string>
+    <string name="color_green">Vert</string>
+    <string name="color_teal">Turquoise</string>
+    <string name="color_blue">Bleu</string>
+    <string name="color_purple">Violet</string>
+    <string name="color_pink">Rose</string>
+    <string name="stat_list_added">Ajoutés lors de la dernière synchro</string>
+    <string name="stat_list_removed">Retirés lors de la dernière synchro</string>
+    <string name="stat_list_not_found">Introuvables lors de la dernière synchro</string>
+    <string name="stat_list_unavailable">Pour cette exécution, seul le nombre a été gardé : la liste est enregistrée à partir de la prochaine synchro.</string>
+    <string name="stat_list_more">…et %1$d de plus</string>
+    <plurals name="syncs_running">
+        <item quantity="one">%d synchro en cours</item>
+        <item quantity="many">%d synchros en cours</item>
+        <item quantity="other">%d synchros en cours</item>
+    </plurals>
 </resources>

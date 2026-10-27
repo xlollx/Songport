@@ -98,6 +98,8 @@ data class SyncJob(
     val policy: MatchPolicy = MatchPolicy(),
     /** After adding, put the target in the source's order (where the target service can move tracks). */
     val keepOrder: Boolean = false,
+    /** The card's colour, chosen by the user to tell syncs apart at a glance (a key like "teal"); null = the default look. */
+    val color: String? = null,
 )
 
 /**
@@ -146,6 +148,8 @@ data class SyncReport(
     val reviewTracks: List<MatchReview> = emptyList(),
     /** Brani tolti dalla destinazione con "rispecchia rimozioni": si possono ripristinare. */
     val removedTracks: List<Track> = emptyList(),
+    /** What this run added, for the list behind the "added" figure (the first 500). */
+    val addedTracks: List<Track> = emptyList(),
     /** Avvisi non bloccanti (es. destinazione che non permette di rimuovere brani). */
     val notes: List<String> = emptyList(),
     val error: String? = null,

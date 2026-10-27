@@ -42,6 +42,8 @@ import java.util.UUID
 private val WAIT_SECONDS = intArrayOf(10, 20, 40, 60, 120)
 /** Quante attese dichiarate dal servizio (blocco dell'indirizzo) si accettano prima di fermarsi con quanto fatto. */
 private const val MAX_BLOCK_WAITS = 8
+/** How many added tracks a report keeps for its list: enough to read, small enough for a stored report. */
+private const val MAX_LISTED = 500
 private const val RESET_AFTER_CHUNKS = 15
 /** Punteggio fittizio di un "non trovato" preso dalla cache dei fallimenti, mai mostrato. */
 private const val MISS_SCORE = -1.0
@@ -587,6 +589,7 @@ class SyncEngine(
         val notes = ArrayList(plan.notes)
 
         var added = 0
+        val addedList = ArrayList<Track>()
         if (plan.toAdd.isNotEmpty()) {
             onProgress(Progress(Progress.Step.ADDING, 0, plan.toAdd.size))
             // Verso una playlist un blocco di 50 e' una chiamata sola. Verso i "brani preferiti" ogni
@@ -604,6 +607,7 @@ class SyncEngine(
                     try {
                         dst.addTracks(env, targetId, chunk)
                         added += chunk.size
+                        addedList += chunk
                         chunk.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.ADDED)) }
                         break
                     } catch (e: Exception) {
@@ -619,7 +623,7 @@ class SyncEngine(
                         // Un blocco fallito (id non piu' valido, ecc.): riprova brano per brano.
                         for (t in chunk) {
                             try {
-                                dst.addTracks(env, targetId, listOf(t)); added++
+                                dst.addTracks(env, targetId, listOf(t)); added++; addedList += t
                                 SyncState.item(job.id, SyncState.LiveItem(t.live(), null, SyncState.Outcome.ADDED))
                             } catch (e2: Exception) {
                                 failed += "$t (${e2.message})"
@@ -672,6 +676,8 @@ class SyncEngine(
             ignored = plan.ignored,
             reviewTracks = reviews,
             removedTracks = if (removed > 0) plan.toRemove else emptyList(),
+            // Favourites are added last-first: listed back in the source's order.
+            addedTracks = (if (MusicProvider.isLibrary(targetId)) addedList.asReversed() else addedList).take(MAX_LISTED),
             notes = notes,
             suggestions = suggestionsFor(unmatched),
             absent = unmatched.filter { it.id in absent }.map { it.id },

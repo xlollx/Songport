@@ -896,4 +896,25 @@
     <string name="provider_note_soundcloud">Publiczne sety i strony polubień SoundCloud, tylko do odczytu i bez logowania: wklej link jako źródło synchronizacji. To nie jest oficjalny interfejs: może przestać działać, gdy SoundCloud zmieni swoją stronę.</string>
     <string name="soundcloud_not_public">Ta playlista SoundCloud jest prywatna lub nie istnieje: działają tylko linki publiczne</string>
     <string name="soundcloud_player_changed">SoundCloud zmienił swój odtwarzacz internetowy; Songport wymaga aktualizacji</string>
+    <string name="job_color">Kolor</string>
+    <string name="job_color_default">Domyślny</string>
+    <string name="color_red">Czerwony</string>
+    <string name="color_orange">Pomarańczowy</string>
+    <string name="color_yellow">Żółty</string>
+    <string name="color_green">Zielony</string>
+    <string name="color_teal">Turkusowy</string>
+    <string name="color_blue">Niebieski</string>
+    <string name="color_purple">Fioletowy</string>
+    <string name="color_pink">Różowy</string>
+    <string name="stat_list_added">Dodane podczas ostatniej synchronizacji</string>
+    <string name="stat_list_removed">Usunięte podczas ostatniej synchronizacji</string>
+    <string name="stat_list_not_found">Nie znalezione podczas ostatniej synchronizacji</string>
+    <string name="stat_list_unavailable">Z tego przebiegu zapisano tylko liczbę: lista jest zapisywana od następnej synchronizacji.</string>
+    <string name="stat_list_more">…i jeszcze %1$d</string>
+    <plurals name="syncs_running">
+        <item quantity="one">%d synchronizacja w toku</item>
+        <item quantity="few">%d synchronizacje w toku</item>
+        <item quantity="many">%d synchronizacji w toku</item>
+        <item quantity="other">%d synchronizacji w toku</item>
+    </plurals>
 </resources>

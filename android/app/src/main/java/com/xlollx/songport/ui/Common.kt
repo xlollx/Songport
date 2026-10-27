@@ -294,7 +294,7 @@ fun AppTopBar(title: String, showBrand: Boolean = true, actions: @Composable Row
  * lives. White text at full alpha, and the gradient ends on a deep magenta, so it reads at AA.
  */
 @Composable
-fun HeroHeader(title: String, subtitle: String, content: @Composable RowScope.() -> Unit = {}) {
+fun HeroHeader(title: String, subtitle: String, content: (@Composable RowScope.() -> Unit)? = null) {
     Box(
         Modifier.fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
@@ -309,8 +309,10 @@ fun HeroHeader(title: String, subtitle: String, content: @Composable RowScope.()
             }
             Spacer(Modifier.height(4.dp))
             Text(subtitle, color = Color.White, style = MaterialTheme.typography.bodyMedium)
-            Spacer(Modifier.height(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, content = content)
+            if (content != null) {
+                Spacer(Modifier.height(16.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, content = content)
+            }
         }
     }
 }

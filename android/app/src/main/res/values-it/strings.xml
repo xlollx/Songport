@@ -868,4 +868,23 @@
     <string name="provider_note_soundcloud">Set e pagine dei \"Mi piace\" pubblici di SoundCloud, in sola lettura e senza accesso: incolla il link come origine di una sincronizzazione. Interfaccia non ufficiale: può smettere di funzionare quando SoundCloud cambia il suo sito.</string>
     <string name="soundcloud_not_public">Questa playlist di SoundCloud è privata o non esiste: funzionano solo i link pubblici</string>
     <string name="soundcloud_player_changed">SoundCloud ha cambiato il suo player web; Songport va aggiornato</string>
+    <string name="job_color">Colore</string>
+    <string name="job_color_default">Predefinito</string>
+    <string name="color_red">Rosso</string>
+    <string name="color_orange">Arancione</string>
+    <string name="color_yellow">Giallo</string>
+    <string name="color_green">Verde</string>
+    <string name="color_teal">Verde acqua</string>
+    <string name="color_blue">Blu</string>
+    <string name="color_purple">Viola</string>
+    <string name="color_pink">Rosa</string>
+    <string name="stat_list_added">Aggiunti nell\'ultima sync</string>
+    <string name="stat_list_removed">Rimossi nell\'ultima sync</string>
+    <string name="stat_list_not_found">Non trovati nell\'ultima sync</string>
+    <string name="stat_list_unavailable">Per questa esecuzione è stato salvato solo il numero: l\'elenco viene salvato dalla prossima sync.</string>
+    <string name="stat_list_more">…e altri %1$d</string>
+    <plurals name="syncs_running">
+        <item quantity="one">%d sync in corso</item>
+        <item quantity="other">%d sync in corso</item>
+    </plurals>
 </resources>

@@ -59,6 +59,8 @@ class SyncEngineTest {
         val why = "error=${r.error} notes=${r.notes} unmatched=${r.unmatched} added=${r.added}"
         assertEquals(why, 2, r.added)
         assertEquals(why, listOf(sid("da"), sid("db")), dst.lists["t"]!!.map { it.id })
+        // The card lists what was added, in the source's order.
+        assertEquals(why, listOf(sid("da"), sid("db")), r.addedTracks.map { it.id })
         assertEquals(why, listOf(sid("c")), r.unmatchedTracks.map { it.id })
         assertEquals(why, listOf(sid("c")), r.absent)
     }
