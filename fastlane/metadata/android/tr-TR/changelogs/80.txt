@@ -1,0 +1,1 @@
+Plex: Songport artık sunucunuzda çalma listesi oluşturabiliyor, böylece bir eşitlemenin hedefi yeni bir Plex çalma listesi olabilir. Ampache: başarısız bir giriş artık Ampache'nin Subsonic parolasını veya API anahtarını istediğini açıklıyor.

@@ -1,0 +1,1 @@
+Plex: 이제 Songport가 서버에 플레이리스트를 만들 수 있어 새 Plex 플레이리스트를 동기화 대상으로 삼을 수 있습니다. Ampache: 로그인이 실패하면 Ampache에 Subsonic 비밀번호나 API 키가 필요하다고 안내합니다.

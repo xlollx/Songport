@@ -1,0 +1,1 @@
+Plex : Songport peut désormais créer des playlists sur votre serveur, une synchro peut donc viser une nouvelle playlist Plex. Ampache : une connexion refusée explique maintenant qu'Ampache veut son mot de passe Subsonic ou sa clé API.

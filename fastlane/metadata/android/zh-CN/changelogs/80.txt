@@ -1,0 +1,1 @@
+Plex：Songport 现在可以在你的服务器上创建歌单，同步可以以新的 Plex 歌单为目标。Ampache：登录失败时会说明 Ampache 需要它的 Subsonic 密码或 API 密钥。

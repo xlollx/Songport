@@ -1,0 +1,1 @@
+Plex: Songport kann jetzt Playlists auf deinem Server erstellen, eine Synchronisierung kann also eine neue Plex-Playlist als Ziel haben. Ampache: Ein fehlgeschlagener Login erklärt jetzt, dass Ampache sein Subsonic-Passwort oder einen API-Schlüssel braucht.

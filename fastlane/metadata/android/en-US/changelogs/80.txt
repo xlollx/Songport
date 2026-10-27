@@ -1,0 +1,1 @@
+Plex: Songport can now create playlists on your server, so a sync can target a new Plex playlist. Ampache: a failed login now explains that Ampache wants its Subsonic password or API key.

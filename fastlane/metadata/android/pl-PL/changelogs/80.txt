@@ -1,0 +1,1 @@
+Plex: Songport może teraz tworzyć playlisty na Twoim serwerze, więc synchronizacja może trafiać do nowej playlisty Plex. Ampache: nieudane logowanie wyjaśnia teraz, że Ampache wymaga hasła Subsonic lub klucza API.
