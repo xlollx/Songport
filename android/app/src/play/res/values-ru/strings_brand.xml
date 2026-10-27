@@ -54,4 +54,6 @@
     <string name="settings_unplayable_desc">Раз в неделю Trackhop просматривает ваши плейлисты и сообщает, если трек больше нельзя воспроизвести. Сам ничего не меняет.</string>
     <string name="soundcloud_player_changed">SoundCloud изменил свой веб-плеер; Trackhop нужно обновить</string>
     <string name="shazam_share_hint">Часто пользуетесь Shazam? В настройках Shazam подключите Spotify или Apple Music: каждый распознанный трек попадёт в плейлист «My Shazam Tracks». Trackhop будет синхронизировать его с любым вашим сервисом.</string>
+    <string name="stats_title">Trackhop в цифрах</string>
+    <string name="stats_local_note">Подсчитано на этом телефоне по истории синхронизаций, которую Trackhop уже хранит. Ничего не отправляется, если вы сами не поделитесь карточкой.</string>
 </resources>

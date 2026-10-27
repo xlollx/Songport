@@ -142,6 +142,7 @@ fun SyncsScreen(
     onGoToAccounts: () -> Unit,
     onReview: (String) -> Unit = {},
     onOpenTarget: (SyncJob) -> Unit = {},
+    onStats: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val running by SyncState.running.collectAsState()
@@ -199,7 +200,12 @@ fun SyncsScreen(
             item(key = "hero") {
                 val n = data.jobs.size
                 val last = if (lastRun > 0) " · " + stringResource(R.string.hero_last, formatDate(lastRun)) else ""
-                HeroHeader(stringResource(R.string.hero_title), ctx.resources.getQuantityString(R.plurals.hero_jobs, n, n) + last)
+                // "Your numbers" once a sync has completed: before that there is nothing to count.
+                val anyRun = data.reports.any { it.ok && !it.partial }
+                HeroHeader(
+                    stringResource(R.string.hero_title), ctx.resources.getQuantityString(R.plurals.hero_jobs, n, n) + last,
+                    link = if (anyRun) stringResource(R.string.stats_hero_link) else null, onLink = onStats,
+                )
             }
             // Under the hero and scrolling with the list, so it never fights the pinned pill below.
             if (finder) item(key = "finder") {

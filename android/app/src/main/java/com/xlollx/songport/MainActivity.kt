@@ -222,6 +222,8 @@ private fun MainScreen(
     var filesOpen by rememberSaveable { mutableStateOf(false) }
     var logOpen by rememberSaveable { mutableStateOf(false) }
     var transferOpen by rememberSaveable { mutableStateOf(false) }
+    // "Songport in numbers", from the Tools list or the Syncs header.
+    var statsOpen by rememberSaveable { mutableStateOf(false) }
     var manageProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
     var scanProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
     var unplayableProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
@@ -353,6 +355,7 @@ private fun MainScreen(
         scan != null -> "scan:" + scan.id
         unplayable != null -> "unplayable:" + unplayable.id
         transferOpen -> "transfer"
+        statsOpen -> "stats"
         current != null -> "edit:" + current.id
         else -> null
     }
@@ -372,6 +375,7 @@ private fun MainScreen(
                 scan != null -> LibraryScanScreen(scan) { scanProvider = null }
                 unplayable != null -> UnplayableScreen(unplayable) { unplayableProvider = null }
                 transferOpen -> TransferScreen(onClose = { transferOpen = false }, onDone = { transferOpen = false; tab = MainActivity.TAB_SYNCS })
+                statsOpen -> com.xlollx.songport.ui.StatsScreen(data, onClose = { statsOpen = false })
                 current != null -> SyncEditorScreen(
                     job = current,
                     onCancel = { editing = null },
@@ -475,9 +479,10 @@ private fun MainScreen(
                     onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS },
                     onReview = { unmatchedReport = it },
                     onOpenTarget = { targetJob = it },
+                    onStats = { statsOpen = true },
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
-                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks, onSubpage = { toolSubpage = it })
+                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks, onSubpage = { toolSubpage = it }, onStats = { statsOpen = true })
                 else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
             } }
             }

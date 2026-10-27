@@ -936,4 +936,56 @@
         <item quantity="many">%1$d z %2$d synchronizacji</item>
         <item quantity="other">%1$d z %2$d synchronizacji</item>
     </plurals>
+    <string name="stats_title">Songport w liczbach</string>
+    <string name="stats_row_desc">Co do tej pory zrobiły twoje synchronizacje, jako karta do udostępnienia</string>
+    <string name="stats_hero_link">Twoje liczby</string>
+    <string name="stats_tracks_moved">Przeniesione utwory</string>
+    <string name="stats_this_month">Przeniesione w tym miesiącu</string>
+    <string name="stats_syncs_done">Ukończone synchronizacje</string>
+    <string name="stats_services">Połączone serwisy</string>
+    <string name="stats_match_rate">Skuteczność dopasowania</string>
+    <string name="stats_time_saved">Zaoszczędzony czas (szacunek)</string>
+    <string name="stats_top_route">Najczęstsza trasa</string>
+    <string name="stats_longest">Najdłuższa synchronizowana playlista</string>
+    <string name="stats_top_artists">Najczęściej dodawani wykonawcy</string>
+    <plurals name="stats_since">
+        <item quantity="one">Z %1$d synchronizacji od %2$s</item>
+        <item quantity="few">Z %1$d synchronizacji od %2$s</item>
+        <item quantity="many">Z %1$d synchronizacji od %2$s</item>
+        <item quantity="other">Z %1$d synchronizacji od %2$s</item>
+    </plurals>
+    <string name="stats_card_since">od %1$s</string>
+    <plurals name="stats_n_syncs">
+        <item quantity="one">%1$d synchronizacja</item>
+        <item quantity="few">%1$d synchronizacje</item>
+        <item quantity="many">%1$d synchronizacji</item>
+        <item quantity="other">%1$d synchronizacji</item>
+    </plurals>
+    <string name="stats_route_desc">z %1$s do %2$s</string>
+    <string name="stats_hours_short">%1$s godz.</string>
+    <string name="stats_minutes_short">%1$s min</string>
+    <plurals name="stats_time_note">
+        <item quantity="one">Zaoszczędzony czas to szacunek: %1$d sekunda na przeniesiony utwór, mniej więcej tyle, ile trwa ręczne wyszukanie i dodanie jednego.</item>
+        <item quantity="few">Zaoszczędzony czas to szacunek: %1$d sekundy na przeniesiony utwór, mniej więcej tyle, ile trwa ręczne wyszukanie i dodanie jednego.</item>
+        <item quantity="many">Zaoszczędzony czas to szacunek: %1$d sekund na przeniesiony utwór, mniej więcej tyle, ile trwa ręczne wyszukanie i dodanie jednego.</item>
+        <item quantity="other">Zaoszczędzony czas to szacunek: %1$d sekundy na przeniesiony utwór, mniej więcej tyle, ile trwa ręczne wyszukanie i dodanie jednego.</item>
+    </plurals>
+    <string name="stats_match_note">Skuteczność dopasowania: utwory znalezione w drugim serwisie spośród wyszukiwanych, w ostatnim przebiegu każdej synchronizacji.</string>
+    <plurals name="stats_artists_note">
+        <item quantity="one">Policzono na podstawie %1$d utworu z ostatnich raportów synchronizacji.</item>
+        <item quantity="few">Policzono na podstawie %1$d utworów z ostatnich raportów synchronizacji; starsze przebiegi zapisały tylko liczbę.</item>
+        <item quantity="many">Policzono na podstawie %1$d utworów z ostatnich raportów synchronizacji; starsze przebiegi zapisały tylko liczbę.</item>
+        <item quantity="other">Policzono na podstawie %1$d utworu z ostatnich raportów synchronizacji; starsze przebiegi zapisały tylko liczbę.</item>
+    </plurals>
+    <plurals name="stats_history_cap">
+        <item quantity="one">Na tym telefonie przechowywana jest tylko ostatnia synchronizacja (%1$d): starsze nie są uwzględnione w tych liczbach.</item>
+        <item quantity="few">Na tym telefonie przechowywane są tylko %1$d ostatnie synchronizacje: starsze nie są uwzględnione w tych liczbach.</item>
+        <item quantity="many">Na tym telefonie przechowywanych jest tylko %1$d ostatnich synchronizacji: starsze nie są uwzględnione w tych liczbach.</item>
+        <item quantity="other">Na tym telefonie przechowywanych jest tylko %1$d ostatnich synchronizacji: starsze nie są uwzględnione w tych liczbach.</item>
+    </plurals>
+    <string name="stats_local_note">Policzone na tym telefonie z historii synchronizacji, którą Songport już przechowuje. Nic nie jest wysyłane, chyba że udostępnisz kartę.</string>
+    <string name="stats_empty_title">Jeszcze brak liczb</string>
+    <string name="stats_empty_body">Pojawią się po pierwszej ukończonej synchronizacji, policzone z historii zapisanej na tym telefonie.</string>
+    <string name="stats_share_title">Udostępnij swoje liczby</string>
+    <string name="stats_card_preview">Podgląd karty do udostępnienia</string>
 </resources>

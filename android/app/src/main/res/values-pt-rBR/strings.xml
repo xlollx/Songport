@@ -906,4 +906,51 @@
         <item quantity="many">%1$d de %2$d sincronizações</item>
         <item quantity="other">%1$d de %2$d sincronizações</item>
     </plurals>
+    <string name="stats_title">Songport em números</string>
+    <string name="stats_row_desc">O que suas sincronizações já fizeram, em um cartão para compartilhar</string>
+    <string name="stats_hero_link">Seus números</string>
+    <string name="stats_tracks_moved">Músicas transferidas</string>
+    <string name="stats_this_month">Transferidas este mês</string>
+    <string name="stats_syncs_done">Sincronizações concluídas</string>
+    <string name="stats_services">Serviços conectados</string>
+    <string name="stats_match_rate">Taxa de correspondência</string>
+    <string name="stats_time_saved">Tempo economizado (estimativa)</string>
+    <string name="stats_top_route">Rota mais usada</string>
+    <string name="stats_longest">Maior playlist sincronizada</string>
+    <string name="stats_top_artists">Artistas mais adicionados</string>
+    <plurals name="stats_since">
+        <item quantity="one">De %1$d sincronização desde %2$s</item>
+        <item quantity="many">De %1$d sincronizações desde %2$s</item>
+        <item quantity="other">De %1$d sincronizações desde %2$s</item>
+    </plurals>
+    <string name="stats_card_since">desde %1$s</string>
+    <plurals name="stats_n_syncs">
+        <item quantity="one">%1$d sincronização</item>
+        <item quantity="many">%1$d sincronizações</item>
+        <item quantity="other">%1$d sincronizações</item>
+    </plurals>
+    <string name="stats_route_desc">de %1$s para %2$s</string>
+    <string name="stats_hours_short">%1$s h</string>
+    <string name="stats_minutes_short">%1$s min</string>
+    <plurals name="stats_time_note">
+        <item quantity="one">O tempo economizado é uma estimativa: %1$d segundo por música transferida, mais ou menos o tempo de procurar e adicionar uma à mão.</item>
+        <item quantity="many">O tempo economizado é uma estimativa: %1$d segundos por música transferida, mais ou menos o tempo de procurar e adicionar uma à mão.</item>
+        <item quantity="other">O tempo economizado é uma estimativa: %1$d segundos por música transferida, mais ou menos o tempo de procurar e adicionar uma à mão.</item>
+    </plurals>
+    <string name="stats_match_note">Taxa de correspondência: as músicas encontradas no outro serviço, entre as procuradas, na última execução de cada sincronização.</string>
+    <plurals name="stats_artists_note">
+        <item quantity="one">Contado sobre %1$d música listada nos relatórios recentes de sincronização.</item>
+        <item quantity="many">Contado sobre %1$d músicas listadas nos relatórios recentes de sincronização; execuções mais antigas guardaram só a contagem.</item>
+        <item quantity="other">Contado sobre %1$d músicas listadas nos relatórios recentes de sincronização; execuções mais antigas guardaram só a contagem.</item>
+    </plurals>
+    <plurals name="stats_history_cap">
+        <item quantity="one">Só a última sincronização (%1$d) fica guardada neste celular: as mais antigas não estão nestes números.</item>
+        <item quantity="many">Só as últimas %1$d sincronizações ficam guardadas neste celular: as mais antigas não estão nestes números.</item>
+        <item quantity="other">Só as últimas %1$d sincronizações ficam guardadas neste celular: as mais antigas não estão nestes números.</item>
+    </plurals>
+    <string name="stats_local_note">Contado neste celular, a partir do histórico de sincronizações que o Songport já guarda. Nada é enviado, a não ser que você compartilhe o cartão.</string>
+    <string name="stats_empty_title">Ainda não há números</string>
+    <string name="stats_empty_body">Eles aparecem depois da sua primeira sincronização concluída, contados a partir do histórico guardado neste celular.</string>
+    <string name="stats_share_title">Compartilhe seus números</string>
+    <string name="stats_card_preview">Prévia do cartão para compartilhar</string>
 </resources>

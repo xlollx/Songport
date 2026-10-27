@@ -934,4 +934,56 @@
         <item quantity="many">%1$d из %2$d синхронизаций</item>
         <item quantity="other">%1$d из %2$d синхронизации</item>
     </plurals>
+    <string name="stats_title">Songport в цифрах</string>
+    <string name="stats_row_desc">Что ваши синхронизации уже сделали — в карточке, которой можно поделиться</string>
+    <string name="stats_hero_link">Ваши цифры</string>
+    <string name="stats_tracks_moved">Перенесённые треки</string>
+    <string name="stats_this_month">Перенесено за этот месяц</string>
+    <string name="stats_syncs_done">Завершённые синхронизации</string>
+    <string name="stats_services">Подключённые сервисы</string>
+    <string name="stats_match_rate">Доля совпадений</string>
+    <string name="stats_time_saved">Сэкономленное время (оценка)</string>
+    <string name="stats_top_route">Самый частый маршрут</string>
+    <string name="stats_longest">Самый длинный синхронизируемый плейлист</string>
+    <string name="stats_top_artists">Чаще всего добавляемые исполнители</string>
+    <plurals name="stats_since">
+        <item quantity="one">Синхронизаций: %1$d, начиная с %2$s</item>
+        <item quantity="few">Синхронизаций: %1$d, начиная с %2$s</item>
+        <item quantity="many">Синхронизаций: %1$d, начиная с %2$s</item>
+        <item quantity="other">Синхронизаций: %1$d, начиная с %2$s</item>
+    </plurals>
+    <string name="stats_card_since">с %1$s</string>
+    <plurals name="stats_n_syncs">
+        <item quantity="one">%1$d синхронизация</item>
+        <item quantity="few">%1$d синхронизации</item>
+        <item quantity="many">%1$d синхронизаций</item>
+        <item quantity="other">%1$d синхронизации</item>
+    </plurals>
+    <string name="stats_route_desc">из %1$s в %2$s</string>
+    <string name="stats_hours_short">%1$s ч</string>
+    <string name="stats_minutes_short">%1$s мин</string>
+    <plurals name="stats_time_note">
+        <item quantity="one">Сэкономленное время — оценка: %1$d секунда на перенесённый трек, примерно столько уходит, чтобы найти и добавить его вручную.</item>
+        <item quantity="few">Сэкономленное время — оценка: %1$d секунды на перенесённый трек, примерно столько уходит, чтобы найти и добавить его вручную.</item>
+        <item quantity="many">Сэкономленное время — оценка: %1$d секунд на перенесённый трек, примерно столько уходит, чтобы найти и добавить его вручную.</item>
+        <item quantity="other">Сэкономленное время — оценка: %1$d секунды на перенесённый трек, примерно столько уходит, чтобы найти и добавить его вручную.</item>
+    </plurals>
+    <string name="stats_match_note">Доля совпадений: треки, найденные в другом сервисе, из числа искомых, в последнем запуске каждой синхронизации.</string>
+    <plurals name="stats_artists_note">
+        <item quantity="one">Подсчитано по %1$d треку из недавних отчётов о синхронизации.</item>
+        <item quantity="few">Подсчитано по %1$d трекам из недавних отчётов о синхронизации; в старых запусках сохранялось только количество.</item>
+        <item quantity="many">Подсчитано по %1$d трекам из недавних отчётов о синхронизации; в старых запусках сохранялось только количество.</item>
+        <item quantity="other">Подсчитано по %1$d трека из недавних отчётов о синхронизации; в старых запусках сохранялось только количество.</item>
+    </plurals>
+    <plurals name="stats_history_cap">
+        <item quantity="one">На этом телефоне хранится только %1$d последняя синхронизация: более старые сюда не входят.</item>
+        <item quantity="few">На этом телефоне хранятся только %1$d последние синхронизации: более старые сюда не входят.</item>
+        <item quantity="many">На этом телефоне хранятся только %1$d последних синхронизаций: более старые сюда не входят.</item>
+        <item quantity="other">На этом телефоне хранятся только %1$d последних синхронизаций: более старые сюда не входят.</item>
+    </plurals>
+    <string name="stats_local_note">Подсчитано на этом телефоне по истории синхронизаций, которую Songport уже хранит. Ничего не отправляется, если вы сами не поделитесь карточкой.</string>
+    <string name="stats_empty_title">Цифр пока нет</string>
+    <string name="stats_empty_body">Они появятся после первой завершённой синхронизации и будут подсчитаны по истории на этом телефоне.</string>
+    <string name="stats_share_title">Поделитесь своими цифрами</string>
+    <string name="stats_card_preview">Предпросмотр карточки, которой можно поделиться</string>
 </resources>

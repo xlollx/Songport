@@ -906,4 +906,51 @@
         <item quantity="many">%1$d de %2$d sincronizaciones</item>
         <item quantity="other">%1$d de %2$d sincronizaciones</item>
     </plurals>
+    <string name="stats_title">Songport en números</string>
+    <string name="stats_row_desc">Lo que han hecho tus sincronizaciones hasta ahora, en una tarjeta para compartir</string>
+    <string name="stats_hero_link">Tus números</string>
+    <string name="stats_tracks_moved">Canciones movidas</string>
+    <string name="stats_this_month">Movidas este mes</string>
+    <string name="stats_syncs_done">Sincronizaciones completadas</string>
+    <string name="stats_services">Servicios conectados</string>
+    <string name="stats_match_rate">Tasa de coincidencia</string>
+    <string name="stats_time_saved">Tiempo ahorrado (estimación)</string>
+    <string name="stats_top_route">Ruta más usada</string>
+    <string name="stats_longest">Lista más larga sincronizada</string>
+    <string name="stats_top_artists">Artistas más añadidos</string>
+    <plurals name="stats_since">
+        <item quantity="one">De %1$d sincronización desde el %2$s</item>
+        <item quantity="many">De %1$d sincronizaciones desde el %2$s</item>
+        <item quantity="other">De %1$d sincronizaciones desde el %2$s</item>
+    </plurals>
+    <string name="stats_card_since">desde el %1$s</string>
+    <plurals name="stats_n_syncs">
+        <item quantity="one">%1$d sincronización</item>
+        <item quantity="many">%1$d sincronizaciones</item>
+        <item quantity="other">%1$d sincronizaciones</item>
+    </plurals>
+    <string name="stats_route_desc">de %1$s a %2$s</string>
+    <string name="stats_hours_short">%1$s h</string>
+    <string name="stats_minutes_short">%1$s min</string>
+    <plurals name="stats_time_note">
+        <item quantity="one">El tiempo ahorrado es una estimación: %1$d segundo por canción movida, más o menos lo que se tarda en buscar y añadir una a mano.</item>
+        <item quantity="many">El tiempo ahorrado es una estimación: %1$d segundos por canción movida, más o menos lo que se tarda en buscar y añadir una a mano.</item>
+        <item quantity="other">El tiempo ahorrado es una estimación: %1$d segundos por canción movida, más o menos lo que se tarda en buscar y añadir una a mano.</item>
+    </plurals>
+    <string name="stats_match_note">Tasa de coincidencia: las canciones encontradas en el otro servicio, sobre las buscadas, en la última ejecución de cada sincronización.</string>
+    <plurals name="stats_artists_note">
+        <item quantity="one">Contado sobre %1$d canción de los informes de sincronización recientes.</item>
+        <item quantity="many">Contado sobre %1$d canciones de los informes de sincronización recientes; las ejecuciones más antiguas solo guardaron el número.</item>
+        <item quantity="other">Contado sobre %1$d canciones de los informes de sincronización recientes; las ejecuciones más antiguas solo guardaron el número.</item>
+    </plurals>
+    <plurals name="stats_history_cap">
+        <item quantity="one">En este teléfono solo se guarda la última sincronización (%1$d): las anteriores no están en estos números.</item>
+        <item quantity="many">En este teléfono solo se guardan las últimas %1$d sincronizaciones: las anteriores no están en estos números.</item>
+        <item quantity="other">En este teléfono solo se guardan las últimas %1$d sincronizaciones: las anteriores no están en estos números.</item>
+    </plurals>
+    <string name="stats_local_note">Contado en este teléfono a partir del historial de sincronizaciones que Songport ya guarda. No se envía nada, salvo que compartas la tarjeta.</string>
+    <string name="stats_empty_title">Aún no hay números</string>
+    <string name="stats_empty_body">Aparecen después de tu primera sincronización completada, contados a partir del historial guardado en este teléfono.</string>
+    <string name="stats_share_title">Comparte tus números</string>
+    <string name="stats_card_preview">Vista previa de la tarjeta para compartir</string>
 </resources>

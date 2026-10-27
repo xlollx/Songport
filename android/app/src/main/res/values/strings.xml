@@ -905,4 +905,46 @@
         <item quantity="one">%1$d of %2$d sync</item>
         <item quantity="other">%1$d of %2$d syncs</item>
     </plurals>
+    <string name="stats_title">Songport in numbers</string>
+    <string name="stats_row_desc">What your syncs have done so far, as a card to share</string>
+    <string name="stats_hero_link">Your numbers</string>
+    <string name="stats_tracks_moved">Tracks moved</string>
+    <string name="stats_this_month">Moved this month</string>
+    <string name="stats_syncs_done">Syncs completed</string>
+    <string name="stats_services">Services connected</string>
+    <string name="stats_match_rate">Match rate</string>
+    <string name="stats_time_saved">Time saved (estimate)</string>
+    <string name="stats_top_route">Most used route</string>
+    <string name="stats_longest">Longest playlist kept in sync</string>
+    <string name="stats_top_artists">Most added artists</string>
+    <plurals name="stats_since">
+        <item quantity="one">From %1$d sync since %2$s</item>
+        <item quantity="other">From %1$d syncs since %2$s</item>
+    </plurals>
+    <string name="stats_card_since">since %1$s</string>
+    <plurals name="stats_n_syncs">
+        <item quantity="one">%1$d sync</item>
+        <item quantity="other">%1$d syncs</item>
+    </plurals>
+    <string name="stats_route_desc">%1$s to %2$s</string>
+    <string name="stats_hours_short">%1$s h</string>
+    <string name="stats_minutes_short">%1$s min</string>
+    <plurals name="stats_time_note">
+        <item quantity="one">Time saved is an estimate: %1$d second per track moved, about what it takes to find and add one by hand.</item>
+        <item quantity="other">Time saved is an estimate: %1$d seconds per track moved, about what it takes to find and add one by hand.</item>
+    </plurals>
+    <string name="stats_match_note">Match rate: the tracks found on the other service, out of those looked for, in each sync\'s latest run.</string>
+    <plurals name="stats_artists_note">
+        <item quantity="one">Counted over %1$d track listed in recent sync reports.</item>
+        <item quantity="other">Counted over %1$d tracks listed in recent sync reports; older runs kept only the count.</item>
+    </plurals>
+    <plurals name="stats_history_cap">
+        <item quantity="one">Only the latest sync (%1$d) is kept on this phone: older ones are not in these numbers.</item>
+        <item quantity="other">Only the latest %1$d syncs are kept on this phone: older ones are not in these numbers.</item>
+    </plurals>
+    <string name="stats_local_note">Counted on this phone from the sync history Songport already keeps. Nothing is sent anywhere unless you share the card.</string>
+    <string name="stats_empty_title">No numbers yet</string>
+    <string name="stats_empty_body">They appear after your first completed sync, counted from the history kept on this phone.</string>
+    <string name="stats_share_title">Share your numbers</string>
+    <string name="stats_card_preview">Preview of the card to share</string>
 </resources>

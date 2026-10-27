@@ -54,4 +54,6 @@
     <string name="settings_unplayable_desc">Once a week Trackhop looks through your playlists and tells you when a track can no longer be played. Nothing is changed by itself.</string>
     <string name="soundcloud_player_changed">SoundCloud changed its web player; Trackhop needs an update</string>
     <string name="shazam_share_hint">Shazam a lot? In Shazam\'s settings, connect Spotify or Apple Music: every song you Shazam lands in a “My Shazam Tracks” playlist. Trackhop can keep it in sync on any of your services.</string>
+    <string name="stats_title">Trackhop in numbers</string>
+    <string name="stats_local_note">Counted on this phone from the sync history Trackhop already keeps. Nothing is sent anywhere unless you share the card.</string>
 </resources>

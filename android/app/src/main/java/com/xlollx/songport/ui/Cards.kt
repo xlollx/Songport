@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
@@ -17,6 +18,9 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
+import androidx.compose.ui.graphics.asAndroidPath
+import androidx.compose.ui.graphics.vector.PathParser
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.xlollx.songport.R
 import com.xlollx.songport.model.Track
@@ -54,6 +58,24 @@ object Cards {
 
     /** What the poster shows. [qr] is the playlist's web address, null when the service has none. */
     class PosterCard(val title: String, val owner: String, val service: String, val trackCount: Int, val durationMs: Long, val covers: List<Bitmap?>, val qr: String?)
+
+    /** A service on the stats card: its name, its colour (ARGB) and the id that picks its glyph. */
+    class Mark(val name: String, val color: Int, val serviceId: String?)
+
+    /**
+     * "Songport in numbers": the headline figure with its label and period, up to three more
+     * figures (value, label), and the route used most with its caption. Everything is already
+     * formatted and translated: the renderer only lays it out.
+     */
+    class StatsCard(
+        val title: String,
+        val headline: String,
+        val headlineLabel: String,
+        val since: String?,
+        val figures: List<Pair<String, String>>,
+        val routeLabel: String,
+        val route: Pair<Mark, Mark>?,
+    )
 
     // ------------------------------------------------------------------ fetching covers
 
@@ -124,14 +146,16 @@ object Cards {
         c.drawRoundRect(r, radius, radius, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = PANEL_LINE; style = Paint.Style.STROKE; strokeWidth = 2f })
     }
 
-    private fun footer(c: Canvas, w: Int, h: Int) {
+    /** The app's name (the build's own: Trackhop on Google Play) and the site, along the bottom edge. */
+    private fun footer(ctx: Context, c: Canvas, w: Int, h: Int) {
+        val name = ctx.getString(R.string.app_name)
         val p = paint(Color.WHITE, 30f, alpha = 200)
         val brand = paint(Color.WHITE, 30f, bold = true, alpha = 230)
         val text = "  ·  $SITE"
-        val total = brand.measureText("Songport") + p.measureText(text)
+        val total = brand.measureText(name) + p.measureText(text)
         val x = (w - total) / 2
-        c.drawText("Songport", x, h - 56f, brand)
-        c.drawText(text, x + brand.measureText("Songport"), h - 56f, p)
+        c.drawText(name, x, h - 56f, brand)
+        c.drawText(text, x + brand.measureText(name), h - 56f, p)
     }
 
     /** One line, cut with an ellipsis to [maxWidth]. */
@@ -221,7 +245,7 @@ object Cards {
             val label = ctx.getString(R.string.card_compat_artists) + "  " + card.result.sharedArtists.take(6).joinToString("  ·  ")
             block(c, label, margin, y, paint(Color.WHITE, 30f, alpha = 210), (w - 2 * margin).toInt(), 2, Layout.Alignment.ALIGN_CENTER)
         }
-        footer(c, w, h)
+        footer(ctx, c, w, h)
         return bmp
     }
 
@@ -277,7 +301,131 @@ object Cards {
             val hintW = (tr.left - margin - 30f).toInt()
             if (hintW > 200) block(c, ctx.getString(R.string.card_poster_scan, card.service), margin, tr.bottom - 80f, hint, hintW, 2)
         }
-        footer(c, w, h)
+        footer(ctx, c, w, h)
+        return bmp
+    }
+
+    /** [p] at the largest size up to [size] at which [text] fits in [maxWidth]. */
+    private fun fit(text: String, p: TextPaint, size: Float, maxWidth: Float): TextPaint {
+        p.textSize = size
+        while (p.textSize > size * 0.4f && p.measureText(text) > maxWidth) p.textSize *= 0.94f
+        return p
+    }
+
+    /** The Songport mark (the app's own vector), in white, centred on [cx]. */
+    private fun brandMark(ctx: Context, c: Canvas, cx: Float, top: Float, side: Float) {
+        val d = ContextCompat.getDrawable(ctx, R.drawable.ic_brand_mark)?.mutate() ?: return
+        d.setTint(Color.WHITE)
+        d.setBounds((cx - side / 2).toInt(), top.toInt(), (cx + side / 2).toInt(), (top + side).toInt())
+        d.draw(c)
+    }
+
+    /** A service's mark as the app draws it ([ServiceLogo]): the glyph, or the initial, on a disc of its colour. */
+    private fun mark(c: Canvas, m: Mark, cx: Float, cy: Float, d: Float) {
+        c.drawCircle(cx, cy, d / 2, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = m.color })
+        // A near-black mark (TIDAL) gets a light edge, so it does not sink into the dark corner.
+        if (Color.luminance(m.color) < 0.03f) {
+            c.drawCircle(cx, cy, d / 2, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = PANEL_LINE; style = Paint.Style.STROKE; strokeWidth = 3f })
+        }
+        val fg = if (Color.luminance(m.color) > 0.45f) INK else Color.WHITE
+        val glyph = ServiceLogos.pathData(m.serviceId)?.let { data ->
+            runCatching { PathParser().parsePathString(data).toPath().asAndroidPath() }.getOrNull()
+        }
+        if (glyph != null) {
+            val side = d * 0.56f
+            glyph.transform(Matrix().apply { setScale(side / 24f, side / 24f); postTranslate(cx - side / 2, cy - side / 2) })
+            c.drawPath(glyph, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = fg })
+        } else {
+            val p = paint(fg, d * 0.46f, bold = true)
+            p.textAlign = Paint.Align.CENTER
+            c.drawText(m.name.firstOrNull()?.uppercaseChar()?.toString() ?: "?", cx, cy + p.textSize * 0.36f, p)
+        }
+    }
+
+    fun stats(ctx: Context, card: StatsCard, format: Format): Bitmap {
+        val w = format.width; val h = format.height
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val c = Canvas(bmp)
+        background(c, w, h)
+        val story = format == Format.STORY
+        val margin = 72f
+        val inner = w - 2 * margin
+        val cx = w / 2f
+        // The mark and the title.
+        val markSide = if (story) 124f else 84f
+        val markTop = if (story) 150f else 60f
+        brandMark(ctx, c, cx, markTop, markSide)
+        var y = markTop + markSide + (if (story) 72f else 54f)
+        val eyebrow = paint(Color.WHITE, if (story) 38f else 32f, bold = true, alpha = 225).apply { letterSpacing = 0.08f }
+        line(c, card.title.uppercase(), cx, y, eyebrow, inner, Paint.Align.CENTER)
+        // The headline figure, as big as it fits.
+        y += if (story) 340f else 210f
+        val big = fit(card.headline, paint(Color.WHITE, 10f, bold = true), if (story) 270f else 190f, inner)
+        big.textAlign = Paint.Align.CENTER
+        c.drawText(card.headline, cx, y, big)
+        y += if (story) 100f else 66f
+        line(c, card.headlineLabel, cx, y, paint(Color.WHITE, if (story) 54f else 42f, bold = true), inner, Paint.Align.CENTER)
+        card.since?.let {
+            y += if (story) 64f else 48f
+            line(c, it, cx, y, paint(Color.WHITE, if (story) 36f else 30f, alpha = 215), inner, Paint.Align.CENTER)
+        }
+        // Up to three more figures, side by side on glass panels.
+        val figures = card.figures.take(3)
+        if (figures.isNotEmpty()) {
+            y += if (story) 100f else 44f
+            val gap = 24f
+            val pw = (inner - gap * (figures.size - 1)) / figures.size
+            val ph = if (story) 300f else 210f
+            figures.forEachIndexed { i, (value, label) ->
+                val left = margin + i * (pw + gap)
+                val r = RectF(left, y, left + pw, y + ph)
+                panel(c, r)
+                val vp = fit(value, paint(Color.WHITE, 10f, bold = true), if (story) 84f else 64f, pw - 40f)
+                vp.textAlign = Paint.Align.CENTER
+                c.drawText(value, r.centerX(), y + (if (story) 130f else 92f), vp)
+                block(c, label, left + 20f, y + (if (story) 166f else 118f), paint(Color.WHITE, if (story) 30f else 26f, alpha = 215), (pw - 40f).toInt(), if (story) 3 else 2, Layout.Alignment.ALIGN_CENTER)
+            }
+            y += ph
+        }
+        // The route used most: the two services' marks with an arrow between them.
+        card.route?.let { (from, to) ->
+            val caption = paint(Color.WHITE, if (story) 32f else 28f, bold = true, alpha = 210).apply { letterSpacing = 0.06f }
+            val arrow = paint(Color.WHITE, if (story) 84f else 56f, bold = true, alpha = 230)
+            arrow.textAlign = Paint.Align.CENTER
+            if (story) {
+                y += 135f
+                line(c, card.routeLabel.uppercase(), cx, y, caption, inner, Paint.Align.CENTER)
+                val d = 190f
+                val cy = y + 60f + d / 2
+                val dx = 220f
+                mark(c, from, cx - dx, cy, d)
+                mark(c, to, cx + dx, cy, d)
+                c.drawText("→", cx, cy + arrow.textSize * 0.32f, arrow)
+                val names = paint(Color.WHITE, 36f, bold = true)
+                line(c, from.name, cx - dx, cy + d / 2 + 70f, names, 2 * dx - 40f, Paint.Align.CENTER)
+                line(c, to.name, cx + dx, cy + d / 2 + 70f, names, 2 * dx - 40f, Paint.Align.CENTER)
+            } else {
+                // One row: mark, name, arrow, mark, name, centred.
+                y += 56f
+                line(c, card.routeLabel.uppercase(), cx, y, caption, inner, Paint.Align.CENTER)
+                val d = 92f
+                val cy = y + 34f + d / 2
+                val names = paint(Color.WHITE, 32f, bold = true)
+                val arrowW = 90f
+                val nameMax = (inner - 2 * (d + 16f) - arrowW) / 2
+                val a = TextUtils.ellipsize(from.name, names, nameMax, TextUtils.TruncateAt.END).toString()
+                val b = TextUtils.ellipsize(to.name, names, nameMax, TextUtils.TruncateAt.END).toString()
+                val total = 2 * (d + 16f) + names.measureText(a) + names.measureText(b) + arrowW
+                var x = (w - total) / 2
+                val base = cy + names.textSize * 0.36f
+                mark(c, from, x + d / 2, cy, d); x += d + 16f
+                c.drawText(a, x, base, names); x += names.measureText(a)
+                c.drawText("→", x + arrowW / 2, cy + arrow.textSize * 0.32f, arrow); x += arrowW
+                mark(c, to, x + d / 2, cy, d); x += d + 16f
+                c.drawText(b, x, base, names)
+            }
+        }
+        footer(ctx, c, w, h)
         return bmp
     }
 

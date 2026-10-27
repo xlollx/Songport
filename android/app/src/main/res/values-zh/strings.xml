@@ -889,4 +889,41 @@
     <plurals name="filter_shown">
         <item quantity="other">%2$d 个同步中的 %1$d 个</item>
     </plurals>
+    <string name="stats_title">Songport 数据一览</string>
+    <string name="stats_row_desc">你的同步至今的成果，做成可分享的卡片</string>
+    <string name="stats_hero_link">查看你的数据</string>
+    <string name="stats_tracks_moved">已迁移歌曲</string>
+    <string name="stats_this_month">本月迁移</string>
+    <string name="stats_syncs_done">已完成同步</string>
+    <string name="stats_services">已连接服务</string>
+    <string name="stats_match_rate">匹配率</string>
+    <string name="stats_time_saved">节省的时间（估算）</string>
+    <string name="stats_top_route">最常用路线</string>
+    <string name="stats_longest">同步中最长的播放列表</string>
+    <string name="stats_top_artists">添加最多的艺人</string>
+    <plurals name="stats_since">
+        <item quantity="other">自 %2$s 以来的 %1$d 次同步</item>
+    </plurals>
+    <string name="stats_card_since">自 %1$s 以来</string>
+    <plurals name="stats_n_syncs">
+        <item quantity="other">%1$d 次同步</item>
+    </plurals>
+    <string name="stats_route_desc">从 %1$s 到 %2$s</string>
+    <string name="stats_hours_short">%1$s 小时</string>
+    <string name="stats_minutes_short">%1$s 分钟</string>
+    <plurals name="stats_time_note">
+        <item quantity="other">节省的时间为估算值：每迁移一首歌按 %1$d 秒计算，大约是手动查找并添加一首所需的时间。</item>
+    </plurals>
+    <string name="stats_match_note">匹配率：每个同步最近一次运行中，在另一服务上找到的歌曲占所查找歌曲的比例。</string>
+    <plurals name="stats_artists_note">
+        <item quantity="other">基于最近同步报告中列出的 %1$d 首歌曲统计；较早的运行只保存了数量。</item>
+    </plurals>
+    <plurals name="stats_history_cap">
+        <item quantity="other">此手机只保留最近 %1$d 次同步，更早的不计入这些数据。</item>
+    </plurals>
+    <string name="stats_local_note">根据 Songport 已保存的同步记录在此手机上统计。除非你分享卡片，否则不会发送任何内容。</string>
+    <string name="stats_empty_title">还没有数据</string>
+    <string name="stats_empty_body">完成第一次同步后，会根据此手机上的记录统计并显示。</string>
+    <string name="stats_share_title">分享你的数据</string>
+    <string name="stats_card_preview">待分享卡片的预览</string>
 </resources>

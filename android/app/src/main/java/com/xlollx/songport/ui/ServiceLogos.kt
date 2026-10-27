@@ -54,20 +54,23 @@ object ServiceLogos {
 
     private val cache = HashMap<String, ImageVector>()
 
+    /** The glyph's SVG path (24×24 viewport) for a service id, or null: the shareable cards draw it on a Canvas. */
+    fun pathData(serviceId: String?): String? = when (serviceId) {
+        "spotify", "spotify_bridge" -> SPOTIFY
+        "apple", "apple_bridge" -> APPLE_MUSIC
+        "ytm" -> YOUTUBE_MUSIC
+        "youtube" -> YOUTUBE
+        "tidal" -> TIDAL
+        "plex" -> PLEX
+        "jellyfin" -> JELLYFIN
+        "lastfm" -> LASTFM
+        "soundcloud" -> SOUNDCLOUD
+        else -> null
+    }
+
     /** The brand glyph for a service id (bridge and web variants share their brand's), or null. */
     fun glyph(serviceId: String?): ImageVector? {
-        val path = when (serviceId) {
-            "spotify", "spotify_bridge" -> SPOTIFY
-            "apple", "apple_bridge" -> APPLE_MUSIC
-            "ytm" -> YOUTUBE_MUSIC
-            "youtube" -> YOUTUBE
-            "tidal" -> TIDAL
-            "plex" -> PLEX
-            "jellyfin" -> JELLYFIN
-            "lastfm" -> LASTFM
-            "soundcloud" -> SOUNDCLOUD
-            else -> return null
-        }
+        val path = pathData(serviceId) ?: return null
         return synchronized(cache) {
             cache.getOrPut(serviceId!!) {
                 ImageVector.Builder(serviceId, 24.dp, 24.dp, 24f, 24f)

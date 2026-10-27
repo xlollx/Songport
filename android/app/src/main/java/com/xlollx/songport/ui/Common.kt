@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -294,7 +295,7 @@ fun AppTopBar(title: String, showBrand: Boolean = true, actions: @Composable Row
  * lives. White text at full alpha, and the gradient ends on a deep magenta, so it reads at AA.
  */
 @Composable
-fun HeroHeader(title: String, subtitle: String, content: (@Composable RowScope.() -> Unit)? = null) {
+fun HeroHeader(title: String, subtitle: String, link: String? = null, onLink: (() -> Unit)? = null, content: (@Composable RowScope.() -> Unit)? = null) {
     Box(
         Modifier.fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
@@ -309,6 +310,17 @@ fun HeroHeader(title: String, subtitle: String, content: (@Composable RowScope.(
             }
             Spacer(Modifier.height(4.dp))
             Text(subtitle, color = Color.White, style = MaterialTheme.typography.bodyMedium)
+            // A quiet way on from the subtitle ("Your numbers ›"): a text link, not one more button.
+            if (link != null && onLink != null) {
+                Row(
+                    Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(50))
+                        .clickable(role = Role.Button, onClick = onLink).padding(end = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(link, color = Color.White, style = MaterialTheme.typography.labelLarge)
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = Color.White, modifier = Modifier.size(20.dp))
+                }
+            }
             if (content != null) {
                 Spacer(Modifier.height(16.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, content = content)
