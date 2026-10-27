@@ -425,7 +425,8 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
         pendingImport = null
         val result = withContext(Dispatchers.IO) {
             runCatching {
-                val text = ctx.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() } ?: ""
+                // Bytes, not a UTF-8 reader: a BOM or a Windows-1252 .m3u decodes as written.
+                val text = ctx.contentResolver.openInputStream(uri)?.use { com.xlollx.songport.sync.PlaylistFiles.decode(it.readBytes()) } ?: ""
                 LocalFilesProvider.importFile(ctx, displayName(ctx, uri), text)
             }
         }

@@ -197,4 +197,69 @@ class PlaylistFilesTest {
         assertEquals(listOf("The Daily", "Radiolab & Co"), t.map { it.title })
         assertTrue(t.all { it.kind == Track.KIND_PODCAST })
     }
+
+    // ---------------------------------------------------------------- files as players write them
+
+    private val names = listOf("Metallica – Battery", "Beyoncé – Café Noir", "Måneskin – Home")
+    private fun named(ts: List<Track>) = ts.map { "${it.artists.joinToString()} – ${it.title}" }
+
+    @Test fun m3uWithBomAndCrlf() {
+        val text = "\uFEFF#EXTM3U\r\n#EXTINF:8,Metallica - Battery\r\nmusic/a.mp3\r\n#EXTINF:8,Beyoncé - Café Noir\r\nmusic/b.flac\r\n#EXTINF:8,Måneskin - Home\r\nmusic/c.mp3\r\n"
+        val t = PlaylistFiles.parse("list.m3u8", text)
+        assertEquals(names, named(t))
+        assertEquals(listOf(8_000L, 8_000L, 8_000L), t.map { it.durationMs })
+        // Without #EXTM3U the BOM used to become a track of its own, or stick to the first title.
+        assertEquals(listOf("Battery", "Home"), PlaylistFiles.parse("list.txt", "\uFEFFMetallica - Battery\nMåneskin - Home\n").map { it.title })
+    }
+
+    @Test fun m3uWithPathsOnly() {
+        val text = listOf(
+            "Metallica/Master of Puppets/01 Battery.mp3",                                  // relative, the library layout
+            "/storage/emulated/0/Music/Beyoncé/Renaissance/01 - Café Noir.flac",           // absolute
+            "C:\\Users\\me\\Music\\Måneskin\\Teatro d'ira\\03. Home.mp3",                // Windows
+            "file:///home/me/Music/Daft%20Punk/Discovery/02%20Digital%20Love.flac",           // a file: URI, percent-encoded
+            "/storage/emulated/0/Music/03 Something.mp3",                                    // no artist folder: no artist
+            "/storage/emulated/0/Download/1-07 Queen - Bohemian Rhapsody.mp3",               // disc-track, artist in the name
+            "Music/50 Cent - In Da Club.mp3",                                                 // a number that is the artist
+            "Music/1979.mp3",                                                                 // a number that is the title
+        ).joinToString("\n")
+        assertEquals(
+            listOf(
+                "Metallica – Battery", "Beyoncé – Café Noir", "Måneskin – Home", "Daft Punk – Digital Love", " – Something",
+                "Queen – Bohemian Rhapsody", "50 Cent – In Da Club", " – 1979",
+            ),
+            named(PlaylistFiles.parse("list.m3u", text)),
+        )
+        assertEquals("Master of Puppets", PlaylistFiles.parse("x.m3u", "Metallica/Master of Puppets/01 Battery.mp3")[0].album)
+    }
+
+    @Test fun pls() {
+        val text = "[playlist]\r\nFile1=Metallica\\Master of Puppets\\01 Battery.mp3\r\nLength1=312\r\n" +
+            "File2=http://radio.example/stream\r\nTitle2=Beyoncé - Café Noir\r\nLength2=-1\r\n" +
+            "Title3=Måneskin - Home\r\nFile3=c.mp3\r\nNumberOfEntries=3\r\nVersion=2\r\n"
+        assertEquals(PlaylistFiles.Format.PLS, PlaylistFiles.detect("x.pls", text))
+        assertEquals(PlaylistFiles.Format.PLS, PlaylistFiles.detect("x", text))
+        val t = PlaylistFiles.parse("radio.pls", text)
+        assertEquals(names, named(t))
+        assertEquals(listOf(312_000L, 0L, 0L), t.map { it.durationMs })
+    }
+
+    @Test fun decodesThePickedFile() {
+        val s = "Beyoncé - Café Noir\n"
+        assertEquals(s, PlaylistFiles.decode(s.toByteArray()))
+        assertEquals(s, PlaylistFiles.decode(byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte()) + s.toByteArray()))
+        assertEquals(s, PlaylistFiles.decode(byteArrayOf(0xFF.toByte(), 0xFE.toByte()) + s.toByteArray(Charsets.UTF_16LE)))
+        // A plain .m3u from a Windows player: not UTF-8.
+        assertEquals(s, PlaylistFiles.decode(s.toByteArray(charset("windows-1252"))))
+    }
+
+    @Test fun m3uExportReadsBack() {
+        val tracks = listOf(
+            Track("1", "Énergie (feat. Pharrell)", listOf("Beyoncé"), "", 8_000),
+            Track("2", "Orion (Remastered 2017)", listOf("Metallica"), "", 8_000),
+        )
+        val back = PlaylistFiles.parse("x.m3u8", PlaylistFiles.decode(PlaylistFiles.toM3u(tracks).toByteArray()))
+        assertEquals(named(tracks), named(back))
+        assertEquals(listOf(8_000L, 8_000L), back.map { it.durationMs })
+    }
 }

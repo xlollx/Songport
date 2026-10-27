@@ -36,6 +36,9 @@ object CsvCodec {
         val iAlbum = col(ALBUM_KEYS)
         val iDur = col(DURATION_KEYS)
         val iIsrc = col(ISRC_KEYS)
+        // "duration_ms" (ours, Exportify's "Duration (ms)") is milliseconds whatever the size: an 8-second
+        // interlude is 8000 ms, not 8000 seconds.
+        val inMs = iDur != null && header[iDur].endsWith("ms")
         // Senza intestazione riconoscibile: assumiamo title,artist,album,duration,isrc.
         val hasHeader = iTitle != null
         val body = if (hasHeader) rows.drop(1) else rows
@@ -46,7 +49,8 @@ object CsvCodec {
             if (title.isEmpty()) continue
             val artist = if (hasHeader) at(iArtist) else r.getOrNull(1)?.trim() ?: ""
             val album = if (hasHeader) at(iAlbum) else r.getOrNull(2)?.trim() ?: ""
-            val dur = parseDuration(if (hasHeader) at(iDur) else r.getOrNull(3)?.trim() ?: "")
+            val rawDur = if (hasHeader) at(iDur) else r.getOrNull(3)?.trim() ?: ""
+            val dur = if (inMs) rawDur.toDoubleOrNull()?.toLong() ?: parseDuration(rawDur) else parseDuration(rawDur)
             val isrc = (if (hasHeader) at(iIsrc) else r.getOrNull(4)?.trim() ?: "").ifEmpty { null }
             out += withStableId(Track(id = "", title = title, artists = splitArtists(artist), album = album, durationMs = dur, isrc = isrc))
         }

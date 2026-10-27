@@ -52,4 +52,13 @@ class CsvCodecTest {
         assertEquals("My_ Playlist", CsvCodec.safeName("My/ Playlist"))
         assertEquals("playlist", CsvCodec.safeName("   "))
     }
+
+    @Test fun shortTracksKeepTheirMilliseconds() {
+        // An 8-second interlude in our own file is 8000 ms, not 8000 seconds (it then matched nothing).
+        val parsed = CsvCodec.parse(CsvCodec.encode(listOf(Track("1", "Intro", listOf("A"), "", 8_000))))
+        assertEquals(8_000L, parsed[0].durationMs)
+        assertEquals(4_500L, CsvCodec.parse("Track Name,Artist Name(s),Duration (ms)\nIntro,A,4500\n")[0].durationMs)
+        // Without a unit in the header the old guess stays: small numbers are seconds.
+        assertEquals(240_000L, CsvCodec.parse("title,artist,duration\nX,A,240\n")[0].durationMs)
+    }
 }

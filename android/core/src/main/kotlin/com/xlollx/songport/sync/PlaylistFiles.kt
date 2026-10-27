@@ -26,7 +26,7 @@ import kotlinx.serialization.json.put
  */
 object PlaylistFiles {
 
-    enum class Format { CSV, M3U, ITUNES_XML, XSPF, OPML, JSON, TEXT }
+    enum class Format { CSV, M3U, PLS, ITUNES_XML, XSPF, OPML, JSON, TEXT }
 
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
@@ -41,6 +41,7 @@ object PlaylistFiles {
         val head = text.take(4000).trimStart().removePrefix("﻿")
         return when {
             head.startsWith("#EXTM3U") || name.endsWith(".m3u") || name.endsWith(".m3u8") -> Format.M3U
+            name.endsWith(".pls") || head.startsWith("[playlist]", ignoreCase = true) -> Format.PLS
             name.endsWith(".xspf") || (head.startsWith("<") && head.contains("xspf.org")) -> Format.XSPF
             name.endsWith(".opml") || (head.startsWith("<") && head.contains("<opml", ignoreCase = true)) -> Format.OPML
             head.contains("<plist") || (name.endsWith(".xml") && head.startsWith("<")) -> Format.ITUNES_XML
@@ -52,8 +53,29 @@ object PlaylistFiles {
         }
     }
 
-    fun parse(fileName: String, text: String): List<Track> = when (detect(fileName, text)) {
+    /**
+     * A picked file's bytes as text: UTF-8 (a BOM is dropped), UTF-16 with a BOM, and otherwise
+     * Windows-1252, what Windows players write in a plain .m3u (where "Beyoncé" is not valid UTF-8).
+     */
+    fun decode(bytes: ByteArray): String {
+        fun starts(vararg b: Int) = bytes.size >= b.size && b.indices.all { bytes[it] == b[it].toByte() }
+        return when {
+            starts(0xEF, 0xBB, 0xBF) -> String(bytes, 3, bytes.size - 3, Charsets.UTF_8)
+            starts(0xFF, 0xFE) -> String(bytes, 2, bytes.size - 2, Charsets.UTF_16LE)
+            starts(0xFE, 0xFF) -> String(bytes, 2, bytes.size - 2, Charsets.UTF_16BE)
+            else -> try {
+                Charsets.UTF_8.newDecoder().decode(java.nio.ByteBuffer.wrap(bytes)).toString()
+            } catch (e: java.nio.charset.CharacterCodingException) {
+                String(bytes, charset("windows-1252"))
+            }
+        }
+    }
+
+    fun parse(fileName: String, text: String): List<Track> = parseClean(fileName, text.removePrefix("\uFEFF"))
+
+    private fun parseClean(fileName: String, text: String): List<Track> = when (detect(fileName, text)) {
         Format.M3U -> parseM3u(text)
+        Format.PLS -> parsePls(text)
         Format.ITUNES_XML -> parseItunesXml(text)
         Format.XSPF -> parseXspf(text)
         Format.OPML -> parseOpml(text)
@@ -79,22 +101,70 @@ object PlaylistFiles {
                 pendingLabel = m.groupValues[2].trim().ifBlank { null }
                 continue
             }
-            val label = pendingLabel ?: fileNameLabel(line)
-            val (artist, title) = splitArtistTitle(label)
-            if (title.isNotBlank()) {
-                out += CsvCodec.withStableId(
-                    Track(id = "", title = title, artists = artist, durationMs = pendingSeconds * 1000)
-                )
-            }
+            val t = pendingLabel?.let { label -> splitArtistTitle(label).let { (artist, title) -> Track(id = "", title = title, artists = artist) } }
+                ?: fromPath(line)
+            if (t.title.isNotBlank()) out += CsvCodec.withStableId(t.copy(durationMs = pendingSeconds * 1000))
             pendingSeconds = 0
             pendingLabel = null
         }
         return out
     }
 
-    private fun fileNameLabel(path: String): String =
-        path.substringAfterLast('/').substringAfterLast('\\').substringBeforeLast('.')
-            .replace('_', ' ').trim()
+    // ---------------------------------------------------------------- PLS
+
+    private val PLS_ENTRY = Regex("""^(file|title|length)(\d+)\s*=\s*(.*)$""", RegexOption.IGNORE_CASE)
+
+    /** PLS (Winamp, VLC, Clementine): File1=…, Title1=Artist - Title, Length1=seconds. */
+    fun parsePls(text: String): List<Track> {
+        val entries = java.util.TreeMap<Int, MutableMap<String, String>>()
+        for (raw in text.lineSequence()) {
+            val m = PLS_ENTRY.find(raw.trim()) ?: continue
+            entries.getOrPut(m.groupValues[2].toInt()) { HashMap() }[m.groupValues[1].lowercase()] = m.groupValues[3].trim()
+        }
+        return entries.values.mapNotNull { e ->
+            val t = e["title"]?.takeIf { it.isNotBlank() }?.let { label -> splitArtistTitle(label).let { (artist, title) -> Track(id = "", title = title, artists = artist) } }
+                ?: e["file"]?.let { fromPath(it) } ?: return@mapNotNull null
+            val secs = e["length"]?.toLongOrNull()?.takeIf { it > 0 } ?: 0
+            t.takeIf { it.title.isNotBlank() }?.let { CsvCodec.withStableId(it.copy(durationMs = secs * 1000)) }
+        }
+    }
+
+    /** Folder names that are a music root, not an artist or an album. */
+    private val ROOT_FOLDERS = setOf(
+        "music", "my music", "musik", "musique", "musica", "música", "muziek", "mp3", "audio", "songs", "download", "downloads",
+        "storage", "emulated", "sdcard", "media", "mnt", "home", "users", "volumes", "various artists", "various", "va", "compilations",
+    )
+    /** What comes before the folders: "http://host", "file://", "file:", "C:". */
+    private val URL_OR_DRIVE = Regex("""^(?:[A-Za-z][\w+.-]*://[^/]*|file:|[A-Za-z]:(?=/))""")
+    // The track number a file name starts with: "01 - ", "01. ", "1-01-" always; "01 " before
+    // "Artist - Title" only when zero-padded ("50 Cent - …" is an artist); "12 " before a bare title.
+    private val NUMBER_DASH = Regex("""^(?:\d{1,2}[-.])?\d{1,3}\s*(?:[-.)]\s+|-(?!\d))(?=.*\p{L})""")
+    private val PADDED_NUMBER = Regex("""^(?:\d{1,2}[-.])?0\d\s+(?=.*\p{L})""")
+    private val NUMBER = Regex("""^(?:\d{1,2}[-.])?\d{1,3}\s+(?=.*\p{L})""")
+
+    private fun withoutTrackNumber(name: String): String = when {
+        NUMBER_DASH.containsMatchIn(name) -> NUMBER_DASH.replace(name, "")
+        DASH.containsMatchIn(name) -> PADDED_NUMBER.replace(name, "")
+        else -> NUMBER.replace(name, "")
+    }.trim()
+
+    /**
+     * A track from a path without #EXTINF: "Artist - Title.mp3" as named, or the usual library layout
+     * Artist/Album/01 Title.mp3, relative or absolute, a file: URI or percent-encoded.
+     */
+    fun fromPath(path: String): Track {
+        val p = (if (path.contains("://") || path.startsWith("file:")) runCatching { java.net.URLDecoder.decode(path.replace("+", "%2B"), "UTF-8") }.getOrDefault(path) else path)
+            .replace('\\', '/').replace(URL_OR_DRIVE, "")
+        val parts = p.split('/').filter { it.isNotBlank() }
+        val name = withoutTrackNumber(parts.lastOrNull().orEmpty().substringBeforeLast('.').replace('_', ' ').trim())
+        val (artists, title) = splitArtistTitle(name)
+        if (artists.isNotEmpty() || parts.size < 3) return Track(id = "", title = title, artists = artists)
+        val album = parts[parts.size - 2]
+        val artist = parts[parts.size - 3]
+        val generic = { f: String -> f.lowercase() in ROOT_FOLDERS || f.all { it.isDigit() || it == ':' } }
+        if (generic(album) || generic(artist)) return Track(id = "", title = title)
+        return Track(id = "", title = title, artists = listOf(artist), album = album)
+    }
 
     fun toM3u(tracks: List<Track>): String = buildString {
         append("#EXTM3U\r\n")
