@@ -1,0 +1,1 @@
+Self-hosted servers: Airsonic-Advanced and Gonic now work, Ampache can remove a playlist's first track, Plex search finds songs, older Jellyfin (10.8) can rename playlists and find accented titles. Playlist files: M3U with BOM, path-only M3U, PLS and non-UTF-8 files are read correctly.

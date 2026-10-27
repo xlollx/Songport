@@ -1,0 +1,1 @@
+自建服务器：Airsonic-Advanced 和 Gonic 现在可用，Ampache 可以移除歌单的第一首歌，Plex 搜索能找到歌曲，旧版 Jellyfin（10.8）可以重命名歌单并找到带重音的标题。歌单文件：带 BOM 的 M3U、只有路径的 M3U、PLS 以及非 UTF-8 文件都能正确读取。

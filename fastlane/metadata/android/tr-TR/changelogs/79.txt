@@ -1,0 +1,1 @@
+Kendi sunucularınız: Airsonic-Advanced ve Gonic artık çalışıyor, Ampache bir çalma listesinin ilk şarkısını kaldırabiliyor, Plex araması şarkıları buluyor, eski Jellyfin (10.8) çalma listelerini yeniden adlandırabiliyor ve aksanlı başlıkları buluyor. Çalma listesi dosyaları: BOM'lu M3U, yalnızca yol içeren M3U, PLS ve UTF-8 olmayan dosyalar doğru okunuyor.

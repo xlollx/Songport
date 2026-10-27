@@ -1,0 +1,1 @@
+Eigene Server: Airsonic-Advanced und Gonic funktionieren jetzt, Ampache kann den ersten Titel einer Playlist entfernen, die Plex-Suche findet Titel, älteres Jellyfin (10.8) kann Playlists umbenennen und Titel mit Akzenten finden. Playlist-Dateien: M3U mit BOM, M3U nur mit Pfaden, PLS und Nicht-UTF-8-Dateien werden richtig gelesen.

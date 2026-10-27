@@ -1,0 +1,1 @@
+Servidores propios: ahora funcionan Airsonic-Advanced y Gonic, Ampache puede quitar la primera canción de una playlist, la búsqueda de Plex encuentra canciones y Jellyfin 10.8 puede renombrar playlists y encontrar títulos con tildes. Archivos de playlist: se leen bien M3U con BOM, M3U solo con rutas, PLS y archivos que no son UTF-8.

@@ -1,0 +1,1 @@
+Własne serwery: działają teraz Airsonic-Advanced i Gonic, Ampache może usunąć pierwszy utwór playlisty, wyszukiwanie w Plex znajduje utwory, starszy Jellyfin (10.8) może zmieniać nazwy playlist i znajdować tytuły z akcentami. Pliki playlist: M3U z BOM, M3U z samymi ścieżkami, PLS i pliki spoza UTF-8 są odczytywane poprawnie.
