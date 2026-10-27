@@ -144,7 +144,8 @@ fun PlaylistTracksScreen(provider: MusicProvider, playlist: Playlist, onClose: (
             )
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    stringResource(R.string.tracks_shown, shown.size, all.size),
+                    // While loading there is nothing to count yet: "0 of 0" would read as an empty playlist.
+                    if (tracks == null) stringResource(R.string.loading) else stringResource(R.string.tracks_shown, shown.size, all.size),
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f),
                 )
                 if (shown.isNotEmpty()) {
@@ -155,9 +156,7 @@ fun PlaylistTracksScreen(provider: MusicProvider, playlist: Playlist, onClose: (
                 }
             }
             when {
-                tracks == null -> Row(Modifier.padding(24.dp), verticalAlignment = Alignment.CenterVertically) {
-                    CircularProgressIndicator(Modifier.width(20.dp)); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.loading))
-                }
+                tracks == null -> SkeletonRows(14)
                 error != null -> Text(error!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(24.dp))
                 all.isEmpty() -> Text(stringResource(R.string.tracks_none), color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(24.dp))
                 else -> LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 24.dp)) {

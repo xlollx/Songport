@@ -22,7 +22,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -181,7 +184,13 @@ fun SyncsScreen(
 private fun RunAllPill(runningCount: Int, onClick: () -> Unit) {
     val haptic = rememberConfirmHaptic()
     val busy = runningCount > 0
-    Box(Modifier.fillMaxWidth().padding(vertical = 4.dp), contentAlignment = Alignment.Center) {
+    // When pinned, cards scroll under a fade instead of meeting the pill's edge.
+    val bg = MaterialTheme.colorScheme.background
+    Box(
+        Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(bg, bg.copy(alpha = 0.85f), bg.copy(alpha = 0f))))
+            .padding(top = 4.dp, bottom = 12.dp),
+        contentAlignment = Alignment.Center,
+    ) {
         androidx.compose.material3.Surface(
             onClick = { if (!busy) haptic(); onClick() },
             shape = RoundedCornerShape(50),
@@ -235,6 +244,9 @@ private fun JobCard(
         colors = CardDefaults.cardColors(containerColor = jobContainer(job.color)),
     ) {
         val accent = jobAccent(job.color)
+        // A coloured sync wears its colour on its controls too, as a gradient.
+        val controls = jobControlBrush(job.color)
+        val ink = jobInk(job.color)
         val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
         Column(
             Modifier.drawBehind {
@@ -309,7 +321,7 @@ private fun JobCard(
             } else if (report != null && data.settings.newLook && report.ok) {
                 Spacer(Modifier.height(14.dp))
                 RunStats(
-                    report, data.reports.filter { it.jobId == job.id && !it.partial }.sortedBy { it.startedEpoch }.takeLast(10),
+                    job.color, report, data.reports.filter { it.jobId == job.id && !it.partial }.sortedBy { it.startedEpoch }.takeLast(10),
                     onAdded = { listOpen = StatList(StatList.Kind.ADDED, report) },
                     onRemoved = { listOpen = StatList(StatList.Kind.REMOVED, report) },
                     onNotFound = {
@@ -330,7 +342,12 @@ private fun JobCard(
             val toFix = report?.takeIf { it.jobId == job.id }?.let { it.unmatchedTracks.size + it.reviewTracks.size } ?: 0
             if (toFix > 0 && report != null) {
                 Spacer(Modifier.height(6.dp))
-                FilledTonalButton(onClick = { onReview(report.id) }, modifier = Modifier.fillMaxWidth()) {
+                FilledTonalButton(
+                    onClick = { onReview(report.id) },
+                    modifier = Modifier.fillMaxWidth().let { m -> controls?.let { m.clip(ButtonDefaults.shape).background(it) } ?: m },
+                    colors = if (controls != null) ButtonDefaults.filledTonalButtonColors(containerColor = Color.Transparent, contentColor = ink ?: Color.Unspecified)
+                    else ButtonDefaults.filledTonalButtonColors(),
+                ) {
                     Icon(Icons.Filled.Build, null, Modifier.size(16.dp))
                     Spacer(Modifier.width(8.dp))
                     Text(stringResource(R.string.review_now, toFix))
@@ -346,7 +363,14 @@ private fun JobCard(
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
                 )
-                FilledTonalIconButton(onClick = { haptic(); onRun(job) }, enabled = !isRunning, modifier = Modifier.size(48.dp)) {
+                FilledTonalIconButton(
+                    onClick = { haptic(); onRun(job) }, enabled = !isRunning,
+                    modifier = Modifier.size(48.dp).let { m -> controls?.let { m.clip(CircleShape).background(it, alpha = if (isRunning) 0.4f else 1f) } ?: m },
+                    colors = if (controls != null) IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = Color.Transparent, contentColor = ink ?: Color.Unspecified,
+                        disabledContainerColor = Color.Transparent,
+                    ) else IconButtonDefaults.filledTonalIconButtonColors(),
+                ) {
                     Icon(Icons.Filled.PlayArrow, stringResource(R.string.run_now))
                 }
                 OverflowMenu(
@@ -936,15 +960,17 @@ private fun SupportCard(report: com.xlollx.songport.model.SyncReport) {
  */
 @Composable
 private fun RunStats(
-    r: SyncReport, history: List<SyncReport>,
+    color: String?, r: SyncReport, history: List<SyncReport>,
     onAdded: () -> Unit, onRemoved: () -> Unit, onNotFound: () -> Unit, onTracks: (() -> Unit)?,
 ) {
+    val brush = jobControlBrush(color)
+    val ink = jobInk(color)
     // Each figure opens what it counts: the tracks added, removed or not found, or the playlist itself.
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Stat("+${r.added}", stringResource(R.string.stat_added), Modifier.weight(1f), MaterialTheme.colorScheme.primary, onAdded.takeIf { r.added > 0 })
-        Stat("−${r.removed}", stringResource(R.string.stat_removed), Modifier.weight(1f), onClick = onRemoved.takeIf { r.removed > 0 })
-        Stat("${r.unmatched.size}", stringResource(R.string.stat_not_found), Modifier.weight(1f), if (r.unmatched.isNotEmpty()) MaterialTheme.colorScheme.tertiary else null, onNotFound.takeIf { r.unmatched.isNotEmpty() })
-        Stat("${r.sourceCount}", stringResource(R.string.stat_tracks), Modifier.weight(1f), onClick = onTracks)
+        Stat("+${r.added}", stringResource(R.string.stat_added), Modifier.weight(1f), brush, ink ?: MaterialTheme.colorScheme.primary, onAdded.takeIf { r.added > 0 })
+        Stat("−${r.removed}", stringResource(R.string.stat_removed), Modifier.weight(1f), brush, onClick = onRemoved.takeIf { r.removed > 0 })
+        Stat("${r.unmatched.size}", stringResource(R.string.stat_not_found), Modifier.weight(1f), brush, if (r.unmatched.isNotEmpty()) MaterialTheme.colorScheme.tertiary else null, onNotFound.takeIf { r.unmatched.isNotEmpty() })
+        Stat("${r.sourceCount}", stringResource(R.string.stat_tracks), Modifier.weight(1f), brush, onClick = onTracks)
     }
     if (history.size >= 2) {
         Spacer(Modifier.height(10.dp))
@@ -953,7 +979,7 @@ private fun RunStats(
             history.forEach { h ->
                 Box(
                     Modifier.size(width = 14.dp, height = 6.dp).clip(RoundedCornerShape(3.dp)).background(
-                        if (h.ok) MaterialTheme.colorScheme.primary.copy(alpha = if (h.added + h.removed > 0) 1f else 0.4f)
+                        if (h.ok) (ink ?: MaterialTheme.colorScheme.primary).copy(alpha = if (h.added + h.removed > 0) 1f else 0.4f)
                         else MaterialTheme.colorScheme.error,
                     ),
                 )
@@ -968,9 +994,10 @@ private fun RunStats(
 }
 
 @Composable
-private fun Stat(value: String, label: String, modifier: Modifier, tint: Color? = null, onClick: (() -> Unit)? = null) {
+private fun Stat(value: String, label: String, modifier: Modifier, brush: Brush? = null, tint: Color? = null, onClick: (() -> Unit)? = null) {
     Column(
-        modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh)
+        modifier.clip(RoundedCornerShape(16.dp))
+            .let { if (brush != null) it.background(brush) else it.background(MaterialTheme.colorScheme.surfaceContainerHigh) }
             .let { if (onClick != null) it.clickable(onClickLabel = label, onClick = onClick) else it }
             .padding(vertical = 10.dp, horizontal = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

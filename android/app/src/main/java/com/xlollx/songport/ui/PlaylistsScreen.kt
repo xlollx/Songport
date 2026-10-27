@@ -214,9 +214,7 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
     ) { padding ->
         val all = lists
         when {
-            all == null -> Row(Modifier.padding(padding).padding(24.dp), verticalAlignment = Alignment.CenterVertically) {
-                CircularProgressIndicator(Modifier.width(20.dp)); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.loading))
-            }
+            all == null -> SkeletonRows(12, leading = 44.dp, modifier = Modifier.padding(padding).padding(top = 8.dp))
             error != null -> Text(error!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(padding).padding(24.dp))
             all.isEmpty() -> Box(Modifier.fillMaxSize().padding(padding).padding(32.dp), contentAlignment = Alignment.Center) {
                 Text(stringResource(R.string.manage_none), color = MaterialTheme.colorScheme.onSurfaceVariant)

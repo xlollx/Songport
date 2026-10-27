@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
@@ -59,6 +60,19 @@ fun jobContainer(key: String?): Color {
     val accent = jobAccent(key) ?: return base
     return lerp(base, accent, if (LocalAppDark.current) 0.20f else 0.13f)
 }
+
+/** The sync's colour for its controls (figures, run button): a gradient of it, or null for the default look. */
+@Composable
+fun jobControlBrush(key: String?): Brush? {
+    val accent = jobAccent(key) ?: return null
+    val base = MaterialTheme.colorScheme.surfaceContainerHigh
+    val dark = LocalAppDark.current
+    return Brush.linearGradient(listOf(lerp(base, accent, if (dark) 0.45f else 0.34f), lerp(base, accent, if (dark) 0.16f else 0.10f)))
+}
+
+/** Text and icons in the sync's colour, deep enough to read on its gradient. */
+@Composable
+fun jobInk(key: String?): Color? = jobAccent(key)?.let { if (LocalAppDark.current) it else lerp(it, Color.Black, 0.3f) }
 
 /** One dot per colour plus the default, the chosen one ticked. */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
