@@ -1,0 +1,1 @@
+SoundCloud (nieoficjalnie): wklej link do publicznego setu lub strony polubień jako źródło synchronizacji. Tylko odczyt, bez logowania.

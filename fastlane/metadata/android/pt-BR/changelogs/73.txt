@@ -1,0 +1,1 @@
+SoundCloud (não oficial): cole o link de um set público ou de uma página de curtidas como origem de uma sincronização. Somente leitura, sem login.

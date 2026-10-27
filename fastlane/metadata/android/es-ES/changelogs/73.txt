@@ -1,0 +1,1 @@
+SoundCloud (no oficial): pega el enlace de un set público o de una página de Me gusta como origen de una sincronización. Solo lectura, sin iniciar sesión.

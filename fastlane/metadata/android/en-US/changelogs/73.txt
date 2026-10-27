@@ -1,0 +1,1 @@
+SoundCloud (unofficial): paste a public set or likes page link as the source of a sync. Read-only, no login needed.

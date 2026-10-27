@@ -1,0 +1,1 @@
+SoundCloud (inoffiziell): Füge den Link eines öffentlichen Sets oder einer Likes-Seite als Quelle einer Synchronisierung ein. Nur lesend, ohne Anmeldung.
