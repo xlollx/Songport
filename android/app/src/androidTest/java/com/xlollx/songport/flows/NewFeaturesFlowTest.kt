@@ -1,0 +1,118 @@
+package com.xlollx.songport.flows
+
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.performTextReplacement
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.xlollx.songport.Demo
+import com.xlollx.songport.MainActivity
+import com.xlollx.songport.R
+import com.xlollx.songport.model.PlaylistRef
+import com.xlollx.songport.model.SyncJob
+import com.xlollx.songport.model.SyncReport
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import org.junit.runner.RunWith
+
+/**
+ * The 1.1 additions, lightly: a sync's colour, the tappable figures of its last run, find and
+ * filter with many syncs, the "Sync all" pill, "Songport in numbers", and a song shared from Shazam.
+ */
+@RunWith(AndroidJUnit4::class)
+class NewFeaturesFlowTest : FlowTest() {
+
+    /** [n] syncs from Spotify to Deezer, each with one completed run that added two songs. */
+    private fun seedJobs(n: Int, colors: Map<Int, String> = emptyMap()) {
+        val now = System.currentTimeMillis()
+        val names = listOf("Road Trip", "Chill Evening", "Workout Mix", "Party Night", "Morning Run", "Focus", "Late Drive")
+        val jobs = (0 until n).map { i ->
+            SyncJob("job-$i", names[i], PlaylistRef("spotify", "pl$i", names[i]), PlaylistRef("deezer", "d$i", names[i]),
+                lastRunEpoch = now - (i + 1) * 60_000L, lastReportId = "r$i", color = colors[i])
+        }
+        val reports = (0 until n).map { i ->
+            SyncReport(id = "r$i", jobId = "job-$i", jobName = names[i], startedEpoch = now - (i + 1) * 60_000L, durationMs = 9_000,
+                sourceCount = 8, targetCount = 8, added = 2, addedTracks = listOf(FakeWorld.song("deezer", i), FakeWorld.song("deezer", i + 1)))
+        }
+        store.update { it.copy(jobs = jobs, reports = reports) }
+    }
+
+    @Test
+    fun colourChosenFromTheMenuIsKeptAndShown() {
+        seedJobs(1)
+        launch(tabIntent(MainActivity.TAB_SYNCS))
+        waitText("Road Trip")
+        clickDesc(s(R.string.more_actions))
+        click(s(R.string.job_color))
+        waitText(s(R.string.job_color_default))
+        click(s(R.string.color_teal))
+        waitFor("teal stored") { store.data.jobs.single().color == "teal" }
+        // Opened again, the picker has Teal ticked.
+        clickDesc(s(R.string.more_actions))
+        click(s(R.string.job_color))
+        compose.onAllNodes(hasContentDescription(s(R.string.color_teal)) and hasClickAction()).onFirst().assertIsSelected()
+        click(s(R.string.cancel))
+    }
+
+    @Test
+    fun addedFigureOpensTheListOfTracks() {
+        seedJobs(1)
+        launch(tabIntent(MainActivity.TAB_SYNCS))
+        waitText("+2")
+        click("+2")
+        waitText(s(R.string.stat_list_added))
+        waitText(Demo.SONGS[0].title, substring = true)
+        waitText(Demo.SONGS[1].title, substring = true)
+    }
+
+    @Test
+    fun finderFiltersManySyncsByWordAndColour() {
+        seedJobs(6, colors = mapOf(1 to "teal", 4 to "teal"))
+        launch(tabIntent(MainActivity.TAB_SYNCS))
+        waitText("Road Trip")
+        // With two syncs or more, the pinned "Sync all" pill.
+        assertTrue(exists(s(R.string.sync_all)))
+        // By word.
+        val field = compose.onAllNodes(hasSetTextAction() and hasText(s(R.string.syncs_find_hint))).onFirst()
+        scrollTo(field).performTextReplacement("Road")
+        waitText(plural(R.plurals.filter_shown, 6, 1, 6))
+        assertTrue(exists("Road Trip"))
+        assertFalse(exists("Chill Evening"))
+        click(s(R.string.filter_clear))
+        waitText("Chill Evening")
+        // By colour: only the teal ones.
+        click(s(R.string.filter_color, s(R.string.color_teal)))
+        waitText(plural(R.plurals.filter_shown, 6, 2, 6))
+        assertTrue(exists("Chill Evening"))
+        assertTrue(exists("Morning Run"))
+        assertFalse(exists("Workout Mix"))
+    }
+
+    @Test
+    fun statsScreenOpensFromTools() {
+        seedJobs(2)
+        launch(tabIntent(MainActivity.TAB_TOOLS))
+        waitText(s(R.string.stats_title))
+        click(s(R.string.stats_title))
+        waitText(s(R.string.stats_tracks_moved))
+        assertTrue(exists(s(R.string.stats_syncs_done)))
+        back()
+        waitText(s(R.string.tools_poster_title))
+    }
+
+    @Test
+    fun shazamShareOpensTheSheetWithTheSong() {
+        launch(shareIntent("I used Shazam to discover Get Lucky by Daft Punk. https://www.shazam.com/track/66932935/get-lucky"))
+        waitText(s(R.string.share_sheet_title), ms = 20_000)
+        waitText("Get Lucky", substring = true)
+        waitText("Daft Punk", substring = true)
+        // No sync of the Shazam playlist yet: the sheet suggests one.
+        waitText(s(R.string.shazam_share_hint_button))
+        assertEquals(0, store.data.jobs.size)
+    }
+}

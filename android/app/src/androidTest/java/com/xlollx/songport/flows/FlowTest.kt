@@ -1,0 +1,286 @@
+package com.xlollx.songport.flows
+
+import android.Manifest
+import android.app.Activity
+import android.app.LocaleManager
+import android.app.UiAutomation
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.LocaleList
+import android.util.Log
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsNode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isRoot
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.printToString
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
+import com.xlollx.songport.MainActivity
+import com.xlollx.songport.data.Settings
+import com.xlollx.songport.data.Store
+import com.xlollx.songport.data.StoreData
+import com.xlollx.songport.net.Http
+import org.junit.Before
+import org.junit.Rule
+import org.junit.rules.RuleChain
+import org.junit.rules.TestRule
+import org.junit.runner.Description
+import org.junit.runners.model.Statement
+import java.io.File
+import java.io.IOException
+import java.util.Collections
+
+/**
+ * The base of the UI flow tests: the app on fake services ([FakeWorld]), a fresh store for each
+ * test, the network closed (every request through the app's HTTP client fails at once, and the
+ * emulator runs in airplane mode in CI), and on a failure a screenshot in /sdcard/ui-test-failures
+ * plus the semantics tree in the log. MainActivity is started from the app context as the store
+ * screenshots do (ActivityScenario does not see a singleTask activity come up).
+ */
+abstract class FlowTest {
+    protected val compose: ComposeTestRule = createEmptyComposeRule()
+    protected val instr = InstrumentationRegistry.getInstrumentation()
+    protected val app: Context = instr.targetContext.applicationContext
+    protected val store: Store get() = Store.get(app)
+
+    @get:Rule val rules: RuleChain = RuleChain.outerRule(compose).around(FailureAndCleanup())
+
+    /** Hosts the app tried to reach during the test: always refused, logged at the end. */
+    protected val attemptedHosts: MutableSet<String> = Collections.synchronizedSet(LinkedHashSet())
+
+    /** Who is signed in when the test starts; a test can change it before [launch]. */
+    protected open val connectedAtStart: List<String> = listOf("spotify", "deezer")
+
+    @Before
+    fun baseSetUp() {
+        com.xlollx.songport.auth.AuthEvents.consume()
+        Http.onRequest = { host -> attemptedHosts += host; throw IOException("UI test: network is closed ($host)") }
+        if (Build.VERSION.SDK_INT >= 33) instr.uiAutomation.grantRuntimePermission(app.packageName, Manifest.permission.POST_NOTIFICATIONS)
+        shell("settings put global hide_error_dialogs 1")
+        resumed()?.let { a -> instr.runOnMainSync { a.finish() } }
+        setRotation(UiAutomation.ROTATION_FREEZE_0)
+        setLocale("")
+        FakeWorld.reset()
+        FakeWorld.connected += connectedAtStart
+        FakeWorld.install()
+        File(app.filesDir, "csv").deleteRecursively()
+        com.xlollx.songport.ai.AiClient.clear(app)
+        store.update { StoreData(settings = baseSettings()) }
+        store.flush()
+    }
+
+    /** Onboarding done, the connectors signed in, nothing that would open by itself (support card, ISRC lookups). */
+    protected open fun baseSettings() = Settings(
+        connectors = connectedAtStart, connectorsInit = true, onboardingDone = true,
+        isrcLookup = false, supportPromptDone = true, appOpens = 0, themeMode = "LIGHT",
+    )
+
+    // ------------------------------------------------------------------ the activity
+
+    protected fun mainIntent(): Intent = Intent(app, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+
+    protected fun tabIntent(tab: Int): Intent = mainIntent().putExtra(MainActivity.EXTRA_TAB, tab)
+
+    protected fun shareIntent(text: String): Intent = mainIntent().setAction(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
+
+    /** Starts [intent] and waits for a new MainActivity to be resumed and drawn. */
+    protected fun launch(intent: Intent = mainIntent()): MainActivity {
+        store.updateSettings { it.copy(appOpens = 0) }
+        val before = resumed()
+        val t0 = System.currentTimeMillis()
+        app.startActivity(intent)
+        val a = waitForNewMain(before)
+        val t1 = System.currentTimeMillis()
+        compose.waitForIdle()
+        log("launch ${intent.action}: resumed after ${t1 - t0} ms, idle after ${System.currentTimeMillis() - t1} ms; on screen: ${screenTexts().take(40)}")
+        return a
+    }
+
+    protected fun waitForNewMain(before: Activity?, ms: Long = 30_000): MainActivity {
+        val end = System.currentTimeMillis() + ms
+        while (System.currentTimeMillis() < end) {
+            val now = resumed()
+            if (now is MainActivity && now !== before) return now
+            Thread.sleep(100)
+        }
+        throw AssertionError("MainActivity did not come up (resumed: ${resumed()?.javaClass?.simpleName})")
+    }
+
+    protected fun resumed(): Activity? {
+        var found: Activity? = null
+        instr.runOnMainSync { found = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).firstOrNull() }
+        return found
+    }
+
+    protected fun main(): MainActivity = resumed() as? MainActivity ?: throw AssertionError("MainActivity is not on screen")
+
+    /** Rotates the screen and waits for the activity to be recreated. */
+    protected fun rotate(to: Int) {
+        val before = resumed()
+        setRotation(to)
+        waitForNewMain(before)
+        compose.waitForIdle()
+    }
+
+    private fun setRotation(r: Int) { runCatching { instr.uiAutomation.setRotation(r) } }
+
+    /** The app's language, as the in-app picker sets it ("" = the phone's). */
+    protected fun setLocale(tag: String) {
+        if (Build.VERSION.SDK_INT < 33) {
+            // Android 12 and older: the app keeps the choice itself (AppLocale) and applies it on the next activity.
+            app.getSharedPreferences("app_locale", Context.MODE_PRIVATE).edit().putString("tag", tag).commit()
+            return
+        }
+        val lm = app.getSystemService(LocaleManager::class.java)
+        val want = if (tag.isEmpty()) LocaleList.getEmptyLocaleList() else LocaleList.forLanguageTags(tag)
+        if (lm.applicationLocales != want) lm.applicationLocales = want
+    }
+
+    protected fun shell(cmd: String): String =
+        instr.uiAutomation.executeShellCommand(cmd).let { pfd -> android.os.ParcelFileDescriptor.AutoCloseInputStream(pfd).use { it.readBytes().decodeToString() } }
+
+    // ------------------------------------------------------------------ strings and nodes
+
+    /** A string in the language the app is shown in now. */
+    protected fun s(id: Int, vararg args: Any): String = (resumed() ?: app).getString(id, *args)
+
+    protected fun plural(id: Int, n: Int, vararg args: Any): String = (resumed() ?: app).resources.getQuantityString(id, n, *args)
+
+    protected fun waitText(text: String, ms: Long = 15_000, substring: Boolean = false) =
+        waitFor("text \"$text\"", ms) { compose.onAllNodesWithText(text, substring = substring, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
+
+    protected fun waitGone(text: String, ms: Long = 15_000, substring: Boolean = false) =
+        waitFor("no text \"$text\"", ms) { compose.onAllNodesWithText(text, substring = substring, useUnmergedTree = true).fetchSemanticsNodes().isEmpty() }
+
+    protected fun waitNode(what: String, matcher: SemanticsMatcher, ms: Long = 15_000) =
+        waitFor(what, ms) { compose.onAllNodes(matcher, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
+
+    protected fun waitFor(what: String, ms: Long = 15_000, condition: () -> Boolean) {
+        try {
+            compose.waitUntil(ms) { runCatching(condition).getOrDefault(false) }
+        } catch (e: Throwable) {
+            throw AssertionError("Timed out after $ms ms waiting for $what", e)
+        }
+    }
+
+    /** Every text on screen now, in all windows (for the log). */
+    protected fun screenTexts(): List<String> = runCatching {
+        compose.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text), useUnmergedTree = true).fetchSemanticsNodes(atLeastOneRootRequired = false)
+            .mapNotNull { it.config.getOrNull(SemanticsProperties.Text)?.joinToString(" ") }
+    }.getOrDefault(emptyList())
+
+    protected fun exists(text: String, substring: Boolean = false): Boolean =
+        compose.onAllNodesWithText(text, substring = substring, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
+
+    /** The first clickable node showing or named [text] (a button, a row, a menu entry), scrolled into view and tapped. */
+    protected fun click(text: String, substring: Boolean = false) =
+        tap(compose.onAllNodes(hasClickAction() and (hasText(text, substring = substring) or hasContentDescription(text, substring = substring))).onFirst(), text)
+
+    protected fun clickDesc(desc: String, index: Int = 0) =
+        tap(compose.onAllNodes(hasClickAction() and hasContentDescription(desc))[index], desc)
+
+    /** The way back from a page: its arrow, named "Back" (or "Cancel" where leaving drops the edits). */
+    protected fun back() {
+        val nav = compose.onAllNodes(hasClickAction() and hasContentDescription(s(com.xlollx.songport.R.string.nav_back))).fetchSemanticsNodes()
+        if (nav.isNotEmpty()) clickDesc(s(com.xlollx.songport.R.string.nav_back)) else clickDesc(s(com.xlollx.songport.R.string.cancel))
+    }
+
+    /** Touches that could not be injected and were replaced by the node's click action (logged, see [tap]). */
+    protected val semanticClicks = ArrayList<String>()
+
+    /**
+     * Scrolls [n] into view, clear of the glass bottom bar, and taps it. Should the touch not be
+     * injectable, the node's own click action is used instead, and that is logged.
+     */
+    protected fun tap(n: SemanticsNodeInteraction, what: String) {
+        runCatching { n.performScrollTo() }
+        clearOfBottomBar(n)
+        try {
+            n.performClick()
+        } catch (e: AssertionError) {
+            if (e.message?.contains("inject") != true) throw e
+            semanticClicks += what
+            log("touch on \"$what\" could not be injected: using its click action")
+            n.performSemanticsAction(SemanticsActions.OnClick)
+        }
+        compose.waitForIdle()
+    }
+
+    private fun topOf(n: SemanticsNode): SemanticsNode { var p = n; while (p.parent != null) p = p.parent!!; return p }
+
+    /**
+     * performScrollTo leaves a node at the bottom edge of its scroller, which on the tabs runs under
+     * the glass bar (the bar would get the tap): the scroller moves it up above the bar.
+     */
+    protected fun clearOfBottomBar(n: SemanticsNodeInteraction) {
+        val node = runCatching { n.fetchSemanticsNode() }.getOrNull() ?: return
+        val root = topOf(node).id
+        val tabs = compose.onAllNodes(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).fetchSemanticsNodes().filter { topOf(it).id == root }
+        if (tabs.any { it.id == node.id }) return
+        val top = tabs.minOfOrNull { it.boundsInRoot.top } ?: return
+        if (node.boundsInRoot.bottom <= top) return
+        var p = node.parent
+        while (p != null && !p.config.contains(SemanticsActions.ScrollBy)) p = p.parent
+        val scroll = p?.config?.getOrNull(SemanticsActions.ScrollBy)?.action ?: return
+        val dy = node.boundsInRoot.bottom - top + 24 * app.resources.displayMetrics.density
+        compose.runOnIdle { scroll(0f, dy) }
+        compose.waitForIdle()
+    }
+
+    protected fun scrollTo(node: SemanticsNodeInteraction): SemanticsNodeInteraction = node.also { runCatching { it.performScrollTo() } }
+
+    protected fun SemanticsNode.dp(px: Float): Float = px / app.resources.displayMetrics.density
+
+    protected fun log(msg: String) = Log.i("UiFlow", msg)
+
+    // ------------------------------------------------------------------ failures
+
+    /** On failure: the screen to a PNG and the semantics tree to the log. Always: rotation and locale put back. */
+    private inner class FailureAndCleanup : TestRule {
+        override fun apply(base: Statement, description: Description): Statement = object : Statement() {
+            override fun evaluate() {
+                try {
+                    base.evaluate()
+                } catch (t: Throwable) {
+                    val name = "${description.testClass.simpleName}.${description.methodName}"
+                    runCatching {
+                        shell("mkdir -p /sdcard/ui-test-failures")
+                        shell("screencap -p /sdcard/ui-test-failures/$name.png")
+                    }
+                    runCatching {
+                        // Where the app's own threads are: a request or a lock that never returns shows here.
+                        Thread.getAllStackTraces().filter { (t, st) -> st.any { it.className.startsWith("com.xlollx.songport") && !it.className.contains(".flows.") } }
+                            .forEach { (t, st) -> Log.e("UiFlowThreads", "$name ${t.name}\n" + st.take(40).joinToString("\n") { "  at $it" }) }
+                    }
+                    runCatching {
+                        compose.onAllNodes(isRoot()).fetchSemanticsNodes().indices.forEach { i ->
+                            compose.onAllNodes(isRoot())[i].printToString(maxDepth = Int.MAX_VALUE).chunked(3500).forEach { Log.e("UiFlowTree", "$name root $i\n$it") }
+                        }
+                    }
+                    throw t
+                } finally {
+                    if (semanticClicks.isNotEmpty()) log("${description.methodName}: touch not injectable on $semanticClicks")
+                    if (attemptedHosts.isNotEmpty()) log("${description.methodName}: refused network requests to $attemptedHosts")
+                    runCatching { instr.uiAutomation.setRotation(UiAutomation.ROTATION_FREEZE_0) }
+                    runCatching { setLocale("") }
+                }
+            }
+        }
+    }
+}

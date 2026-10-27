@@ -58,7 +58,7 @@ android {
 
     defaultConfig {
         applicationId "com.xlollx.songport"
-        // Only the store screenshots use it (androidTest, .github/workflows/screenshots.yml).
+        // Only the instrumented tests use it: the store screenshots and the UI flow tests (androidTest).
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         minSdk 26
         targetSdk 36
@@ -225,6 +225,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test:core:1.6.1'
+    // The UI flow tests (androidTest/.../flows, .github/workflows/ui-tests.yml): the system pickers
+    // and outgoing links answered in-process, and the poster's QR code read back.
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.6.1'
+    androidTestImplementation 'com.google.zxing:core:3.5.3'
 }
 
 // F-Droid rebuilds the APK and compares it byte for byte with the release. The ART baseline profile

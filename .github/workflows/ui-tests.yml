@@ -1,0 +1,130 @@
+name: UI tests
+
+# Instrumented UI flow tests on an Android emulator: app/src/androidTest/.../flows. The app runs on
+# fake music services (no account, no network: the emulator is in airplane mode and the tests close
+# the app's HTTP client), through onboarding, accounts, the sync editor and runs, sharing, the cards,
+# unplayable tracks, settings, backup, the bottom bar, dark mode, long and right-to-left languages,
+# accessibility basics and the differences between the two build flavors.
+# Runs by hand (workflow_dispatch) on the branch it is started from. Reports, failure screenshots
+# and the log are kept as artifacts.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ ui-tests-110 ] # TEMPORARY: removed before the final commit
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ui:
+    name: ${{ matrix.flavor }} · API ${{ matrix.api }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { flavor: full, api: 34 }
+          - { flavor: play, api: 34 }
+          - { flavor: full, api: 30 }
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
+
+      - name: Installa platform e build-tools
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" > /dev/null
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '8.14.3'
+
+      - name: Build the app and the tests
+        working-directory: android
+        run: |
+          F=${{ matrix.flavor }}; F=${F^}
+          gradle assemble${F}Debug assemble${F}DebugAndroidTest --no-daemon --stacktrace
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run the UI tests
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          FLAVOR: ${{ matrix.flavor }}
+        with:
+          api-level: ${{ matrix.api }}
+          arch: x86_64
+          target: google_apis
+          profile: pixel_7
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          working-directory: android
+          script: bash ../.github/scripts/run-ui-tests.sh
+
+      - name: Summary
+        if: always()
+        working-directory: android
+        run: |
+          python3 - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          import glob, xml.etree.ElementTree as ET
+          files = glob.glob("app/build/outputs/androidTest-results/connected/**/*.xml", recursive=True)
+          total = failed = skipped = 0
+          rows = []
+          for f in files:
+              for tc in ET.parse(f).getroot().iter("testcase"):
+                  total += 1
+                  name = tc.get("classname", "").split(".")[-1] + "." + tc.get("name", "")
+                  fail = tc.find("failure")
+                  if fail is not None:
+                      failed += 1
+                      msg = (fail.get("message") or fail.text or "").strip().splitlines()
+                      rows.append(f"| FAIL {name} | {(msg[0] if msg else '')[:300]} |")
+                  elif tc.find("skipped") is not None:
+                      skipped += 1
+                      rows.append(f"| skip {name} | skipped |")
+                  else:
+                      rows.append(f"| ok {name} | |")
+          print(f"### UI tests ${{ matrix.flavor }} · API ${{ matrix.api }}: {total - failed - skipped} passed, {failed} failed, {skipped} skipped\n")
+          print("| test | note |\n|---|---|")
+          print("\n".join(sorted(rows)))
+          PY
+          tail -n 80 ui-out/logcat-short.txt 2>/dev/null || true
+
+      - name: Keep the reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-tests-${{ matrix.flavor }}-api${{ matrix.api }}
+          path: |
+            android/app/build/reports/androidTests/
+            android/app/build/outputs/androidTest-results/
+            android/ui-out/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Result
+        working-directory: android
+        run: |
+          s=$(cat ui-out/status 2>/dev/null || echo 1)
+          [ "$s" = "0" ] || { echo "UI tests failed (gradle exit $s)"; exit 1; }
