@@ -1,0 +1,1 @@
+Corrección: una sincronización que terminaba al mismo tiempo que otra podía quedar marcada en curso y no volver a empezar. El servidor Docker (alfa) tiene formularios web que funcionan en los navegadores y varias correcciones de seguridad.

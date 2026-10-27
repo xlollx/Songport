@@ -1,0 +1,1 @@
+Düzeltme: başka biriyle aynı anda biten bir eşitleme sürüyor olarak işaretli kalıp bir daha başlamayabiliyordu. Docker sunucusu (alfa) artık tarayıcılarda çalışan web formlarına ve birkaç güvenlik düzeltmesine sahip.

@@ -1,0 +1,1 @@
+Correction : une synchro terminée au même instant qu'une autre pouvait rester marquée en cours et ne plus jamais repartir. Le serveur Docker (alpha) a des formulaires web qui fonctionnent dans les navigateurs et plusieurs correctifs de sécurité.

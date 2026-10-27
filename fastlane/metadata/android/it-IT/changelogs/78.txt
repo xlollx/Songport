@@ -1,0 +1,1 @@
+Correzione: una sync finita nello stesso istante di un'altra poteva restare segnata in corso e non ripartire più. Il server Docker (alpha) ha i moduli web funzionanti nei browser e diverse correzioni di sicurezza.

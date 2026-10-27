@@ -1,0 +1,1 @@
+Poprawka: synchronizacja zakończona w tej samej chwili co inna mogła pozostać oznaczona jako trwająca i już nigdy nie ruszyć. Serwer Docker (alfa) ma działające w przeglądarkach formularze i kilka poprawek bezpieczeństwa.

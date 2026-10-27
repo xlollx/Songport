@@ -1,0 +1,1 @@
+Fix: a sync that finished at the same moment as another could stay marked as running and never start again. The Docker server (alpha) gets its web forms working in browsers and several security fixes.

@@ -1,0 +1,1 @@
+Korrektur: Eine Synchronisierung, die gleichzeitig mit einer anderen endete, konnte als laufend markiert bleiben und nie wieder starten. Der Docker-Server (Alpha) hat funktionierende Webformulare im Browser und mehrere Sicherheitskorrekturen.
