@@ -946,4 +946,6 @@
     <string name="stats_empty_body">Compaiono dopo la prima sync completata, contati dalla cronologia salvata su questo telefono.</string>
     <string name="stats_share_title">Condividi i tuoi numeri</string>
     <string name="stats_card_preview">Anteprima della card da condividere</string>
+    <!-- The Quick Settings tile: its own label, the launcher shortcut keeps its short one. -->
+    <string name="tile_sync_all">Sincronizza tutto</string>
 </resources>

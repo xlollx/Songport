@@ -946,4 +946,6 @@
     <string name="stats_empty_body">Sie erscheinen nach deiner ersten abgeschlossenen Synchronisierung, gezählt aus dem Verlauf auf diesem Telefon.</string>
     <string name="stats_share_title">Teile deine Zahlen</string>
     <string name="stats_card_preview">Vorschau der Karte zum Teilen</string>
+    <!-- The Quick Settings tile: its own label, the launcher shortcut keeps its short one. -->
+    <string name="tile_sync_all">Alle synchronisieren</string>
 </resources>

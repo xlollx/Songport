@@ -947,4 +947,6 @@
     <string name="stats_empty_body">They appear after your first completed sync, counted from the history kept on this phone.</string>
     <string name="stats_share_title">Share your numbers</string>
     <string name="stats_card_preview">Preview of the card to share</string>
+    <!-- The Quick Settings tile: its own label, the launcher shortcut keeps its short one. -->
+    <string name="tile_sync_all">Sync all</string>
 </resources>

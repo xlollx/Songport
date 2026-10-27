@@ -925,4 +925,6 @@
     <string name="stats_empty_body">첫 동기화가 완료되면 이 휴대폰의 기록에서 집계되어 표시됩니다.</string>
     <string name="stats_share_title">내 숫자 공유하기</string>
     <string name="stats_card_preview">공유할 카드 미리보기</string>
+    <!-- The Quick Settings tile: its own label, the launcher shortcut keeps its short one. -->
+    <string name="tile_sync_all">모두 동기화</string>
 </resources>

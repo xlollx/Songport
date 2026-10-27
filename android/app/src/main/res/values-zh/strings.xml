@@ -926,4 +926,6 @@
     <string name="stats_empty_body">完成第一次同步后，会根据此手机上的记录统计并显示。</string>
     <string name="stats_share_title">分享你的数据</string>
     <string name="stats_card_preview">待分享卡片的预览</string>
+    <!-- The Quick Settings tile: its own label, the launcher shortcut keeps its short one. -->
+    <string name="tile_sync_all">全部同步</string>
 </resources>

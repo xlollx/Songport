@@ -944,4 +944,6 @@
     <string name="stats_empty_body">İlk tamamlanan eşitlemeden sonra, bu telefondaki geçmişten sayılarak görünürler.</string>
     <string name="stats_share_title">Rakamlarınızı paylaşın</string>
     <string name="stats_card_preview">Paylaşılacak kartın önizlemesi</string>
+    <!-- The Quick Settings tile: its own label, the launcher shortcut keeps its short one. -->
+    <string name="tile_sync_all">Tümünü eşitle</string>
 </resources>

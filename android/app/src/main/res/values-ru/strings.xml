@@ -986,4 +986,6 @@
     <string name="stats_empty_body">Они появятся после первой завершённой синхронизации и будут подсчитаны по истории на этом телефоне.</string>
     <string name="stats_share_title">Поделитесь своими цифрами</string>
     <string name="stats_card_preview">Предпросмотр карточки, которой можно поделиться</string>
+    <!-- The Quick Settings tile: its own label, the launcher shortcut keeps its short one. -->
+    <string name="tile_sync_all">Синхронизировать всё</string>
 </resources>

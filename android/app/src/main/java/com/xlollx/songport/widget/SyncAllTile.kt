@@ -111,7 +111,7 @@ class SyncAllTile : TileService() {
             // The time today, the date before: short enough for a tile.
             else -> getString(R.string.hero_last, DateUtils.formatSameDayTime(s.lastRun, System.currentTimeMillis(), DateFormat.SHORT, DateFormat.SHORT))
         }
-        tile.label = getString(R.string.shortcut_sync_all_short)
+        tile.label = getString(R.string.tile_sync_all)
         tile.icon = Icon.createWithResource(this, R.drawable.ic_notification)
         tile.state = when {
             s.enabled == 0 -> Tile.STATE_UNAVAILABLE

@@ -988,4 +988,6 @@
     <string name="stats_empty_body">Pojawią się po pierwszej ukończonej synchronizacji, policzone z historii zapisanej na tym telefonie.</string>
     <string name="stats_share_title">Udostępnij swoje liczby</string>
     <string name="stats_card_preview">Podgląd karty do udostępnienia</string>
+    <!-- The Quick Settings tile: its own label, the launcher shortcut keeps its short one. -->
+    <string name="tile_sync_all">Synchronizuj wszystko</string>
 </resources>

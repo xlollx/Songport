@@ -953,4 +953,6 @@
     <string name="stats_empty_body">Eles aparecem depois da sua primeira sincronização concluída, contados a partir do histórico guardado neste celular.</string>
     <string name="stats_share_title">Compartilhe seus números</string>
     <string name="stats_card_preview">Prévia do cartão para compartilhar</string>
+    <!-- The Quick Settings tile: its own label, the launcher shortcut keeps its short one. -->
+    <string name="tile_sync_all">Sincronizar tudo</string>
 </resources>

@@ -926,4 +926,6 @@
     <string name="stats_empty_body">最初の同期が完了すると、この端末の履歴から集計して表示されます。</string>
     <string name="stats_share_title">数字をシェア</string>
     <string name="stats_card_preview">シェアするカードのプレビュー</string>
+    <!-- The Quick Settings tile: its own label, the launcher shortcut keeps its short one. -->
+    <string name="tile_sync_all">すべて同期</string>
 </resources>
