@@ -896,4 +896,5 @@
     <string name="provider_note_soundcloud">Publiczne sety i strony polubień SoundCloud, tylko do odczytu i bez logowania: wklej link jako źródło synchronizacji. To nie jest oficjalny interfejs: może przestać działać, gdy SoundCloud zmieni swoją stronę.</string>
     <string name="soundcloud_not_public">Ta playlista SoundCloud jest prywatna lub nie istnieje: działają tylko linki publiczne</string>
     <string name="soundcloud_player_changed">SoundCloud zmienił swój odtwarzacz internetowy; Songport wymaga aktualizacji</string>
+    <string name="search_clear">Wyczyść wyszukiwanie</string>
 </resources>

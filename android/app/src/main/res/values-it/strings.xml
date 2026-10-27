@@ -868,4 +868,5 @@
     <string name="provider_note_soundcloud">Set e pagine dei \"Mi piace\" pubblici di SoundCloud, in sola lettura e senza accesso: incolla il link come origine di una sincronizzazione. Interfaccia non ufficiale: può smettere di funzionare quando SoundCloud cambia il suo sito.</string>
     <string name="soundcloud_not_public">Questa playlist di SoundCloud è privata o non esiste: funzionano solo i link pubblici</string>
     <string name="soundcloud_player_changed">SoundCloud ha cambiato il suo player web; Songport va aggiornato</string>
+    <string name="search_clear">Cancella la ricerca</string>
 </resources>

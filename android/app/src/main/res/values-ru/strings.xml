@@ -894,4 +894,5 @@
     <string name="provider_note_soundcloud">Публичные сеты и страницы лайков SoundCloud, только чтение и без входа: вставьте ссылку как источник синхронизации. Это неофициальный интерфейс: он может перестать работать, когда SoundCloud изменит свой сайт.</string>
     <string name="soundcloud_not_public">Этот плейлист SoundCloud приватный или не существует: работают только публичные ссылки</string>
     <string name="soundcloud_player_changed">SoundCloud изменил свой веб-плеер; Songport нужно обновить</string>
+    <string name="search_clear">Очистить поиск</string>
 </resources>

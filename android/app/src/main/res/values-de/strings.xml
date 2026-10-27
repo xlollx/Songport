@@ -868,4 +868,5 @@
     <string name="provider_note_soundcloud">Öffentliche SoundCloud-Sets und Likes-Seiten, nur lesend und ohne Anmeldung: Füge den Link als Quelle einer Synchronisierung ein. Keine offizielle Schnittstelle: Sie kann aufhören zu funktionieren, wenn SoundCloud seine Website ändert.</string>
     <string name="soundcloud_not_public">Diese SoundCloud-Playlist ist privat oder existiert nicht: Nur öffentliche Links funktionieren</string>
     <string name="soundcloud_player_changed">SoundCloud hat seinen Web-Player geändert; Songport braucht ein Update</string>
+    <string name="search_clear">Suche löschen</string>
 </resources>

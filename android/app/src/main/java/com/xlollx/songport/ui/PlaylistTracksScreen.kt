@@ -139,7 +139,7 @@ fun PlaylistTracksScreen(provider: MusicProvider, playlist: Playlist, onClose: (
                 value = query, onValueChange = { query = it }, singleLine = true,
                 placeholder = { Text(stringResource(R.string.tracks_search)) },
                 leadingIcon = { Icon(Icons.Filled.Search, null) },
-                trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { query = "" }) { Icon(Icons.Filled.Close, null) } },
+                trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { query = "" }) { Icon(Icons.Filled.Close, stringResource(R.string.search_clear)) } },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
             )
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -179,7 +179,7 @@ fun PlaylistTracksScreen(provider: MusicProvider, playlist: Playlist, onClose: (
                             if (artist.isNotBlank() || t.album.isNotBlank()) {
                                 var menu by remember { mutableStateOf(false) }
                                 Box {
-                                    IconButton(enabled = !busy, onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, null) }
+                                    IconButton(enabled = !busy, onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, stringResource(R.string.more_actions)) }
                                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                                         if (artist.isNotBlank()) {
                                             val a = Matcher.normalizeArtist(artist)

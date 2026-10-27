@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -140,7 +141,17 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             val settings by Store.get(this).state.collectAsState()
-            AppTheme(mode = ThemeMode.of(settings.settings.themeMode), dynamicColor = settings.settings.dynamicColor) {
+            val mode = ThemeMode.of(settings.settings.themeMode)
+            // enableEdgeToEdge() picks the bar icons from the phone's light or dark mode; with the theme
+            // forced in Settings the app's own choice decides, or the icons vanish (dark on dark).
+            val dark = when (mode) { ThemeMode.SYSTEM -> androidx.compose.foundation.isSystemInDarkTheme(); ThemeMode.LIGHT -> false; ThemeMode.DARK -> true }
+            LaunchedEffect(dark) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT) { dark },
+                    navigationBarStyle = SystemBarStyle.auto(LIGHT_NAV_SCRIM, DARK_NAV_SCRIM) { dark },
+                )
+            }
+            AppTheme(mode = mode, dynamicColor = settings.settings.dynamicColor) {
                 val isLocked by locked.collectAsState()
                 if (isLocked) LockScreen { requestUnlock() } else MainScreen(messages, tabRequests, sharedText, newSyncRequests, toolRequests)
             }
@@ -201,6 +212,10 @@ class MainActivity : ComponentActivity() {
         const val TAB_SETTINGS = 4
 
         @Volatile var unlockedThisProcess = false
+
+        /** The navigation bar scrims enableEdgeToEdge() uses by default (three-button navigation). */
+        private val LIGHT_NAV_SCRIM = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+        private val DARK_NAV_SCRIM = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
     }
 }
 

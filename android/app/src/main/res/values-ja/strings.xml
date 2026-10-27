@@ -855,4 +855,5 @@
     <string name="provider_note_soundcloud">SoundCloud の公開セットといいねページを、ログインなし・読み取り専用で使えます。リンクを同期の元として貼り付けてください。公式のインターフェースではないため、SoundCloud がサイトを変更すると動かなくなることがあります。</string>
     <string name="soundcloud_not_public">この SoundCloud プレイリストは非公開か存在しません。使えるのは公開リンクだけです</string>
     <string name="soundcloud_player_changed">SoundCloud のウェブプレーヤーが変更されました。Songport のアップデートが必要です</string>
+    <string name="search_clear">検索をクリア</string>
 </resources>
