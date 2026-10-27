@@ -207,7 +207,7 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
                         Text(stringResource(R.string.manage_title, provider.label(ctx)), maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 },
-                navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
+                navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
                 actions = { if (busy) CircularProgressIndicator(Modifier.padding(end = 16.dp).width(20.dp)) },
             )
         },

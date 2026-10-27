@@ -999,5 +999,4 @@
     <string name="settings_developer_summary">Journal des connexions, rapport technique, capture du trafic.</string>
     <string name="settings_new_look_summary">Cartes de sync avec les chiffres et l\'historique récent.</string>
     <string name="settings_log_summary">Résultats des dernières syncs et détails techniques.</string>
-    <string name="search_clear">Effacer la recherche</string>
 </resources>

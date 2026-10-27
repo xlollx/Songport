@@ -95,7 +95,7 @@ private fun LoginForm(provider: CredentialsProvider, onDone: (String) -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.login_title, provider.displayName)) },
-                navigationIcon = { IconButton(onClick = { onDone("") }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
+                navigationIcon = { IconButton(onClick = { onDone("") }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
             )
         },
     ) { padding ->

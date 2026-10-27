@@ -100,7 +100,7 @@ fun SetupWizardScreen(provider: MusicProvider, onClose: () -> Unit) {
             TopAppBar(
                 title = { Text(stringResource(R.string.setup_title, provider.displayName)) },
                 navigationIcon = {
-                    IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) }
+                    IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) }
                 },
             )
         },

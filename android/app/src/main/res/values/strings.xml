@@ -993,5 +993,4 @@
     <string name="settings_developer_summary">Connections log, technical report, traffic capture.</string>
     <string name="settings_new_look_summary">Sync cards with run numbers and recent history.</string>
     <string name="settings_log_summary">Recent sync results and technical details.</string>
-    <string name="search_clear">Clear search</string>
 </resources>

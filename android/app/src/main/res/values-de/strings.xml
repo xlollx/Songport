@@ -992,5 +992,4 @@
     <string name="settings_developer_summary">Verbindungsprotokoll, technischer Bericht, Traffic-Mitschnitt.</string>
     <string name="settings_new_look_summary">Sync-Karten mit Zahlen und dem Verlauf der letzten Läufe.</string>
     <string name="settings_log_summary">Ergebnisse der letzten Syncs und technische Details.</string>
-    <string name="search_clear">Suche löschen</string>
 </resources>

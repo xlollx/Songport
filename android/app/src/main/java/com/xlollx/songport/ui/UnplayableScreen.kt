@@ -204,7 +204,7 @@ fun UnplayableScreen(provider: MusicProvider, onClose: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.unplayable_title, provider.label(ctx)), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
+                navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
             )
         },
         bottomBar = {

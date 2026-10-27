@@ -990,5 +990,4 @@
     <string name="settings_developer_summary">Bağlantı günlüğü, teknik rapor, trafik kaydı.</string>
     <string name="settings_new_look_summary">Sayılar ve son çalıştırma geçmişiyle senkronizasyon kartları.</string>
     <string name="settings_log_summary">Son senkronizasyon sonuçları ve teknik ayrıntılar.</string>
-    <string name="search_clear">Aramayı temizle</string>
 </resources>

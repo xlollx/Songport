@@ -88,7 +88,7 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.review_title, report?.jobName ?: "")) },
-                navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
+                navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
                 actions = {
                     // The list as text, to keep or send: what was not found and what was matched loosely.
                     if (report != null && (report.unmatchedTracks.isNotEmpty() || report.reviewTracks.isNotEmpty())) {

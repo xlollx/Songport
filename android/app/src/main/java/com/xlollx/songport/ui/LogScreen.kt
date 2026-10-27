@@ -78,7 +78,7 @@ fun LogScreen(data: StoreData, onClose: () -> Unit, onResolve: (String) -> Unit)
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.tab_log)) },
-                navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
+                navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
             )
         },
     ) { padding ->

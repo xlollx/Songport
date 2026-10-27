@@ -140,7 +140,7 @@ fun StatsScreen(data: StoreData, onClose: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.stats_title), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) } },
+                navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
             )
         },
     ) { padding ->

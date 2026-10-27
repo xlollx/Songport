@@ -237,7 +237,7 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                     }
                 } else {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { family = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cancel)) }
+                        IconButton(onClick = { family = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) }
                         ServiceLogo(chosen.first(), 32.dp)
                         Spacer(Modifier.width(12.dp))
                         Text(family!!, style = MaterialTheme.typography.titleMedium)
