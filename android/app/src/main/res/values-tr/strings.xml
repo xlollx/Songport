@@ -889,4 +889,17 @@
     <string name="shazam_share_hint">Shazam\'ı sık mı kullanıyorsunuz? Shazam ayarlarında Spotify veya Apple Music\'i bağlayın: tanıdığınız her şarkı “My Shazam Tracks” çalma listesine eklenir. Songport onu tüm hizmetlerinizde eşitleyebilir.</string>
     <string name="shazam_share_hint_button">Shazam\'larımı eşitle</string>
     <string name="shazam_editor_suggest">Shazam\'larınız: %1$s</string>
+    <string name="syncs_find_hint">Senkronizasyon bul</string>
+    <string name="syncs_find_clear">Aramayı temizle</string>
+    <string name="filter_errors">Hatalar</string>
+    <string name="filter_running">Devam eden</string>
+    <string name="filter_disabled">Devre dışı</string>
+    <string name="filter_color">Renk: %1$s</string>
+    <string name="filter_none">Eşleşen senkronizasyon yok. Başka bir kelime ya da daha az filtre deneyin.</string>
+    <string name="filter_clear">Filtreleri temizle</string>
+    <string name="tile_all_disabled">Tüm senkronizasyonlar kapalı</string>
+    <plurals name="filter_shown">
+        <item quantity="one">%1$d / %2$d senkronizasyon</item>
+        <item quantity="other">%1$d / %2$d senkronizasyon</item>
+    </plurals>
 </resources>

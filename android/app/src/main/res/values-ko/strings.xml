@@ -876,4 +876,16 @@
     <string name="shazam_share_hint">Shazam을 자주 쓰시나요? Shazam 설정에서 Spotify나 Apple Music을 연결하면 인식한 모든 곡이 “My Shazam Tracks” 플레이리스트에 들어갑니다. Songport가 이를 어떤 서비스에든 동기화할 수 있습니다.</string>
     <string name="shazam_share_hint_button">내 Shazam 동기화</string>
     <string name="shazam_editor_suggest">내 Shazam: %1$s</string>
+    <string name="syncs_find_hint">동기화 찾기</string>
+    <string name="syncs_find_clear">검색어 지우기</string>
+    <string name="filter_errors">오류</string>
+    <string name="filter_running">실행 중</string>
+    <string name="filter_disabled">사용 안 함</string>
+    <string name="filter_color">색상: %1$s</string>
+    <string name="filter_none">일치하는 동기화가 없어요. 다른 단어로 찾거나 필터를 줄여 보세요.</string>
+    <string name="filter_clear">필터 지우기</string>
+    <string name="tile_all_disabled">모든 동기화가 꺼져 있어요</string>
+    <plurals name="filter_shown">
+        <item quantity="other">동기화 %2$d개 중 %1$d개</item>
+    </plurals>
 </resources>

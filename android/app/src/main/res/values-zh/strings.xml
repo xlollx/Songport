@@ -877,4 +877,16 @@
     <string name="shazam_share_hint">经常用 Shazam？在 Shazam 设置中连接 Spotify 或 Apple Music：识别到的每首歌都会进入“My Shazam Tracks”歌单。Songport 可以把它同步到你的任何服务。</string>
     <string name="shazam_share_hint_button">同步我的 Shazam</string>
     <string name="shazam_editor_suggest">你的 Shazam：%1$s</string>
+    <string name="syncs_find_hint">查找同步</string>
+    <string name="syncs_find_clear">清除搜索</string>
+    <string name="filter_errors">错误</string>
+    <string name="filter_running">运行中</string>
+    <string name="filter_disabled">已停用</string>
+    <string name="filter_color">颜色：%1$s</string>
+    <string name="filter_none">没有匹配的同步。换个词试试，或减少筛选条件。</string>
+    <string name="filter_clear">清除筛选</string>
+    <string name="tile_all_disabled">所有同步都已停用</string>
+    <plurals name="filter_shown">
+        <item quantity="other">%2$d 个同步中的 %1$d 个</item>
+    </plurals>
 </resources>

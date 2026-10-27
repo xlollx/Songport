@@ -877,4 +877,16 @@
     <string name="shazam_share_hint">Shazamをよく使いますか？Shazamの設定でSpotifyかApple Musicを連携すると、認識した曲がすべて「My Shazam Tracks」プレイリストに入ります。Songportならそれをどのサービスにも同期できます。</string>
     <string name="shazam_share_hint_button">Shazamの曲を同期</string>
     <string name="shazam_editor_suggest">あなたのShazam：%1$s</string>
+    <string name="syncs_find_hint">同期を検索</string>
+    <string name="syncs_find_clear">検索をクリア</string>
+    <string name="filter_errors">エラー</string>
+    <string name="filter_running">実行中</string>
+    <string name="filter_disabled">無効</string>
+    <string name="filter_color">色：%1$s</string>
+    <string name="filter_none">一致する同期はありません。別の言葉で探すか、フィルタを減らしてください。</string>
+    <string name="filter_clear">フィルタをクリア</string>
+    <string name="tile_all_disabled">すべての同期が無効です</string>
+    <plurals name="filter_shown">
+        <item quantity="other">%2$d 件中 %1$d 件の同期</item>
+    </plurals>
 </resources>
