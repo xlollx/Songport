@@ -885,4 +885,17 @@
         <item quantity="one">%d eşitleme sürüyor</item>
         <item quantity="other">%d eşitleme sürüyor</item>
     </plurals>
+    <string name="syncs_find_hint">Senkronizasyon bul</string>
+    <string name="syncs_find_clear">Aramayı temizle</string>
+    <string name="filter_errors">Hatalar</string>
+    <string name="filter_running">Devam eden</string>
+    <string name="filter_disabled">Devre dışı</string>
+    <string name="filter_color">Renk: %1$s</string>
+    <string name="filter_none">Eşleşen senkronizasyon yok. Başka bir kelime ya da daha az filtre deneyin.</string>
+    <string name="filter_clear">Filtreleri temizle</string>
+    <string name="tile_all_disabled">Tüm senkronizasyonlar kapalı</string>
+    <plurals name="filter_shown">
+        <item quantity="one">%1$d / %2$d senkronizasyon</item>
+        <item quantity="other">%1$d / %2$d senkronizasyon</item>
+    </plurals>
 </resources>

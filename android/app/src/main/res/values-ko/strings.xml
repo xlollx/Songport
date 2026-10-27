@@ -872,4 +872,16 @@
     <plurals name="syncs_running">
         <item quantity="other">동기화 %d개 실행 중</item>
     </plurals>
+    <string name="syncs_find_hint">동기화 찾기</string>
+    <string name="syncs_find_clear">검색어 지우기</string>
+    <string name="filter_errors">오류</string>
+    <string name="filter_running">실행 중</string>
+    <string name="filter_disabled">사용 안 함</string>
+    <string name="filter_color">색상: %1$s</string>
+    <string name="filter_none">일치하는 동기화가 없어요. 다른 단어로 찾거나 필터를 줄여 보세요.</string>
+    <string name="filter_clear">필터 지우기</string>
+    <string name="tile_all_disabled">모든 동기화가 꺼져 있어요</string>
+    <plurals name="filter_shown">
+        <item quantity="other">동기화 %2$d개 중 %1$d개</item>
+    </plurals>
 </resources>

@@ -887,4 +887,17 @@
         <item quantity="one">%d sync in corso</item>
         <item quantity="other">%d sync in corso</item>
     </plurals>
+    <string name="syncs_find_hint">Cerca una sync</string>
+    <string name="syncs_find_clear">Cancella la ricerca</string>
+    <string name="filter_errors">Errori</string>
+    <string name="filter_running">In corso</string>
+    <string name="filter_disabled">Disattivate</string>
+    <string name="filter_color">Colore: %1$s</string>
+    <string name="filter_none">Nessuna sync corrisponde. Prova un\'altra parola o meno filtri.</string>
+    <string name="filter_clear">Togli i filtri</string>
+    <string name="tile_all_disabled">Tutte le sync sono disattivate</string>
+    <plurals name="filter_shown">
+        <item quantity="one">%1$d di %2$d sync</item>
+        <item quantity="other">%1$d di %2$d sync</item>
+    </plurals>
 </resources>

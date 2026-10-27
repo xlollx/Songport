@@ -887,4 +887,17 @@
         <item quantity="one">%d Synchronisierung läuft</item>
         <item quantity="other">%d Synchronisierungen laufen</item>
     </plurals>
+    <string name="syncs_find_hint">Sync finden</string>
+    <string name="syncs_find_clear">Suche löschen</string>
+    <string name="filter_errors">Fehler</string>
+    <string name="filter_running">Laufend</string>
+    <string name="filter_disabled">Deaktiviert</string>
+    <string name="filter_color">Farbe: %1$s</string>
+    <string name="filter_none">Kein Sync passt. Versuch ein anderes Wort oder weniger Filter.</string>
+    <string name="filter_clear">Filter zurücksetzen</string>
+    <string name="tile_all_disabled">Alle Syncs sind deaktiviert</string>
+    <plurals name="filter_shown">
+        <item quantity="one">%1$d von %2$d Sync</item>
+        <item quantity="other">%1$d von %2$d Syncs</item>
+    </plurals>
 </resources>

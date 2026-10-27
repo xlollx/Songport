@@ -888,4 +888,17 @@
         <item quantity="one">%d sync running</item>
         <item quantity="other">%d syncs running</item>
     </plurals>
+    <string name="syncs_find_hint">Find a sync</string>
+    <string name="syncs_find_clear">Clear search</string>
+    <string name="filter_errors">Errors</string>
+    <string name="filter_running">Running</string>
+    <string name="filter_disabled">Disabled</string>
+    <string name="filter_color">Colour: %1$s</string>
+    <string name="filter_none">No sync matches. Try another word or fewer filters.</string>
+    <string name="filter_clear">Clear filters</string>
+    <string name="tile_all_disabled">All syncs are off</string>
+    <plurals name="filter_shown">
+        <item quantity="one">%1$d of %2$d sync</item>
+        <item quantity="other">%1$d of %2$d syncs</item>
+    </plurals>
 </resources>

@@ -89,6 +89,7 @@ import androidx.compose.material3.TopAppBar
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -117,8 +118,18 @@ import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.sync.SyncState
 import java.util.UUID
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import com.xlollx.songport.sync.SyncFilter
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 
-@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SyncsScreen(
     data: StoreData,
@@ -133,6 +144,8 @@ fun SyncsScreen(
 ) {
     val ctx = LocalContext.current
     val running by SyncState.running.collectAsState()
+    // Find and filter: kept across rotation; only in use from FIND_MIN_SYNCS syncs on.
+    var filter by rememberSaveable(stateSaver = SyncFilterSaver) { mutableStateOf(SyncFilter()) }
     if (data.jobs.isEmpty()) {
         val anyConnected = remember { Providers.connectors().any { it.requiresAuth && it.isConnected(ctx) } }
         if (anyConnected) {
@@ -151,32 +164,89 @@ fun SyncsScreen(
     val support = SupportPrompt.pending(Store.get(ctx))
     // One open in ten: a small card that goes away by itself at the next open.
     val nudge = support == null && data.settings.appOpens > 0 && SupportPrompt.nudge(Store.get(ctx))
-    LazyColumn(
-        state = listState,
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 100.dp + LocalBottomBarInset.current),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+    val finder = data.jobs.size >= FIND_MIN_SYNCS
+    // A colour or a service no sync uses any more has no chip to turn it off: it is dropped.
+    val effective = if (finder) filter.pruned(data.jobs) else SyncFilter()
+    val runningIds = running.keys
+    val shown = remember(data.jobs, data.reports, runningIds, effective) {
+        effective.select(data.jobs, data.reports, runningIds) { id -> Providers.byId(id)?.let { it.label(ctx) + " " + it.displayName } ?: id }
+    }
+    // Pull to refresh = sync all. The indicator stays only while the gesture and the start are under
+    // way: the cards show the progress. While syncs run, the pull is off (the pill says how many).
+    val pullHaptic = rememberConfirmHaptic()
+    var starting by remember { mutableStateOf(false) }
+    LaunchedEffect(starting) {
+        if (!starting) return@LaunchedEffect
+        delay(400)
+        withTimeoutOrNull(1500) { SyncState.running.first { it.isNotEmpty() } }
+        starting = false
+    }
+    val pullOff = running.isNotEmpty() && !starting
+    val pullGuard = remember { PullGuard() }
+    SideEffect { pullGuard.blocked = pullOff }
+    PullToRefreshBox(
+        isRefreshing = starting,
+        onRefresh = { if (!pullOff) { pullHaptic(); starting = true; onRunAll() } },
+        modifier = Modifier.fillMaxSize(),
     ) {
-        item(key = "hero") {
-            val n = data.jobs.size
-            val last = if (lastRun > 0) " · " + stringResource(R.string.hero_last, formatDate(lastRun)) else ""
-            HeroHeader(stringResource(R.string.hero_title), ctx.resources.getQuantityString(R.plurals.hero_jobs, n, n) + last)
-        }
-        // "Sync all": a pill centred under the header that stays at the top while the list scrolls.
-        // While syncs run it says how many, and a tap brings the first running card into view.
-        if (data.jobs.size >= 2) stickyHeader(key = "runall") {
-            val firstRunning = data.jobs.indexOfFirst { running.containsKey(it.id) }
-            RunAllPill(running.size) {
-                if (firstRunning >= 0) scope.launch { listState.animateScrollToItem(2 + (if (support != null || nudge) 1 else 0) + firstRunning) }
-                else onRunAll()
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize().nestedScroll(pullGuard),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 100.dp + LocalBottomBarInset.current),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            item(key = "hero") {
+                val n = data.jobs.size
+                val last = if (lastRun > 0) " · " + stringResource(R.string.hero_last, formatDate(lastRun)) else ""
+                HeroHeader(stringResource(R.string.hero_title), ctx.resources.getQuantityString(R.plurals.hero_jobs, n, n) + last)
+            }
+            // Under the hero and scrolling with the list, so it never fights the pinned pill below.
+            if (finder) item(key = "finder") {
+                SyncFinder(data.jobs, effective, shown.size) { filter = it }
+            }
+            // "Sync all": a pill centred under the header that stays at the top while the list scrolls.
+            // While syncs run it says how many, and a tap brings the first running card into view.
+            if (data.jobs.size >= 2) stickyHeader(key = "runall") {
+                // Index of the first card: hero, finder, pill, then the support card when there is one.
+                val firstCard = 2 + (if (finder) 1 else 0) + (if (support != null || nudge) 1 else 0)
+                RunAllPill(running.size) {
+                    val firstShown = shown.indexOfFirst { running.containsKey(it.id) }
+                    val firstAll = data.jobs.indexOfFirst { running.containsKey(it.id) }
+                    when {
+                        firstShown >= 0 -> scope.launch { listState.animateScrollToItem(firstCard + firstShown) }
+                        // Running, but hidden by the filter: show every card again, then go to it.
+                        firstAll >= 0 -> {
+                            filter = SyncFilter()
+                            scope.launch {
+                                withTimeoutOrNull(1000) { snapshotFlow { listState.layoutInfo.totalItemsCount }.first { it > firstCard + firstAll } }
+                                listState.animateScrollToItem(firstCard + firstAll)
+                            }
+                        }
+                        else -> onRunAll()
+                    }
+                }
+            }
+            // Una volta sola, dopo la prima sync grande: il momento in cui si vede quanto tempo ha fatto risparmiare.
+            if (support != null) item(key = "support") { SupportCard(support) }
+            else if (nudge) item(key = "nudge") { CoffeeCard() }
+            if (shown.isEmpty()) item(key = "nomatch") { SyncFinderEmpty { filter = SyncFilter() } }
+            items(shown, key = { it.id }) { job ->
+                Box(Modifier.animateItem()) {
+                    JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget)
+                }
             }
         }
-        // Una volta sola, dopo la prima sync grande: il momento in cui si vede quanto tempo ha fatto risparmiare.
-        if (support != null) item(key = "support") { SupportCard(support) }
-        else if (nudge) item(key = "nudge") { CoffeeCard() }
-        items(data.jobs, key = { it.id }) { job ->
-            JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget)
-        }
     }
+}
+
+/**
+ * Turns the pull off while syncs run: it takes what the list leaves of a downward drag at its top,
+ * so the pull-to-refresh around it never sees it. Everything else passes through untouched.
+ */
+private class PullGuard : NestedScrollConnection {
+    var blocked = false
+    override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset =
+        if (blocked && source == NestedScrollSource.UserInput && available.y > 0f) Offset(0f, available.y) else Offset.Zero
 }
 
 /** The "sync all" pill: filled and inviting when idle, a quiet progress state while syncs run. */

@@ -915,4 +915,19 @@
         <item quantity="many">%d синхронизаций выполняется</item>
         <item quantity="other">%d синхронизации выполняется</item>
     </plurals>
+    <string name="syncs_find_hint">Найти синхронизацию</string>
+    <string name="syncs_find_clear">Очистить поиск</string>
+    <string name="filter_errors">Ошибки</string>
+    <string name="filter_running">Выполняются</string>
+    <string name="filter_disabled">Отключённые</string>
+    <string name="filter_color">Цвет: %1$s</string>
+    <string name="filter_none">Ни одна синхронизация не подходит. Попробуйте другое слово или меньше фильтров.</string>
+    <string name="filter_clear">Сбросить фильтры</string>
+    <string name="tile_all_disabled">Все синхронизации отключены</string>
+    <plurals name="filter_shown">
+        <item quantity="one">%1$d из %2$d синхронизации</item>
+        <item quantity="few">%1$d из %2$d синхронизаций</item>
+        <item quantity="many">%1$d из %2$d синхронизаций</item>
+        <item quantity="other">%1$d из %2$d синхронизации</item>
+    </plurals>
 </resources>

@@ -888,4 +888,18 @@
         <item quantity="many">%d sincronizações em andamento</item>
         <item quantity="other">%d sincronizações em andamento</item>
     </plurals>
+    <string name="syncs_find_hint">Encontrar uma sincronização</string>
+    <string name="syncs_find_clear">Limpar a pesquisa</string>
+    <string name="filter_errors">Erros</string>
+    <string name="filter_running">Em andamento</string>
+    <string name="filter_disabled">Desativadas</string>
+    <string name="filter_color">Cor: %1$s</string>
+    <string name="filter_none">Nenhuma sincronização corresponde. Tente outra palavra ou menos filtros.</string>
+    <string name="filter_clear">Limpar filtros</string>
+    <string name="tile_all_disabled">Todas as sincronizações estão desativadas</string>
+    <plurals name="filter_shown">
+        <item quantity="one">%1$d de %2$d sincronização</item>
+        <item quantity="many">%1$d de %2$d sincronizações</item>
+        <item quantity="other">%1$d de %2$d sincronizações</item>
+    </plurals>
 </resources>

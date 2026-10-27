@@ -917,4 +917,19 @@
         <item quantity="many">%d synchronizacji w toku</item>
         <item quantity="other">%d synchronizacji w toku</item>
     </plurals>
+    <string name="syncs_find_hint">Znajdź synchronizację</string>
+    <string name="syncs_find_clear">Wyczyść wyszukiwanie</string>
+    <string name="filter_errors">Błędy</string>
+    <string name="filter_running">W toku</string>
+    <string name="filter_disabled">Wyłączone</string>
+    <string name="filter_color">Kolor: %1$s</string>
+    <string name="filter_none">Żadna synchronizacja nie pasuje. Spróbuj innego słowa lub mniej filtrów.</string>
+    <string name="filter_clear">Wyczyść filtry</string>
+    <string name="tile_all_disabled">Wszystkie synchronizacje są wyłączone</string>
+    <plurals name="filter_shown">
+        <item quantity="one">%1$d z %2$d synchronizacji</item>
+        <item quantity="few">%1$d z %2$d synchronizacji</item>
+        <item quantity="many">%1$d z %2$d synchronizacji</item>
+        <item quantity="other">%1$d z %2$d synchronizacji</item>
+    </plurals>
 </resources>
