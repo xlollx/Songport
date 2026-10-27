@@ -36,8 +36,15 @@ class AccessibilityFlowTest : FlowTest() {
     private fun audit(screen: String) {
         compose.waitForIdle()
         val density = app.resources.displayMetrics.density
+        // With a dialog or a sheet open, only its window: the screen under it cannot be reached.
+        val roots = compose.onAllNodes(androidx.compose.ui.test.isRoot()).fetchSemanticsNodes()
+        val top = roots.last().id
         for (n in compose.onAllNodes(hasClickAction()).fetchSemanticsNodes()) {
             if (n.config.contains(SemanticsProperties.Disabled)) continue
+            if (rootOf(n).id != top) continue
+            // Only controls wholly on screen: a clipped one (scrolled half out) has no size to judge.
+            val b = n.boundsInRoot
+            if (b.width < n.size.width - 1f || b.height < n.size.height - 1f) continue
             val name = label(n)
             // The area that takes the touch: Compose widens small controls to the minimum touch target.
             val r = touchBounds(n)
@@ -47,6 +54,8 @@ class AccessibilityFlowTest : FlowTest() {
             if (w < 47.5f || h < 47.5f) problems += "$screen: \"${name.take(40)}\" is ${"%.0f".format(w)}×${"%.0f".format(h)} dp (< 48)"
         }
     }
+
+    private fun rootOf(n: SemanticsNode): SemanticsNode { var p = n; while (p.parent != null) p = p.parent!!; return p }
 
     private fun touchBounds(n: SemanticsNode): androidx.compose.ui.geometry.Rect = runCatching {
         SemanticsNode::class.java.methods.first { it.name.startsWith("getTouchBoundsInRoot") }.invoke(n) as androidx.compose.ui.geometry.Rect
@@ -104,7 +113,7 @@ class AccessibilityFlowTest : FlowTest() {
         waitText(s(R.string.settings_theme))
         audit("Settings")
         click(s(R.string.settings_language))
-        waitText(s(R.string.settings_language_system))
+        waitText("Deutsch")
         audit("Language dialog")
         click(s(R.string.cancel))
         compose.onNode(hasClickAction() and hasText(s(R.string.settings_log))).apply { performScrollTo(); performClick() }

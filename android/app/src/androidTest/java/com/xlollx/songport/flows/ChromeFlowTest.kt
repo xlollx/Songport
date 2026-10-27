@@ -148,30 +148,37 @@ class ChromeFlowTest : FlowTest() {
 
     // ------------------------------------------------------------------ long and RTL languages
 
-    /** Control labels (buttons, tabs, chips, menu entries) that are cut off or end in an ellipsis on screen. */
+    /** Texts cut off elsewhere (card stats, descriptions limited on purpose): logged for the report, not failed. */
+    private val otherClipped = ArrayList<String>()
+
+    /**
+     * Control labels (buttons, tabs, chips, switches, checkboxes) that end in an ellipsis or do not fit
+     * their width on screen. Texts outside such controls are only logged.
+     */
     private fun clippedControlLabels(screen: String): List<String> {
         val out = ArrayList<String>()
         val textNodes = compose.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.GetTextLayoutResult), useUnmergedTree = true).fetchSemanticsNodes()
         for (n in textNodes) {
-            if (!insideControl(n)) continue
             val results = ArrayList<TextLayoutResult>()
             n.config.getOrNull(SemanticsActions.GetTextLayoutResult)?.action?.invoke(results)
             val r = results.firstOrNull() ?: continue
             val ellipsized = r.lineCount > 0 && r.isLineEllipsized(r.lineCount - 1)
-            if (ellipsized || r.hasVisualOverflow) {
-                out += "$screen: \"${n.config.getOrNull(SemanticsProperties.Text)?.joinToString()}\" ${if (ellipsized) "ellipsized" else "overflows"} (${n.dp(n.size.width.toFloat())}dp wide)"
-            }
+            if (!ellipsized && !r.didOverflowWidth) continue
+            val line = "$screen: \"${n.config.getOrNull(SemanticsProperties.Text)?.joinToString()}\" ${if (ellipsized) "ellipsized" else "too wide"} (${n.dp(n.size.width.toFloat())}dp)"
+            if (controlRole(n) != null) out += line else otherClipped += line
         }
         return out
     }
 
-    private fun insideControl(n: SemanticsNode): Boolean {
+    /** The role of the control [n] labels: the nearest ancestor (or itself) with a role, within its merged node. */
+    private fun controlRole(n: SemanticsNode): Role? {
         var p: SemanticsNode? = n
         while (p != null) {
-            if (p.config.contains(SemanticsActions.OnClick) || p.config.contains(SemanticsProperties.Role)) return true
+            p.config.getOrNull(SemanticsProperties.Role)?.let { return it }
+            if (p.config.isMergingSemanticsOfDescendants) return null
             p = p.parent
         }
-        return false
+        return null
     }
 
     private fun visitEveryTab(): List<String> {
@@ -196,6 +203,7 @@ class ChromeFlowTest : FlowTest() {
         waitText("Sync number 1")
         assertEquals("de", main().resources.configuration.locales[0].language)
         val problems = visitEveryTab()
+        if (otherClipped.isNotEmpty()) log("German, other cut-off texts:\n" + otherClipped.joinToString("\n"))
         assertTrue("Cut-off labels in German:\n" + problems.joinToString("\n"), problems.isEmpty())
     }
 
@@ -211,6 +219,7 @@ class ChromeFlowTest : FlowTest() {
         val lastTab: Rect = navItem(s(R.string.tab_settings)).fetchSemanticsNode().boundsInRoot
         assertTrue("tabs not mirrored: Syncs at ${first.left}, Settings at ${lastTab.left}", first.left > lastTab.left)
         val problems = visitEveryTab()
+        if (otherClipped.isNotEmpty()) log("RTL, other cut-off texts:\n" + otherClipped.joinToString("\n"))
         assertTrue("Cut-off labels right-to-left:\n" + problems.joinToString("\n"), problems.isEmpty())
     }
 }

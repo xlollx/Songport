@@ -103,9 +103,12 @@ abstract class FlowTest {
     protected fun launch(intent: Intent = mainIntent()): MainActivity {
         store.updateSettings { it.copy(appOpens = 0) }
         val before = resumed()
+        val t0 = System.currentTimeMillis()
         app.startActivity(intent)
         val a = waitForNewMain(before)
+        val t1 = System.currentTimeMillis()
         compose.waitForIdle()
+        log("launch ${intent.action}: resumed after ${t1 - t0} ms, idle after ${System.currentTimeMillis() - t1} ms; on screen: ${screenTexts().take(40)}")
         return a
     }
 
@@ -139,7 +142,11 @@ abstract class FlowTest {
 
     /** The app's language, as the in-app picker sets it ("" = the phone's). */
     protected fun setLocale(tag: String) {
-        if (Build.VERSION.SDK_INT < 33) return
+        if (Build.VERSION.SDK_INT < 33) {
+            // Android 12 and older: the app keeps the choice itself (AppLocale) and applies it on the next activity.
+            app.getSharedPreferences("app_locale", Context.MODE_PRIVATE).edit().putString("tag", tag).commit()
+            return
+        }
         val lm = app.getSystemService(LocaleManager::class.java)
         val want = if (tag.isEmpty()) LocaleList.getEmptyLocaleList() else LocaleList.forLanguageTags(tag)
         if (lm.applicationLocales != want) lm.applicationLocales = want
@@ -171,6 +178,12 @@ abstract class FlowTest {
             throw AssertionError("Timed out after $ms ms waiting for $what", e)
         }
     }
+
+    /** Every text on screen now, in all windows (for the log). */
+    protected fun screenTexts(): List<String> = runCatching {
+        compose.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text), useUnmergedTree = true).fetchSemanticsNodes(atLeastOneRootRequired = false)
+            .mapNotNull { it.config.getOrNull(SemanticsProperties.Text)?.joinToString(" ") }
+    }.getOrDefault(emptyList())
 
     protected fun exists(text: String, substring: Boolean = false): Boolean =
         compose.onAllNodesWithText(text, substring = substring, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
@@ -209,7 +222,7 @@ abstract class FlowTest {
      * performScrollTo leaves a node at the bottom edge of its scroller, which on the tabs runs under
      * the glass bar (the bar would get the tap): the scroller moves it up above the bar.
      */
-    private fun clearOfBottomBar(n: SemanticsNodeInteraction) {
+    protected fun clearOfBottomBar(n: SemanticsNodeInteraction) {
         val node = runCatching { n.fetchSemanticsNode() }.getOrNull() ?: return
         val root = topOf(node).id
         val tabs = compose.onAllNodes(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).fetchSemanticsNodes().filter { topOf(it).id == root }

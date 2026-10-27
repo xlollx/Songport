@@ -94,6 +94,7 @@ class BackupFlowTest : FlowTest() {
         toImport.writeText((3 until 7).joinToString("\n") { "${Demo.SONGS[it].artist} - ${Demo.SONGS[it].title}" })
         openTool(R.string.files_title)
         click(s(R.string.csv_import))
+        waitFor("the picked file imported") { runBlocking { LocalFilesProvider.playlists(app) }.isNotEmpty() }
         waitText(s(R.string.csv_imported, 4))
         val files = runBlocking { LocalFilesProvider.playlists(app) }
         assertEquals(1, files.size)

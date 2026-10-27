@@ -49,8 +49,8 @@ class AccountsFlowTest : FlowTest() {
         click(s(R.string.connector_rename))
         compose.onNode(hasSetTextAction()).performTextReplacement("My Deezer")
         click(s(R.string.ok))
+        waitFor("the new name stored") { store.data.settings.connectorNames["deezer"] == "My Deezer" }
         waitText("My Deezer")
-        assertEquals("My Deezer", store.data.settings.connectorNames["deezer"])
 
         // And remove it: gone from the list and signed out.
         clickDesc(s(R.string.more_actions), index = 1)

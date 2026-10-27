@@ -171,7 +171,9 @@ class CardsFlowTest : FlowTest() {
     private fun readQrOnScreen(): String {
         val attempts = listOf(s(R.string.card_share), s(R.string.card_format_square))
         for (anchor in attempts) {
-            compose.onAllNodesWithText(anchor).onFirst().performScrollTo()
+            val node = compose.onAllNodesWithText(anchor).onFirst()
+            node.performScrollTo()
+            clearOfBottomBar(node)
             compose.waitForIdle()
             val bmp = compose.onAllNodes(isRoot())[0].captureToImage().asAndroidBitmap()
             decodeQr(bmp)?.let { return it }

@@ -29,7 +29,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SettingsFlowTest : FlowTest() {
 
-    private fun switchRow(title: String) = compose.onNode(isToggleable() and hasText(title)).also { it.performScrollTo() }
+    private fun switchRow(title: String) = compose.onNode(isToggleable() and hasText(title)).also { it.performScrollTo(); clearOfBottomBar(it) }
 
     @Test
     fun materialYouTurnsOnAndOff() {
