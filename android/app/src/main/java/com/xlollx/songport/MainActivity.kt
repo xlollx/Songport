@@ -53,6 +53,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -269,51 +271,56 @@ private fun MainScreen(
 
     // Link condiviso da un'altra app: apre l'editor con l'origine gia' impostata.
     val shared by sharedText.collectAsState()
+    val shareScope = rememberCoroutineScope()
     LaunchedEffect(shared) {
         val text = shared ?: return@LaunchedEffect
         sharedText.value = null
-        val links = Regex("""https?://\S+|spotify:playlist:\S+""").findAll(text).map { it.value }.filter { PlaylistLinks.parse(it) != null }.distinct().toList()
-        if (links.size >= 2) { compareLinks = links[0] to links[1]; tab = MainActivity.TAB_TOOLS; return@LaunchedEffect }
-        // A service this build does not carry (SoundCloud on Google Play) is no link it can use; a
-        // SoundCloud short link is followed to its set first.
-        val soundCloud = com.xlollx.songport.sync.SoundCloudPublic
-        val ref = (PlaylistLinks.parse(text)
-            ?: (if (Providers.byId(soundCloud.SERVICE) != null) soundCloud.pathFromLink(text)?.let { PlaylistLinks.Ref(soundCloud.SERVICE, it) } else null))
-            ?.takeIf { Providers.byId(it.providerId) != null }
-        val setlist = com.xlollx.songport.sync.SetlistImport.linkIn(text)
-        val trackRef = if (ref == null && setlist == null) com.xlollx.songport.sync.TrackLinks.parse(text) else null
-        // Several "Artist - Title" lines shared as text become a file playlist, like a setlist.
-        val lines = if (ref == null && setlist == null && trackRef == null && text.lines().count { it.isNotBlank() } >= 2)
-            com.xlollx.songport.sync.PlaylistFiles.parseText(text) else emptyList()
-        if (trackRef != null) {
-            sharedLink = text to trackRef
-        } else if (lines.size >= 2) {
-            tab = MainActivity.TAB_SYNCS
-            val name = ctx.getString(R.string.share_file_name) + " " + java.text.SimpleDateFormat("yyyy-MM-dd HH.mm", java.util.Locale.ROOT).format(java.util.Date())
-            val id = LocalFilesProvider.importTracks(ctx, name, lines)
-            editing = newJob().copy(name = name, source = PlaylistRef(provider = LocalFilesProvider.id, playlistId = id, playlistName = id))
-            snackbar.showSnackbar(ctx.getString(R.string.share_text_imported, lines.size, id))
-        } else if (setlist != null) {
-            // A concert setlist becomes a file playlist, the source of a new sync.
-            tab = MainActivity.TAB_SYNCS
-            try {
-                val s = com.xlollx.songport.sync.SetlistImport.fetch(setlist)
-                val id = LocalFilesProvider.importTracks(ctx, s.name, s.tracks)
-                editing = newJob().copy(name = s.name, source = PlaylistRef(provider = LocalFilesProvider.id, playlistId = id, playlistName = id))
-                snackbar.showSnackbar(ctx.getString(R.string.setlist_imported, s.tracks.size))
-            } catch (e: Exception) {
-                snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+        // Handled in the screen's own scope: clearing the text changes this effect's key, which would
+        // cancel it at its first suspension (the "link received" note, a setlist download).
+        shareScope.launch {
+            val links = Regex("""https?://\S+|spotify:playlist:\S+""").findAll(text).map { it.value }.filter { PlaylistLinks.parse(it) != null }.distinct().toList()
+            if (links.size >= 2) { compareLinks = links[0] to links[1]; tab = MainActivity.TAB_TOOLS; return@launch }
+            // A service this build does not carry (SoundCloud on Google Play) is no link it can use; a
+            // SoundCloud short link is followed to its set first.
+            val soundCloud = com.xlollx.songport.sync.SoundCloudPublic
+            val ref = (PlaylistLinks.parse(text)
+                ?: (if (Providers.byId(soundCloud.SERVICE) != null) soundCloud.pathFromLink(text)?.let { PlaylistLinks.Ref(soundCloud.SERVICE, it) } else null))
+                ?.takeIf { Providers.byId(it.providerId) != null }
+            val setlist = com.xlollx.songport.sync.SetlistImport.linkIn(text)
+            val trackRef = if (ref == null && setlist == null) com.xlollx.songport.sync.TrackLinks.parse(text) else null
+            // Several "Artist - Title" lines shared as text become a file playlist, like a setlist.
+            val lines = if (ref == null && setlist == null && trackRef == null && text.lines().count { it.isNotBlank() } >= 2)
+                com.xlollx.songport.sync.PlaylistFiles.parseText(text) else emptyList()
+            if (trackRef != null) {
+                sharedLink = text to trackRef
+            } else if (lines.size >= 2) {
+                tab = MainActivity.TAB_SYNCS
+                val name = ctx.getString(R.string.share_file_name) + " " + java.text.SimpleDateFormat("yyyy-MM-dd HH.mm", java.util.Locale.ROOT).format(java.util.Date())
+                val id = LocalFilesProvider.importTracks(ctx, name, lines)
+                editing = newJob().copy(name = name, source = PlaylistRef(provider = LocalFilesProvider.id, playlistId = id, playlistName = id))
+                snackbar.showSnackbar(ctx.getString(R.string.share_text_imported, lines.size, id))
+            } else if (setlist != null) {
+                // A concert setlist becomes a file playlist, the source of a new sync.
+                tab = MainActivity.TAB_SYNCS
+                try {
+                    val s = com.xlollx.songport.sync.SetlistImport.fetch(setlist)
+                    val id = LocalFilesProvider.importTracks(ctx, s.name, s.tracks)
+                    editing = newJob().copy(name = s.name, source = PlaylistRef(provider = LocalFilesProvider.id, playlistId = id, playlistName = id))
+                    snackbar.showSnackbar(ctx.getString(R.string.setlist_imported, s.tracks.size))
+                } catch (e: Exception) {
+                    snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+                }
+            } else if (ref == null) {
+                snackbar.showSnackbar(ctx.getString(R.string.share_invalid))
+            } else {
+                tab = MainActivity.TAB_SYNCS
+                // Link di YouTube: se il Bridge e' collegato, la sync nasce gia' su quel connettore.
+                val providerId = if (ref.providerId == YouTubeProvider.SERVICE &&
+                    Providers.byId(YouTubeBridgeProvider.SERVICE)?.isConnected(ctx) == true
+                ) YouTubeBridgeProvider.SERVICE else ref.providerId
+                editing = newJob().copy(source = PlaylistRef(provider = providerId, playlistId = ref.playlistId, playlistName = ""))
+                snackbar.showSnackbar(ctx.getString(R.string.share_received))
             }
-        } else if (ref == null) {
-            snackbar.showSnackbar(ctx.getString(R.string.share_invalid))
-        } else {
-            tab = MainActivity.TAB_SYNCS
-            // Link di YouTube: se il Bridge e' collegato, la sync nasce gia' su quel connettore.
-            val providerId = if (ref.providerId == YouTubeProvider.SERVICE &&
-                Providers.byId(YouTubeBridgeProvider.SERVICE)?.isConnected(ctx) == true
-            ) YouTubeBridgeProvider.SERVICE else ref.providerId
-            editing = newJob().copy(source = PlaylistRef(provider = providerId, playlistId = ref.playlistId, playlistName = ""))
-            snackbar.showSnackbar(ctx.getString(R.string.share_received))
         }
     }
 
