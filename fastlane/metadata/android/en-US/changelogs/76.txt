@@ -1,0 +1,1 @@
+Fixes: Spotify keep order with local files in the playlist; Deezer waits instead of failing at its request limit; YouTube rename and visibility keep the description; clearer errors when a service answers with an error page; Last.fm lists of one track; SoundCloud likes beyond the first page; Amazon no longer reopens the player on ordinary errors.
