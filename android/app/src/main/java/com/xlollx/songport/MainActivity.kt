@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
@@ -255,7 +258,8 @@ private fun MainScreen(
     // A sync's target playlist, opened from the track count on its card.
     var targetJob by rememberSaveable(stateSaver = JobSaver) { mutableStateOf<SyncJob?>(null) }
     // Two playlist links shared at once: "how compatible are we?" in Tools.
-    var compareLinks by remember { mutableStateOf<Pair<String, String>?>(null) }
+    // Saved, so a rotation keeps the comparison; dropped once its page is left.
+    var compareLinks by rememberSaveable { mutableStateOf<Pair<String, String>?>(null) }
     // A tool page open in Tools: it brings its own top bar.
     var toolSubpage by remember { mutableStateOf(false) }
     var addConnector by rememberSaveable { mutableStateOf(false) }
@@ -375,6 +379,9 @@ private fun MainScreen(
         else -> null
     }
     if (overlay != null) {
+        // The tabs' Scaffold (and its snackbar host) is not composed under a full-screen page: its
+        // messages ("Link received: choose where to sync it.") show here, above the page's own bottom bar.
+        Box(Modifier.fillMaxSize()) {
         BackAwareScreen(overlay) {
             when {
                 preview != null -> PreviewScreen(preview, onClose = { previewJob = null }) { j -> Scheduler.runNow(ctx, j.id); previewJob = null }
@@ -411,6 +418,8 @@ private fun MainScreen(
                     },
                 )
             }
+        }
+        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 80.dp))
         }
         return
     }
@@ -465,12 +474,13 @@ private fun MainScreen(
             when (tab) {
                 MainActivity.TAB_SYNCS -> ExtendedFloatingActionButton(
                     onClick = { editing = newJob() },
-                    icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                    // The extended button clears its text from the semantics: the icon names it for TalkBack.
+                    icon = { Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.new_sync)) },
                     text = { Text(stringResource(R.string.new_sync)) },
                 )
                 MainActivity.TAB_ACCOUNTS -> ExtendedFloatingActionButton(
                     onClick = { addConnector = true },
-                    icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                    icon = { Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.connector_add)) },
                     text = { Text(stringResource(R.string.connector_add)) },
                 )
             }
@@ -497,7 +507,7 @@ private fun MainScreen(
                     onStats = { statsOpen = true },
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
-                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks, onSubpage = { toolSubpage = it }, onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS }, onStats = { statsOpen = true })
+                MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks, onSubpage = { toolSubpage = it }, onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS }, onStats = { statsOpen = true }, onCompareClosed = { compareLinks = null })
                 else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
             } }
             }

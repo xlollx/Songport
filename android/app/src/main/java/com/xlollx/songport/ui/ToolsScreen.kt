@@ -70,6 +70,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -129,16 +130,19 @@ private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVecto
  */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, onUnplayable: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null, onSubpage: (Boolean) -> Unit = {}, onGoToAccounts: () -> Unit = {}, onStats: () -> Unit = {}) {
+fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, onUnplayable: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null, onSubpage: (Boolean) -> Unit = {}, onGoToAccounts: () -> Unit = {}, onStats: () -> Unit = {}, onCompareClosed: () -> Unit = {}) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
-    var selectedId by remember { mutableStateOf(connected.firstOrNull()?.id) }
+    var selectedId by rememberSaveable { mutableStateOf(connected.firstOrNull()?.id) }
     val provider = connected.firstOrNull { it.id == selectedId } ?: connected.firstOrNull()
-    var open by remember { mutableStateOf<Tool?>(null) }
+    // Saved: a rotation or a fold keeps the open tool on screen.
+    var open by rememberSaveable { mutableStateOf<Tool?>(null) }
     // Two playlist links shared together open the comparison straight away.
     LaunchedEffect(compareLinks) { if (compareLinks != null) open = Tool.COMPAT }
 
     val current = open
+    // Leaving a tool's page; the shared links are done with once their comparison is closed.
+    fun close() { if (open == Tool.COMPAT) onCompareClosed(); open = null }
     // A tool's page has its own top bar with the way back: the tab's "Tools" header steps aside,
     // so there is one header, not two stacked.
     DisposableEffect(current != null) {
@@ -148,7 +152,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
     if (current != null) {
         // The tool's own page: its card, full width, with a snackbar of its own (the tab's is behind us).
         val local = remember { SnackbarHostState() }
-        BackHandler { open = null }
+        BackHandler { close() }
         // Nested in the tab, which keeps the status-bar inset (no second gap); the end of the page
         // clears the glass bottom bar.
         Scaffold(
@@ -157,7 +161,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
             topBar = {
                 TopAppBar(
                     title = { Text(stringResource(current.titleRes)) },
-                    navigationIcon = { IconButton(onClick = { open = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
+                    navigationIcon = { IconButton(onClick = { close() }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
                     windowInsets = WindowInsets(0, 0, 0, 0),
                 )
             },
