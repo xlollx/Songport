@@ -1,1 +1,6 @@
-Shazam: udostępnij utwór z aplikacji Shazam do Songport, a trafi do playlisty w dowolnym Twoim serwisie. Edytor synchronizacji podpowiada też playlistę Shazama, by mieć każdy Shazam wszędzie.
+Songport 1.1.0
+• Songport w liczbach: statystyki synchronizacji jako karta do udostępnienia
+• Shazam: udostępnij utwór, by dodać go do dowolnej playlisty
+• Lista: pociągnij, by zsynchronizować wszystko, wyszukiwanie i filtry, kafelek Szybkich ustawień
+• Ustawienia i Narzędzia w przejrzystych sekcjach
+• Poprawki z nowych testów automatycznych: udostępniane linki, import plików, obrót, dostępność

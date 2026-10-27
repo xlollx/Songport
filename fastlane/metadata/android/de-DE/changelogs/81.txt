@@ -1,1 +1,6 @@
-Shazam: Teile einen Song aus der Shazam-App mit Songport und er landet in einer Playlist auf jedem deiner Dienste. Der Sync-Editor schlägt auch die Shazam-Playlist vor, damit jeder Shazam überall ist.
+Songport 1.1.0
+• Songport in Zahlen: deine Sync-Statistik als teilbare Story-Karte
+• Shazam: Teile einen Song, um ihn in jede Playlist zu legen
+• Sync-Liste: zum Synchronisieren nach unten ziehen, Suche und Filter, Schnelleinstellungs-Kachel
+• Einstellungen und Werkzeuge in klare Abschnitte geordnet
+• Korrekturen aus neuen automatischen Tests: geteilte Links, Dateiimport, Drehen, Barrierefreiheit

@@ -1,1 +1,6 @@
-Shazam: Shazam uygulamasından bir şarkıyı Songport ile paylaşın, herhangi bir hizmetinizdeki çalma listesine eklensin. Eşitleme düzenleyicisi Shazam'ın kendi listesini de öneriyor.
+Songport 1.1.0
+• Rakamlarla Songport: eşitleme istatistiklerin paylaşılabilir kartta
+• Shazam: bir şarkıyı paylaşarak herhangi bir listeye ekle
+• Liste: tümünü eşitlemek için aşağı çek, arama ve filtreler, Hızlı Ayarlar kutucuğu
+• Ayarlar ve Araçlar net bölümlere ayrıldı
+• Yeni otomatik testlerden düzeltmeler: paylaşılan bağlantılar, dosya içe aktarma, döndürme, erişilebilirlik

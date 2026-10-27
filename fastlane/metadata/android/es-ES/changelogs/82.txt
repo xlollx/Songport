@@ -1,1 +1,0 @@
-Desliza hacia abajo la lista para sincronizar todo. Con cinco o más sincronizaciones, búscalas por nombre y fíltralas por estado, servicio o color. Nuevo icono en Ajustes rápidos: Sincronizar todo, con la hora de la última.

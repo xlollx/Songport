@@ -1,1 +1,6 @@
-Shazam : partagez un titre depuis l'app Shazam vers Songport et il arrive dans une playlist sur n'importe quel service. L'éditeur propose aussi la playlist de Shazam, pour avoir chaque Shazam partout.
+Songport 1.1.0
+• Songport en chiffres : vos statistiques en carte à partager
+• Shazam : partagez un titre pour l'ajouter à n'importe quelle playlist
+• Liste : tirez pour tout synchroniser, recherche et filtres, tuile Réglages rapides
+• Réglages et Outils réorganisés en sections claires
+• Corrections issues des nouveaux tests automatiques : liens partagés, import de fichiers, rotation, accessibilité

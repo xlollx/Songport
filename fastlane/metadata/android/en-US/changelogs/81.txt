@@ -1,1 +1,6 @@
-Shazam: share a song from the Shazam app to Songport and it goes into a playlist on any of your services. The sync editor also suggests Shazam's own playlist, to keep every Shazam everywhere.
+Songport 1.1.0
+• Songport in numbers: your sync stats as a shareable story card
+• Shazam: share a song to put it in any playlist
+• Sync list: pull to sync all, search and filters, Quick Settings tile
+• Settings and Tools reorganised into clear sections
+• Fixes found by new automatic tests: shared links and file import, rotation, accessibility

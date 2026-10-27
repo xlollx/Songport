@@ -1,1 +1,0 @@
-Tirez la liste vers le bas pour tout synchroniser. Dès cinq synchros, cherchez-les par nom et filtrez par état, service ou couleur. Nouvelle tuile Réglages rapides : Tout synchroniser, avec l'heure de la dernière synchro.

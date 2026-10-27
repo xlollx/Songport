@@ -1,1 +1,0 @@
-Ziehe die Liste nach unten, um alles zu synchronisieren. Ab fünf Synchronisierungen findest du sie per Name und filterst nach Status, Dienst oder Farbe. Neue Schnelleinstellungs-Kachel: Alle synchronisieren, mit der Zeit der letzten Synchronisierung.

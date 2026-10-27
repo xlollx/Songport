@@ -1,1 +1,0 @@
-Pull down on the sync list to sync everything. With five or more syncs, find them by name and filter by status, service or colour. New Quick Settings tile: Sync all, with the last sync time.

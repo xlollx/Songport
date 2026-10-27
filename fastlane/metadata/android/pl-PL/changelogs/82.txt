@@ -1,1 +1,0 @@
-Pociągnij listę w dół, aby zsynchronizować wszystko. Przy pięciu lub więcej synchronizacjach wyszukasz je po nazwie i przefiltrujesz po stanie, serwisie lub kolorze. Nowy kafelek Szybkich ustawień: Synchronizuj wszystko, z godziną ostatniej.

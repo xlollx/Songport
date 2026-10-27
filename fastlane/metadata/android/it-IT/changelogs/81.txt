@@ -1,1 +1,6 @@
-Shazam: condividi un brano dall'app Shazam a Songport e finisce in una playlist su qualsiasi tuo servizio. L'editor delle sync propone anche la playlist di Shazam, per avere ogni Shazam ovunque.
+Songport 1.1.0
+• Songport in numeri: le statistiche delle tue sync in una card da condividere
+• Shazam: condividi un brano per metterlo in qualsiasi playlist
+• Lista sync: trascina giù per sincronizzare tutto, ricerca e filtri, riquadro nelle impostazioni rapide
+• Impostazioni e Strumenti riordinati in sezioni chiare
+• Correzioni dai nuovi test automatici: link condivisi, importazione file, rotazione, accessibilità
