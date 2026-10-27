@@ -53,4 +53,5 @@
     <string name="unplayable_confirm_body">%1$d 首曲目将换成可播放的版本，%2$d 个条目将被移除。原始条目保留在 Trackhop 的日志中，可以撤销。</string>
     <string name="settings_unplayable_desc">Trackhop 每周查看一次你的播放列表，当有曲目无法再播放时通知你。它不会自行更改任何内容。</string>
     <string name="soundcloud_player_changed">SoundCloud 更改了网页播放器；Trackhop 需要更新</string>
+    <string name="shazam_share_hint">经常用 Shazam？在 Shazam 设置中连接 Spotify 或 Apple Music：识别到的每首歌都会进入“My Shazam Tracks”歌单。Trackhop 可以把它同步到你的任何服务。</string>
 </resources>

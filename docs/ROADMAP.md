@@ -27,7 +27,7 @@ quota meter; own API keys to escape shared quotas.
 - The source playlist's description travels to the created target.
 - Repeats across playlists and liked songs in no playlist, per service, with export.
 - Sort by release year, date added and duration.
-- setlist.fm links (shared or pasted) and Shazam exports become playlists.
+- setlist.fm links (shared or pasted) and Shazam exports become playlists; songs shared from Shazam go into a playlist on any service.
 - ListenBrainz loved tracks writable with the user token.
 - A source or target playlist deleted on the service (or unfollowed on Spotify) stops the sync with
   its name instead of feeding a ghost.

@@ -53,4 +53,5 @@
     <string name="unplayable_confirm_body">%1$d brani ricevono una versione riproducibile, %2$d voci vengono tolte. Gli originali restano nel registro di Trackhop, così puoi annullare.</string>
     <string name="settings_unplayable_desc">Una volta a settimana Trackhop scorre le tue playlist e ti avvisa quando un brano non si può più ascoltare. Non cambia nulla da solo.</string>
     <string name="soundcloud_player_changed">SoundCloud ha cambiato il suo player web; Trackhop va aggiornato</string>
+    <string name="shazam_share_hint">Usi spesso Shazam? Nelle impostazioni di Shazam collega Spotify o Apple Music: ogni brano riconosciuto finisce nella playlist “My Shazam Tracks”. Trackhop può tenerla sincronizzata su qualsiasi tuo servizio.</string>
 </resources>

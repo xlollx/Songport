@@ -889,4 +889,7 @@
         <item quantity="other">%d sincronizações em andamento</item>
     </plurals>
     <string name="error_ampache_subsonic_password">O Ampache recusou a senha. Para apps Subsonic, o Ampache não aceita a senha da sua conta: no Ampache, abra Preferências → Conta, defina uma senha do Subsonic (ou copie sua chave de API) e informe-a aqui como senha.</string>
+    <string name="shazam_share_hint">Usa muito o Shazam? Nas configurações do Shazam, conecte o Spotify ou o Apple Music: cada música reconhecida vai para a playlist “My Shazam Tracks”. O Songport pode mantê-la sincronizada em qualquer um dos seus serviços.</string>
+    <string name="shazam_share_hint_button">Sincronizar meus Shazams</string>
+    <string name="shazam_editor_suggest">Seus Shazams: %1$s</string>
 </resources>

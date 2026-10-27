@@ -873,4 +873,7 @@
         <item quantity="other">동기화 %d개 실행 중</item>
     </plurals>
     <string name="error_ampache_subsonic_password">Ampache가 비밀번호를 거부했어요. Ampache는 Subsonic 앱에서 계정 비밀번호를 받지 않아요. Ampache에서 환경설정 → 계정을 열고 Subsonic 비밀번호를 설정(또는 API 키를 복사)한 뒤 여기에 비밀번호로 입력하세요.</string>
+    <string name="shazam_share_hint">Shazam을 자주 쓰시나요? Shazam 설정에서 Spotify나 Apple Music을 연결하면 인식한 모든 곡이 “My Shazam Tracks” 플레이리스트에 들어갑니다. Songport가 이를 어떤 서비스에든 동기화할 수 있습니다.</string>
+    <string name="shazam_share_hint_button">내 Shazam 동기화</string>
+    <string name="shazam_editor_suggest">내 Shazam: %1$s</string>
 </resources>

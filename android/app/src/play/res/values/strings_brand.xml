@@ -53,4 +53,5 @@
     <string name="unplayable_confirm_body">%1$d tracks get a playable version, %2$d entries are removed. The originals stay in Trackhop\'s log so you can undo.</string>
     <string name="settings_unplayable_desc">Once a week Trackhop looks through your playlists and tells you when a track can no longer be played. Nothing is changed by itself.</string>
     <string name="soundcloud_player_changed">SoundCloud changed its web player; Trackhop needs an update</string>
+    <string name="shazam_share_hint">Shazam a lot? In Shazam\'s settings, connect Spotify or Apple Music: every song you Shazam lands in a “My Shazam Tracks” playlist. Trackhop can keep it in sync on any of your services.</string>
 </resources>

@@ -53,4 +53,5 @@
     <string name="unplayable_confirm_body">%1$d faixas recebem uma versão que toca, %2$d entradas são removidas. Os originais ficam no log do Trackhop para você desfazer.</string>
     <string name="settings_unplayable_desc">Uma vez por semana o Trackhop percorre suas playlists e avisa quando uma faixa não pode mais ser tocada. Nada é alterado sozinho.</string>
     <string name="soundcloud_player_changed">O SoundCloud mudou o player web; o Trackhop precisa de uma atualização</string>
+    <string name="shazam_share_hint">Usa muito o Shazam? Nas configurações do Shazam, conecte o Spotify ou o Apple Music: cada música reconhecida vai para a playlist “My Shazam Tracks”. O Trackhop pode mantê-la sincronizada em qualquer um dos seus serviços.</string>
 </resources>

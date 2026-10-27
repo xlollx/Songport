@@ -43,6 +43,9 @@ import com.xlollx.songport.model.Track
 import com.xlollx.songport.sync.Matcher
 import com.xlollx.songport.sync.SyncEngine
 import com.xlollx.songport.sync.TrackLinks
+import com.xlollx.songport.sync.ShazamShare
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import com.xlollx.songport.sync.TrackLookup
 import kotlinx.coroutines.CancellationException
 
@@ -65,6 +68,7 @@ fun ShareTrackSheet(
     onClose: () -> Unit,
     onAdd: (MusicProvider, Track) -> Unit,
     onMessage: (String) -> Unit,
+    onNewSync: (() -> Unit)? = null,
 ) {
     val ctx = LocalContext.current
     val app = ctx.applicationContext
@@ -85,7 +89,8 @@ fun ShareTrackSheet(
     var source by remember { mutableStateOf<Track?>(null) }
     var sourceFailed by remember { mutableStateOf(false) }
     LaunchedEffect(ref) {
-        source = describe(app, ref, link)
+        // A Shazam share names its song in the text: nothing to ask anyone.
+        source = if (ref.service == ShazamShare.SERVICE) ShazamShare.track(text) else describe(app, ref, link)
         if (source == null) { sourceFailed = true; source = Track(id = ref.trackId, title = "") }
     }
 
@@ -140,6 +145,18 @@ fun ShareTrackSheet(
                     TextButton(onClick = { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } }) { Text(stringResource(R.string.share_sheet_open, fromName)) }
                 }
                 TextButton(onClick = { clipboard.setText(AnnotatedString(link)); onMessage(ctx.getString(R.string.share_sheet_copied)) }) { Text(stringResource(R.string.share_sheet_copy)) }
+            }
+            // From Shazam, and no sync of the Shazam playlist yet: the way to have every Shazam everywhere.
+            if (ref.service == ShazamShare.SERVICE && onNewSync != null &&
+                store.data.jobs.none { it.source.playlistName.contains("shazam", ignoreCase = true) }
+            ) {
+                Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
+                    Column(Modifier.padding(14.dp)) {
+                        Text(stringResource(R.string.shazam_share_hint), style = MaterialTheme.typography.bodySmall)
+                        TextButton(onClick = onNewSync, modifier = Modifier.align(Alignment.End)) { Text(stringResource(R.string.shazam_share_hint_button)) }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
             }
 
             if (targets.isEmpty()) {
@@ -225,6 +242,8 @@ private suspend fun describe(app: android.content.Context, ref: TrackLinks.Ref, 
 
 /** The very recording on [dst], when its id is known there: the link's own service, or song.link's word. */
 private suspend fun exactOn(app: android.content.Context, dst: MusicProvider, ref: TrackLinks.Ref, link: String): Track? {
+    // Shazam's ids are its own: the song is found by searching what it is called.
+    if (ref.service == ShazamShare.SERVICE) return null
     val id = if (TrackLinks.matches(ref.service, dst.serviceId)) ref.trackId
         else runCatching { TrackLinks.viaOdesli(link, dst.serviceId) }.getOrNull()?.trackId ?: return null
     return runCatching { dst.track(app, id) }.getOrNull()?.takeIf { it.title.isNotBlank() }

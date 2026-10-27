@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Sync
@@ -624,6 +625,15 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                         }
                     } else {
                         PlaylistPicker(srcLists, srcPlaylist, label = stringResource(R.string.editor_playlist)) { srcPlaylist = it }
+                        // The playlist Shazam fills on Spotify or Apple Music: one tap to have every Shazam on another service.
+                        val shazam = (srcLists as? Loaded.Ok)?.items?.firstOrNull { it.name.contains("shazam", ignoreCase = true) }
+                        if (shazam != null && srcPlaylist?.id != shazam.id) {
+                            androidx.compose.material3.AssistChip(
+                                onClick = { srcPlaylist = shazam; if (name.isBlank()) name = shazam.name },
+                                label = { Text(stringResource(R.string.shazam_editor_suggest, shazam.name)) },
+                                leadingIcon = { Icon(Icons.Filled.MusicNote, null, Modifier.size(18.dp)) },
+                            )
+                        }
                     }
                 }
             }

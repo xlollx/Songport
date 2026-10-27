@@ -916,4 +916,7 @@
         <item quantity="other">%d синхронизации выполняется</item>
     </plurals>
     <string name="error_ampache_subsonic_password">Ampache отклонил пароль. Для приложений Subsonic Ampache не принимает пароль от учётной записи: в Ampache откройте «Настройки» → «Учётная запись», задайте пароль Subsonic (или скопируйте ключ API) и введите его здесь как пароль.</string>
+    <string name="shazam_share_hint">Часто пользуетесь Shazam? В настройках Shazam подключите Spotify или Apple Music: каждый распознанный трек попадёт в плейлист «My Shazam Tracks». Songport будет синхронизировать его с любым вашим сервисом.</string>
+    <string name="shazam_share_hint_button">Синхронизировать мои Shazam</string>
+    <string name="shazam_editor_suggest">Ваши Shazam: %1$s</string>
 </resources>

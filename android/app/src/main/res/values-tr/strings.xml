@@ -886,4 +886,7 @@
         <item quantity="other">%d eşitleme sürüyor</item>
     </plurals>
     <string name="error_ampache_subsonic_password">Ampache şifreyi reddetti. Ampache, Subsonic uygulamaları için hesap şifrenizi kabul etmez: Ampache\'de Tercihler → Hesap\'ı açın, bir Subsonic şifresi belirleyin (veya API anahtarınızı kopyalayın) ve burada şifre olarak girin.</string>
+    <string name="shazam_share_hint">Shazam\'ı sık mı kullanıyorsunuz? Shazam ayarlarında Spotify veya Apple Music\'i bağlayın: tanıdığınız her şarkı “My Shazam Tracks” çalma listesine eklenir. Songport onu tüm hizmetlerinizde eşitleyebilir.</string>
+    <string name="shazam_share_hint_button">Shazam\'larımı eşitle</string>
+    <string name="shazam_editor_suggest">Shazam\'larınız: %1$s</string>
 </resources>
