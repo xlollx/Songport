@@ -280,7 +280,7 @@ class SpotifyWebClient(private val ctx: Context) {
         val (code, text, wait) = send(req)
         if (code == 401 && retry) { SpotifyBridge.invalidateToken(); return spclient(path, body, retry = false) }
         if (code == 429) throw BridgeException("Spotify asks to slow down (429, retry in $wait s)")
-        if (code !in 200..299) throw BridgeException("Spotify playlist store: HTTP $code on ${path.substringBefore('?')} ${text.take(200)}")
+        if (code !in 200..299) throw BridgeException("Spotify playlist store: HTTP $code on ${path.substringBefore('?')}" + text.take(200).let { if (it.isBlank()) " (no reason given)" else " $it" })
         return runCatching { parseJson(text) }.getOrNull() ?: JsonNull
     }
 
@@ -297,6 +297,20 @@ class SpotifyWebClient(private val ctx: Context) {
         "deltas" to listOf(jsonObj("ops" to ops.toList(), "info" to jsonObj("source" to jsonObj("client" to 5)))),
         "wantResultingRevisions" to false, "wantSyncResult" to false, "nonces" to emptyList<String>(),
     )
+
+    /**
+     * A change to the user's rootlist (the library's playlist list). Unlike a playlist's own
+     * changes, the rootlist refuses a change without the revision it applies to (HTTP 400 with an
+     * empty body): the rootlist is read for its revision and the change names it as baseRevision.
+     * [build] gets the rootlist read, for changes that need an entry's position.
+     */
+    private fun rootlistChange(build: (root: JsonElement) -> JsonObject) {
+        val user = username()
+        val root = spclientGet("/playlist/v2/user/$user/rootlist?decorate=revision,length,attributes,timestamp,owner")
+        val op = build(root)
+        val body = deltas(op).let { d -> root["revision"].str?.let { rev -> JsonObject(d + ("baseRevision" to JsonPrimitive(rev))) } ?: d }
+        spclient("/playlist/v2/user/$user/rootlist/changes", body)
+    }
 
     // ---- account
 
@@ -502,9 +516,9 @@ class SpotifyWebClient(private val ctx: Context) {
             ?: throw BridgeException("Spotify: playlist not created")
         // The store has it; the library lists it only once the rootlist does.
         runCatching {
-            spclient("/playlist/v2/user/${username()}/rootlist/changes", deltas(jsonObj(
-                "kind" to 2, "add" to jsonObj("items" to listOf(jsonObj("uri" to uri, "attributes" to jsonObj("timestamp" to System.currentTimeMillis(), "formatAttributes" to emptyList<String>(), "availableSignals" to emptyList<String>()))), "addFirst" to true),
-            )))
+            rootlistChange {
+                jsonObj("kind" to 2, "add" to jsonObj("items" to listOf(jsonObj("uri" to uri, "attributes" to jsonObj("timestamp" to System.currentTimeMillis(), "formatAttributes" to emptyList<String>(), "availableSignals" to emptyList<String>()))), "addFirst" to true))
+            }
         }
         return PlaylistDto(uri.substringAfterLast(':'), name, 0, owned = true, description = description)
     }
@@ -557,13 +571,11 @@ class SpotifyWebClient(private val ctx: Context) {
      */
     fun setPublic(id: String, public: Boolean) {
         val uri = "spotify:playlist:$id"
-        val user = username()
-        val root = spclientGet("/playlist/v2/user/$user/rootlist?decorate=revision,length,attributes,timestamp,owner")
-        val index = root["contents"]["items"].arr.indexOfFirst { it["uri"].str == uri }
-        if (index < 0) throw BridgeException("Spotify: the playlist is not in your library")
-        spclient("/playlist/v2/user/$user/rootlist/changes", deltas(jsonObj(
-            "kind" to 5, "updateItemAttributes" to jsonObj("index" to index, "newAttributes" to jsonObj("values" to jsonObj("public" to public), "noValue" to emptyList<String>())),
-        )))
+        rootlistChange { root ->
+            val index = root["contents"]["items"].arr.indexOfFirst { it["uri"].str == uri }
+            if (index < 0) throw BridgeException("Spotify: the playlist is not in your library")
+            jsonObj("kind" to 5, "updateItemAttributes" to jsonObj("index" to index, "newAttributes" to jsonObj("values" to jsonObj("public" to public), "noValue" to emptyList<String>())))
+        }
     }
 
     /** Moves "item at from, inserted before to", applied in order: the store's MOV op, a hundred per request. */
@@ -582,9 +594,7 @@ class SpotifyWebClient(private val ctx: Context) {
             gql("removeFromLibrary", jsonObj("uris" to listOf(uri), "libraryItemUris" to listOf(uri)))
         } catch (e: BridgeException) {
             if (e.message?.contains("429") == true) throw e
-            spclient("/playlist/v2/user/${username()}/rootlist/changes", deltas(jsonObj(
-                "kind" to 3, "rem" to jsonObj("items" to listOf(jsonObj("uri" to uri)), "itemsAsKey" to true),
-            )))
+            rootlistChange { jsonObj("kind" to 3, "rem" to jsonObj("items" to listOf(jsonObj("uri" to uri)), "itemsAsKey" to true)) }
         }
     }
 
