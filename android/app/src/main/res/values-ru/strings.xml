@@ -1032,4 +1032,5 @@
     <string name="settings_developer_summary">Журнал подключений, технический отчёт, запись трафика.</string>
     <string name="settings_new_look_summary">Карточки синхронизаций с цифрами и недавней историей.</string>
     <string name="settings_log_summary">Последние результаты синхронизаций и технические детали.</string>
+    <string name="search_clear">Очистить поиск</string>
 </resources>

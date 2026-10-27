@@ -233,7 +233,7 @@ fun PlaylistsScreen(provider: MusicProvider, onClose: () -> Unit) {
                             }
                             var menu by remember { mutableStateOf(false) }
                             Box {
-                                IconButton(enabled = !busy, onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, null) }
+                                IconButton(enabled = !busy, onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, stringResource(R.string.more_actions)) }
                                 DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                                     if (provider.canRenamePlaylists) DropdownMenuItem(text = { Text(stringResource(R.string.manage_rename)) }, onClick = { menu = false; renaming = pl })
                                     // Both entries when the listing does not say which state the playlist is in.

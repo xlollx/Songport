@@ -95,6 +95,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -548,6 +549,18 @@ private sealed class Loaded {
     data class Failed(val message: String) : Loaded()
 }
 
+/** A playlist in the saved instance state, as JSON. */
+private val PlaylistSaver = androidx.compose.runtime.saveable.Saver<Playlist?, String>(
+    save = { it?.let { p -> com.xlollx.songport.net.json.encodeToString(Playlist.serializer(), p) } },
+    restore = { runCatching { com.xlollx.songport.net.json.decodeFromString(Playlist.serializer(), it) }.getOrNull() },
+)
+
+/** The matching rules in the saved instance state, as JSON. */
+private val PolicySaver = androidx.compose.runtime.saveable.Saver<com.xlollx.songport.model.MatchPolicy, String>(
+    save = { com.xlollx.songport.net.json.encodeToString(com.xlollx.songport.model.MatchPolicy.serializer(), it) },
+    restore = { runCatching { com.xlollx.songport.net.json.decodeFromString(com.xlollx.songport.model.MatchPolicy.serializer(), it) }.getOrNull() },
+)
+
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJob?) -> Unit) {
@@ -563,28 +576,29 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
             listOfNotNull(Providers.byId(job.source.provider), Providers.byId(job.target.provider))).distinctBy { it.id }
     }
 
-    var name by remember { mutableStateOf(job.name) }
-    var srcProvider by remember { mutableStateOf(job.source.provider.ifEmpty { available.firstOrNull()?.id ?: "" }) }
-    var srcPlaylist by remember { mutableStateOf<Playlist?>(job.source.playlistId?.let { Playlist(it, job.source.playlistName) }) }
+    // Saved, so a rotation or a fold keeps what was chosen (the job itself travels as JSON).
+    var name by rememberSaveable { mutableStateOf(job.name) }
+    var srcProvider by rememberSaveable { mutableStateOf(job.source.provider.ifEmpty { available.firstOrNull()?.id ?: "" }) }
+    var srcPlaylist by rememberSaveable(stateSaver = PlaylistSaver) { mutableStateOf<Playlist?>(job.source.playlistId?.let { Playlist(it, job.source.playlistName) }) }
     // A pasted link is a source of its own: the field stays, the service's playlist list does not.
-    var linkMode by remember { mutableStateOf(job.source.link != null) }
-    var linkText by remember { mutableStateOf(job.source.link ?: "") }
+    var linkMode by rememberSaveable { mutableStateOf(job.source.link != null) }
+    var linkText by rememberSaveable { mutableStateOf(job.source.link ?: "") }
     // Written by the AI: the source is the AI's own list, kept in a file; nothing to pick.
     val aiSource = job.aiPrompt != null && job.source.provider == com.xlollx.songport.providers.LocalFilesProvider.id
     val writable = available.filter { it.canWrite }
-    var dstProvider by remember { mutableStateOf(job.target.provider.ifEmpty { writable.getOrNull(1)?.id ?: writable.firstOrNull()?.id ?: "" }) }
-    var createNew by remember { mutableStateOf(job.target.playlistId == null) }
-    var dstPlaylist by remember { mutableStateOf<Playlist?>(job.target.playlistId?.let { Playlist(it, job.target.playlistName) }) }
-    var newName by remember { mutableStateOf(if (job.target.playlistId == null) job.target.playlistName else "") }
-    var schedule by remember { mutableStateOf(job.schedule) }
-    var mirror by remember { mutableStateOf(job.mirrorRemovals) }
-    var keepOrder by remember { mutableStateOf(job.keepOrder) }
-    var wifiOnly by remember { mutableStateOf(job.wifiOnly) }
-    var enabled by remember { mutableStateOf(job.enabled) }
-    var color by remember { mutableStateOf(job.color) }
-    var bidirectional by remember { mutableStateOf(job.linkedJobId != null) }
-    var policy by remember { mutableStateOf(job.policy) }
-    var matchingOpen by remember { mutableStateOf(job.policy != com.xlollx.songport.model.MatchPolicy()) }
+    var dstProvider by rememberSaveable { mutableStateOf(job.target.provider.ifEmpty { writable.getOrNull(1)?.id ?: writable.firstOrNull()?.id ?: "" }) }
+    var createNew by rememberSaveable { mutableStateOf(job.target.playlistId == null) }
+    var dstPlaylist by rememberSaveable(stateSaver = PlaylistSaver) { mutableStateOf<Playlist?>(job.target.playlistId?.let { Playlist(it, job.target.playlistName) }) }
+    var newName by rememberSaveable { mutableStateOf(if (job.target.playlistId == null) job.target.playlistName else "") }
+    var schedule by rememberSaveable { mutableStateOf(job.schedule) }
+    var mirror by rememberSaveable { mutableStateOf(job.mirrorRemovals) }
+    var keepOrder by rememberSaveable { mutableStateOf(job.keepOrder) }
+    var wifiOnly by rememberSaveable { mutableStateOf(job.wifiOnly) }
+    var enabled by rememberSaveable { mutableStateOf(job.enabled) }
+    var color by rememberSaveable { mutableStateOf(job.color) }
+    var bidirectional by rememberSaveable { mutableStateOf(job.linkedJobId != null) }
+    var policy by rememberSaveable(stateSaver = PolicySaver) { mutableStateOf(job.policy) }
+    var matchingOpen by rememberSaveable { mutableStateOf(job.policy != com.xlollx.songport.model.MatchPolicy()) }
     var error by remember { mutableStateOf<String?>(null) }
 
     var srcLists by remember { mutableStateOf<Loaded>(Loaded.Loading) }

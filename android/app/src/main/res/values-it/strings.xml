@@ -992,4 +992,5 @@
     <string name="settings_developer_summary">Registro connessioni, rapporto tecnico, cattura traffico.</string>
     <string name="settings_new_look_summary">Schede delle sync con i numeri e la cronologia recente.</string>
     <string name="settings_log_summary">Esiti delle ultime sync e dettagli tecnici.</string>
+    <string name="search_clear">Cancella la ricerca</string>
 </resources>

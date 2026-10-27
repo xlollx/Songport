@@ -972,4 +972,5 @@
     <string name="settings_developer_summary">接続ログ、技術レポート、通信のキャプチャ。</string>
     <string name="settings_new_look_summary">数値と最近の実行履歴を表示する同期カード。</string>
     <string name="settings_log_summary">最近の同期結果と技術的な詳細。</string>
+    <string name="search_clear">検索をクリア</string>
 </resources>

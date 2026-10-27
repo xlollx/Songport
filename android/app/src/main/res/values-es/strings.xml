@@ -999,4 +999,5 @@
     <string name="settings_developer_summary">Registro de conexiones, informe técnico, captura de tráfico.</string>
     <string name="settings_new_look_summary">Tarjetas de sincronización con cifras e historial reciente.</string>
     <string name="settings_log_summary">Resultados recientes y detalles técnicos.</string>
+    <string name="search_clear">Borrar la búsqueda</string>
 </resources>

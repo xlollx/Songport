@@ -972,4 +972,5 @@
     <string name="settings_developer_summary">连接日志、技术报告、流量捕获。</string>
     <string name="settings_new_look_summary">显示数字和近期运行记录的同步卡片。</string>
     <string name="settings_log_summary">最近的同步结果和技术细节。</string>
+    <string name="search_clear">清除搜索</string>
 </resources>
