@@ -106,9 +106,10 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
             Track.KIND_ARTIST -> return api(ctx, "GET", "/Items?UserId=${uid(ctx)}&searchTerm=${Http.enc(track.title)}&IncludeItemTypes=MusicArtist&Recursive=true&Limit=5")["Items"].arr
                 .mapNotNull { toArtist(it) }
         }
-        val q = (listOfNotNull(track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }) + Matcher.searchTitle(track.title)).joinToString(" ")
-        return api(ctx, "GET", "/Items?UserId=${uid(ctx)}&searchTerm=${Http.enc(q)}&IncludeItemTypes=Audio&Recursive=true&Limit=5")["Items"].arr
+        // The search term matches names only ("Metallica Battery" finds nothing): the title, then the artist's songs first.
+        val found = api(ctx, "GET", "/Items?UserId=${uid(ctx)}&searchTerm=${Http.enc(Matcher.searchTitle(track.title))}&IncludeItemTypes=Audio&Recursive=true&Limit=25")["Items"].arr
             .mapNotNull { toTrack(it) }
+        return byArtist(track, found).take(5)
     }
 
     private fun toAlbum(i: JsonElement?): Track? {
@@ -152,10 +153,39 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
             tracks.forEach { api(ctx, "DELETE", "/Users/${uid(ctx)}/FavoriteItems/${it.id}") }
             return
         }
-        tracks.mapNotNull { it.itemId }.chunked(50).forEach { chunk ->
+        val gone = tracks.mapNotNull { it.itemId }
+        // Jellyfin 10.9+ gives every copy of a song the same entry id, and deleting it drops them all:
+        // when a copy has to stay, the list is written back whole.
+        keptAfterRemoving(tracks(ctx, playlistId), gone)?.let { kept ->
+            api(ctx, "POST", "/Playlists/$playlistId", jsonObj("Ids" to kept.map { it.id }))
+            return
+        }
+        gone.chunked(50).forEach { chunk ->
             api(ctx, "DELETE", "/Playlists/$playlistId/Items?EntryIds=${chunk.joinToString(",")}")
         }
     }
 
-    companion object { const val SERVICE = "jellyfin" }
+    companion object {
+        const val SERVICE = "jellyfin"
+
+        /**
+         * The entries left once [gone] (entry ids, one per copy to remove) are removed, or null when
+         * deleting those entry ids removes exactly them. With shared ids the first copies stay.
+         */
+        internal fun keptAfterRemoving(entries: List<Track>, gone: List<String>): List<Track>? {
+            val toDrop = gone.groupingBy { it }.eachCount().toMutableMap()
+            if (toDrop.all { (id, n) -> entries.count { it.itemId == id } <= n }) return null
+            return entries.asReversed().filter { e ->
+                val left = e.itemId?.let { toDrop[it] } ?: 0
+                if (left > 0) toDrop[e.itemId!!] = left - 1
+                left == 0
+            }.asReversed()
+        }
+
+        /** The songs by the searched artist first, the rest after, each group in the server's order. */
+        internal fun byArtist(track: Track, found: List<Track>): List<Track> {
+            val want = track.artists.map { Matcher.normalizeArtist(it) }.filter { it.isNotEmpty() }.toSet()
+            return found.sortedByDescending { t -> t.artists.any { Matcher.normalizeArtist(it) in want } }
+        }
+    }
 }
