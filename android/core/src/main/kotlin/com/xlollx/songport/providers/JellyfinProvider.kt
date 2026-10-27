@@ -15,6 +15,9 @@ import com.xlollx.songport.net.parseJson
 import com.xlollx.songport.net.str
 import com.xlollx.songport.sync.Matcher
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
 
 /** Jellyfin (https://api.jellyfin.org): server personale, nessuna registrazione, nessuna quota. */
 class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
@@ -107,9 +110,13 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
                 .mapNotNull { toArtist(it) }
         }
         // The search term matches names only ("Metallica Battery" finds nothing): the title, then the artist's songs first.
-        val found = api(ctx, "GET", "/Items?UserId=${uid(ctx)}&searchTerm=${Http.enc(Matcher.searchTitle(track.title))}&IncludeItemTypes=Audio&Recursive=true&Limit=25")["Items"].arr
+        suspend fun find(term: String) = api(ctx, "GET", "/Items?UserId=${uid(ctx)}&searchTerm=${Http.enc(term)}&IncludeItemTypes=Audio&Recursive=true&Limit=25")["Items"].arr
             .mapNotNull { toTrack(it) }
-        return byArtist(track, found).take(5)
+        // Jellyfin 10.8 does not fold accents: "energie" misses "Énergie". The title as written, then.
+        val folded = Matcher.searchTitle(track.title)
+        val plain = Matcher.plainTitle(track.title)
+        val found = find(folded).ifEmpty { if (plain.equals(folded, ignoreCase = true)) emptyList() else find(plain) }
+        return Matcher.byArtist(track, found).take(5)
     }
 
     private fun toAlbum(i: JsonElement?): Track? {
@@ -130,7 +137,14 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
     }
 
     override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
-        api(ctx, "POST", "/Playlists/$playlistId", jsonObj("Name" to name))
+        try {
+            api(ctx, "POST", "/Playlists/$playlistId", jsonObj("Name" to name))
+        } catch (e: ProviderException) {
+            // Before 10.9 there is no playlist update: the item itself is written back, renamed, whole.
+            if (e.message?.contains(" 404") != true && e.message?.contains(" 405") != true) throw e
+            val item = api(ctx, "GET", "/Users/${uid(ctx)}/Items/$playlistId").jsonObject
+            api(ctx, "POST", "/Items/$playlistId", JsonObject(item + ("Name" to JsonPrimitive(name))))
+        }
     }
 
     override suspend fun deletePlaylist(ctx: Env, playlistId: String) {
@@ -180,12 +194,6 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
                 if (left > 0) toDrop[e.itemId!!] = left - 1
                 left == 0
             }.asReversed()
-        }
-
-        /** The songs by the searched artist first, the rest after, each group in the server's order. */
-        internal fun byArtist(track: Track, found: List<Track>): List<Track> {
-            val want = track.artists.map { Matcher.normalizeArtist(it) }.filter { it.isNotEmpty() }.toSet()
-            return found.sortedByDescending { t -> t.artists.any { Matcher.normalizeArtist(it) in want } }
         }
     }
 }

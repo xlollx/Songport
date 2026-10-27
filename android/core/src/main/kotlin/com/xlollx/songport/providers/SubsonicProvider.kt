@@ -38,8 +38,9 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
 
     override suspend fun login(ctx: Env, url: String, user: String, secret: String) {
         val base = normalizeUrl(url)
-        val t = Tokens(accessToken = secret, userName = user.trim(), extra = mapOf("url" to base))
-        call(ctx, "ping", emptyList(), t)
+        var t = Tokens(accessToken = secret, userName = user.trim(), extra = mapOf("url" to base))
+        // The version this server speaks, when it refuses ours: every later call is made with it.
+        call(ctx, "ping", emptyList(), t) { v -> t = t.copy(extra = t.extra + ("v" to v)) }
         save(ctx, t)
     }
 
@@ -47,20 +48,28 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
         MessageDigest.getInstance("MD5").digest(s.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
 
     /** Chiamata REST Subsonic; i parametri ripetibili (songIdToAdd…) passano come lista di coppie. */
-    private suspend fun call(ctx: Env, method: String, params: List<Pair<String, String>>, t: Tokens = creds(ctx)): JsonElement {
-        val salt = ByteArray(8).also { SecureRandom().nextBytes(it) }.joinToString("") { "%02x".format(it) }
-        val common = listOf(
-            "u" to t.userName, "t" to md5(t.accessToken + salt), "s" to salt,
-            "v" to "1.16.1", "c" to "Songport", "f" to "json",
-        )
-        val query = (common + params).joinToString("&") { (k, v) -> "${Http.enc(k)}=${Http.enc(v)}" }
-        val resp = Http.send("GET", "${t.extra["url"]}/rest/$method?$query", mapOf("Accept" to "application/json"))
-        if (!resp.ok) throw ProviderException("$displayName: HTTP ${resp.code}")
-        val r = parseJson(resp.body)["subsonic-response"] ?: throw ProviderException("$displayName: unexpected response")
-        if (r["status"].str != "ok") {
+    private suspend fun call(
+        ctx: Env, method: String, params: List<Pair<String, String>>, t: Tokens = creds(ctx),
+        onVersion: (String) -> Unit = { v -> save(ctx, t.copy(extra = t.extra + ("v" to v))) },
+    ): JsonElement {
+        var version = t.extra["v"] ?: API_VERSION
+        while (true) {
+            val salt = ByteArray(8).also { SecureRandom().nextBytes(it) }.joinToString("") { "%02x".format(it) }
+            val common = listOf(
+                "u" to t.userName, "t" to md5(t.accessToken + salt), "s" to salt,
+                "v" to version, "c" to "Songport", "f" to "json",
+            )
+            val query = (common + params).joinToString("&") { (k, v) -> "${Http.enc(k)}=${Http.enc(v)}" }
+            val resp = Http.send("GET", "${t.extra["url"]}/rest/$method?$query", mapOf("Accept" to "application/json"))
+            if (!resp.ok) throw ProviderException("$displayName: HTTP ${resp.code}")
+            val r = parseJson(resp.body)["subsonic-response"] ?: throw ProviderException("$displayName: unexpected response")
+            if (r["status"].str == "ok") return r
+            // Error 30, "server must upgrade": an older server (Airsonic-Advanced speaks 1.15.0) refuses a
+            // newer client version. Its own version is in the answer; once per call, then remembered.
+            val older = olderVersion(r, version)
+            if (older != null) { version = older; onVersion(older); continue }
             throw ProviderException("$displayName: ${r["error"]["message"].str ?: "error ${r["error"]["code"].int}"}")
         }
-        return r
     }
 
     internal fun toTrack(s: JsonElement?, index: Int? = null): Track? {
@@ -108,9 +117,13 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
             }
             Track.KIND_ARTIST -> return call(ctx, "search3", listOf("query" to track.title, "songCount" to "0", "albumCount" to "0", "artistCount" to "5"))["searchResult3"]["artist"].arr.mapNotNull { toArtist(it) }
         }
-        val q = (listOfNotNull(track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }) + Matcher.searchTitle(track.title)).joinToString(" ")
-        return call(ctx, "search3", listOf("query" to q, "songCount" to "5", "albumCount" to "0", "artistCount" to "0"))["searchResult3"]["song"].arr
+        val title = Matcher.searchTitle(track.title)
+        val q = (listOfNotNull(track.artists.firstOrNull()?.let { Matcher.searchArtist(it) }) + title).joinToString(" ")
+        suspend fun songs(query: String, count: Int) = call(ctx, "search3", listOf("query" to query, "songCount" to "$count", "albumCount" to "0", "artistCount" to "0"))["searchResult3"]["song"].arr
             .mapNotNull { toTrack(it) }
+        // Gonic and Ampache match the query against the title alone ("metallica battery" finds nothing):
+        // then the title, with the artist's songs first.
+        return songs(q, 5).ifEmpty { if (q == title) emptyList() else Matcher.byArtist(track, songs(title, 20)).take(5) }
     }
 
     private fun toAlbum(a: JsonElement?): Track? {
@@ -179,8 +192,21 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
         // Rimozione per posizione: gli indici sono quelli letti da getPlaylist, tutti in una chiamata.
         val indexes = tracks.mapNotNull { it.itemId }
         if (indexes.isEmpty()) return
-        call(ctx, "updatePlaylist", listOf("playlistId" to playlistId) + indexes.map { "songIndexToRemove" to it })
+        call(ctx, "updatePlaylist", listOf("playlistId" to playlistId) + indexes.map { "songIndexToRemove" to removalIndex(it) })
     }
 
-    companion object { const val SERVICE = "subsonic" }
+    companion object {
+        const val SERVICE = "subsonic"
+        const val API_VERSION = "1.16.1"
+
+        /**
+         * Ampache drops every query parameter whose value is "0" (PHP truthiness), so the first entry
+         * could not be removed there; "00" reads as 0 everywhere (Go, Java, Python, PHP).
+         */
+        internal fun removalIndex(index: String): String = if (index == "0") "00" else index
+
+        /** The version to retry with when [r] is the "server must upgrade" refusal of a call made with [sent]. */
+        internal fun olderVersion(r: JsonElement?, sent: String): String? =
+            r["version"].str?.takeIf { r["error"]["code"].int == 30 && it.isNotBlank() && it != sent }
+    }
 }

@@ -88,9 +88,26 @@ object Matcher {
         return a.removePrefix("the ").trim()
     }
 
+    /**
+     * For servers whose search matches titles only (Jellyfin, Plex, Gonic, Ampache): the songs by the
+     * searched artist first, the rest after, each group in the server's order.
+     */
+    fun byArtist(track: Track, found: List<Track>): List<Track> {
+        val want = track.artists.map { normalizeArtist(it) }.filter { it.isNotEmpty() }.toSet()
+        return found.sortedByDescending { t -> t.artists.any { normalizeArtist(it) in want } }
+    }
+
     /** Versioni compatte per costruire le query di ricerca. */
     fun searchTitle(title: String): String = normalizeTitle(title).ifBlank { title.trim() }
     fun searchArtist(artist: String): String = normalizeArtist(artist).ifBlank { artist.trim() }
+
+    /**
+     * The title without the decorations [searchTitle] drops (feat., remaster, version brackets) but
+     * with its accents and case: for servers whose search does not fold accents (Jellyfin 10.8 finds
+     * "Café Noir" by "Café", never by "cafe").
+     */
+    fun plainTitle(title: String): String =
+        SPACES.replace(DASH_TAIL.replace(FEAT_TAIL.replace(BRACKET_NOISE.replace(title, " "), " "), " "), " ").trim().ifBlank { title.trim() }
 
     fun levenshtein(a: String, b: String): Int {
         if (a == b) return 0
