@@ -864,4 +864,8 @@
         <item quantity="one">Tout se lit : aucun titre injouable dans %1$d playlist.</item>
         <item quantity="other">Tout se lit : aucun titre injouable dans %1$d playlists.</item>
     </plurals>
+    <string name="soundcloud_label">SoundCloud (liens publics, non officiel)</string>
+    <string name="provider_note_soundcloud">Sets et pages de « J\'aime » publics de SoundCloud, en lecture seule et sans connexion : collez le lien comme source d\'une synchronisation. Interface non officielle : elle peut cesser de fonctionner quand SoundCloud modifie son site.</string>
+    <string name="soundcloud_not_public">Cette playlist SoundCloud est privée ou n\'existe pas : seuls les liens publics fonctionnent</string>
+    <string name="soundcloud_player_changed">SoundCloud a modifié son lecteur web ; Songport doit être mis à jour</string>
 </resources>

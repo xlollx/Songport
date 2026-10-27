@@ -5,6 +5,7 @@ import com.xlollx.songport.providers.Providers.Factory
 /**
  * The connectors of the Android app, in the order the service picker shows them: the engine's,
  * with the web connectors (built in, or through a plugin app) next to their official route.
+ * SoundCloud's public links read an unofficial interface: only in the builds that carry those.
  */
 fun installConnectors() = Providers.install(
     listOf(
@@ -23,4 +24,5 @@ fun installConnectors() = Providers.install(
         Factory(LastFmProvider.SERVICE) { LastFmProvider(it) },
         Factory(ListenBrainzProvider.SERVICE) { ListenBrainzProvider(it) },
     ),
+    singletons = listOfNotNull(LocalFilesProvider, SoundCloudProvider.takeIf { BuiltIn.available }),
 )

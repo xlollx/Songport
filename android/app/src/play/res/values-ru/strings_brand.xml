@@ -52,4 +52,5 @@
     <string name="unplayable_hint">Для каждого Trackhop предлагает версию, которая играет. Примите её, найдите другую, удалите запись или пропустите. Ничего не меняется, пока вы не примените.</string>
     <string name="unplayable_confirm_body">%1$d треков получат играющую версию, %2$d записей будут удалены. Оригиналы остаются в журнале Trackhop, так что это можно отменить.</string>
     <string name="settings_unplayable_desc">Раз в неделю Trackhop просматривает ваши плейлисты и сообщает, если трек больше нельзя воспроизвести. Сам ничего не меняет.</string>
+    <string name="soundcloud_player_changed">SoundCloud изменил свой веб-плеер; Trackhop нужно обновить</string>
 </resources>

@@ -865,4 +865,8 @@
         <item quantity="one">Everything plays: no unplayable track in %1$d playlist.</item>
         <item quantity="other">Everything plays: no unplayable track in %1$d playlists.</item>
     </plurals>
+    <string name="soundcloud_label">SoundCloud (public links, unofficial)</string>
+    <string name="provider_note_soundcloud">Public SoundCloud sets and likes pages, read-only and without signing in: paste the link as the source of a sync. Not an official interface: it can stop working when SoundCloud changes its site.</string>
+    <string name="soundcloud_not_public">This SoundCloud playlist is private or doesn\'t exist: only public links work</string>
+    <string name="soundcloud_player_changed">SoundCloud changed its web player; Songport needs an update</string>
 </resources>

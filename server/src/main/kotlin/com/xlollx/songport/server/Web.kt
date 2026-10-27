@@ -11,6 +11,7 @@ import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.OAuthProvider
 import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.server.Html.h
+import com.xlollx.songport.sync.SoundCloudPublic
 import com.xlollx.songport.sync.SyncState
 import kotlinx.coroutines.runBlocking
 import java.net.InetSocketAddress
@@ -238,7 +239,8 @@ class Web(
             }
             body.append("""<div class="card row"><div><a href="/connectors/${q(p.id)}"><b>${h(p.label(env))}</b></a>${unofficialBadges(p)} $state</div></div>""")
         }
-        val available = Providers.services().filter { s -> added.none { it.id == s.id } }
+        // A link-only source (SoundCloud) is not added: it is offered when a sync is created.
+        val available = Providers.services().filter { s -> !s.linkOnly && added.none { it.id == s.id } }
         if (available.isNotEmpty()) {
             body.append("""<h2>Add a service</h2><form method="post" action="/connectors/add" class="card"><select name="service">""")
             available.forEach { body.append("""<option value="${h(it.id)}">${h(it.displayName)}${if (it is YtmServerProvider) " (unofficial, alpha)" else ""}</option>""") }
@@ -248,8 +250,11 @@ class Web(
     }
 
     /** The web connector is not an official API: said next to its name wherever it is listed. */
-    private fun unofficialBadges(p: MusicProvider): String =
-        if (p is YtmServerProvider) """ <span class="badge">unofficial</span> <span class="alpha">alpha</span>""" else ""
+    private fun unofficialBadges(p: MusicProvider): String = when {
+        p is YtmServerProvider -> """ <span class="badge">unofficial</span> <span class="alpha">alpha</span>"""
+        p.linkOnly -> """ <span class="badge">unofficial</span>"""
+        else -> ""
+    }
 
     private fun connectorPage(r: Req, p: MusicProvider) {
         val body = StringBuilder(notice(r))
@@ -382,11 +387,13 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
     private fun usable(p: MusicProvider) = !p.requiresAuth || p.isConnected(env)
 
     private fun newSync(r: Req) {
-        val list = Providers.connectors().filter(::usable)
+        val connected = Providers.connectors().filter(::usable)
+        // Link-only sources need nothing added or connected: they are always offered as a source.
+        val list = (connected + Providers.services().filter { it.linkOnly }).distinctBy { it.id }
         val src = r.query["src"]?.let { Providers.byId(it) }
         val dst = r.query["dst"]?.let { Providers.byId(it) }
         val body = StringBuilder(notice(r))
-        if (list.isEmpty()) {
+        if (connected.isEmpty()) {
             body.append("""<div class="card">Connect a service first: <a href="/connectors">Services</a>.</div>""")
             return send(r.ex, 200, page("New sync", body.toString()))
         }
@@ -398,7 +405,7 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
             )
             return send(r.ex, 200, page("New sync", body.toString()))
         }
-        val srcLists = runCatching { runBlocking { src.libraryEntries(env, false) + src.playlists(env) } }
+        val srcLists = runCatching { if (src.linkOnly) emptyList() else runBlocking { src.libraryEntries(env, false) + src.playlists(env) } }
         val dstLists = runCatching { runBlocking { dst.libraryEntries(env, true) + dst.playlists(env).filter { it.ownedByMe } } }
         srcLists.exceptionOrNull()?.let { body.append("""<div class="card err">${h(src.label(env))}: ${h(it.message)}</div>""") }
         dstLists.exceptionOrNull()?.let { body.append("""<div class="card err">${h(dst.label(env))}: ${h(it.message)}</div>""") }
@@ -409,7 +416,8 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
         body.append(
             """<form method="post" action="/syncs" class="card">
 <input type="hidden" name="src" value="${h(src.id)}"><input type="hidden" name="dst" value="${h(dst.id)}">
-<label>From ${h(src.label(env))}</label><select name="srcPlaylist" required>${opts(srcLists.getOrDefault(emptyList()))}</select>
+${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input type="url" name="srcLink" required placeholder="https://soundcloud.com/user/sets/…">"""
+            else """<label>From ${h(src.label(env))}</label><select name="srcPlaylist" required>${opts(srcLists.getOrDefault(emptyList()))}</select>"""}
 <label>To ${h(dst.label(env))}</label><select name="dstPlaylist">${if (dst.canCreatePlaylists) "<option value=\"\">A new playlist with the same name</option>" else ""}${opts(dstLists.getOrDefault(emptyList()))}</select>
 <label>Name of the sync (optional)</label><input type="text" name="name">
 <label>Schedule</label><select name="schedule">$schedules</select>
@@ -422,10 +430,18 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
     private fun createSync(r: Req) {
         val src = Providers.byId(r.form["src"].orEmpty()) ?: return redirect(r.ex, "/syncs/new?err=${q("Pick a source.")}")
         val dst = Providers.byId(r.form["dst"].orEmpty()) ?: return redirect(r.ex, "/syncs/new?err=${q("Pick a destination.")}")
-        val srcId = r.form["srcPlaylist"].orEmpty().ifBlank { return redirect(r.ex, "/syncs/new?src=${q(src.id)}&dst=${q(dst.id)}&err=${q("Pick a playlist.")}") }
+        val back = "/syncs/new?src=${q(src.id)}&dst=${q(dst.id)}"
+        // A link-only source (SoundCloud): the pasted link, short links followed, is the playlist,
+        // and reading its name now says at once whether it is public.
+        val linked = if (src.linkOnly) {
+            val path = runBlocking { SoundCloudPublic.pathFromLink(r.form["srcLink"].orEmpty()) }
+                ?: return redirect(r.ex, "$back&err=${q("Not a link to a SoundCloud set or likes page.")}")
+            runCatching { runBlocking { src.playlistInfo(env, path) } }.getOrElse { return redirect(r.ex, "$back&err=${q(it.message ?: "Error")}") }
+        } else null
+        val srcId = linked?.id ?: r.form["srcPlaylist"].orEmpty().ifBlank { return redirect(r.ex, "$back&err=${q("Pick a playlist.")}") }
         val dstId = r.form["dstPlaylist"].orEmpty().ifBlank { null }
         // Names as the services list them; a library entry (liked songs...) keeps its label.
-        val srcName = runCatching { runBlocking { (src.libraryEntries(env, false) + src.playlists(env)).firstOrNull { it.id == srcId }?.name } }.getOrNull() ?: srcId
+        val srcName = linked?.name ?: runCatching { runBlocking { (src.libraryEntries(env, false) + src.playlists(env)).firstOrNull { it.id == srcId }?.name } }.getOrNull() ?: srcId
         val dstName = dstId?.let { id -> runCatching { runBlocking { (dst.libraryEntries(env, true) + dst.playlists(env)).firstOrNull { it.id == id }?.name } }.getOrNull() } ?: srcName
         val job = SyncJob(
             id = UUID.randomUUID().toString(),

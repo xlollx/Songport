@@ -139,6 +139,11 @@ interface MusicProvider {
     val searchParallelism: Int get() = 4
     /** True se il servizio passa da un'app plugin installata a parte (vedi BridgePlugin). */
     val pluginBased: Boolean get() = false
+    /**
+     * True for a source reached only through a pasted public link (SoundCloud): nothing to add or
+     * sign in to, so it stays out of the service list and appears where a link is pasted.
+     */
+    val linkOnly: Boolean get() = false
 
     /** True se questa build (o le impostazioni utente) hanno le credenziali per il servizio. */
     fun isConfigured(ctx: Env): Boolean

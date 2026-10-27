@@ -864,4 +864,8 @@
         <item quantity="one">Todo suena: ninguna canción no reproducible en %1$d lista.</item>
         <item quantity="other">Todo suena: ninguna canción no reproducible en %1$d listas.</item>
     </plurals>
+    <string name="soundcloud_label">SoundCloud (enlaces públicos, no oficial)</string>
+    <string name="provider_note_soundcloud">Listas y páginas de «me gusta» públicas de SoundCloud, solo lectura y sin iniciar sesión: pega el enlace como origen de una sincronización. No es una interfaz oficial: puede dejar de funcionar cuando SoundCloud cambie su web.</string>
+    <string name="soundcloud_not_public">Esta lista de SoundCloud es privada o no existe: solo funcionan los enlaces públicos</string>
+    <string name="soundcloud_player_changed">SoundCloud ha cambiado su reproductor web; Songport necesita una actualización</string>
 </resources>

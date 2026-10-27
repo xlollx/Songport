@@ -851,4 +851,8 @@
     <plurals name="unplayable_none_in">
         <item quantity="other">全部可播放：%1$d 个播放列表中没有无法播放的曲目。</item>
     </plurals>
+    <string name="soundcloud_label">SoundCloud（公开链接，非官方）</string>
+    <string name="provider_note_soundcloud">SoundCloud 的公开歌单和喜欢页面，只读且无需登录：将链接粘贴为同步的来源。这不是官方接口：SoundCloud 修改网站后可能会失效。</string>
+    <string name="soundcloud_not_public">此 SoundCloud 歌单为私密或不存在：仅支持公开链接</string>
+    <string name="soundcloud_player_changed">SoundCloud 更改了网页播放器；Songport 需要更新</string>
 </resources>

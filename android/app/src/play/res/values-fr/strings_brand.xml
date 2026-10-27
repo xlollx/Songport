@@ -52,4 +52,5 @@
     <string name="unplayable_hint">Pour chacun, Trackhop propose une version qui se lit. Acceptez-la, cherchez-en une autre, retirez l\'entrée ou passez. Rien ne change avant d\'appliquer.</string>
     <string name="unplayable_confirm_body">%1$d titres reçoivent une version lisible, %2$d entrées sont retirées. Les originaux restent dans le journal de Trackhop pour pouvoir annuler.</string>
     <string name="settings_unplayable_desc">Une fois par semaine, Trackhop parcourt vos playlists et vous prévient quand un titre ne peut plus être lu. Rien n\'est changé tout seul.</string>
+    <string name="soundcloud_player_changed">SoundCloud a modifié son lecteur web ; Trackhop doit être mis à jour</string>
 </resources>

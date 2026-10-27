@@ -862,4 +862,8 @@
         <item quantity="one">Her şey çalıyor: %1$d çalma listesinde çalınamayan parça yok.</item>
         <item quantity="other">Her şey çalıyor: %1$d çalma listesinde çalınamayan parça yok.</item>
     </plurals>
+    <string name="soundcloud_label">SoundCloud (herkese açık bağlantılar, resmî değil)</string>
+    <string name="provider_note_soundcloud">Herkese açık SoundCloud setleri ve beğeni sayfaları, yalnızca okuma ve oturum açmadan: bağlantıyı bir eşitlemenin kaynağı olarak yapıştırın. Resmî bir arayüz değil: SoundCloud sitesini değiştirdiğinde çalışmayı bırakabilir.</string>
+    <string name="soundcloud_not_public">Bu SoundCloud çalma listesi gizli veya mevcut değil: yalnızca herkese açık bağlantılar çalışır</string>
+    <string name="soundcloud_player_changed">SoundCloud web oynatıcısını değiştirdi; Songport\'un güncellenmesi gerekiyor</string>
 </resources>

@@ -61,4 +61,21 @@ class PlaylistLinksTest {
         assertNull(PlaylistLinks.webUrl("spotify", "__liked__"))
         assertNull(PlaylistLinks.webUrl("csv", "file"))
     }
+
+    @Test fun soundcloud() {
+        val set = PlaylistLinks.Ref("soundcloud", "artist-name/sets/my_set-2")
+        assertEquals(set, ref("https://soundcloud.com/artist-name/sets/my_set-2"))
+        assertEquals(set, ref("https://m.soundcloud.com/artist-name/sets/my_set-2?si=abc&utm_source=clipboard"))
+        assertEquals(set, ref("Listen: https://www.soundcloud.com/artist-name/sets/my_set-2/ now"))
+        assertEquals(PlaylistLinks.Ref("soundcloud", "dj/sets/promo/s-AbC12"), ref("https://soundcloud.com/dj/sets/promo/s-AbC12?si=1"))
+        assertEquals(PlaylistLinks.Ref("soundcloud", "someone/likes"), ref("soundcloud.com/someone/likes"))
+        // A single track, a profile, the signed-in user's own pages and short links are not sets.
+        assertNull(ref("https://soundcloud.com/artist-name/a-track"))
+        assertNull(ref("https://soundcloud.com/artist-name"))
+        assertNull(ref("https://soundcloud.com/you/likes"))
+        assertNull(ref("https://on.soundcloud.com/AbCdEf"))
+        assertEquals(listOf(set, PlaylistLinks.Ref("soundcloud", "someone/likes")),
+            PlaylistLinks.parseAll("https://soundcloud.com/artist-name/sets/my_set-2 https://soundcloud.com/someone/likes"))
+        assertEquals("https://soundcloud.com/dj/sets/promo/s-AbC12", PlaylistLinks.webUrl("soundcloud", "dj/sets/promo/s-AbC12"))
+    }
 }

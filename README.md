@@ -22,8 +22,8 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
 <p align="center"><img src="docs/store/screenshots.png" width="100%" alt="Syncs with their numbers, a new sync, a shared track going into a playlist, how compatible two playlists are, a playlist poster, unplayable tracks and their replacements"></p>
 
 Songport keeps playlists identical across Spotify, Apple Music, YouTube Music, Amazon Music, TIDAL,
-Deezer, Subsonic/Navidrome, Jellyfin and Plex, with Last.fm and ListenBrainz as sources and playlist
-files (CSV, TSV, M3U, iTunes XML, JSON, pasted text) as a bridge to everything else. Everything runs
+Deezer, Subsonic/Navidrome, Jellyfin and Plex, with Last.fm, ListenBrainz and public SoundCloud links
+as sources and playlist files (CSV, TSV, M3U, iTunes XML, JSON, pasted text) as a bridge to everything else. Everything runs
 on the phone: there is no Songport server, and access tokens never leave the device. Free, no ads in
 this build: development lives on voluntary donations.
 
@@ -173,7 +173,8 @@ that is exactly what to report.
 | Last.fm | read-only, beta | username | `LASTFM_API_KEY` or a key entered by the user | Loved tracks only, source only. |
 | ListenBrainz | read-only, beta | username | nothing | Playlists and loved tracks, source only. |
 | Files | complete | | | Import/export through the system file picker, or "Paste a list". |
-| Qobuz, SoundCloud, Pandora | not connectable | | | Partner-only or closed-beta APIs. Use files. |
+| SoundCloud | public links, read-only, unofficial; GitHub/F-Droid build and server only | none: paste a public set or likes link | nothing | No public API for new apps, so the link is read the way soundcloud.com's web player reads it, with the client id the site ships in its scripts. Sets (playlists, albums, EPs, unlisted ones with their secret link) and a user's public likes page; nothing to sign in to, never a destination. ISRC and album only where the uploader filled in the label metadata; otherwise "Artist - Title" is split from the title. Not an official route, may break without notice: the app then says it needs an update. |
+| Qobuz, Pandora | not connectable | | | Partner-only or closed-beta APIs. Use files. |
 
 Own credentials are entered from *Accounts → service card → Use your own credentials*: numbered
 steps, link to the developer portal, redirect URI to copy, verification with a real login.
@@ -279,7 +280,7 @@ MainActivity (tabs: Syncs, Accounts, Tools, Log, Settings)                      
                                                                                         │
                                                        MusicProvider (interface, one instance per account)
                                                        Spotify · AppleMusic · YouTube · Tidal · Deezer
-                                                       Subsonic · Jellyfin · Plex · LastFm · ListenBrainz · LocalFiles
+                                                       Subsonic · Jellyfin · Plex · LastFm · ListenBrainz · SoundCloud · LocalFiles
                                                                                         │
 AuthFlow (PKCE, loopback) · AppleAuthActivity (MusicKit JS) · ServerLoginActivity · TokenStore (encrypted)
                                                                                         ▼
@@ -519,7 +520,9 @@ services mentioned in this project are trademarks of their respective owners.
   6 months.
 - Amazon Music: through the Bridge only, mapped from the web player's own calls; search results are
   what its player would show, playlist by playlist.
-- Qobuz, SoundCloud: no open API, files only.
+- Qobuz: no open API, files only.
+- SoundCloud: public sets and likes pages only, read-only, through the web player's interface (not
+  official). Private playlists still go through files. Not in the Google Play build.
 - Matching is by title, artists and duration (and ISRC when both sides expose it): remixes, live
   versions and covers are kept apart on purpose, and a track with a different title on the
   destination ends up in the review screen rather than being guessed.

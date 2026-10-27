@@ -6,6 +6,7 @@ import com.xlollx.songport.providers.JellyfinProvider
 import com.xlollx.songport.providers.LastFmProvider
 import com.xlollx.songport.providers.ListenBrainzProvider
 import com.xlollx.songport.providers.LocalFilesProvider
+import com.xlollx.songport.providers.SoundCloudProvider
 import com.xlollx.songport.providers.PlexProvider
 import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.providers.Providers.Factory
@@ -17,7 +18,8 @@ import java.io.File
 
 /**
  * The connectors a server can use: the official APIs, the personal servers, and YouTube Music with
- * cookies pasted from a browser (unofficial: [YtmServerProvider]). The other web connectors (Amazon
+ * cookies pasted from a browser (unofficial: [YtmServerProvider]), and public SoundCloud links as a
+ * read-only source (unofficial too: [SoundCloudProvider]). The other web connectors (Amazon
  * Music, Spotify without a key, Apple Music without a key) run the service's own web player in an
  * Android WebView, and Apple Music's official route signs in with MusicKit JS in one too: none of
  * them exists without a phone.
@@ -35,7 +37,7 @@ fun installServerConnectors() = Providers.install(
         Factory(LastFmProvider.SERVICE) { LastFmProvider(it) },
         Factory(ListenBrainzProvider.SERVICE) { ListenBrainzProvider(it) },
     ),
-    singletons = listOf(LocalFilesProvider),
+    singletons = listOf(LocalFilesProvider, SoundCloudProvider),
 )
 
 /** The settings, from the environment (what `docker run -e` sets). */
