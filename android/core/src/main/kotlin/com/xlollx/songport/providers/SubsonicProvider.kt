@@ -63,7 +63,7 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
         return r
     }
 
-    private fun toTrack(s: JsonElement?, index: Int? = null): Track? {
+    internal fun toTrack(s: JsonElement?, index: Int? = null): Track? {
         val id = s["id"].str ?: return null
         return Track(
             id = id,
@@ -73,6 +73,8 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
             durationMs = (s["duration"].long ?: 0) * 1000,
             itemId = index?.toString(),
             year = s["year"].int ?: 0,
+            // OpenSubsonic servers (Navidrome) list the file's ISRCs; older ones a single string or nothing.
+            isrc = s["isrc"].arr.firstNotNullOfOrNull { it.str } ?: s["isrc"].str,
             addedAt = com.xlollx.songport.sync.Durations.parseInstant(s["created"].str),
         )
     }
