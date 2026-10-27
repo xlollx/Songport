@@ -1,0 +1,1 @@
+Shazam: share a song from the Shazam app to Songport and it goes into a playlist on any of your services. The sync editor also suggests Shazam's own playlist, to keep every Shazam everywhere.

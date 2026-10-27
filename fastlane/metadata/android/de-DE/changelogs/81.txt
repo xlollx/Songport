@@ -1,0 +1,1 @@
+Shazam: Teile einen Song aus der Shazam-App mit Songport und er landet in einer Playlist auf jedem deiner Dienste. Der Sync-Editor schlägt auch die Shazam-Playlist vor, damit jeder Shazam überall ist.

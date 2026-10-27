@@ -1,0 +1,1 @@
+Shazam: comparte una canción desde la app Shazam a Songport y va a una playlist en cualquiera de tus servicios. El editor también sugiere la playlist de Shazam, para tener cada Shazam en todas partes.
