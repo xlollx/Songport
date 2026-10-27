@@ -888,4 +888,7 @@
         <item quantity="many">%d sincronizaciones en curso</item>
         <item quantity="other">%d sincronizaciones en curso</item>
     </plurals>
+    <string name="shazam_share_hint">¿Usas mucho Shazam? En los ajustes de Shazam conecta Spotify o Apple Music: cada canción que reconozcas irá a la playlist “My Shazam Tracks”. Songport puede mantenerla sincronizada en cualquiera de tus servicios.</string>
+    <string name="shazam_share_hint_button">Sincronizar mis Shazam</string>
+    <string name="shazam_editor_suggest">Tus Shazam: %1$s</string>
 </resources>

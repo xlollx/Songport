@@ -873,4 +873,7 @@
     <plurals name="syncs_running">
         <item quantity="other">%d 个同步正在运行</item>
     </plurals>
+    <string name="shazam_share_hint">经常用 Shazam？在 Shazam 设置中连接 Spotify 或 Apple Music：识别到的每首歌都会进入“My Shazam Tracks”歌单。Songport 可以把它同步到你的任何服务。</string>
+    <string name="shazam_share_hint_button">同步我的 Shazam</string>
+    <string name="shazam_editor_suggest">你的 Shazam：%1$s</string>
 </resources>

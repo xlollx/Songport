@@ -743,6 +743,8 @@ class SyncEngine(
     /** The same search on any service [dst], for a playlist [playlistId] (its kind decides what is searched) under [policy]. */
     suspend fun searchOn(dst: MusicProvider, playlistId: String?, policy: MatchPolicy, query: String, source: Track? = null): TargetSearch {
         fun hit(t: Track, kind: TargetSearch.Kind) = TargetSearch.Hit(t, if (source != null) Matcher.score(source, t, policy) else 0.0, kind)
+        // A Shazam share names the song but lives on no service: search for what it names.
+        if (ShazamShare.isShazam(query)) ShazamShare.track(query)?.let { return searchOn(dst, playlistId, policy, ShazamShare.query(it), source) }
         // Il link del brano incollato: si aggiunge quello, letto dal servizio quando possibile. I link
         // brevi delle app (amzn.eu, spotify.link...) si seguono fino all'indirizzo vero.
         (TrackLinks.parse(query) ?: resolveShortLink(query)?.let { TrackLinks.parse(it) })?.let { ref0 ->

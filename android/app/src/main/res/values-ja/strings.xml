@@ -873,4 +873,7 @@
     <plurals name="syncs_running">
         <item quantity="other">%d 件の同期を実行中</item>
     </plurals>
+    <string name="shazam_share_hint">Shazamをよく使いますか？Shazamの設定でSpotifyかApple Musicを連携すると、認識した曲がすべて「My Shazam Tracks」プレイリストに入ります。Songportならそれをどのサービスにも同期できます。</string>
+    <string name="shazam_share_hint_button">Shazamの曲を同期</string>
+    <string name="shazam_editor_suggest">あなたのShazam：%1$s</string>
 </resources>

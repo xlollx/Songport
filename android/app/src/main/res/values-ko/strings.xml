@@ -872,4 +872,7 @@
     <plurals name="syncs_running">
         <item quantity="other">동기화 %d개 실행 중</item>
     </plurals>
+    <string name="shazam_share_hint">Shazam을 자주 쓰시나요? Shazam 설정에서 Spotify나 Apple Music을 연결하면 인식한 모든 곡이 “My Shazam Tracks” 플레이리스트에 들어갑니다. Songport가 이를 어떤 서비스에든 동기화할 수 있습니다.</string>
+    <string name="shazam_share_hint_button">내 Shazam 동기화</string>
+    <string name="shazam_editor_suggest">내 Shazam: %1$s</string>
 </resources>

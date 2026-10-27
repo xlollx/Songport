@@ -917,4 +917,7 @@
         <item quantity="many">%d synchronizacji w toku</item>
         <item quantity="other">%d synchronizacji w toku</item>
     </plurals>
+    <string name="shazam_share_hint">Często używasz Shazama? W ustawieniach Shazama połącz Spotify lub Apple Music: każdy rozpoznany utwór trafi do playlisty „My Shazam Tracks”. Songport może ją synchronizować z dowolnym Twoim serwisem.</string>
+    <string name="shazam_share_hint_button">Synchronizuj moje Shazamy</string>
+    <string name="shazam_editor_suggest">Twoje Shazamy: %1$s</string>
 </resources>

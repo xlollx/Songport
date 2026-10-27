@@ -53,4 +53,5 @@
     <string name="unplayable_confirm_body">%1$d titres reçoivent une version lisible, %2$d entrées sont retirées. Les originaux restent dans le journal de Trackhop pour pouvoir annuler.</string>
     <string name="settings_unplayable_desc">Une fois par semaine, Trackhop parcourt vos playlists et vous prévient quand un titre ne peut plus être lu. Rien n\'est changé tout seul.</string>
     <string name="soundcloud_player_changed">SoundCloud a modifié son lecteur web ; Trackhop doit être mis à jour</string>
+    <string name="shazam_share_hint">Vous utilisez souvent Shazam ? Dans les réglages de Shazam, connectez Spotify ou Apple Music : chaque titre reconnu arrive dans la playlist « My Shazam Tracks ». Trackhop peut la garder synchronisée sur n\'importe lequel de vos services.</string>
 </resources>

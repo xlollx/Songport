@@ -30,6 +30,8 @@ object TrackLinks {
         Regex("""deezer\.com/(?:[a-z]{2}/)?track/(\d+)""") to "deezer",
         // TIDAL: https://tidal.com/browse/track/1234567
         Regex("""tidal\.com/(?:browse/)?track/(\d+)""") to "tidal",
+        // Shazam: not a service to add to, but a song to find elsewhere (see ShazamShare).
+        ShazamShare.LINK to ShazamShare.SERVICE,
     )
 
     /** @return il riferimento al brano, oppure null se il testo non e' un link riconosciuto. */
@@ -86,6 +88,7 @@ object TrackLinks {
         "amazon" -> "https://music.amazon.com/tracks/$trackId"
         "deezer" -> "https://www.deezer.com/track/$trackId"
         "tidal" -> "https://tidal.com/browse/track/$trackId"
+        ShazamShare.SERVICE -> "https://www.shazam.com/track/$trackId"
         else -> null
     }
 

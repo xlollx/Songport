@@ -327,6 +327,7 @@ private fun MainScreen(
             onClose = { sharedLink = null },
             onAdd = { p, t -> sharedLink = null; sharedTrack = p to t },
             onMessage = { messages.value = it },
+            onNewSync = { sharedLink = null; tab = MainActivity.TAB_SYNCS; editing = newJob() },
         )
     }
     // One screen on top of the tabs at a time, in this order of precedence. The key names which
