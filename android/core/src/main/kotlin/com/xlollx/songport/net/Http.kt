@@ -26,10 +26,19 @@ object Http {
      */
     @Volatile var onRequest: (host: String) -> Unit = {}
 
+    /**
+     * Tests only: rewrites each request just before it leaves (the contract tests send every host to
+     * a local mock server). Null in the app and on the server, where requests go where addressed.
+     */
+    @Volatile internal var rewrite: ((Request) -> Request)? = null
+
+    /** How [send] waits before a retry. Tests record the waits instead of sleeping through them. */
+    @Volatile internal var pause: suspend (Long) -> Unit = { delay(it) }
+
     /** The interceptor that reports each request to [onRequest]: for every OkHttp client of the app. */
     val hostInterceptor = okhttp3.Interceptor { chain ->
         onRequest(chain.request().url.host)
-        chain.proceed(chain.request())
+        chain.proceed(rewrite?.invoke(chain.request()) ?: chain.request())
     }
 
     /** Longest Retry-After (seconds) honoured silently inside [send]; anything longer is returned as is. */
@@ -80,12 +89,12 @@ object Http {
                 // spinner for minutes; the sync engine waits on its own terms, visibly.
                 val asked = out.header("Retry-After")?.trim()?.toLongOrNull()
                 if (asked != null && asked > MAX_SILENT_WAIT_S) return@withContext out
-                delay((asked?.coerceAtLeast(1) ?: (2L * (attempt + 1))) * 1000)
+                pause((asked?.coerceAtLeast(1) ?: (2L * (attempt + 1))) * 1000)
                 continue
             }
             // 502/503/504: quasi sempre un singhiozzo del servizio, un secondo tentativo basta.
             if (out.code in listOf(502, 503, 504) && attempt < 1) {
-                delay(1500)
+                pause(1500)
                 continue
             }
             return@withContext out

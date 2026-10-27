@@ -42,7 +42,10 @@ class ListenBrainzProvider(override val slot: String = "") : CredentialsProvider
         headers["Accept"] = "application/json"
         token?.let { headers["Authorization"] = "Token $it" }
         val resp = Http.send(method, "$API$path", headers, body?.let { Http.jsonBody(it.toString()) })
-        if (!resp.ok) throw ProviderException("$displayName API ${resp.code}: ${parseJson(resp.body)["error"].str ?: ""}")
+        if (!resp.ok) {
+            val why = runCatching { parseJson(resp.body)["error"].str ?: "" }.getOrElse { resp.body.take(160) }
+            throw ProviderException("$displayName API ${resp.code}: $why")
+        }
         return parseJson(resp.body)
     }
 

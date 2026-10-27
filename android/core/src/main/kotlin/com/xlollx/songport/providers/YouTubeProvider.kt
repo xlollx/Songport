@@ -94,7 +94,7 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
     }
 
     override fun errorMessage(resp: HttpResponse): String {
-        val e = parseJson(resp.body)["error"]
+        val e = runCatching { parseJson(resp.body)["error"] }.getOrNull()
         val reason = e["errors"][0]["reason"].str
         if (reason == "quotaExceeded") return "daily YouTube API quota exceeded, retry tomorrow"
         return e["message"].str ?: super.errorMessage(resp)
@@ -251,20 +251,33 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
         }
     }
 
+    /**
+     * The playlist's snippet as it is, with [title] in place of its own when given. An update
+     * replaces the whole part it names: what it leaves out (the description) would be erased.
+     */
+    private suspend fun snippet(ctx: Env, playlistId: String, title: String? = null): Map<String, Any?> {
+        val s = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlists?part=snippet&id=$playlistId") }["items"][0]["snippet"]
+        val current = s["title"].str ?: throw ProviderException("$displayName: playlist $playlistId not found")
+        return mapOf("title" to (title ?: current), "description" to s["description"].str, "defaultLanguage" to s["defaultLanguage"].str, "tags" to s["tags"])
+            .filterValues { !it.isNullish() }
+    }
+
+    private fun Any?.isNullish(): Boolean = this == null || this is kotlinx.serialization.json.JsonNull
+
     override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
+        val snippet = snippet(ctx, playlistId, title = name)
         counted(ctx, QuotaMeter.COST_WRITE) {
-            api(ctx, "PUT", "$API/playlists?part=snippet", jsonObj("id" to playlistId, "snippet" to mapOf("title" to name)))
+            api(ctx, "PUT", "$API/playlists?part=snippet", jsonObj("id" to playlistId, "snippet" to snippet))
         }
     }
 
-    /** An update must carry the title as well, so the current one is read first. */
+    /** An update must carry the title as well, so the current snippet is read first. */
     override val canSetVisibility: Boolean get() = true
     override suspend fun setPlaylistVisibility(ctx: Env, playlistId: String, public: Boolean) {
-        val title = counted(ctx, QuotaMeter.COST_LIST) { api(ctx, "GET", "$API/playlists?part=snippet&id=$playlistId") }["items"][0]["snippet"]["title"].str
-            ?: throw ProviderException("$displayName: playlist $playlistId not found")
+        val snippet = snippet(ctx, playlistId)
         counted(ctx, QuotaMeter.COST_WRITE) {
             api(ctx, "PUT", "$API/playlists?part=snippet,status", jsonObj(
-                "id" to playlistId, "snippet" to mapOf("title" to title), "status" to mapOf("privacyStatus" to if (public) "public" else "private"),
+                "id" to playlistId, "snippet" to snippet, "status" to mapOf("privacyStatus" to if (public) "public" else "private"),
             ))
         }
     }

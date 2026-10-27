@@ -49,7 +49,7 @@ class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
         val key = apiKey(ctx)
         if (key.isBlank()) throw ProviderException(ctx.text("not_configured"))
         val resp = Http.send("GET", "https://ws.audioscrobbler.com/2.0/?" + Http.query(params + mapOf("api_key" to key, "format" to "json")))
-        val j = parseJson(resp.body)
+        val j = runCatching { parseJson(resp.body) }.getOrElse { if (resp.ok) throw it else kotlinx.serialization.json.JsonNull }
         j["error"].int?.let { throw ProviderException("$displayName: ${j["message"].str ?: "error $it"}") }
         if (!resp.ok) throw ProviderException("$displayName: HTTP ${resp.code}")
         return j
@@ -67,7 +67,7 @@ class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
         val user = creds(ctx).userName
         if (playlistId == MusicProvider.RECENT_ID) {
             val j = call(ctx, mapOf("method" to "user.getrecenttracks", "user" to user, "limit" to "200"))
-            return j["recenttracks"]["track"].arr.mapNotNull { t ->
+            return list(j["recenttracks"]["track"]).mapNotNull { t ->
                 if (t["@attr"]["nowplaying"].str == "true") return@mapNotNull null
                 val title = t["name"].str ?: return@mapNotNull null
                 val artist = t["artist"]["#text"].str ?: t["artist"]["name"].str
@@ -86,7 +86,7 @@ class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
             val j = call(ctx, mapOf("method" to "user.getlovedtracks", "user" to user, "limit" to "200", "page" to page.toString()))
             val root = j["lovedtracks"]
             pages = root["@attr"]["totalPages"].str?.toIntOrNull() ?: 1
-            for (t in root["track"].arr) {
+            for (t in list(root["track"])) {
                 val title = t["name"].str ?: continue
                 out += Track(
                     id = t["mbid"].str?.takeIf { it.isNotBlank() } ?: t["url"].str ?: "$title|${t["artist"]["name"].str}",
@@ -98,6 +98,9 @@ class LastFmProvider(override val slot: String = "") : CredentialsProvider() {
         } while (page <= pages && page <= 50)
         return out
     }
+
+    /** Last.fm's JSON comes from its XML: a list of one arrives as the object itself, not an array of one. */
+    private fun list(e: JsonElement?): List<JsonElement> = if (e is kotlinx.serialization.json.JsonObject) listOf(e) else e.arr
 
     override suspend fun search(ctx: Env, track: Track): List<Track> = unsupported(ctx)
     override suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist = unsupported(ctx)

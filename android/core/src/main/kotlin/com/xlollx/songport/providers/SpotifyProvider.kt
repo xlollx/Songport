@@ -375,11 +375,44 @@ open class SpotifyProvider(override val slot: String = "") : OAuthProvider() {
         api(ctx, "PUT", "$API/playlists/$playlistId", jsonObj("name" to name))
     }
 
+    /**
+     * Every entry of the playlist in its position: the id of the ones [tracks] lists, null for the
+     * ones it skips (local files, entries the catalogue lost). Spotify's positions count them all.
+     */
+    private suspend fun positions(ctx: Env, playlistId: String): MutableList<String?> {
+        val out = ArrayList<String?>()
+        var url: String? = "$API/playlists/$playlistId/items?limit=100&fields=" + Http.enc("next,items(item(id,is_local),track(id,is_local))")
+        while (url != null) {
+            val j = try {
+                api(ctx, "GET", url)
+            } catch (e: ProviderException) {
+                if (e.code != 403 || !url.contains("/items?")) throw e
+                api(ctx, "GET", url.replace("/items?", "/tracks?"))
+            }
+            for (item in j["items"].arr) {
+                val t = item["item"].takeUnless { it.isNullish } ?: item["track"]
+                out += if (t.isNullish || t["is_local"].bool == true) null else t["id"].str
+            }
+            url = j["next"].str
+        }
+        return out
+    }
+
     override val canReorder: Boolean get() = canWrite
     override suspend fun reorderTracks(ctx: Env, playlistId: String, current: List<Track>, ordered: List<Track>) {
         val moves = com.xlollx.songport.sync.Reorder.moves(current.map { it.id }, ordered.map { it.id })
+        if (moves.isEmpty()) return
+        // [current] leaves out what [tracks] skips, so its indices are not the playlist's positions
+        // once a local file sits before them: the moves are worked out on the whole playlist.
+        val all = positions(ctx, playlistId)
+        if (all.filterNotNull() != current.map { it.id }) throw ProviderException("$displayName: the playlist changed while it was being reordered")
         var path = "items"
-        for ((from, to) in moves) {
+        for ((listedFrom, listedTo) in moves) {
+            val from = all.indices.filter { all[it] != null }[listedFrom]
+            val moved = all.removeAt(from)
+            val listed = all.indices.filter { all[it] != null }
+            val to = if (listedTo < listed.size) listed[listedTo] else (listed.lastOrNull()?.plus(1) ?: 0)
+            all.add(to, moved)
             val body = jsonObj("range_start" to from, "insert_before" to com.xlollx.songport.sync.Reorder.insertBefore(from, to), "range_length" to 1)
             try {
                 api(ctx, "PUT", "$API/playlists/$playlistId/$path", body)

@@ -130,7 +130,7 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
         headers.putAll(apiHeaders(ctx))
         val resp = Http.send(method, apiUrl(url), headers, body?.let { Http.jsonBody(it.toString()) })
         if (!resp.ok) {
-            val detail = parseJson(resp.body)["errors"][0]["detail"].str ?: resp.body.take(200).ifBlank { "no detail" }
+            val detail = runCatching { parseJson(resp.body)["errors"][0]["detail"].str }.getOrNull() ?: resp.body.take(200).ifBlank { "no detail" }
             // 401 sul developer token = scaduto; 403 con user token = sessione da rifare.
             if (resp.code == 401 && needsUser) ctx.tokens.clear(id)
             // An Apple ID without an Apple Music subscription: 403 from the public API, or a 400 saying

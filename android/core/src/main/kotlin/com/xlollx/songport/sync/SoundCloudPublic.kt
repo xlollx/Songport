@@ -11,6 +11,7 @@ import com.xlollx.songport.net.long
 import com.xlollx.songport.net.parseJson
 import com.xlollx.songport.net.str
 import kotlinx.serialization.json.JsonElement
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 /**
  * Public SoundCloud sets and likes, read the way soundcloud.com's own web player reads them: no
@@ -124,6 +125,10 @@ object SoundCloudPublic {
         throw PlayerChanged("no client id in the web player's scripts")
     }
 
+    /** [url] without its client_id parameter, wherever it stands in the query. */
+    fun withoutClientId(url: String): String =
+        url.toHttpUrlOrNull()?.newBuilder()?.removeAllQueryParameters("client_id")?.build()?.toString() ?: url
+
     private fun withClientId(url: String, id: String) = url + (if ('?' in url) "&" else "?") + "client_id=$id"
 
     /** GET on the API with the client id; a refused id is fetched again once before giving up. */
@@ -172,7 +177,7 @@ object SoundCloudPublic {
             val out = ArrayList<Track>()
             var next: String? = "$API/users/$uid/likes?limit=200&linked_partitioning=1"
             while (next != null && out.size < MAX_TRACKS) {
-                val (page, more) = likesPage(api(next.replace(Regex("""[?&]client_id=[^&]*"""), "")))
+                val (page, more) = likesPage(api(withoutClientId(next)))
                 out += page
                 next = more
             }
