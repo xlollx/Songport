@@ -1,6 +1,8 @@
 package com.xlollx.songport.flows
 
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -64,8 +66,9 @@ class UnplayableFlowTest : FlowTest() {
         waitText(s(R.string.tools_unplayable_title))
         // Pick YouTube Music in the service row of Tools.
         compose.onAllNodes(hasClickAction() and hasText("YouTube Music"))[0].apply { performScrollTo(); performClick() }
-        click(s(R.string.tools_unplayable_title))
-        waitText(s(R.string.unplayable_unsupported, "YouTube Music"))
+        // Tools says it on the row itself, which is dimmed and does not open.
+        waitText(s(R.string.tools_unavailable_on, "YouTube Music"))
+        compose.onAllNodes(hasClickAction() and hasText(s(R.string.tools_unplayable_title))).onFirst().assertIsNotEnabled()
     }
 
     @Test

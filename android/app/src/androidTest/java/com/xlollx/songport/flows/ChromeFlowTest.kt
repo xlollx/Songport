@@ -98,7 +98,7 @@ class ChromeFlowTest : FlowTest() {
             // The control lowest on the page (the tabs and the floating button aside) clears the bar.
             val fabText = when (tab) { R.string.tab_syncs -> s(R.string.new_sync); R.string.tab_accounts -> s(R.string.connector_add); else -> null }
             val last = compose.onAllNodes(hasClickAction()).fetchSemanticsNodes()
-                .filter { it.config.getOrNull(SemanticsProperties.Role) != Role.Tab && (fabText == null || it.config.getOrNull(SemanticsProperties.ContentDescription)?.contains(fabText) != true) }
+                .filter { !it.config.contains(SemanticsProperties.Disabled) && it.config.getOrNull(SemanticsProperties.Role) != Role.Tab && (fabText == null || it.config.getOrNull(SemanticsProperties.ContentDescription)?.contains(fabText) != true) }
                 .maxByOrNull { it.boundsInRoot.bottom } ?: throw AssertionError("${s(tab)}: no control")
             val lastName = (last.config.getOrNull(SemanticsProperties.Text) ?: last.config.getOrNull(SemanticsProperties.ContentDescription))?.joinToString()
             assertTrue("${s(tab)}: the last control ($lastName, bottom ${last.boundsInRoot.bottom}) ends under the bar (top $top)", last.boundsInRoot.bottom <= top + 1)

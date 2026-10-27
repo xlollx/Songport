@@ -49,7 +49,7 @@ class NewFeaturesFlowTest : FlowTest() {
         waitText("Road Trip")
         clickDesc(s(R.string.more_actions))
         click(s(R.string.job_color))
-        waitText(s(R.string.job_color_default))
+        waitNode("the colour swatches", hasContentDescription(s(R.string.job_color_default)))
         click(s(R.string.color_teal))
         waitFor("teal stored") { store.data.jobs.single().color == "teal" }
         // Opened again, the picker has Teal ticked.
