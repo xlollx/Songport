@@ -163,8 +163,10 @@ class ChromeFlowTest : FlowTest() {
             n.config.getOrNull(SemanticsActions.GetTextLayoutResult)?.action?.invoke(results)
             val r = results.firstOrNull() ?: continue
             val ellipsized = r.lineCount > 0 && r.isLineEllipsized(r.lineCount - 1)
-            if (!ellipsized && !r.didOverflowWidth) continue
-            val line = "$screen: \"${n.config.getOrNull(SemanticsProperties.Text)?.joinToString()}\" ${if (ellipsized) "ellipsized" else "too wide"} (${n.dp(n.size.width.toFloat())}dp)"
+            // An ellipsis is what a reader sees of a cut: Compose's overflow flags are set for any text
+            // laid out at its intrinsic width here, so they say nothing.
+            if (!ellipsized) continue
+            val line = "$screen: \"${n.config.getOrNull(SemanticsProperties.Text)?.joinToString()}\" ellipsized (${n.dp(n.size.width.toFloat())}dp)"
             if (controlRole(n) != null) out += line else otherClipped += line
         }
         return out
