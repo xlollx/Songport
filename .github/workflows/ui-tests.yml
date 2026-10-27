@@ -9,8 +9,6 @@ name: UI tests
 # and the log are kept as artifacts.
 on:
   workflow_dispatch:
-  push:
-    branches: [ ui-tests-110 ] # TEMPORARY: removed before the final commit
 
 permissions:
   contents: read
