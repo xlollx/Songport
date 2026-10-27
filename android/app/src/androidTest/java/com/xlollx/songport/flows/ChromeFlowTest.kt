@@ -85,7 +85,7 @@ class ChromeFlowTest : FlowTest() {
             // The floating button, where there is one, sits above the bar.
             val fab = when (tab) { R.string.tab_syncs -> s(R.string.new_sync); R.string.tab_accounts -> s(R.string.connector_add); else -> null }
             if (fab != null) {
-                val b = compose.onAllNodes(hasClickAction() and hasText(fab)).onFirst().fetchSemanticsNode().boundsInRoot
+                val b = compose.onAllNodes(hasClickAction() and (hasText(fab) or androidx.compose.ui.test.hasContentDescription(fab))).onFirst().fetchSemanticsNode().boundsInRoot
                 assertTrue("${s(tab)}: the button \"$fab\" overlaps the bar", b.bottom <= top + 1)
             }
         }
@@ -102,13 +102,15 @@ class ChromeFlowTest : FlowTest() {
 
     private fun statusBarIconsDark(): Boolean {
         var light = false
-        instr.runOnMainSync { val a = main(); light = WindowCompat.getInsetsController(a.window, a.window.decorView).isAppearanceLightStatusBars }
+        val a = main()
+        instr.runOnMainSync { light = WindowCompat.getInsetsController(a.window, a.window.decorView).isAppearanceLightStatusBars }
         return light
     }
 
     private fun navBarIconsDark(): Boolean {
         var light = false
-        instr.runOnMainSync { val a = main(); light = WindowCompat.getInsetsController(a.window, a.window.decorView).isAppearanceLightNavigationBars }
+        val a = main()
+        instr.runOnMainSync { light = WindowCompat.getInsetsController(a.window, a.window.decorView).isAppearanceLightNavigationBars }
         return light
     }
 

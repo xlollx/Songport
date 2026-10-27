@@ -39,12 +39,18 @@ class AccessibilityFlowTest : FlowTest() {
         for (n in compose.onAllNodes(hasClickAction()).fetchSemanticsNodes()) {
             if (n.config.contains(SemanticsProperties.Disabled)) continue
             val name = label(n)
-            val w = n.size.width / density
-            val h = n.size.height / density
+            // The area that takes the touch: Compose widens small controls to the minimum touch target.
+            val r = touchBounds(n)
+            val w = r.width / density
+            val h = r.height / density
             if (name.isBlank()) problems += "$screen: a control without a name (${"%.0f".format(w)}×${"%.0f".format(h)} dp at ${n.boundsInRoot.topLeft})"
             if (w < 47.5f || h < 47.5f) problems += "$screen: \"${name.take(40)}\" is ${"%.0f".format(w)}×${"%.0f".format(h)} dp (< 48)"
         }
     }
+
+    private fun touchBounds(n: SemanticsNode): androidx.compose.ui.geometry.Rect = runCatching {
+        SemanticsNode::class.java.methods.first { it.name.startsWith("getTouchBoundsInRoot") }.invoke(n) as androidx.compose.ui.geometry.Rect
+    }.getOrDefault(n.boundsInRoot)
 
     private fun seed() {
         val now = System.currentTimeMillis()

@@ -33,7 +33,7 @@ import java.io.File
 @RunWith(AndroidJUnit4::class)
 class BackupFlowTest : FlowTest() {
     private val exported by lazy { File(app.cacheDir, "ui-test-export.csv") }
-    private val toImport by lazy { File(app.cacheDir, "ui-test-import.csv") }
+    private val toImport by lazy { File(app.cacheDir, "ui-test-import.txt") }
 
     @Before fun stubPickers() {
         exported.delete()
@@ -91,7 +91,7 @@ class BackupFlowTest : FlowTest() {
 
     @Test
     fun importAFileFromThePicker() {
-        toImport.writeText("Artist,Title\n" + (3 until 7).joinToString("\n") { "${Demo.SONGS[it].artist},${Demo.SONGS[it].title}" })
+        toImport.writeText((3 until 7).joinToString("\n") { "${Demo.SONGS[it].artist} - ${Demo.SONGS[it].title}" })
         openTool(R.string.files_title)
         click(s(R.string.csv_import))
         waitText(s(R.string.csv_imported, 4))

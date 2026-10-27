@@ -9,7 +9,12 @@ import android.content.Intent
 import android.os.Build
 import android.os.LocaleList
 import android.util.Log
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsNode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.hasClickAction
@@ -64,6 +69,7 @@ abstract class FlowTest {
 
     @Before
     fun baseSetUp() {
+        com.xlollx.songport.auth.AuthEvents.consume()
         Http.onRequest = { host -> attemptedHosts += host; throw IOException("UI test: network is closed ($host)") }
         if (Build.VERSION.SDK_INT >= 33) instr.uiAutomation.grantRuntimePermission(app.packageName, Manifest.permission.POST_NOTIFICATIONS)
         shell("settings put global hide_error_dialogs 1")
@@ -169,17 +175,52 @@ abstract class FlowTest {
     protected fun exists(text: String, substring: Boolean = false): Boolean =
         compose.onAllNodesWithText(text, substring = substring, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
 
-    /** The first clickable node showing [text] (a button, a row, a menu entry), scrolled into view and clicked. */
-    protected fun click(text: String, substring: Boolean = false) {
-        val n = compose.onAllNodes(hasClickAction() and hasText(text, substring = substring)).onFirst()
+    /** The first clickable node showing or named [text] (a button, a row, a menu entry), scrolled into view and tapped. */
+    protected fun click(text: String, substring: Boolean = false) =
+        tap(compose.onAllNodes(hasClickAction() and (hasText(text, substring = substring) or hasContentDescription(text, substring = substring))).onFirst(), text)
+
+    protected fun clickDesc(desc: String, index: Int = 0) =
+        tap(compose.onAllNodes(hasClickAction() and hasContentDescription(desc))[index], desc)
+
+    /** Touches that could not be injected and were replaced by the node's click action (logged, see [tap]). */
+    protected val semanticClicks = ArrayList<String>()
+
+    /**
+     * Scrolls [n] into view, clear of the glass bottom bar, and taps it. Should the touch not be
+     * injectable, the node's own click action is used instead, and that is logged.
+     */
+    protected fun tap(n: SemanticsNodeInteraction, what: String) {
         runCatching { n.performScrollTo() }
-        n.performClick()
+        clearOfBottomBar(n)
+        try {
+            n.performClick()
+        } catch (e: AssertionError) {
+            if (e.message?.contains("inject") != true) throw e
+            semanticClicks += what
+            log("touch on \"$what\" could not be injected: using its click action")
+            n.performSemanticsAction(SemanticsActions.OnClick)
+        }
         compose.waitForIdle()
     }
 
-    protected fun clickDesc(desc: String, index: Int = 0) {
-        val nodes = compose.onAllNodes(hasClickAction() and hasContentDescription(desc))
-        nodes[index].performClick()
+    private fun topOf(n: SemanticsNode): SemanticsNode { var p = n; while (p.parent != null) p = p.parent!!; return p }
+
+    /**
+     * performScrollTo leaves a node at the bottom edge of its scroller, which on the tabs runs under
+     * the glass bar (the bar would get the tap): the scroller moves it up above the bar.
+     */
+    private fun clearOfBottomBar(n: SemanticsNodeInteraction) {
+        val node = runCatching { n.fetchSemanticsNode() }.getOrNull() ?: return
+        val root = topOf(node).id
+        val tabs = compose.onAllNodes(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab)).fetchSemanticsNodes().filter { topOf(it).id == root }
+        if (tabs.any { it.id == node.id }) return
+        val top = tabs.minOfOrNull { it.boundsInRoot.top } ?: return
+        if (node.boundsInRoot.bottom <= top) return
+        var p = node.parent
+        while (p != null && !p.config.contains(SemanticsActions.ScrollBy)) p = p.parent
+        val scroll = p?.config?.getOrNull(SemanticsActions.ScrollBy)?.action ?: return
+        val dy = node.boundsInRoot.bottom - top + 24 * app.resources.displayMetrics.density
+        compose.runOnIdle { scroll(0f, dy) }
         compose.waitForIdle()
     }
 
@@ -204,12 +245,18 @@ abstract class FlowTest {
                         shell("screencap -p /sdcard/ui-test-failures/$name.png")
                     }
                     runCatching {
+                        // Where the app's own threads are: a request or a lock that never returns shows here.
+                        Thread.getAllStackTraces().filter { (t, st) -> st.any { it.className.startsWith("com.xlollx.songport") && !it.className.contains(".flows.") } }
+                            .forEach { (t, st) -> Log.e("UiFlowThreads", "$name ${t.name}\n" + st.take(40).joinToString("\n") { "  at $it" }) }
+                    }
+                    runCatching {
                         compose.onAllNodes(isRoot()).fetchSemanticsNodes().indices.forEach { i ->
                             compose.onAllNodes(isRoot())[i].printToString(maxDepth = Int.MAX_VALUE).chunked(3500).forEach { Log.e("UiFlowTree", "$name root $i\n$it") }
                         }
                     }
                     throw t
                 } finally {
+                    if (semanticClicks.isNotEmpty()) log("${description.methodName}: touch not injectable on $semanticClicks")
                     if (attemptedHosts.isNotEmpty()) log("${description.methodName}: refused network requests to $attemptedHosts")
                     runCatching { instr.uiAutomation.setRotation(UiAutomation.ROTATION_FREEZE_0) }
                     runCatching { setLocale("") }
