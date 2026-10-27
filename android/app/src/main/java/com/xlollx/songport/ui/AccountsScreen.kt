@@ -209,7 +209,7 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
         text = {
             // Plugin-based services are offered only when a plugin is installed, unless this build
             // may point to where to get one.
-            val services = Providers.services().filter { !it.pluginBased || BuildConfig.PLUGIN_LINKS || it.isConfigured(ctx) }
+            val services = Providers.services().filter { !it.linkOnly && (!it.pluginBased || BuildConfig.PLUGIN_LINKS || it.isConfigured(ctx)) }
             // A service reachable two ways (its official API with a key of yours, or its web player with a
             // plain sign-in) is one entry with two routes, each saying what it asks and what it is.
             val families = services.groupBy { it.familyName }

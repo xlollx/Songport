@@ -69,6 +69,7 @@ playlist files. Back that folder up and you have backed up Songport.
 | Deezer | yes (beta) | Your own app, and an `https` address |
 | Navidrome / Subsonic, Jellyfin, Plex | yes | The server's address and your login |
 | Last.fm, ListenBrainz | yes, as sources | Your user name |
+| SoundCloud | yes, as a source (unofficial) | Nothing: pick it as the source of a new sync and paste a public set or likes link. [More](soundcloud) |
 | CSV files | yes | Put them in `csv/` inside the data volume |
 | YouTube Music | yes (unofficial, alpha) | The cookies of a browser where you are signed in: [see below](#youtube-music-unofficial) |
 | Amazon Music, Spotify (web), Apple Music | no | See below |

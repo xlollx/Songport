@@ -844,4 +844,8 @@
     <string name="onboarding_next">次へ</string>
     <string name="onboarding_page">%1$d / %2$d ページ</string>
     <string name="editor_step_options">オプション</string>
+    <string name="soundcloud_label">SoundCloud（公開リンク、非公式）</string>
+    <string name="provider_note_soundcloud">SoundCloud の公開セットといいねページを、ログインなし・読み取り専用で使えます。リンクを同期の元として貼り付けてください。公式のインターフェースではないため、SoundCloud がサイトを変更すると動かなくなることがあります。</string>
+    <string name="soundcloud_not_public">この SoundCloud プレイリストは非公開か存在しません。使えるのは公開リンクだけです</string>
+    <string name="soundcloud_player_changed">SoundCloud のウェブプレーヤーが変更されました。Songport のアップデートが必要です</string>
 </resources>

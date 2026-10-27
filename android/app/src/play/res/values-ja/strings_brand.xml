@@ -50,4 +50,5 @@
     <string name="unplayable_hint">それぞれについて Trackhop が再生できるバージョンを提案します。採用する、別のものを探す、項目を削除する、スキップする、から選べます。適用するまで何も変わりません。</string>
     <string name="unplayable_confirm_body">%1$d 曲が再生できるバージョンに置き換わり、%2$d 件の項目が削除されます。元の項目は Trackhop のログに残るので、取り消せます。</string>
     <string name="settings_unplayable_desc">週に一度、Trackhop がプレイリストを確認し、再生できなくなった曲があればお知らせします。勝手に変更することはありません。</string>
+    <string name="soundcloud_player_changed">SoundCloud のウェブプレーヤーが変更されました。Trackhop のアップデートが必要です</string>
 </resources>

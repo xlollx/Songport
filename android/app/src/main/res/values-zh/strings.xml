@@ -844,4 +844,8 @@
     <string name="onboarding_next">下一步</string>
     <string name="onboarding_page">第 %1$d 页，共 %2$d 页</string>
     <string name="editor_step_options">选项</string>
+    <string name="soundcloud_label">SoundCloud（公开链接，非官方）</string>
+    <string name="provider_note_soundcloud">SoundCloud 的公开歌单和喜欢页面，只读且无需登录：将链接粘贴为同步的来源。这不是官方接口：SoundCloud 修改网站后可能会失效。</string>
+    <string name="soundcloud_not_public">此 SoundCloud 歌单为私密或不存在：仅支持公开链接</string>
+    <string name="soundcloud_player_changed">SoundCloud 更改了网页播放器；Songport 需要更新</string>
 </resources>

@@ -785,12 +785,18 @@ private fun LinkImportField(initial: String = "", keep: Boolean = false, onResol
                         } else if (!provider.canRead(ctx, ref.playlistId)) {
                             error = ctx.getString(R.string.link_not_connected, provider.displayName)
                         } else {
-                            // No name when the service will not say yet: the run fills it in.
-                            val info = runCatching { provider.playlistInfo(ctx, ref.playlistId) }
-                                .getOrElse { Playlist(ref.playlistId, "", ownedByMe = false) }
-                            val pasted = text.trim()
-                            if (!keep) text = ""
-                            onResolved(provider.id, info, pasted)
+                            // No name when the service will not say yet: the run fills it in. A
+                            // link-only source has nothing else to go on: its error (a private set) shows here.
+                            val got = runCatching { provider.playlistInfo(ctx, ref.playlistId) }
+                            val failed = got.exceptionOrNull()?.takeIf { provider.linkOnly && it !is kotlinx.coroutines.CancellationException }
+                            if (failed != null) {
+                                error = failed.message ?: ctx.getString(R.string.error_generic)
+                            } else {
+                                val info = got.getOrElse { Playlist(ref.playlistId, "", ownedByMe = false) }
+                                val pasted = text.trim()
+                                if (!keep) text = ""
+                                onResolved(provider.id, info, pasted)
+                            }
                         }
                         busy = false
                     }

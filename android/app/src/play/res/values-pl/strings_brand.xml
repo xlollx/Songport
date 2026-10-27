@@ -52,4 +52,5 @@
     <string name="unplayable_hint">Dla każdego Trackhop proponuje działającą wersję. Zaakceptuj ją, poszukaj innej, usuń wpis albo pomiń. Nic się nie zmieni, dopóki nie zastosujesz.</string>
     <string name="unplayable_confirm_body">%1$d utworów dostanie działającą wersję, %2$d wpisów zostanie usuniętych. Oryginały zostają w dzienniku Trackhop, więc można to cofnąć.</string>
     <string name="settings_unplayable_desc">Raz w tygodniu Trackhop przegląda twoje playlisty i daje znać, gdy jakiegoś utworu nie da się już odtworzyć. Sam niczego nie zmienia.</string>
+    <string name="soundcloud_player_changed">SoundCloud zmienił swój odtwarzacz internetowy; Trackhop wymaga aktualizacji</string>
 </resources>

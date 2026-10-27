@@ -7,8 +7,8 @@ square one (1080×1080). Nothing is created or changed on any service: they only
 
 Two playlists in, a score out. Each side can be:
 
-- a **public link** pasted in (Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL; short
-  share links too), or
+- a **public link** pasted in (Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL, and
+  SoundCloud in the GitHub/F-Droid build; short share links too), or
 - one of **your own playlists** on a connected service, liked songs included.
 
 Sharing **two playlist links at once** to Songport (select both messages in a chat, or paste two

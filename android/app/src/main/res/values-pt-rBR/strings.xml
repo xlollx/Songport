@@ -854,4 +854,8 @@
     <string name="onboarding_next">Avançar</string>
     <string name="onboarding_page">Página %1$d de %2$d</string>
     <string name="editor_step_options">Opções</string>
+    <string name="soundcloud_label">SoundCloud (links públicos, não oficial)</string>
+    <string name="provider_note_soundcloud">Sets e páginas de curtidas públicos do SoundCloud, somente leitura e sem login: cole o link como origem de uma sincronização. Não é uma interface oficial: pode parar de funcionar quando o SoundCloud mudar o site.</string>
+    <string name="soundcloud_not_public">Esta playlist do SoundCloud é privada ou não existe: só links públicos funcionam</string>
+    <string name="soundcloud_player_changed">O SoundCloud mudou o player web; o Songport precisa de uma atualização</string>
 </resources>

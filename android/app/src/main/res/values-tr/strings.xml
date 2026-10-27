@@ -852,4 +852,8 @@
     <string name="onboarding_next">İleri</string>
     <string name="onboarding_page">Sayfa %1$d / %2$d</string>
     <string name="editor_step_options">Seçenekler</string>
+    <string name="soundcloud_label">SoundCloud (herkese açık bağlantılar, resmî değil)</string>
+    <string name="provider_note_soundcloud">Herkese açık SoundCloud setleri ve beğeni sayfaları, yalnızca okuma ve oturum açmadan: bağlantıyı bir eşitlemenin kaynağı olarak yapıştırın. Resmî bir arayüz değil: SoundCloud sitesini değiştirdiğinde çalışmayı bırakabilir.</string>
+    <string name="soundcloud_not_public">Bu SoundCloud çalma listesi gizli veya mevcut değil: yalnızca herkese açık bağlantılar çalışır</string>
+    <string name="soundcloud_player_changed">SoundCloud web oynatıcısını değiştirdi; Songport\'un güncellenmesi gerekiyor</string>
 </resources>

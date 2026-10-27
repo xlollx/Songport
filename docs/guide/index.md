@@ -7,6 +7,7 @@ description (architecture, matching, services and their limits) stays in the
 **Using the app**
 - [Getting started](getting-started): install, connect a service, the first sync.
 - [Shared links](shared-links): a friend's Spotify link into your YouTube Music, Navidrome or Jellyfin playlist.
+- [SoundCloud](soundcloud): a public SoundCloud set or likes page as the source of a sync, no account needed.
 - [Troubleshooting](troubleshooting): the errors people actually meet, and what to do about each.
 - [Reporting a problem](reporting-a-problem): the diagnostic report, and what makes a report useful.
 - [Cards](cards): "how compatible are we?" between two playlists, and the playlist poster with a QR code.
