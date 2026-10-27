@@ -1,0 +1,1 @@
+Une synchro colorée porte désormais sa couleur sur ses chiffres et ses boutons. Les playlists se chargent avec des lignes d'attente au lieu d'un cercle, et la pastille Tout synchroniser fixée en haut ne couvre plus les cartes.

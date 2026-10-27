@@ -1,0 +1,1 @@
+Eine farbige Synchronisierung trägt ihre Farbe jetzt auch auf Zahlen und Schaltflächen. Playlists laden mit Platzhalterzeilen statt Ladekreis, und die oben fixierte Pille Alle synchronisieren verdeckt die Karten nicht mehr.

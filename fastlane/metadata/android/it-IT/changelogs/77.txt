@@ -1,0 +1,1 @@
+Una sync colorata ora porta il suo colore anche su riquadri e pulsanti. Le playlist si caricano con righe segnaposto invece della rotellina, e la pillola Sincronizza tutto fissata in alto non copre più le schede.

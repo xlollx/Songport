@@ -1,0 +1,1 @@
+Renkli bir eşitleme artık rengini sayılarında ve düğmelerinde de taşıyor. Çalma listeleri dönen simge yerine yer tutucu satırlarla yükleniyor ve üstte sabit Tümünü eşitle düğmesi artık kartları örtmüyor.

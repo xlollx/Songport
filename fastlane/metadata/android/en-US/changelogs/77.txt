@@ -1,0 +1,1 @@
+A coloured sync now wears its colour on its figures and buttons too. Playlists load with placeholder rows instead of a spinner, and the pinned Sync all pill no longer covers the cards.

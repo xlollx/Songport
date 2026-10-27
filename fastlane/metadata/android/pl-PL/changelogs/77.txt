@@ -1,0 +1,1 @@
+Kolorowa synchronizacja ma teraz swój kolor także na liczbach i przyciskach. Playlisty wczytują się z wierszami zastępczymi zamiast kółka, a przypięta u góry pigułka Synchronizuj wszystko nie zasłania już kart.

@@ -1,0 +1,1 @@
+Una sincronización con color lo lleva ahora también en sus cifras y botones. Las playlists cargan con filas de marcador en lugar de un círculo, y la píldora Sincronizar todo fija arriba ya no tapa las tarjetas.
