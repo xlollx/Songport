@@ -1,5 +1,6 @@
 package com.xlollx.songport.ui
 
+import kotlinx.coroutines.withTimeoutOrNull
 import com.xlollx.songport.providers.*
 import android.content.Intent
 import android.net.Uri
@@ -106,13 +107,18 @@ fun ShareTrackSheet(
         if (dst == null || src == null) return@LaunchedEffect
         searching = true
         try {
-            exact = exactOn(app, dst, ref, link)
-            if (exact == null && src.title.isNotBlank()) {
-                val job = jobFor(dst)
-                val found = engine.searchOnTarget(job, queryOf(src), src)
-                best = found.hits.maxByOrNull { it.score }?.takeIf { it.score >= Matcher.DEFAULT_THRESHOLD }
-                if (best == null) changing = true
-            } else if (exact == null) changing = true
+            // A service that never answers must not leave the sheet on "Finding it…": after a while
+            // the manual search takes over, where the user can try again or type the title.
+            val done = withTimeoutOrNull(SEARCH_TIMEOUT_MS) {
+                exact = exactOn(app, dst, ref, link)
+                if (exact == null && src.title.isNotBlank()) {
+                    val job = jobFor(dst)
+                    val found = engine.searchOnTarget(job, queryOf(src), src)
+                    best = found.hits.maxByOrNull { it.score }?.takeIf { it.score >= Matcher.DEFAULT_THRESHOLD }
+                    if (best == null) changing = true
+                } else if (exact == null) changing = true
+            }
+            if (done == null) changing = true
         } catch (e: CancellationException) { throw e } catch (e: Exception) {
             onMessage(e.message ?: ctx.getString(R.string.error_generic)); changing = true
         }
@@ -203,6 +209,8 @@ fun ShareTrackSheet(
         }
     }
 }
+
+private const val SEARCH_TIMEOUT_MS = 30_000L
 
 @Composable
 private fun Actions(p: MusicProvider, t: Track, canOpen: Boolean, onAdd: () -> Unit, onOpen: () -> Unit, onChange: () -> Unit) {
