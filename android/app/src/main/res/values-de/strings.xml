@@ -953,9 +953,9 @@
     <string name="settings_section_privacy">Datenschutz und Sicherheit</string>
     <string name="settings_section_backups">Backups</string>
     <string name="settings_section_advanced">Erweitert</string>
-    <string name="settings_isrc_summary">Fehlende ISRC-Codes im öffentlichen Deezer-Katalog nachschlagen, für die exakte Aufnahme statt einer ähnlichen.</string>
-    <string name="settings_music_links_summary">Musiklinks von Spotify, Apple Music und anderen in Songport öffnen, um den Song zu einer Playlist hinzuzufügen.</string>
-    <string name="settings_unplayable_summary">Meldet einmal pro Woche Songs, die nicht mehr abspielbar sind. Ändert nichts.</string>
+    <string name="settings_isrc_summary">Fehlende ISRC-Codes bei Deezer nachschlagen, für exakte Treffer.</string>
+    <string name="settings_music_links_summary">Musiklinks in Songport öffnen, um den Song zu einer Playlist hinzuzufügen.</string>
+    <string name="settings_unplayable_summary">Meldet Songs, die nicht mehr abspielbar sind. Ändert nichts.</string>
     <string name="settings_notifications_system">Benachrichtigungseinstellungen des Systems</string>
     <string name="settings_notifications_system_desc">Ton, Vibration und welche Benachrichtigungen Android zeigt.</string>
     <string name="settings_security_summary">Verschlüsselte, widerrufbare Anmeldungen auf diesem Handy; kein Songport-Server.</string>
@@ -986,4 +986,10 @@
     <string name="tools_row_compat">Zwei Playlists vergleichen und einen Wert zum Teilen erhalten.</string>
     <string name="tools_row_poster">Eine Karte zum Teilen mit Covern und QR-Code.</string>
     <string name="tools_row_unplayable">Ausgegraute Songs finden und durch abspielbare Versionen ersetzen.</string>
+    <string name="settings_battery_summary">Manche Handys stoppen Hintergrund-Apps: nimm Songport von der Akku-Optimierung aus.</string>
+    <string name="settings_dynamic_color_summary">Die Farben deines Hintergrundbilds statt der von Songport.</string>
+    <string name="settings_notifications_summary">Wenn ein geplanter Sync Songs ändert oder fehlschlägt.</string>
+    <string name="settings_developer_summary">Verbindungsprotokoll, technischer Bericht, Traffic-Mitschnitt.</string>
+    <string name="settings_new_look_summary">Sync-Karten mit Zahlen und dem Verlauf der letzten Läufe.</string>
+    <string name="settings_log_summary">Ergebnisse der letzten Syncs und technische Details.</string>
 </resources>

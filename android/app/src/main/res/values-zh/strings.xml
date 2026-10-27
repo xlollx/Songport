@@ -933,9 +933,9 @@
     <string name="settings_section_privacy">隐私与安全</string>
     <string name="settings_section_backups">备份</string>
     <string name="settings_section_advanced">高级</string>
-    <string name="settings_isrc_summary">在 Deezer 公开曲库中查找缺失的 ISRC 码，找到准确的录音而不是相似的版本。</string>
-    <string name="settings_music_links_summary">让 Spotify、Apple Music 等的音乐链接在 Songport 中打开，把歌曲加入歌单。</string>
-    <string name="settings_unplayable_summary">每周一次，提醒你哪些歌曲已无法播放。不会改动任何内容。</string>
+    <string name="settings_isrc_summary">在 Deezer 查找缺失的 ISRC 码，实现精确匹配。</string>
+    <string name="settings_music_links_summary">在 Songport 中打开音乐链接，把歌曲加入歌单。</string>
+    <string name="settings_unplayable_summary">提醒你哪些歌曲已无法播放。不会改动任何内容。</string>
     <string name="settings_notifications_system">系统通知设置</string>
     <string name="settings_notifications_system_desc">声音、振动以及 Android 显示哪些通知。</string>
     <string name="settings_security_summary">加密且可撤销的登录信息只保存在本机；Songport 没有服务器。</string>
@@ -966,4 +966,10 @@
     <string name="tools_row_compat">比较两个歌单，得到一个可分享的分数。</string>
     <string name="tools_row_poster">一张带封面和二维码的分享卡片。</string>
     <string name="tools_row_unplayable">找出变灰的歌曲，换成可以播放的版本。</string>
+    <string name="settings_battery_summary">部分手机会停止后台应用：请将 Songport 排除在电池优化之外。</string>
+    <string name="settings_dynamic_color_summary">使用壁纸的颜色，而不是 Songport 的颜色。</string>
+    <string name="settings_notifications_summary">计划同步更改了歌曲或失败时。</string>
+    <string name="settings_developer_summary">连接日志、技术报告、流量捕获。</string>
+    <string name="settings_new_look_summary">显示数字和近期运行记录的同步卡片。</string>
+    <string name="settings_log_summary">最近的同步结果和技术细节。</string>
 </resources>

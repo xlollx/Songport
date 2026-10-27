@@ -56,6 +56,8 @@
     <string name="shazam_share_hint">Часто пользуетесь Shazam? В настройках Shazam подключите Spotify или Apple Music: каждый распознанный трек попадёт в плейлист «My Shazam Tracks». Trackhop будет синхронизировать его с любым вашим сервисом.</string>
     <string name="stats_title">Trackhop в цифрах</string>
     <string name="stats_local_note">Подсчитано на этом телефоне по истории синхронизаций, которую Trackhop уже хранит. Ничего не отправляется, если вы сами не поделитесь карточкой.</string>
-    <string name="settings_music_links_summary">Музыкальные ссылки Spotify, Apple Music и других открываются в Trackhop, чтобы добавить трек в плейлист.</string>
+    <string name="settings_music_links_summary">Открывайте музыкальные ссылки в Trackhop, чтобы добавить трек в плейлист.</string>
     <string name="settings_security_summary">Зашифрованные, отзываемые входы на этом телефоне; никакого сервера Trackhop.</string>
+    <string name="settings_battery_summary">Некоторые телефоны останавливают фоновые приложения: исключите Trackhop из оптимизации батареи.</string>
+    <string name="settings_dynamic_color_summary">Цвета ваших обоев вместо цветов Trackhop.</string>
 </resources>

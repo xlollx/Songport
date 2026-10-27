@@ -56,6 +56,8 @@
     <string name="shazam_share_hint">Shazam a lot? In Shazam\'s settings, connect Spotify or Apple Music: every song you Shazam lands in a “My Shazam Tracks” playlist. Trackhop can keep it in sync on any of your services.</string>
     <string name="stats_title">Trackhop in numbers</string>
     <string name="stats_local_note">Counted on this phone from the sync history Trackhop already keeps. Nothing is sent anywhere unless you share the card.</string>
-    <string name="settings_music_links_summary">Let music links from Spotify, Apple Music and others open in Trackhop, to add the track to a playlist.</string>
+    <string name="settings_music_links_summary">Open music links in Trackhop to add the track to a playlist.</string>
     <string name="settings_security_summary">Encrypted, revocable sign-ins on this phone; no Trackhop server.</string>
+    <string name="settings_battery_summary">Some phones stop background apps: exclude Trackhop from battery optimisation.</string>
+    <string name="settings_dynamic_color_summary">Your wallpaper\'s colours instead of Trackhop\'s.</string>
 </resources>

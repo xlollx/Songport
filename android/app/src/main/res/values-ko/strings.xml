@@ -932,9 +932,9 @@
     <string name="settings_section_privacy">개인정보 보호 및 보안</string>
     <string name="settings_section_backups">백업</string>
     <string name="settings_section_advanced">고급</string>
-    <string name="settings_isrc_summary">누락된 ISRC 코드를 Deezer 공개 카탈로그에서 찾아, 비슷한 곡이 아닌 정확한 녹음을 찾습니다.</string>
-    <string name="settings_music_links_summary">Spotify, Apple Music 등의 음악 링크를 Songport에서 열어 곡을 플레이리스트에 추가합니다.</string>
-    <string name="settings_unplayable_summary">일주일에 한 번, 더 이상 재생할 수 없는 곡을 알려 줍니다. 아무것도 바꾸지 않습니다.</string>
+    <string name="settings_isrc_summary">누락된 ISRC 코드를 Deezer에서 찾아 정확히 일치시킵니다.</string>
+    <string name="settings_music_links_summary">음악 링크를 Songport에서 열어 곡을 플레이리스트에 추가합니다.</string>
+    <string name="settings_unplayable_summary">재생되지 않게 된 곡을 알려 줍니다. 아무것도 바꾸지 않습니다.</string>
     <string name="settings_notifications_system">시스템 알림 설정</string>
     <string name="settings_notifications_system_desc">소리, 진동, Android가 표시하는 알림.</string>
     <string name="settings_security_summary">이 휴대폰에 암호화되고 취소 가능한 로그인만 저장; Songport 서버는 없습니다.</string>
@@ -965,4 +965,10 @@
     <string name="tools_row_compat">두 플레이리스트를 비교하고 공유할 점수를 받기.</string>
     <string name="tools_row_poster">커버와 QR 코드가 담긴 공유용 카드.</string>
     <string name="tools_row_unplayable">회색으로 표시된 곡을 찾아 재생되는 버전으로 교체.</string>
+    <string name="settings_battery_summary">일부 휴대폰은 백그라운드 앱을 중지합니다: Songport를 배터리 최적화에서 제외하세요.</string>
+    <string name="settings_dynamic_color_summary">Songport 색상 대신 배경화면 색상을 사용합니다.</string>
+    <string name="settings_notifications_summary">예약 동기화가 곡을 바꾸거나 실패했을 때.</string>
+    <string name="settings_developer_summary">연결 기록, 기술 보고서, 트래픽 캡처.</string>
+    <string name="settings_new_look_summary">숫자와 최근 실행 기록이 있는 동기화 카드.</string>
+    <string name="settings_log_summary">최근 동기화 결과와 기술 세부 정보.</string>
 </resources>

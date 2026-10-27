@@ -54,6 +54,8 @@
     <string name="shazam_share_hint">Shazamをよく使いますか？Shazamの設定でSpotifyかApple Musicを連携すると、認識した曲がすべて「My Shazam Tracks」プレイリストに入ります。Trackhopならそれをどのサービスにも同期できます。</string>
     <string name="stats_title">数字で見る Trackhop</string>
     <string name="stats_local_note">Trackhop がすでに保存している同期履歴から、この端末上で集計しています。カードを共有しない限り、何も送信されません。</string>
-    <string name="settings_music_links_summary">Spotify や Apple Music などの音楽リンクを Trackhop で開き、曲をプレイリストに追加できます。</string>
+    <string name="settings_music_links_summary">音楽リンクを Trackhop で開き、曲をプレイリストに追加します。</string>
     <string name="settings_security_summary">暗号化され、取り消せるログインをこの端末に保存。Trackhop のサーバーはありません。</string>
+    <string name="settings_battery_summary">一部の端末はバックグラウンドのアプリを停止します。Trackhop を電池の最適化から除外してください。</string>
+    <string name="settings_dynamic_color_summary">Trackhop の色の代わりに壁紙の色を使います。</string>
 </resources>

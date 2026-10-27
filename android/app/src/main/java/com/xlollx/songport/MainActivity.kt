@@ -137,7 +137,19 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             val settings by Store.get(this).state.collectAsState()
-            AppTheme(mode = ThemeMode.of(settings.settings.themeMode), dynamicColor = settings.settings.dynamicColor) {
+            val themeMode = ThemeMode.of(settings.settings.themeMode)
+            // The status and navigation bar icons follow the app's theme, not only the system's:
+            // Light chosen on a dark phone otherwise leaves white clock and icons on a light page.
+            val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
+            val appDark = when (themeMode) { ThemeMode.SYSTEM -> systemDark; ThemeMode.LIGHT -> false; ThemeMode.DARK -> true }
+            androidx.compose.runtime.DisposableEffect(appDark) {
+                enableEdgeToEdge(
+                    statusBarStyle = androidx.activity.SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT) { appDark },
+                    navigationBarStyle = androidx.activity.SystemBarStyle.auto(LIGHT_SCRIM, DARK_SCRIM) { appDark },
+                )
+                onDispose {}
+            }
+            AppTheme(mode = themeMode, dynamicColor = settings.settings.dynamicColor) {
                 val isLocked by locked.collectAsState()
                 if (isLocked) LockScreen { requestUnlock() } else MainScreen(messages, tabRequests, sharedText, newSyncRequests, toolRequests)
             }
@@ -188,6 +200,9 @@ class MainActivity : ComponentActivity() {
         const val EXTRA_TAB = "tab"
         const val EXTRA_TOOL = "tool"
         const val TOOL_UNPLAYABLE = "unplayable"
+        /** The scrims enableEdgeToEdge() puts behind three-button navigation by default. */
+        private val LIGHT_SCRIM = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+        private val DARK_SCRIM = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
         const val ACTION_SYNC_ALL = "com.xlollx.songport.SYNC_ALL"
         const val ACTION_NEW_SYNC = "com.xlollx.songport.NEW_SYNC"
         const val TAB_SYNCS = 0

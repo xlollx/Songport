@@ -933,9 +933,9 @@
     <string name="settings_section_privacy">プライバシーとセキュリティ</string>
     <string name="settings_section_backups">バックアップ</string>
     <string name="settings_section_advanced">詳細設定</string>
-    <string name="settings_isrc_summary">不足している ISRC コードを Deezer の公開カタログで調べ、似た曲ではなく正確な録音を見つけます。</string>
-    <string name="settings_music_links_summary">Spotify や Apple Music などの音楽リンクを Songport で開き、曲をプレイリストに追加できます。</string>
-    <string name="settings_unplayable_summary">週に一度、再生できなくなった曲をお知らせします。何も変更しません。</string>
+    <string name="settings_isrc_summary">不足している ISRC コードを Deezer で調べ、正確に一致させます。</string>
+    <string name="settings_music_links_summary">音楽リンクを Songport で開き、曲をプレイリストに追加します。</string>
+    <string name="settings_unplayable_summary">再生できなくなった曲をお知らせします。何も変更しません。</string>
     <string name="settings_notifications_system">システムの通知設定</string>
     <string name="settings_notifications_system_desc">音、バイブレーション、Android が表示する通知。</string>
     <string name="settings_security_summary">暗号化され、取り消せるログインをこの端末に保存。Songport のサーバーはありません。</string>
@@ -966,4 +966,10 @@
     <string name="tools_row_compat">2 つのプレイリストを比べて、共有できるスコアを表示。</string>
     <string name="tools_row_poster">ジャケットと QR コード入りの共有カード。</string>
     <string name="tools_row_unplayable">グレー表示の曲を見つけ、再生できるバージョンに置き換え。</string>
+    <string name="settings_battery_summary">一部の端末はバックグラウンドのアプリを停止します。Songport を電池の最適化から除外してください。</string>
+    <string name="settings_dynamic_color_summary">Songport の色の代わりに壁紙の色を使います。</string>
+    <string name="settings_notifications_summary">スケジュールした同期で曲が変わったときや失敗したとき。</string>
+    <string name="settings_developer_summary">接続ログ、技術レポート、通信のキャプチャ。</string>
+    <string name="settings_new_look_summary">数値と最近の実行履歴を表示する同期カード。</string>
+    <string name="settings_log_summary">最近の同期結果と技術的な詳細。</string>
 </resources>

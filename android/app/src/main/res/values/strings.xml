@@ -954,9 +954,9 @@
     <string name="settings_section_privacy">Privacy and security</string>
     <string name="settings_section_backups">Backups</string>
     <string name="settings_section_advanced">Advanced</string>
-    <string name="settings_isrc_summary">Look up missing ISRC codes in Deezer\'s public catalogue, for the exact recording instead of a look-alike.</string>
-    <string name="settings_music_links_summary">Let music links from Spotify, Apple Music and others open in Songport, to add the track to a playlist.</string>
-    <string name="settings_unplayable_summary">Once a week, tells you about tracks that can no longer be played. Changes nothing.</string>
+    <string name="settings_isrc_summary">Look up missing ISRC codes on Deezer, for exact matches.</string>
+    <string name="settings_music_links_summary">Open music links in Songport to add the track to a playlist.</string>
+    <string name="settings_unplayable_summary">Tells you about tracks that stop playing. Changes nothing.</string>
     <string name="settings_notifications_system">System notification settings</string>
     <string name="settings_notifications_system_desc">Sound, vibration and which notifications Android shows.</string>
     <string name="settings_security_summary">Encrypted, revocable sign-ins on this phone; no Songport server.</string>
@@ -987,4 +987,10 @@
     <string name="tools_row_compat">Compare two playlists and get a score to share.</string>
     <string name="tools_row_poster">A shareable card with covers and a QR code.</string>
     <string name="tools_row_unplayable">Find greyed-out tracks and swap in versions that play.</string>
+    <string name="settings_battery_summary">Some phones stop background apps: exclude Songport from battery optimisation.</string>
+    <string name="settings_dynamic_color_summary">Your wallpaper\'s colours instead of Songport\'s.</string>
+    <string name="settings_notifications_summary">When a scheduled sync changes tracks or fails.</string>
+    <string name="settings_developer_summary">Connections log, technical report, traffic capture.</string>
+    <string name="settings_new_look_summary">Sync cards with run numbers and recent history.</string>
+    <string name="settings_log_summary">Recent sync results and technical details.</string>
 </resources>

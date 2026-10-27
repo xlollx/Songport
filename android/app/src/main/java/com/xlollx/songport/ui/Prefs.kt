@@ -155,9 +155,9 @@ fun PrefRow(
         if (trailing != null) {
             Spacer(Modifier.width(12.dp))
             trailing()
-        } else if (onClick != null && chevron) {
+        } else if (onClick != null && chevron && enabled) {
             Spacer(Modifier.width(8.dp))
-            Icon(Icons.Filled.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (enabled) 1f else 0.5f))
+            Icon(Icons.Filled.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

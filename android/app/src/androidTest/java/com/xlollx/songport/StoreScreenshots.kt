@@ -11,7 +11,10 @@ import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Shader
 import android.os.LocaleList
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
@@ -339,13 +342,15 @@ class StoreScreenshots {
             step("review tab $t") { body() }
         }
         fun scrollTo(text: String) = compose.onAllNodesWithText(text).onFirst().performScrollTo()
+        // To the very end, so the last row shows where the bottom padding leaves it (above the bar).
+        fun toBottom() = repeat(6) { compose.onAllNodes(hasScrollAction()).onFirst().performTouchInput { swipeUp() }; compose.waitForIdle() }
         fun settingsPages(theme: String) {
             tab(MainActivity.TAB_SETTINGS) {
                 compose.waitUntil(15_000) { compose.onAllNodesWithText(s(R.string.settings_theme)).fetchSemanticsNodes().isNotEmpty() }
                 snap("settings_${theme}_1")
                 scrollTo(s(R.string.settings_section_privacy)); snap("settings_${theme}_2")
                 scrollTo(s(R.string.settings_section_advanced)); snap("settings_${theme}_3")
-                scrollTo(s(R.string.settings_show_onboarding)); snap("settings_${theme}_4")
+                toBottom(); snap("settings_${theme}_4")
             }
         }
         fun toolsPages(theme: String) {
@@ -353,7 +358,7 @@ class StoreScreenshots {
                 compose.waitUntil(15_000) { compose.onAllNodesWithText(s(R.string.tools_poster_title)).fetchSemanticsNodes().isNotEmpty() }
                 snap("tools_${theme}_1")
                 scrollTo(s(R.string.tools_section_clean)); snap("tools_${theme}_2")
-                scrollTo(s(R.string.tools_backup_title)); snap("tools_${theme}_3")
+                toBottom(); snap("tools_${theme}_3")
             }
         }
         for (theme in listOf("DARK", "LIGHT")) {

@@ -56,6 +56,8 @@
     <string name="shazam_share_hint">Często używasz Shazama? W ustawieniach Shazama połącz Spotify lub Apple Music: każdy rozpoznany utwór trafi do playlisty „My Shazam Tracks”. Trackhop może ją synchronizować z dowolnym Twoim serwisem.</string>
     <string name="stats_title">Trackhop w liczbach</string>
     <string name="stats_local_note">Policzone na tym telefonie z historii synchronizacji, którą Trackhop już przechowuje. Nic nie jest wysyłane, chyba że udostępnisz kartę.</string>
-    <string name="settings_music_links_summary">Linki muzyczne ze Spotify, Apple Music i innych otwierają się w Trackhop, by dodać utwór do playlisty.</string>
+    <string name="settings_music_links_summary">Otwieraj linki muzyczne w Trackhop, by dodać utwór do playlisty.</string>
     <string name="settings_security_summary">Szyfrowane, odwoływalne logowania na tym telefonie; brak serwera Trackhop.</string>
+    <string name="settings_battery_summary">Niektóre telefony zatrzymują aplikacje w tle: wyłącz optymalizację baterii dla Trackhop.</string>
+    <string name="settings_dynamic_color_summary">Kolory Twojej tapety zamiast kolorów Trackhop.</string>
 </resources>

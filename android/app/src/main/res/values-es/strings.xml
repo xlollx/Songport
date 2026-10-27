@@ -960,9 +960,9 @@
     <string name="settings_section_privacy">Privacidad y seguridad</string>
     <string name="settings_section_backups">Copias de seguridad</string>
     <string name="settings_section_advanced">Avanzado</string>
-    <string name="settings_isrc_summary">Busca los códigos ISRC que faltan en el catálogo público de Deezer, para la grabación exacta y no una parecida.</string>
-    <string name="settings_music_links_summary">Abre en Songport los enlaces de música de Spotify, Apple Music y otros, para añadir la canción a una playlist.</string>
-    <string name="settings_unplayable_summary">Una vez por semana te avisa de las canciones que ya no se pueden reproducir. No cambia nada.</string>
+    <string name="settings_isrc_summary">Busca en Deezer los códigos ISRC que faltan, para coincidencias exactas.</string>
+    <string name="settings_music_links_summary">Abre enlaces de música en Songport para añadir la canción a una playlist.</string>
+    <string name="settings_unplayable_summary">Te avisa de las canciones que dejan de reproducirse. No cambia nada.</string>
     <string name="settings_notifications_system">Ajustes de notificaciones del sistema</string>
     <string name="settings_notifications_system_desc">Sonido, vibración y qué notificaciones muestra Android.</string>
     <string name="settings_security_summary">Inicios de sesión cifrados y revocables en este teléfono; sin servidor de Songport.</string>
@@ -993,4 +993,10 @@
     <string name="tools_row_compat">Compara dos playlists y obtén una puntuación para compartir.</string>
     <string name="tools_row_poster">Una tarjeta para compartir con portadas y un código QR.</string>
     <string name="tools_row_unplayable">Encuentra canciones en gris y cámbialas por versiones que se reproducen.</string>
+    <string name="settings_battery_summary">Algunos teléfonos detienen las apps en segundo plano: excluye Songport de la optimización de batería.</string>
+    <string name="settings_dynamic_color_summary">Los colores de tu fondo de pantalla en lugar de los de Songport.</string>
+    <string name="settings_notifications_summary">Cuando una sincronización programada cambia canciones o falla.</string>
+    <string name="settings_developer_summary">Registro de conexiones, informe técnico, captura de tráfico.</string>
+    <string name="settings_new_look_summary">Tarjetas de sincronización con cifras e historial reciente.</string>
+    <string name="settings_log_summary">Resultados recientes y detalles técnicos.</string>
 </resources>
