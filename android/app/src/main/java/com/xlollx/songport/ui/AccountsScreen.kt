@@ -187,6 +187,9 @@ fun AccountsScreen(snackbar: SnackbarHostState, showAdd: Boolean, onShowAdd: (Bo
                 if (!p.requiresAuth) FilesCard(snackbar, onRemove = { remove(p) }, onManage = onManageFiles)
                 else ProviderCard(
                     p = p,
+                    // Read here, where the connector names are observed: the card itself is skipped
+                    // when only the name changes (same provider), and a rename would not show.
+                    label = p.label(ctx),
                     quotaUsed = if (p.serviceId == YouTubeProvider.SERVICE) QuotaMeter.used(data, YouTubeProvider.SERVICE) else null,
                     onSetup = onSetup,
                     onConnect = { connectFor = p },
@@ -310,6 +313,7 @@ private fun TrustBanner() {
 @Composable
 private fun ProviderCard(
     p: MusicProvider,
+    label: String,
     quotaUsed: Long?,
     onSetup: (MusicProvider) -> Unit,
     onConnect: () -> Unit,
@@ -336,7 +340,7 @@ private fun ProviderCard(
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
-                        p.label(ctx) + (if (!p.canWrite) " · " + stringResource(R.string.read_only) else "") +
+                        label + (if (!p.canWrite) " · " + stringResource(R.string.read_only) else "") +
                             (if (p.beta) " · " + stringResource(R.string.beta) else ""),
                         style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     )
@@ -423,15 +427,18 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
     LaunchedEffect(pendingImport) {
         val uri = pendingImport ?: return@LaunchedEffect
         pendingImport = null
-        val result = withContext(Dispatchers.IO) {
-            runCatching {
-                // Bytes, not a UTF-8 reader: a BOM or a Windows-1252 .m3u decodes as written.
-                val text = ctx.contentResolver.openInputStream(uri)?.use { com.xlollx.songport.sync.PlaylistFiles.decode(it.readBytes()) } ?: ""
-                LocalFilesProvider.importFile(ctx, displayName(ctx, uri), text)
+        // In the card's scope: clearing pendingImport restarts this effect, which would cancel the import.
+        scope.launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    // Bytes, not a UTF-8 reader: a BOM or a Windows-1252 .m3u decodes as written.
+                    val text = ctx.contentResolver.openInputStream(uri)?.use { com.xlollx.songport.sync.PlaylistFiles.decode(it.readBytes()) } ?: ""
+                    LocalFilesProvider.importFile(ctx, displayName(ctx, uri), text)
+                }
             }
+            result.onSuccess { n -> version++; snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n)) }
+                .onFailure { snackbar.showSnackbar(it.message ?: ctx.getString(R.string.error_generic)) }
         }
-        result.onSuccess { n -> snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n)); version++ }
-            .onFailure { snackbar.showSnackbar(it.message ?: ctx.getString(R.string.error_generic)) }
     }
 
     var pasteOpen by remember { mutableStateOf(false) }
