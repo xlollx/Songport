@@ -1,0 +1,1 @@
+Trascina giù l'elenco delle sync per sincronizzare tutto. Con cinque o più sync puoi cercarle per nome e filtrarle per stato, servizio o colore. Nuovo riquadro nelle impostazioni rapide: Sincronizza tutto, con l'ora dell'ultima sync.
