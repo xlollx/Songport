@@ -990,4 +990,11 @@
     <string name="settings_developer_summary">Bağlantı günlüğü, teknik rapor, trafik kaydı.</string>
     <string name="settings_new_look_summary">Sayılar ve son çalıştırma geçmişiyle senkronizasyon kartları.</string>
     <string name="settings_log_summary">Son senkronizasyon sonuçları ve teknik ayrıntılar.</string>
+    <string name="first_sync_title">Önce servislerini bağla</string>
+    <string name="first_sync_body">Senkronizasyon, bir servisin çalma listelerini başka bir servise taşır ve güncel tutar. Müziğinin bulunduğu servisle başla.</string>
+    <string name="first_sync_see_all">Tüm servisleri gör</string>
+    <string name="first_sync_ready_title">İlk senkronizasyonunu oluşturmak ister misin?</string>
+    <string name="first_sync_ready_body">%1$s bağlandı. Çalma listelerinden birini ve nereye gideceğini seç.</string>
+    <string name="first_sync_create">Senkronizasyon oluştur</string>
+    <string name="editor_one_service_hint">İki servis arasında senkronize etmek için ikinci bir servis ekle. O zamana kadar senkronizasyon bu telefondaki bir dosyaya gidebilir.</string>
 </resources>

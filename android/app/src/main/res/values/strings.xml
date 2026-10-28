@@ -993,4 +993,11 @@
     <string name="settings_developer_summary">Connections log, technical report, traffic capture.</string>
     <string name="settings_new_look_summary">Sync cards with run numbers and recent history.</string>
     <string name="settings_log_summary">Recent sync results and technical details.</string>
+    <string name="first_sync_title">First, connect your services</string>
+    <string name="first_sync_body">A sync takes the playlists of one service to another and keeps them up to date. Start with the service your music is on.</string>
+    <string name="first_sync_see_all">See all services</string>
+    <string name="first_sync_ready_title">Create your first sync?</string>
+    <string name="first_sync_ready_body">%1$s is connected. Pick one of its playlists and where it should go.</string>
+    <string name="first_sync_create">Create sync</string>
+    <string name="editor_one_service_hint">Add a second service to sync between two services. Until then, a sync can go to a file on this phone.</string>
 </resources>

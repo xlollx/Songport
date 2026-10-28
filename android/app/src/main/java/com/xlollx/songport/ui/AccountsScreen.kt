@@ -130,21 +130,7 @@ fun AccountsScreen(snackbar: SnackbarHostState, showAdd: Boolean, onShowAdd: (Bo
             onDismiss = { naming = null },
         ) { name ->
             naming = null
-            store.updateSettings { s ->
-                // First connector of a service uses the primary slot; the next ones get a numbered slot.
-                val primaryTaken = service.serviceId in s.connectors
-                val slot = if (!primaryTaken) "" else {
-                    val used = s.extraAccounts[service.serviceId].orEmpty()
-                    ((used.mapNotNull { it.toIntOrNull() }.maxOrNull() ?: 1) + 1).toString()
-                }
-                val id = if (slot.isEmpty()) service.serviceId else "${service.serviceId}@$slot"
-                s.copy(
-                    connectors = s.connectors + id,
-                    connectorNames = s.connectorNames + (id to name),
-                    extraAccounts = if (slot.isEmpty()) s.extraAccounts
-                    else s.extraAccounts + (service.serviceId to s.extraAccounts[service.serviceId].orEmpty() + slot),
-                )
-            }
+            addConnector(store, service, name)
         }
     }
     var renaming by remember { mutableStateOf<MusicProvider?>(null) }
@@ -202,6 +188,33 @@ fun AccountsScreen(snackbar: SnackbarHostState, showAdd: Boolean, onShowAdd: (Bo
     }
 }
 
+/**
+ * Adds a connector of [service] named [name] and returns its id: the first connector of a service
+ * takes the primary slot, the next ones a numbered slot.
+ */
+internal fun addConnector(store: Store, service: MusicProvider, name: String): String {
+    var id = ""
+    store.updateSettings { s ->
+        val primaryTaken = service.serviceId in s.connectors
+        val slot = if (!primaryTaken) "" else {
+            val used = s.extraAccounts[service.serviceId].orEmpty()
+            ((used.mapNotNull { it.toIntOrNull() }.maxOrNull() ?: 1) + 1).toString()
+        }
+        id = if (slot.isEmpty()) service.serviceId else "${service.serviceId}@$slot"
+        s.copy(
+            connectors = s.connectors + id,
+            connectorNames = s.connectorNames + (id to name),
+            extraAccounts = if (slot.isEmpty()) s.extraAccounts
+            else s.extraAccounts + (service.serviceId to s.extraAccounts[service.serviceId].orEmpty() + slot),
+        )
+    }
+    return id
+}
+
+/** The services offered to add, in display order: plugin-based ones only where this build may name them or a plugin is installed. */
+internal fun addableServices(ctx: android.content.Context): List<MusicProvider> =
+    Providers.services().filter { !it.linkOnly && (!it.pluginBased || BuildConfig.PLUGIN_LINKS || it.isConfigured(ctx)) }
+
 /** Service picker for a new connector. Services that allow one connector only are greyed out once added. */
 @Composable
 private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, onPick: (MusicProvider) -> Unit) {
@@ -212,7 +225,7 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
         text = {
             // Plugin-based services are offered only when a plugin is installed, unless this build
             // may point to where to get one.
-            val services = Providers.services().filter { !it.linkOnly && (!it.pluginBased || BuildConfig.PLUGIN_LINKS || it.isConfigured(ctx)) }
+            val services = addableServices(ctx)
             // A service reachable two ways (its official API with a key of yours, or its web player with a
             // plain sign-in) is one entry with two routes, each saying what it asks and what it is.
             val families = services.groupBy { it.familyName }
@@ -552,7 +565,7 @@ private fun serviceGroups(names: List<String>, families: Map<String, List<MusicP
 
 /** A service in the "add a service" grid: its mark, large, and its name. */
 @Composable
-private fun ServiceGridTile(p: MusicProvider, name: String, enabled: Boolean, onClick: () -> Unit) {
+internal fun ServiceGridTile(p: MusicProvider, name: String, enabled: Boolean, onClick: () -> Unit) {
     Surface(
         onClick = onClick, enabled = enabled,
         shape = RoundedCornerShape(20.dp),

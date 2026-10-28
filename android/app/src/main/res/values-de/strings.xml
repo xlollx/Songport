@@ -992,4 +992,11 @@
     <string name="settings_developer_summary">Verbindungsprotokoll, technischer Bericht, Traffic-Mitschnitt.</string>
     <string name="settings_new_look_summary">Sync-Karten mit Zahlen und dem Verlauf der letzten Läufe.</string>
     <string name="settings_log_summary">Ergebnisse der letzten Syncs und technische Details.</string>
+    <string name="first_sync_title">Verbinde zuerst deine Dienste</string>
+    <string name="first_sync_body">Ein Sync bringt die Playlists eines Dienstes zu einem anderen und hält sie aktuell. Beginne mit dem Dienst, auf dem deine Musik ist.</string>
+    <string name="first_sync_see_all">Alle Dienste anzeigen</string>
+    <string name="first_sync_ready_title">Ersten Sync erstellen?</string>
+    <string name="first_sync_ready_body">%1$s ist verbunden. Wähle eine seiner Playlists und wohin sie soll.</string>
+    <string name="first_sync_create">Sync erstellen</string>
+    <string name="editor_one_service_hint">Füge einen zweiten Dienst hinzu, um zwischen zwei Diensten zu synchronisieren. Bis dahin kann ein Sync in eine Datei auf diesem Telefon gehen.</string>
 </resources>

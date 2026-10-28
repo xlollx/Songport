@@ -999,4 +999,11 @@
     <string name="settings_developer_summary">Registro de conexiones, informe técnico, captura de tráfico.</string>
     <string name="settings_new_look_summary">Tarjetas de sincronización con cifras e historial reciente.</string>
     <string name="settings_log_summary">Resultados recientes y detalles técnicos.</string>
+    <string name="first_sync_title">Primero, conecta tus servicios</string>
+    <string name="first_sync_body">Una sincronización lleva las playlists de un servicio a otro y las mantiene al día. Empieza por el servicio donde está tu música.</string>
+    <string name="first_sync_see_all">Ver todos los servicios</string>
+    <string name="first_sync_ready_title">¿Crear tu primera sincronización?</string>
+    <string name="first_sync_ready_body">%1$s está conectado. Elige una de sus playlists y adónde debe ir.</string>
+    <string name="first_sync_create">Crear sincronización</string>
+    <string name="editor_one_service_hint">Añade un segundo servicio para sincronizar entre dos servicios. Mientras tanto, una sincronización puede ir a un archivo en este teléfono.</string>
 </resources>

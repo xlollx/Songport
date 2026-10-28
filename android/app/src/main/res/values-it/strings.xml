@@ -992,4 +992,11 @@
     <string name="settings_developer_summary">Registro connessioni, rapporto tecnico, cattura traffico.</string>
     <string name="settings_new_look_summary">Schede delle sync con i numeri e la cronologia recente.</string>
     <string name="settings_log_summary">Esiti delle ultime sync e dettagli tecnici.</string>
+    <string name="first_sync_title">Prima di tutto, collega i tuoi servizi</string>
+    <string name="first_sync_body">Una sync porta le playlist di un servizio su un altro e le tiene aggiornate. Comincia dal servizio dove si trova la tua musica.</string>
+    <string name="first_sync_see_all">Vedi tutti i servizi</string>
+    <string name="first_sync_ready_title">Creare la tua prima sync?</string>
+    <string name="first_sync_ready_body">%1$s è collegato. Scegli una delle sue playlist e dove deve andare.</string>
+    <string name="first_sync_create">Crea sync</string>
+    <string name="editor_one_service_hint">Aggiungi un secondo servizio per sincronizzare tra due servizi. Nel frattempo, una sync può andare in un file su questo telefono.</string>
 </resources>

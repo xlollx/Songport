@@ -270,8 +270,26 @@ private fun MainScreen(
     // A track link from any music app, headed for any connected service (ShareTrackSheet).
     var sharedLink by remember { mutableStateOf<Pair<String, com.xlollx.songport.sync.TrackLinks.Ref>?>(null) }
 
+    // "New sync" with no service signed in (files and public links do not count) would open an
+    // editor with nothing to pick: first the services to connect, then the offer of a first sync.
+    var firstSheet by rememberSaveable { mutableStateOf(false) }
+    var connectNow by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
+    var firstSyncFor by rememberSaveable { mutableStateOf<String?>(null) }
+    var firstSyncReady by rememberSaveable { mutableStateOf<String?>(null) }
+    fun startNewSync() {
+        if (Providers.connectors().any { it.requiresAuth && it.isConnected(ctx) }) editing = newJob() else firstSheet = true
+    }
+    // The sign-in comes back through the browser (a resume) or the loopback flow (AuthEvents).
+    val authVersion by AuthEvents.version.collectAsState()
+    var resumes by remember { mutableIntStateOf(0) }
+    androidx.lifecycle.compose.LifecycleResumeEffect(Unit) { resumes++; onPauseOrDispose { } }
+    LaunchedEffect(firstSyncFor, authVersion, resumes) {
+        val id = firstSyncFor ?: return@LaunchedEffect
+        if (Providers.byId(id)?.isConnected(ctx) == true) { firstSyncFor = null; firstSyncReady = id }
+    }
+
     val newSync by newSyncRequests.collectAsState()
-    LaunchedEffect(newSync) { if (newSync) { newSyncRequests.value = false; tab = MainActivity.TAB_SYNCS; editing = newJob() } }
+    LaunchedEffect(newSync) { if (newSync) { newSyncRequests.value = false; tab = MainActivity.TAB_SYNCS; startNewSync() } }
 
     // Link condiviso da un'altra app: apre l'editor con l'origine gia' impostata.
     val shared by sharedText.collectAsState()
@@ -358,6 +376,46 @@ private fun MainScreen(
             onNewSync = { sharedLink = null; tab = MainActivity.TAB_SYNCS; editing = newJob() },
         )
     }
+    if (firstSheet) com.xlollx.songport.ui.FirstSyncSheet(
+        onDismiss = { firstSheet = false },
+        onPick = { service ->
+            firstSheet = false
+            // The same connector Accounts → add makes; one already added and not signed in is reused.
+            val p = Providers.connectors().firstOrNull { it.serviceId == service.serviceId && it.requiresAuth && !it.isConnected(ctx) }
+                ?: Providers.byId(com.xlollx.songport.ui.addConnector(store, service, service.displayName)) ?: service
+            firstSyncFor = p.id
+            when {
+                p.isConnected(ctx) -> { firstSyncFor = null; firstSyncReady = p.id }
+                !p.isConfigured(ctx) && p.installUrl != null -> runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(p.installUrl))) }
+                // No key for it in this build: the setup guide, then its card in Accounts to sign in.
+                !p.isConfigured(ctx) && p.setupGuide != null -> { tab = MainActivity.TAB_ACCOUNTS; wizardFor = p }
+                else -> connectNow = p
+            }
+        },
+        onSeeAll = { firstSheet = false; tab = MainActivity.TAB_ACCOUNTS; addConnector = true },
+    )
+    connectNow?.let { p ->
+        com.xlollx.songport.ui.ConnectDialog(p, onDismiss = { connectNow = null }) {
+            connectNow = null
+            com.xlollx.songport.auth.AuthFlow.start(ctx, p)
+        }
+    }
+    firstSyncReady?.let { id ->
+        val p = Providers.byId(id)
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { firstSyncReady = null },
+            title = { Text(stringResource(R.string.first_sync_ready_title)) },
+            text = { Text(stringResource(R.string.first_sync_ready_body, p?.label(ctx) ?: id)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    firstSyncReady = null
+                    tab = MainActivity.TAB_SYNCS
+                    editing = newJob().copy(source = PlaylistRef(provider = id))
+                }) { Text(stringResource(R.string.first_sync_create)) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { firstSyncReady = null }) { Text(stringResource(R.string.support_prompt_later)) } },
+        )
+    }
     // One screen on top of the tabs at a time, in this order of precedence. The key names which
     // one is open, so switching animates and the predictive-back preview knows what to move.
     val preview = previewJob
@@ -408,6 +466,8 @@ private fun MainScreen(
                 current != null -> SyncEditorScreen(
                     job = current,
                     onCancel = { editing = null },
+                    // To Accounts with its service grid open; the sync not saved yet is left.
+                    onConnectService = { editing = null; tab = MainActivity.TAB_ACCOUNTS; addConnector = true },
                     onSave = { job, reverse ->
                         val previous = store.job(job.id)
                         store.upsertJob(job)
@@ -480,7 +540,7 @@ private fun MainScreen(
         floatingActionButton = {
             when (tab) {
                 MainActivity.TAB_SYNCS -> ExtendedFloatingActionButton(
-                    onClick = { editing = newJob() },
+                    onClick = { startNewSync() },
                     // The extended button clears its text from the semantics: the icon names it for TalkBack.
                     icon = { Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.new_sync)) },
                     text = { Text(stringResource(R.string.new_sync)) },

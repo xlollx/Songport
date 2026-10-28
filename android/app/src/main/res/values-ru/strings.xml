@@ -1032,4 +1032,11 @@
     <string name="settings_developer_summary">Журнал подключений, технический отчёт, запись трафика.</string>
     <string name="settings_new_look_summary">Карточки синхронизаций с цифрами и недавней историей.</string>
     <string name="settings_log_summary">Последние результаты синхронизаций и технические детали.</string>
+    <string name="first_sync_title">Сначала подключите свои сервисы</string>
+    <string name="first_sync_body">Синхронизация переносит плейлисты из одного сервиса в другой и поддерживает их актуальными. Начните с сервиса, где хранится ваша музыка.</string>
+    <string name="first_sync_see_all">Все сервисы</string>
+    <string name="first_sync_ready_title">Создать первую синхронизацию?</string>
+    <string name="first_sync_ready_body">%1$s подключён. Выберите один из его плейлистов и куда его отправить.</string>
+    <string name="first_sync_create">Создать синхронизацию</string>
+    <string name="editor_one_service_hint">Добавьте второй сервис, чтобы синхронизировать между двумя сервисами. А пока синхронизация может сохранять в файл на этом телефоне.</string>
 </resources>

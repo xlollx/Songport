@@ -565,7 +565,7 @@ private val PolicySaver = androidx.compose.runtime.saveable.Saver<com.xlollx.son
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJob?) -> Unit) {
+fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () -> Unit = {}, onSave: (SyncJob, SyncJob?) -> Unit) {
     val ctx = LocalContext.current
     ScreenBackHandler(onCancel)
     val saveHaptic = rememberConfirmHaptic()
@@ -587,7 +587,12 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
     var linkText by rememberSaveable { mutableStateOf(job.source.link ?: "") }
     // Written by the AI: the source is the AI's own list, kept in a file; nothing to pick.
     val aiSource = job.aiPrompt != null && job.source.provider == com.xlollx.songport.providers.LocalFilesProvider.id
-    val writable = available.filter { it.canWrite }
+    // With a single service there is nowhere else to write to: a file on the phone always is, so a
+    // first sync is possible before a second service is connected.
+    val writable = available.filter { it.canWrite }.let { w ->
+        if (w.size < 2 && w.none { it.id == com.xlollx.songport.providers.LocalFilesProvider.id }) w + com.xlollx.songport.providers.LocalFilesProvider else w
+    }
+    val loginServices = remember(available) { available.count { it.requiresAuth && it.isConnected(ctx) } }
     var dstProvider by rememberSaveable { mutableStateOf(job.target.provider.ifEmpty { writable.getOrNull(1)?.id ?: writable.firstOrNull()?.id ?: "" }) }
     var createNew by rememberSaveable { mutableStateOf(job.target.playlistId == null) }
     var dstPlaylist by rememberSaveable(stateSaver = PlaylistSaver) { mutableStateOf<Playlist?>(job.target.playlistId?.let { Playlist(it, job.target.playlistName) }) }
@@ -685,8 +690,11 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
         },
     ) { padding ->
         Column(Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            if (available.isEmpty()) {
-                Text(stringResource(R.string.no_connected_providers), color = MaterialTheme.colorScheme.error)
+            // Nothing to sync from yet, or only one service to sync between: say so, with the way to connect one.
+            if (loginServices == 0) {
+                ConnectServiceCard(stringResource(R.string.no_connected_providers), onConnectService)
+            } else if (loginServices == 1) {
+                ConnectServiceCard(stringResource(R.string.editor_one_service_hint), onConnectService)
             }
             EditorStep(1, stringResource(R.string.editor_source)) {
                 if (aiSource) {
@@ -828,6 +836,17 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onSave: (SyncJob, SyncJ
                 }
             }
             Spacer(Modifier.height(8.dp))
+        }
+    }
+}
+
+/** A note at the top of the editor with the way to connect a service. */
+@Composable
+private fun ConnectServiceCard(text: String, onConnect: () -> Unit) {
+    Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
+            FilledTonalButton(onClick = onConnect, modifier = Modifier.align(Alignment.End)) { Text(stringResource(R.string.empty_syncs_cta_accounts)) }
         }
     }
 }

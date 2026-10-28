@@ -972,4 +972,11 @@
     <string name="settings_developer_summary">接続ログ、技術レポート、通信のキャプチャ。</string>
     <string name="settings_new_look_summary">数値と最近の実行履歴を表示する同期カード。</string>
     <string name="settings_log_summary">最近の同期結果と技術的な詳細。</string>
+    <string name="first_sync_title">まずサービスを接続しましょう</string>
+    <string name="first_sync_body">同期は、あるサービスのプレイリストを別のサービスへ運び、最新の状態に保ちます。音楽があるサービスから始めましょう。</string>
+    <string name="first_sync_see_all">すべてのサービスを表示</string>
+    <string name="first_sync_ready_title">最初の同期を作成しますか？</string>
+    <string name="first_sync_ready_body">%1$s が接続されました。プレイリストと同期先を選んでください。</string>
+    <string name="first_sync_create">同期を作成</string>
+    <string name="editor_one_service_hint">2つのサービス間で同期するには、2つ目のサービスを追加してください。それまでは、このスマートフォン上のファイルに同期できます。</string>
 </resources>

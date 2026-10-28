@@ -1034,4 +1034,11 @@
     <string name="settings_developer_summary">Dziennik połączeń, raport techniczny, przechwytywanie ruchu.</string>
     <string name="settings_new_look_summary">Karty synchronizacji z liczbami i historią ostatnich uruchomień.</string>
     <string name="settings_log_summary">Ostatnie wyniki synchronizacji i szczegóły techniczne.</string>
+    <string name="first_sync_title">Najpierw połącz swoje serwisy</string>
+    <string name="first_sync_body">Synchronizacja przenosi playlisty z jednego serwisu do drugiego i utrzymuje je na bieżąco. Zacznij od serwisu, w którym jest Twoja muzyka.</string>
+    <string name="first_sync_see_all">Zobacz wszystkie serwisy</string>
+    <string name="first_sync_ready_title">Utworzyć pierwszą synchronizację?</string>
+    <string name="first_sync_ready_body">%1$s jest połączony. Wybierz jedną z jego playlist i miejsce docelowe.</string>
+    <string name="first_sync_create">Utwórz synchronizację</string>
+    <string name="editor_one_service_hint">Dodaj drugi serwis, aby synchronizować między dwoma serwisami. Do tego czasu synchronizacja może trafić do pliku na tym telefonie.</string>
 </resources>

@@ -972,4 +972,11 @@
     <string name="settings_developer_summary">连接日志、技术报告、流量捕获。</string>
     <string name="settings_new_look_summary">显示数字和近期运行记录的同步卡片。</string>
     <string name="settings_log_summary">最近的同步结果和技术细节。</string>
+    <string name="first_sync_title">首先，连接你的服务</string>
+    <string name="first_sync_body">同步会把一个服务的歌单带到另一个服务并保持更新。从你的音乐所在的服务开始吧。</string>
+    <string name="first_sync_see_all">查看所有服务</string>
+    <string name="first_sync_ready_title">创建你的第一个同步？</string>
+    <string name="first_sync_ready_body">%1$s 已连接。选择它的一个歌单以及要同步到哪里。</string>
+    <string name="first_sync_create">创建同步</string>
+    <string name="editor_one_service_hint">再添加一个服务，即可在两个服务之间同步。在此之前，同步可以保存到这部手机上的文件。</string>
 </resources>
