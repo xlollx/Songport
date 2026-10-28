@@ -1,0 +1,1 @@
+Nouvelle synchro sans service connecté montre maintenant quels services connecter, lance la connexion, puis propose votre première synchro. Avec un seul service, Fichier est proposé comme destination.

@@ -1,0 +1,1 @@
+New sync with no service connected now shows which services to connect and starts the sign-in, then offers your first sync. With one service, File is offered as the target, so a first sync always works.

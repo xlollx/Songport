@@ -1,0 +1,1 @@
+Nowa synchronizacja bez połączonych serwisów pokazuje teraz, które serwisy połączyć, rozpoczyna logowanie i proponuje pierwszą synchronizację. Przy jednym serwisie jako cel dostępny jest Plik.

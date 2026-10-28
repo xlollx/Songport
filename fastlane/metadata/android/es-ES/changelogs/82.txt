@@ -1,0 +1,1 @@
+Nueva sincronización sin servicios conectados ahora muestra qué servicios conectar e inicia el acceso, y luego propone tu primera sincronización. Con un solo servicio puedes elegir Archivo como destino.

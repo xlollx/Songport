@@ -1,0 +1,1 @@
+Nova sincronização sem serviços conectados agora mostra quais serviços conectar e inicia o login, depois oferece sua primeira sincronização. Com um só serviço, Arquivo é oferecido como destino.

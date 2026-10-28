@@ -1,0 +1,1 @@
+Bağlı hizmet yokken Yeni eşitleme artık hangi hizmetleri bağlayacağını gösterip girişi başlatıyor, ardından ilk eşitlemeni öneriyor. Tek hizmetle hedef olarak Dosya sunuluyor.

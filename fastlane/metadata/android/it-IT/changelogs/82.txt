@@ -1,0 +1,1 @@
+Nuova sync senza servizi collegati ora mostra quali servizi collegare e avvia l'accesso, poi propone la prima sync. Con un solo servizio puoi scegliere File come destinazione, così la prima sync funziona sempre.

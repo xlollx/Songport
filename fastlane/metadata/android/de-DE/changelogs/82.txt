@@ -1,0 +1,1 @@
+Neue Synchronisierung ohne verbundenen Dienst zeigt jetzt, welche Dienste du verbinden kannst, startet die Anmeldung und bietet dann die erste Synchronisierung an. Mit nur einem Dienst steht Datei als Ziel bereit.
