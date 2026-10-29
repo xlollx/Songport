@@ -1165,4 +1165,5 @@
     <string name="tour_mirror">Con Replicar eliminaciones desactivado, Trackhop solo añade: la opción segura para una primera sincronización.</string>
     <string name="tour_save">Guardar abre la vista previa, que muestra qué cambiaría y pregunta por las coincidencias dudosas antes de que pase nada.</string>
     <string name="tour_results">Después de la ejecución, la tarjeta muestra los números, y una etiqueta como No encontradas te lleva a lo que hay que revisar. Más en Ajustes › Cómo se hace.</string>
+    <string name="plugins_where">Los plugins los publican sus propios autores, no esta app: en GitHub llevan el tema «trackhop-plugin».</string>
 </resources>

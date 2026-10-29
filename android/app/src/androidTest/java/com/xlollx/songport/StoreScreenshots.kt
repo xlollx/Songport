@@ -54,6 +54,11 @@ import java.util.Locale
  * (ShotProvider, no network, no account), the app in dark mode with the brand palette, every
  * language of the store listing. Each picture is written to the app's external files dir as
  * shots/<fastlane locale>/<n>.png and pulled by the workflow.
+ *
+ * Run from the Play build (flavor "play") it takes the Play listing's pictures: only the services
+ * that build reaches on its own (TIDAL where the full build shows Amazon Music, the official YouTube
+ * connector, no web or plugin connector), no service picker (it lists what Play cannot reach) and no
+ * banner ad.
  */
 @RunWith(AndroidJUnit4::class)
 class StoreScreenshots {
@@ -75,9 +80,19 @@ class StoreScreenshots {
     private val amazon = ShotProvider("amazon", "Amazon Music", 0xFF25D1DA, ShotProvider.IdStyle.ASIN)
     private val deezer = ShotProvider("deezer", "Deezer", 0xFFA238FF, ShotProvider.IdStyle.NUMERIC)
     private val jellyfin = ShotProvider("jellyfin", "Jellyfin", 0xFF00A4DC, ShotProvider.IdStyle.UUID)
+    private val tidal = ShotProvider("tidal", "TIDAL", 0xFF111111, ShotProvider.IdStyle.NUMERIC)
+
+    /** The Play build: no web connector, no plugin, a banner ad. */
+    private val play = BuildConfig.FLAVOR == "play"
+    /** YouTube Music of the demo: the web connector in the full build, the official one in the Play build. */
+    private val yt = if (play) "youtube" else "ytm"
+    /** The fourth service: Amazon Music in the full build; TIDAL in the Play build, which reaches Amazon only through a plugin. */
+    private val fourth = if (play) "tidal" else "amazon"
+    private val fourthName = if (play) "TIDAL" else "Amazon Music"
 
     @Test
     fun takeAll() {
+        if (play) hideAds()
         installDemo()
         // -e review true: only the pictures for checking the Settings and Tools layout (English,
         // dark and light, a large font, Tools with no service), kept apart from the store's.
@@ -98,7 +113,18 @@ class StoreScreenshots {
 
     private fun installDemo() {
         Providers.install(
-            listOf(
+            if (play) listOf(
+                Factory("spotify") { spotify },
+                Factory(AppleMusicProvider.SERVICE) { AppleMusicProvider(it) },
+                Factory("youtube") { youtube },
+                Factory("tidal") { tidal },
+                Factory("deezer") { deezer },
+                Factory(SubsonicProvider.SERVICE) { SubsonicProvider(it) },
+                Factory("jellyfin") { jellyfin },
+                Factory(PlexProvider.SERVICE) { PlexProvider(it) },
+                Factory(LastFmProvider.SERVICE) { LastFmProvider(it) },
+                Factory(ListenBrainzProvider.SERVICE) { ListenBrainzProvider(it) },
+            ) else listOf(
                 Factory("spotify") { spotify },
                 Factory(SpotifyBridgeProvider.SERVICE) { SpotifyBridgeProvider(it) },
                 Factory(AppleMusicProvider.SERVICE) { AppleMusicProvider(it) },
@@ -119,9 +145,9 @@ class StoreScreenshots {
         val now = System.currentTimeMillis()
         val pl = Demo.PLAYLISTS
         val jobs = listOf(
-            SyncJob("job-metal", pl[0].second, PlaylistRef("spotify", pl[0].first, pl[0].second), PlaylistRef("ytm", "PLmetal", pl[0].second), Schedule.WEEKLY, mirrorRemovals = true),
-            SyncJob("job-road", pl[1].second, PlaylistRef("spotify", pl[1].first, pl[1].second), PlaylistRef("amazon", "B0road", pl[1].second), Schedule.DAILY),
-            SyncJob("job-chill", pl[2].second, PlaylistRef("ytm", "PLchill", pl[2].second), PlaylistRef("jellyfin", "jf-chill", pl[2].second), Schedule.WEEKLY, mirrorRemovals = true),
+            SyncJob("job-metal", pl[0].second, PlaylistRef("spotify", pl[0].first, pl[0].second), PlaylistRef(yt, "PLmetal", pl[0].second), Schedule.WEEKLY, mirrorRemovals = true),
+            SyncJob("job-road", pl[1].second, PlaylistRef("spotify", pl[1].first, pl[1].second), PlaylistRef(fourth, if (play) "5843001" else "B0road", pl[1].second), Schedule.DAILY),
+            SyncJob("job-chill", pl[2].second, PlaylistRef(yt, "PLchill", pl[2].second), PlaylistRef("jellyfin", "jf-chill", pl[2].second), Schedule.WEEKLY, mirrorRemovals = true),
             SyncJob("job-workout", pl[3].second, PlaylistRef("deezer", "908622995", pl[3].second), PlaylistRef("spotify", pl[3].first, pl[3].second), Schedule.EVERY_6H),
         )
         // Ten runs each, the newest last: (added, removed, not found) of the newest, and a failure in the history of one.
@@ -149,9 +175,9 @@ class StoreScreenshots {
         store.update { d -> d.copy(jobs = finalJobs, reports = reports) }
         store.updateSettings {
             it.copy(
-                connectors = listOf("spotify", "ytm", "amazon", "deezer", "jellyfin"), connectorsInit = true,
+                connectors = listOf("spotify", yt, fourth, "deezer", "jellyfin"), connectorsInit = true,
                 onboardingDone = true, tourDone = true, themeMode = "DARK", dynamicColor = false, newLook = true,
-                supportPromptDone = true, appOpens = 1, supportNudgeSeen = 0, shareTarget = "ytm",
+                supportPromptDone = true, appOpens = 1, supportNudgeSeen = 0, shareTarget = yt,
             )
         }
         store.flush()
@@ -250,7 +276,10 @@ class StoreScreenshots {
         }
         // 3 Accounts, 4 the add-a-service grid.
         open(main().putExtra(MainActivity.EXTRA_TAB, MainActivity.TAB_ACCOUNTS)) {
-            waitText("Amazon Music"); snap()
+            waitText(fourthName); snap()
+            // The Play build's picker lists, greyed out, the services it cannot reach (Amazon Music
+            // among them): not a picture for its listing.
+            if (play) return@open
             // The "Add connector" button, then the grid of services. The test sees neither the button's
             // merged node nor the dialog, and the injected click fails, so: a real tap on the label, and
             // the picture kept only if it differs from the one before (the grid did open).
@@ -385,6 +414,18 @@ class StoreScreenshots {
         tab(MainActivity.TAB_TOOLS) { snap("tools_noservice_dark") }
         store.updateSettings { it.copy(connectors = connectors) }; store.flush()
         resumed()?.let { a -> instr.runOnMainSync { a.finish() } }
+    }
+
+    /**
+     * The Play build's banner kept out of the pictures: its SDK is marked as started before any
+     * screen opens, so it never starts and no ad is asked for (the app's own Ads.start is left as is).
+     */
+    private fun hideAds() {
+        runCatching {
+            val ads = Class.forName("com.xlollx.songport.ads.Ads")
+            val started = ads.getDeclaredField("initialized").apply { isAccessible = true }
+            (started.get(null) as java.util.concurrent.atomic.AtomicBoolean).set(true)
+        }.onFailure { android.util.Log.w("StoreScreenshots", "ads not held back: $it") }
     }
 
     /** One fallible part of a picture: a miss is logged and the picture is taken anyway. */

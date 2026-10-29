@@ -1165,4 +1165,5 @@
     <string name="tour_mirror">Refléter les retraits désactivé, Trackhop ne fait qu\'ajouter : le choix prudent pour une première sync.</string>
     <string name="tour_save">Enregistrer ouvre l\'aperçu, qui montre ce qui changerait et pose la question des correspondances incertaines avant que rien ne se passe.</string>
     <string name="tour_results">Après l\'exécution, la carte affiche les chiffres, et une étiquette comme Introuvables vous mène à ce qu\'il faut regarder. Plus dans Réglages › Mode d\'emploi.</string>
+    <string name="plugins_where">Les plugins sont publiés par leurs auteurs, pas par cette app : sur GitHub, ils portent le sujet « trackhop-plugin ».</string>
 </resources>

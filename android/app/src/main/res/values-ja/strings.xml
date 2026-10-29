@@ -1138,4 +1138,5 @@
     <string name="tour_mirror">「削除も反映」がオフなら Trackhop は追加だけを行うので、はじめての同期には安全な設定です。</string>
     <string name="tour_save">保存するとプレビューが開き、何かが起きる前に、変わる内容の表示と不確かな一致の確認が行われます。</string>
     <string name="tour_results">実行後、カードに数字が表示され、「見つからず」などのラベルから確認が必要な画面に移動できます。詳しくは「設定 › 使い方」へ。</string>
+    <string name="plugins_where">プラグインはこのアプリではなく各作者が公開しています。GitHub ではトピック「trackhop-plugin」が付いています。</string>
 </resources>

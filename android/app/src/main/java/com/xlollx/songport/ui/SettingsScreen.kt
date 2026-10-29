@@ -318,7 +318,7 @@ fun SettingsScreen(
                 }
             }
             // What a plugin is, above the list; nothing about where plugins come from.
-            PrefSection(stringResource(R.string.plugins_title), description = stringResource(R.string.plugins_desc), help = { HelpButton(Helps.plugins) }) {
+            PrefSection(stringResource(R.string.plugins_title), description = stringResource(R.string.plugins_desc), footer = stringResource(R.string.plugins_where), help = { HelpButton(Helps.plugins) }) {
                 val list = plugins
                 if (list != null && list.isEmpty()) PrefRow(Icons.Filled.Extension, stringResource(R.string.plugins_none))
                 list?.forEach { (p, services) ->

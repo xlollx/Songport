@@ -1137,4 +1137,5 @@
     <string name="tour_mirror">삭제도 반영을 끄면 Trackhop은 추가만 해요. 첫 동기화에는 이게 안전해요.</string>
     <string name="tour_save">저장하면 미리보기가 열려서, 무슨 일이 일어나기 전에 바뀔 내용을 보여 주고 불확실한 매칭을 물어봐요.</string>
     <string name="tour_results">실행이 끝나면 카드에 숫자가 나오고, 찾지 못함 같은 라벨을 누르면 확인할 곳으로 가요. 자세한 내용은 설정 › 사용 방법에 있어요.</string>
+    <string name="plugins_where">플러그인은 이 앱이 아니라 각 제작자가 배포합니다. GitHub에서는 “trackhop-plugin” 주제가 붙어 있습니다.</string>
 </resources>

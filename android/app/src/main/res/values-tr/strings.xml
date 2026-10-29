@@ -1156,4 +1156,5 @@
     <string name="tour_mirror">Kaldırmaları yansıt kapalıyken Trackhop yalnızca ekler: ilk senkronizasyon için güvenli seçim budur.</string>
     <string name="tour_save">Kaydet önizlemeyi açar; önizleme neyin değişeceğini gösterir ve bir şey olmadan önce belirsiz eşleşmeleri sorar.</string>
     <string name="tour_results">Çalıştırmadan sonra kart sayıları gösterir; Bulunamadı gibi bir etiket sizi bakılması gerekene götürür. Daha fazlası Ayarlar › Nasıl yapılır\'da.</string>
+    <string name="plugins_where">Eklentileri bu uygulama değil, kendi geliştiricileri yayınlar: GitHub\'da “trackhop-plugin” konusunu taşırlar.</string>
 </resources>

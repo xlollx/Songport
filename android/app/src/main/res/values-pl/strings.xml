@@ -1200,4 +1200,5 @@
     <string name="tour_mirror">Gdy Odzwierciedlaj usunięcia jest wyłączone, Trackhop tylko dodaje: to bezpieczny wybór na pierwszą synchronizację.</string>
     <string name="tour_save">Zapisz otwiera podgląd, który pokazuje, co by się zmieniło, i pyta o niepewne dopasowania, zanim cokolwiek się stanie.</string>
     <string name="tour_results">Po uruchomieniu karta pokazuje liczby, a etykieta taka jak Nieznalezione prowadzi do tego, co wymaga uwagi. Więcej w Ustawienia › Jak to zrobić.</string>
+    <string name="plugins_where">Wtyczki publikują ich autorzy, nie ta aplikacja: na GitHubie mają temat „trackhop-plugin”.</string>
 </resources>

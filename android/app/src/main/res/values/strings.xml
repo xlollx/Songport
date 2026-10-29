@@ -1158,4 +1158,5 @@
     <string name="tour_mirror">With Mirror removals off, Trackhop only adds, which is the safe choice for a first sync.</string>
     <string name="tour_save">Save opens the preview, which shows what would change and asks about uncertain matches before anything happens.</string>
     <string name="tour_results">After the run the card shows the numbers, and a pill such as Not found leads you to whatever needs a look. More in Settings › How to.</string>
+    <string name="plugins_where">Plugins are published by their own authors, not through this app: on GitHub they carry the topic “trackhop-plugin”.</string>
 </resources>

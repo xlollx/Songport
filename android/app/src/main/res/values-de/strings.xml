@@ -1158,4 +1158,5 @@
     <string name="tour_mirror">Mit ausgeschaltetem „Entfernungen spiegeln“ fügt Trackhop nur hinzu – die sichere Wahl für den ersten Sync.</string>
     <string name="tour_save">Speichern öffnet die Vorschau, die zeigt, was sich ändern würde, und nach unsicheren Zuordnungen fragt, bevor etwas passiert.</string>
     <string name="tour_results">Nach dem Lauf zeigt die Karte die Zahlen, und eine Markierung wie „Nicht gefunden“ führt dich zu dem, was du ansehen solltest. Mehr unter Einstellungen › So geht\'s.</string>
+    <string name="plugins_where">Plugins werden von ihren Autoren veröffentlicht, nicht über diese App: Auf GitHub tragen sie das Thema „trackhop-plugin“.</string>
 </resources>
