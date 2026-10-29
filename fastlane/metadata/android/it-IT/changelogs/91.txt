@@ -1,0 +1,1 @@
+Aiuto dove serve: una ? accanto alle opzioni meno ovvie apre una spiegazione breve con un esempio. Nuovo Impostazioni › Aiuto › Come si fa, con nove guide brevi che funzionano anche offline, e un giro guidato facoltativo della prima sincronizzazione.

@@ -73,7 +73,7 @@ private const val PAGES = 4
  * are. Skip goes straight to the app; the last page's button starts it.
  */
 @Composable
-fun OnboardingScreen(onDone: () -> Unit) {
+fun OnboardingScreen(onDone: () -> Unit, onTour: () -> Unit = onDone) {
     val pager = rememberPagerState { PAGES }
     val scope = rememberCoroutineScope()
     val last = pager.currentPage == PAGES - 1
@@ -94,6 +94,8 @@ fun OnboardingScreen(onDone: () -> Unit) {
             ) {
                 Box(Modifier.weight(1f)) {
                     if (!last) TextButton(onClick = onDone, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.onboarding_skip)) }
+                    // The end of the welcome offers the guided first sync, once; Start goes straight in.
+                    else TextButton(onClick = onTour, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.tour_offer)) }
                 }
                 Dots(pager.currentPage)
                 Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {

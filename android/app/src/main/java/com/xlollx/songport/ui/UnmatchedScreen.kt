@@ -90,6 +90,7 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
                 title = { Text(stringResource(R.string.review_title, report?.jobName ?: "")) },
                 navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
                 actions = {
+                    HelpButton(Helps.change, Helps.proposal, Helps.ignore, label = stringResource(R.string.help_review_title))
                     // The list as text, to keep or send: what was not found and what was matched loosely.
                     if (report != null && (report.unmatchedTracks.isNotEmpty() || report.reviewTracks.isNotEmpty())) {
                         IconButton(onClick = {

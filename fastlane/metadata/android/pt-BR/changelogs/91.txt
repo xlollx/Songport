@@ -1,0 +1,1 @@
+Ajuda onde você precisa: um ? ao lado das opções menos óbvias abre uma explicação curta com um exemplo. Novo Configurações › Ajuda › Como fazer, com nove guias curtos que funcionam offline, e um tour guiado opcional da sua primeira sincronização.

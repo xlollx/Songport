@@ -63,6 +63,8 @@ data class Settings(
     val dynamicColor: Boolean = false,
     /** The refreshed sync cards (big numbers, run history): on unless turned off in Appearance. */
     val newLook: Boolean = true,
+    /** The guided first sync was finished or skipped: it is no longer offered on the empty Syncs tab. */
+    val tourDone: Boolean = false,
 )
 
 /** Unita' di quota consumate in un giorno (chiave = data nel fuso del servizio). */

@@ -91,6 +91,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
             TopAppBar(
                 title = { Text(stringResource(R.string.preview_title, job.name)) },
                 navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
+                actions = { HelpButton(Helps.preview, Helps.previewRun, label = stringResource(R.string.preview)) },
             )
         },
     ) { padding ->
@@ -137,7 +138,8 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                             ) {
                                 Checkbox(checked = confirmRemovals, onCheckedChange = null)
                                 Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.preview_remove_confirm, p.toRemove.size), style = MaterialTheme.typography.bodyMedium)
+                                Text(stringResource(R.string.preview_remove_confirm, p.toRemove.size), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                                HelpButton(Helps.removals)
                             }
                         }
                         Button(onClick = {
@@ -146,7 +148,10 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                         }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.run_now)) }
                     }
                     if (p.uncertain.isNotEmpty()) {
-                        Text(stringResource(R.string.review_section_uncertain, p.uncertain.size), style = MaterialTheme.typography.titleMedium)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(stringResource(R.string.review_section_uncertain, p.uncertain.size), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                            HelpButton(Helps.uncertain)
+                        }
                         var openReview by remember { mutableStateOf<String?>(null) }
                         p.uncertain.forEach { review ->
                             ReviewRow(

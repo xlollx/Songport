@@ -70,6 +70,8 @@ abstract class FlowTest {
     @Before
     fun baseSetUp() {
         com.xlollx.songport.auth.AuthEvents.consume()
+        // The guided tour lives in the process: none left running from the test before.
+        com.xlollx.songport.ui.Tour.step.value = null
         Http.onRequest = { host -> attemptedHosts += host; throw IOException("UI test: network is closed ($host)") }
         if (Build.VERSION.SDK_INT >= 33) instr.uiAutomation.grantRuntimePermission(app.packageName, Manifest.permission.POST_NOTIFICATIONS)
         shell("settings put global hide_error_dialogs 1")
@@ -85,9 +87,9 @@ abstract class FlowTest {
         store.flush()
     }
 
-    /** Onboarding done, the connectors signed in, nothing that would open by itself (support card, ISRC lookups). */
+    /** Onboarding and the guided tour done, the connectors signed in, nothing that would open by itself (support card, ISRC lookups). */
     protected open fun baseSettings() = Settings(
-        connectors = connectedAtStart, connectorsInit = true, onboardingDone = true,
+        connectors = connectedAtStart, connectorsInit = true, onboardingDone = true, tourDone = true,
         isrcLookup = false, supportPromptDone = true, appOpens = 0, themeMode = "LIGHT",
     )
 

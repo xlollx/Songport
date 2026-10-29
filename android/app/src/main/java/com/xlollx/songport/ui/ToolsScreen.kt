@@ -321,7 +321,10 @@ private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
 
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.tools_export_title), style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.tools_export_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                HelpButton(Helps.export)
+            }
             Spacer(Modifier.height(6.dp))
             Text(stringResource(R.string.tools_export_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(10.dp))
@@ -452,7 +455,10 @@ private fun DedupeCard(provider: MusicProvider, snackbar: SnackbarHostState) {
 
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.tools_dedupe_title), style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.tools_dedupe_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                HelpButton(Helps.dedupe)
+            }
             Spacer(Modifier.height(6.dp))
             Text(stringResource(R.string.tools_dedupe_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (!provider.canRemoveTracks) {
