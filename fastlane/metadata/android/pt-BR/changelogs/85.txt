@@ -1,1 +1,1 @@
-A tela de abertura também ganhou o novo visual: o ícone com a placa de vidro e o feixe de luz sobre preto, no lugar do antigo roxo.
+A tela de abertura ganhou o novo visual: o feixe de luz e a placa de vidro na tela inteira, no lugar do antigo roxo.

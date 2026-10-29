@@ -1,1 +1,1 @@
-Anche la schermata di avvio ha il nuovo look: l'icona con il riquadro glass e il fascio di luce su nero, al posto del vecchio viola.
+La schermata di avvio ha il nuovo look: il fascio di luce e il riquadro glass su tutto lo schermo, al posto del vecchio viola.
