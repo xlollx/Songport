@@ -10,11 +10,11 @@ import android.os.Bundle
 import com.xlollx.songport.BuildConfig
 
 /**
- * Discovery of a "connector plugin": a separately installed app that implements Songport's open
+ * Discovery of a "connector plugin": a separately installed app that implements Trackhop's open
  * connector interface (a ContentProvider answering `call()` methods, plus login activities).
  *
  * The plugin advertises itself with an activity handling [ACTION] and a `<meta-data>` entry naming
- * its provider authority. Songport never bundles, downloads or installs a plugin: it only uses one
+ * its provider authority. Trackhop never bundles, downloads or installs a plugin: it only uses one
  * the user has already installed. The direct-download build may show where to get one; the Google
  * Play build does not link to anything and simply offers the services when a plugin is present.
  *

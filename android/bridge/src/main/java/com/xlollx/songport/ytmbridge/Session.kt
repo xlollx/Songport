@@ -9,7 +9,7 @@ import androidx.security.crypto.MasterKey
 /**
  * The YouTube Music session: the cookies of the login the user completed in the WebView, encrypted
  * with the Android Keystore. They are as sensitive as the Google password: they never leave this
- * device and are never handed to Songport, which only receives playlists and tracks.
+ * device and are never handed to Trackhop, which only receives playlists and tracks.
  */
 object Session {
     const val ORIGIN = YtmAuth.ORIGIN
@@ -43,7 +43,7 @@ object Session {
     fun clear(ctx: Context) {
         YtmWeb.reset()
         prefs(ctx).edit().clear().apply()
-        // Only Google's and YouTube's cookies: inside Songport the WebView also holds the other web
+        // Only Google's and YouTube's cookies: inside Trackhop the WebView also holds the other web
         // sessions (Amazon, Spotify, Apple), which signing out of YouTube Music must not touch.
         runCatching {
             val cm = CookieManager.getInstance()

@@ -4,8 +4,7 @@
    users should get is a release: Obtainium and F-Droid follow the tags.
 2. **Changelog**: `fastlane/metadata/android/<locale>/changelogs/<versionCode>.txt` in all seven
    locales (en-US, it-IT, fr-FR, de-DE, es-ES, zh-CN, ja-JP), under 500 characters.
-3. **Push to `main`**. CI (`.github/workflows/build.yml`) runs the unit tests and the Play-strings
-   check, builds the debug APK, the signed release APK (`full` flavour) and the AAB (`play` flavour),
+3. **Push to `main`**. CI (`.github/workflows/build.yml`) runs the unit tests, builds the debug APK, the signed release APK (`full` flavour) and the AAB (`play` flavour),
    and, when the `versionName` has no tag yet, creates the tag `vX.Y.Z` and the GitHub Release with
    `Songport-vX.Y.Z.apk` and `Songport-vX.Y.Z-play.aab`.
 4. **Obtainium** users get it at once. **F-Droid** finds the new tag (`UpdateCheckMode: Tags`),
@@ -23,15 +22,13 @@
 
 ## Google Play (when it happens)
 
-The `play` flavour is published as **Trackhop**: same package id, no built-in web connectors, AdMob
-banner. Listing texts, Data safety answers and the closed-test kit are in `docs/play-store-listing.md`
+The `play` flavour is published as **Trackhop**, like every other build: same package id, no built-in
+web connectors, AdMob banner. Listing texts, Data safety answers and the closed-test kit are in `docs/play-store-listing.md`
 and `docs/play-testers.md`.
 
 ## Checks before pushing
 
 - Strings: the same names, in the same order, in all seven `values*/strings.xml`; apostrophes escaped
   (`\'`).
-- After editing `strings.xml`: `python3 scripts/play_strings.py` (CI fails if the Play brand strings
-  are stale).
 
 [All guide pages](./)

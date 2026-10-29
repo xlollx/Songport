@@ -51,7 +51,7 @@ object Cards {
     private const val INK = 0xFF14121A.toInt()
     private const val PANEL = 0x2EFFFFFF
     private const val PANEL_LINE = 0x40FFFFFF
-    private const val SITE = "xlollx.github.io/Songport"
+    private const val SITE = "xlollx.github.io/Trackhop"
 
     /** What the compatibility card shows: names, score, the common tracks with covers. */
     class CompatibilityCard(val nameA: String, val nameB: String, val result: Compatibility.Result, val covers: Map<String, Bitmap?>)
@@ -63,7 +63,7 @@ object Cards {
     class Mark(val name: String, val color: Int, val serviceId: String?)
 
     /**
-     * "Songport in numbers": the headline figure with its label and period, up to three more
+     * "Trackhop in numbers": the headline figure with its label and period, up to three more
      * figures (value, label), and the route used most with its caption. Everything is already
      * formatted and translated: the renderer only lays it out.
      */
@@ -312,7 +312,7 @@ object Cards {
         return p
     }
 
-    /** The Songport mark (the app's own vector), in white, centred on [cx]. */
+    /** The Trackhop mark (the app's own vector), in white, centred on [cx]. */
     private fun brandMark(ctx: Context, c: Canvas, cx: Float, top: Float, side: Float) {
         val d = ContextCompat.getDrawable(ctx, R.drawable.ic_brand_mark)?.mutate() ?: return
         d.setTint(Color.WHITE)

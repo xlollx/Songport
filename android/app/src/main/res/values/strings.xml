@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Songport</string>
+    <string name="app_name">Trackhop</string>
 
     <string name="tab_syncs">Syncs</string>
     <string name="tab_accounts">Accounts</string>
@@ -91,7 +91,7 @@
     <string name="connected_as">Connected as %1$s</string>
     <string name="not_connected">Not connected</string>
     <string name="not_configured">Setup needed</string>
-    <string name="not_configured_hint">Songport ships without service keys. Create your own free key on the service\'s developer page: it takes about two minutes and the app guides you step by step.</string>
+    <string name="not_configured_hint">Trackhop ships without service keys. Create your own free key on the service\'s developer page: it takes about two minutes and the app guides you step by step.</string>
     <string name="setup_now">Set up</string>
     <string name="connect">Connect</string>
     <string name="disconnect">Disconnect</string>
@@ -115,13 +115,13 @@
     <string name="settings_notifications">Notify after each sync</string>
     <string name="settings_notifications_desc">Show a notification when a scheduled sync adds or removes tracks, or fails.</string>
     <string name="settings_isrc">Exact recording via Deezer</string>
-    <string name="settings_isrc_desc">When a track carries no ISRC (web routes, files), Songport looks it up once in Deezer\'s public catalogue, so Spotify, Apple Music and TIDAL answer with the exact recording instead of a look-alike. Anonymous request, no account involved.</string>
+    <string name="settings_isrc_desc">When a track carries no ISRC (web routes, files), Trackhop looks it up once in Deezer\'s public catalogue, so Spotify, Apple Music and TIDAL answer with the exact recording instead of a look-alike. Anonymous request, no account involved.</string>
     <string name="settings_language">Language</string>
-    <string name="settings_language_desc">Songport follows the system language: English, Italian, French, German, Spanish, Portuguese, Polish, Russian, Turkish, Chinese, Japanese, Korean.</string>
+    <string name="settings_language_desc">Trackhop follows the system language: English, Italian, French, German, Spanish, Portuguese, Polish, Russian, Turkish, Chinese, Japanese, Korean.</string>
     <string name="settings_language_open">Change</string>
     <string name="settings_language_system">System language</string>
     <string name="settings_advanced">Service keys</string>
-    <string name="settings_advanced_desc">Songport ships without keys of its own: Spotify, YouTube Music, TIDAL, Deezer, Last.fm and Apple Music connect through a free key created in your name, so their limits and quotas are yours alone. Here you can see and change them.</string>
+    <string name="settings_advanced_desc">Trackhop ships without keys of its own: Spotify, YouTube Music, TIDAL, Deezer, Last.fm and Apple Music connect through a free key created in your name, so their limits and quotas are yours alone. Here you can see and change them.</string>
     <string name="settings_privacy_options">Ad privacy options</string>
     <string name="settings_privacy_policy">Privacy policy</string>
     <string name="settings_about">About</string>
@@ -129,7 +129,7 @@
     <string name="settings_developer_switch">Show developer tools</string>
     <string name="settings_developer_desc">Connections log, technical report to share, traffic capture for the web connectors. Off, they stay out of the way.</string>
     <string name="settings_version">Version %1$s</string>
-    <string name="settings_ads_note">Songport is free with no subscriptions. It is supported by a single small banner ad; no data is sold and nothing leaves your phone except the requests to the music services you connect.</string>
+    <string name="settings_ads_note">Trackhop is free with no subscriptions. It is supported by a single small banner ad; no data is sold and nothing leaves your phone except the requests to the music services you connect.</string>
     <string name="settings_csv">Files</string>
     <string name="csv_import">Import file</string>
     <string name="csv_export">Export</string>
@@ -138,7 +138,7 @@
     <string name="csv_imported">Imported %1$d tracks</string>
     <string name="csv_exported">File exported</string>
     <string name="log_save_file">Save as file…</string>
-    <string name="note_file_target">Saved inside Songport: use “Save as file” here, or Options → Files, to get a CSV or M3U.</string>
+    <string name="note_file_target">Saved inside Trackhop: use “Save as file” here, or Options → Files, to get a CSV or M3U.</string>
 
     <string name="auth_done">Connected to %1$s</string>
     <string name="auth_failed">Login failed: %1$s</string>
@@ -178,7 +178,7 @@
     <string name="note_removals_capped">Removals held back: this run would remove %1$d of the %2$d tracks in the target. Open the preview to see them and confirm; if the source has not really lost them, the service listed it incompletely and nothing should go.</string>
     <string name="note_unchanged">Nothing changed on either side since the last run: skipped.</string>
     <string name="review_share">Share the list</string>
-    <string name="note_search_interrupted">%1$d of %2$d tracks searched, then the service asked for a longer pause (%3$s). This is a limit of the service, not a Songport error: what was found has been applied and remembered. Run the sync again in a few minutes to continue from there.</string>
+    <string name="note_search_interrupted">%1$d of %2$d tracks searched, then the service asked for a longer pause (%3$s). This is a limit of the service, not a Trackhop error: what was found has been applied and remembered. Run the sync again in a few minutes to continue from there.</string>
     <string name="error_no_removals">%1$s cannot remove tracks from a playlist</string>
     <string name="log_notes_title">Notes</string>
     <string name="editor_mirror_unsupported">%1$s can only add tracks: removals will be skipped.</string>
@@ -206,7 +206,7 @@
     <string name="setup_why_deezer">Deezer needs an app registered in your name. The https redirect page is provided by the project.</string>
     <string name="setup_why_apple">The developer token belongs to your Apple Developer account and expires after six months at most.</string>
     <string name="error_dev_mode_limit">%1$s only allows a handful of users per app. Set up your own credentials: it is free and takes about two minutes.</string>
-    <string name="error_network">the phone could not reach the service (DNS failed). Check the connection, any VPN or private DNS, and that Songport is allowed to use data in the background, then try again.</string>
+    <string name="error_network">the phone could not reach the service (DNS failed). Check the connection, any VPN or private DNS, and that Trackhop is allowed to use data in the background, then try again.</string>
     <string name="auth_timeout">no answer from the browser, time is up</string>
 
     <string name="tab_tools">Tools</string>
@@ -260,7 +260,7 @@
     <string name="result_ignored">%1$d ignored</string>
     <string name="tools_pick_service">Service</string>
     <string name="files_row_desc">Imported lists and playlists a sync wrote to “File”: import, paste, export.</string>
-    <string name="ai_row_desc">Describe a playlist; your own AI writes it, Songport finds the tracks.</string>
+    <string name="ai_row_desc">Describe a playlist; your own AI writes it, Trackhop finds the tracks.</string>
     <string name="tools_backup_row_desc">Every playlist, liked song, album and artist of this service saved as dated files.</string>
     <string name="tools_none">Connect a service first.</string>
     <string name="spotify_forbidden">Spotify refused the request (%1$s). Apps in Development Mode cannot read playlists made by Spotify itself (Discover Weekly, Release Radar, editorial mixes) and only serve accounts listed in the app\'s User Management. Pick a playlist you or another user created, or add the account on developer.spotify.com.</string>
@@ -345,7 +345,7 @@
     </plurals>
     <string name="transfer_started">%1$d syncs created and started: follow them in Syncs.</string>
     <string name="ai_title">Playlist generator</string>
-    <string name="ai_desc">Describe the playlist you want and your own AI writes it; Songport then looks the tracks up on the service you choose, like a normal sync, so anything the AI got wrong ends up among the tracks to review. Songport has no AI of its own: you connect yours (OpenAI, Anthropic, Google Gemini or any OpenAI-compatible server, even a local one) with a key from your account, and only the text you type here is sent to it.</string>
+    <string name="ai_desc">Describe the playlist you want and your own AI writes it; Trackhop then looks the tracks up on the service you choose, like a normal sync, so anything the AI got wrong ends up among the tracks to review. Trackhop has no AI of its own: you connect yours (OpenAI, Anthropic, Google Gemini or any OpenAI-compatible server, even a local one) with a key from your account, and only the text you type here is sent to it.</string>
     <string name="ai_setup">Connect an AI</string>
     <string name="ai_setup_change">Change</string>
     <string name="ai_setup_title">Your AI</string>
@@ -384,7 +384,7 @@
     <string name="ai_check">Test</string>
     <string name="ai_checking">Trying the model…</string>
     <string name="ai_check_ok">Model ready</string>
-    <string name="ai_free_hint">Free to try: Google Gemini and Groq have a free tier, OpenRouter has free models (the ones ending in “:free”). A key takes a minute on the provider\'s site. Songport cannot ship a shared key: it would be visible in the open source code and used up within a day.</string>
+    <string name="ai_free_hint">Free to try: Google Gemini and Groq have a free tier, OpenRouter has free models (the ones ending in “:free”). A key takes a minute on the provider\'s site. Trackhop cannot ship a shared key: it would be visible in the open source code and used up within a day.</string>
     <string name="ai_badge_desc">Written by your AI</string>
     <string name="ai_extend">Add tracks with AI</string>
     <string name="ai_extend_title">Extend the playlist</string>
@@ -454,7 +454,7 @@
     </plurals>
     <string name="settings_battery">Scheduled syncs not running?</string>
     <string name="backup_folder_title">Backup to a folder</string>
-    <string name="backup_folder_desc">Songport already keeps dated backups of your playlists inside the app. Pick a folder (SD card, Nextcloud, Drive, any app that offers one) and the new versions are copied there too, so they survive the phone. To restore, import a file from that folder in Files.</string>
+    <string name="backup_folder_desc">Trackhop already keeps dated backups of your playlists inside the app. Pick a folder (SD card, Nextcloud, Drive, any app that offers one) and the new versions are copied there too, so they survive the phone. To restore, import a file from that folder in Files.</string>
     <string name="backup_folder_none">No folder chosen</string>
     <string name="backup_folder_hint">Only files not yet in the folder are copied.</string>
     <string name="backup_folder_pick">Choose a folder</string>
@@ -463,7 +463,7 @@
     <string name="backup_folder_forget">Stop</string>
     <string name="backup_folder_missing">The backup folder can no longer be reached: it was deleted, the card was removed or the app lost access to it. Choose a folder again.</string>
     <string name="backup_last_ok">Last copy: %1$s</string>
-    <string name="settings_battery_desc">Some phones (Xiaomi, Huawei, Oppo, Samsung) stop background apps. Exclude Songport from battery optimisation so the schedule is respected.</string>
+    <string name="settings_battery_desc">Some phones (Xiaomi, Huawei, Oppo, Samsung) stop background apps. Exclude Trackhop from battery optimisation so the schedule is respected.</string>
     <string name="settings_battery_button">Open battery settings</string>
     <string name="share_received">Link received: choose where to sync it.</string>
     <string name="share_invalid">The shared text has no recognisable playlist link.</string>
@@ -483,7 +483,7 @@
     <string name="login_token">Token</string>
     <string name="login_submit">Check and save</string>
     <string name="login_checking">Checking…</string>
-    <string name="login_trust_server">Your credentials stay encrypted on this phone. Songport only talks to the server you enter here.</string>
+    <string name="login_trust_server">Your credentials stay encrypted on this phone. Trackhop only talks to the server you enter here.</string>
     <string name="login_hint_subsonic">Enter the address of your Navidrome, Airsonic or other Subsonic-compatible server (for example https://music.example.com), your username and password. The password is never sent as-is: each request uses a salted hash. Ampache: use the Subsonic password or API key set in Preferences → Account, not your account password.</string>
     <string name="login_hint_jellyfin">Enter the address of your Jellyfin server (for example https://jellyfin.example.com), your username and password.</string>
     <string name="login_hint_plex">Enter the address of your Plex Media Server (for example http://192.168.1.10:32400) and your X-Plex-Token. Plex explains how to find the token in its support pages ("Finding an authentication token").</string>
@@ -497,12 +497,12 @@
     <string name="error_read_only">%1$s is read-only: it can only be a source.</string>
     <string name="error_create_unsupported">%1$s cannot create playlists from the app: create it in %1$s and pick it here.</string>
     <string name="connect_title">Connecting %1$s</string>
-    <string name="connect_where_oauth">You will sign in on %1$s, in your browser. Songport never sees your password.</string>
-    <string name="connect_where_web">You will sign in on %1$s\'s own page, shown inside the app. Songport never sees your password, only the session it leaves.</string>
-    <string name="connect_where_apple">You will sign in with your Apple ID in Apple\'s own window. Songport never sees your password.</string>
-    <string name="connect_where_server">Your server details stay encrypted on this phone. Songport only talks to your server.</string>
-    <string name="connect_token">Songport only receives a limited, revocable permission, stored encrypted on this phone (Android Keystore).</string>
-    <string name="connect_noserver">There is no Songport server: data travels only between this phone and %1$s.</string>
+    <string name="connect_where_oauth">You will sign in on %1$s, in your browser. Trackhop never sees your password.</string>
+    <string name="connect_where_web">You will sign in on %1$s\'s own page, shown inside the app. Trackhop never sees your password, only the session it leaves.</string>
+    <string name="connect_where_apple">You will sign in with your Apple ID in Apple\'s own window. Trackhop never sees your password.</string>
+    <string name="connect_where_server">Your server details stay encrypted on this phone. Trackhop only talks to your server.</string>
+    <string name="connect_token">Trackhop only receives a limited, revocable permission, stored encrypted on this phone (Android Keystore).</string>
+    <string name="connect_noserver">There is no Trackhop server: data travels only between this phone and %1$s.</string>
     <string name="connect_revoke">You can revoke at any time: here with Disconnect, or from your %1$s account.</string>
     <string name="connect_continue">Continue</string>
     <string name="connect_continue_browser">Continue in the browser</string>
@@ -532,8 +532,8 @@
     <string name="connector_pick_hint">Some services can be reached two ways. Easiest: sign in on the site, nothing to create. Official: the service\'s own API with a free key of yours, more stable.</string>
     <string name="route_easy">Quick route</string>
     <string name="route_official">Official route</string>
-    <string name="route_note_web">You sign in on the service\'s own page, as you would in a browser: Songport never sees your password, it only keeps the session, encrypted on this phone. Nothing to create. Not an official interface: it can stop working when the site changes.</string>
-    <string name="route_note_web_only">You sign in on the service\'s own page, as in a browser: Songport never sees your password, only the session, encrypted on this phone. No official API exists: it can stop working when the site changes.</string>
+    <string name="route_note_web">You sign in on the service\'s own page, as you would in a browser: Trackhop never sees your password, it only keeps the session, encrypted on this phone. Nothing to create. Not an official interface: it can stop working when the site changes.</string>
+    <string name="route_note_web_only">You sign in on the service\'s own page, as in a browser: Trackhop never sees your password, only the session, encrypted on this phone. No official API exists: it can stop working when the site changes.</string>
     <string name="route_note_api">Your own free API key, created on the service\'s developer page in about two minutes. Official and stable.</string>
     <string name="route_note_spotify_api">Your own free API key, created on developer.spotify.com in about two minutes. Official and stable. Spotify only lets Premium accounts create it (a Spotify rule since February 2026): without Premium, "Web API" stays greyed out there.</string>
     <string name="route_note_apple_api">A developer token from an Apple Developer account (paid). Official.</string>
@@ -543,7 +543,7 @@
     <string name="connector_name_label">Connector name</string>
     <string name="connector_rename">Rename</string>
     <string name="connect_switch_account">The browser may already be signed in to another %1$s account. On the sign-in page choose “Not you?” or switch account, then continue with the account for this connector.</string>
-    <string name="provider_note_amazon">Amazon has no open API: Songport uses the web player\'s interface, so it can stop working when Amazon changes it. Playlists, search, create, add and remove are supported.</string>
+    <string name="provider_note_amazon">Amazon has no open API: Trackhop uses the web player\'s interface, so it can stop working when Amazon changes it. Playlists, search, create, add and remove are supported.</string>
     <string name="amazon_not_installed_hint">Install or update the companion app \"Songport Bridge\" (1.3.1 or newer) from GitHub, then come back here and tap Connect.</string>
     <string name="sync_pause">Pause</string>
     <string name="sync_resume">Resume</string>
@@ -565,16 +565,16 @@
     <string name="bridge_needed_hint">Install or update the companion app \"Songport Bridge\" (1.2 or newer) from GitHub, then come back here and tap Connect.</string>
     <string name="settings_source_code">Source code and documentation</string>
     <string name="plugins_more">Other services can be added by connector plugins: how it works.</string>
-    <string name="plugins_more_url" translatable="false">https://xlollx.github.io/Songport/plugins</string>
+    <string name="plugins_more_url" translatable="false">https://xlollx.github.io/Trackhop/plugins</string>
     <string name="security_title">How your logins are protected</string>
-    <string name="security_fact_1">Passwords are typed on the services\' own pages, never in Songport.</string>
-    <string name="security_fact_2">Songport keeps only revocable access tokens, encrypted with the Android Keystore.</string>
-    <string name="security_fact_3">There is no Songport server and no account to create: nothing leaves your phone except requests to the services you connect.</string>
+    <string name="security_fact_1">Passwords are typed on the services\' own pages, never in Trackhop.</string>
+    <string name="security_fact_2">Trackhop keeps only revocable access tokens, encrypted with the Android Keystore.</string>
+    <string name="security_fact_3">There is no Trackhop server and no account to create: nothing leaves your phone except requests to the services you connect.</string>
     <string name="security_fact_4">Disconnecting deletes the token from the phone; every service also lets you revoke it from your account page.</string>
     <string name="ai_trust_title">Where does the key go?</string>
     <string name="ai_trust_1">It is stored on this phone only, encrypted with the Android Keystore, like the tokens of your music services.</string>
-    <string name="ai_trust_2">It leaves the phone only towards %1$s, with each request you make. Songport has no server of its own: Options → Security → Connections lists every host this app has ever contacted, so you can check.</string>
-    <string name="ai_trust_3">“Forget the key” deletes it at once. Safer still: create a key just for Songport, with a spending limit, and revoke it whenever you like.</string>
+    <string name="ai_trust_2">It leaves the phone only towards %1$s, with each request you make. Trackhop has no server of its own: Options → Security → Connections lists every host this app has ever contacted, so you can check.</string>
+    <string name="ai_trust_3">“Forget the key” deletes it at once. Safer still: create a key just for Trackhop, with a spending limit, and revoke it whenever you like.</string>
     <string name="ai_limits">Set a spending limit</string>
     <string name="security_connections">Show connections</string>
     <string name="security_connections_desc">Every host this app has contacted since it was installed, and how often. Only the host name is recorded, never what was sent.</string>
@@ -583,9 +583,9 @@
     <string name="security_connections_clear">Clear the list</string>
     <string name="security_connections_count">%1$d requests · last on %2$s</string>
     <string name="security_lock">Require unlock to open</string>
-    <string name="security_lock_desc">Fingerprint, face or phone PIN before Songport opens.</string>
+    <string name="security_lock_desc">Fingerprint, face or phone PIN before Trackhop opens.</string>
     <string name="security_lock_unavailable">No screen lock is set up on this phone.</string>
-    <string name="lock_title">Songport is locked</string>
+    <string name="lock_title">Trackhop is locked</string>
     <string name="lock_subtitle">Unlock with fingerprint, face or PIN</string>
     <string name="lock_unlock">Unlock</string>
     <string name="review_title">To review: %1$s</string>
@@ -601,15 +601,15 @@
     <string name="restored_done">%1$d tracks restored</string>
     <string name="restored_note">%1$d removed tracks were restored by hand.</string>
     <string name="quota_used">%1$s / %2$s YouTube units used today</string>
-    <string name="quota_note">Daily limit set by YouTube (Google), not by Songport. Resets at midnight Pacific time. A search costs 100 units, adding a track 50.</string>
-    <string name="quota_note_shared">Daily limit set by YouTube (Google), not by Songport, shared by everyone using the built-in key: what other users consume is not counted here. Your own credentials give you a quota of your own.</string>
+    <string name="quota_note">Daily limit set by YouTube (Google), not by Trackhop. Resets at midnight Pacific time. A search costs 100 units, adding a track 50.</string>
+    <string name="quota_note_shared">Daily limit set by YouTube (Google), not by Trackhop, shared by everyone using the built-in key: what other users consume is not counted here. Your own credentials give you a quota of your own.</string>
     <string name="quota_estimate">This sync will use about %1$s units.</string>
     <string name="quota_estimate_over">This sync needs about %1$s units, but only %2$s remain today: it will finish over the next days.</string>
     <string name="editor_bidirectional">Two-way</string>
     <string name="editor_bidirectional_desc">Also creates the mirror sync in the opposite direction, without removals, so both playlists stay complete.</string>
     <string name="editor_bidirectional_unavailable">Available with an existing target playlist and a writable source.</string>
     <string name="editor_bidirectional_not_owned">Not with a public link or someone else\'s playlist as source: it can be read, not written.</string>
-    <string name="onboarding_title">Welcome to Songport</string>
+    <string name="onboarding_title">Welcome to Trackhop</string>
     <string name="onboarding_intro">Keep your playlists identical across music services, by hand or on a schedule. Free, no subscription, no account to create.</string>
     <string name="onboarding_step1_title">1. Connect your services</string>
     <string name="onboarding_step1_desc">Spotify, Apple Music, YouTube Music, TIDAL, Deezer, your own server, or a file.</string>
@@ -617,8 +617,8 @@
     <string name="onboarding_step2_desc">Pick a source playlist and a target. Preview shows exactly what will change before anything happens.</string>
     <string name="onboarding_step3_title">3. Let it run</string>
     <string name="onboarding_step3_desc">Every hour, day or week. Tracks that cannot be matched are listed so you can fix them yourself.</string>
-    <string name="onboarding_security">You sign in on each service\'s own page. Songport keeps only an encrypted, revocable token on this phone and has no server of its own.</string>
-    <string name="onboarding_credentials">Songport ships without service keys of its own: for Spotify, YouTube Music, TIDAL and Deezer you create a free key on the service\'s developer page, and the app walks you through it in about two minutes. Your data then flows only between your phone and your own key.</string>
+    <string name="onboarding_security">You sign in on each service\'s own page. Trackhop keeps only an encrypted, revocable token on this phone and has no server of its own.</string>
+    <string name="onboarding_credentials">Trackhop ships without service keys of its own: for Spotify, YouTube Music, TIDAL and Deezer you create a free key on the service\'s developer page, and the app walks you through it in about two minutes. Your data then flows only between your phone and your own key.</string>
     <string name="onboarding_start">Let\'s start</string>
     <string name="settings_show_onboarding">Show the introduction again</string>
     <string name="paste_list">Paste a list</string>
@@ -645,16 +645,16 @@
     </plurals>
     <string-array name="setup_steps_spotify">
         <item>Sign in at developer.spotify.com with the Spotify account you use every day. Spotify requires that account to have Premium; if you are asked to accept the developer terms, accept them. If "Web API" is greyed out on that page, the account has no Premium: Spotify does not allow the key, use the other route instead.</item>
-        <item>Press "Create app". Name and description are up to you (for example "Songport"). Leave "Website" empty.</item>
+        <item>Press "Create app". Name and description are up to you (for example "Trackhop"). Leave "Website" empty.</item>
         <item>In "Redirect URIs" paste exactly the address shown below and press "Add". Without it the login cannot come back to the app.</item>
         <item>Under "Which API/SDKs are you planning to use?" tick "Web API", accept the terms and press "Save".</item>
         <item>Open the app you created, press "Settings" (top right) and copy the "Client ID" here. You do not need the Client secret.</item>
         <item>Optional: "User Management" lets you add up to 5 other Spotify accounts (name and e-mail) that may use your key, for example family members.</item>
     </string-array>
     <string-array name="setup_steps_youtube">
-        <item>Sign in to console.cloud.google.com with your Google account and create a project. Any name works, for example "Songport". Wait for the notification that it has been created, then select it.</item>
+        <item>Sign in to console.cloud.google.com with your Google account and create a project. Any name works, for example "Trackhop". Wait for the notification that it has been created, then select it.</item>
         <item>Enable the YouTube Data API v3: the link opens its page in the library, press "Enable".</item>
-        <item>Google Auth Platform, "Overview", press "Get started": app name "Songport", your e-mail as support address, audience "External", your e-mail as contact. Accept and press "Create".</item>
+        <item>Google Auth Platform, "Overview", press "Get started": app name "Trackhop", your e-mail as support address, audience "External", your e-mail as contact. Accept and press "Create".</item>
         <item>Google Auth Platform, "Audience": under "Test users" press "Add users" and add your own Gmail address, then Save. Without this step Google refuses the login with "access blocked".</item>
         <item>Google Auth Platform, "Clients", "Create client": application type "Desktop app", any name. Copy the Client ID and the Client secret here. Nothing else to register: the app receives the login on 127.0.0.1.</item>
     </string-array>
@@ -707,27 +707,27 @@
     <string name="settings_log">Sync log</string>
     <string name="settings_log_desc">Outcome of the last syncs, and the technical details to attach to a report.</string>
     <string name="settings_open">Open</string>
-    <string name="accounts_intro">You log in on each service\'s official page. Songport never sees your password.</string>
-    <string name="web_auth_hint">Sign in on %1$s\'s own page. Songport only receives the confirmation that comes back at the end.</string>
+    <string name="accounts_intro">You log in on each service\'s official page. Trackhop never sees your password.</string>
+    <string name="web_auth_hint">Sign in on %1$s\'s own page. Trackhop only receives the confirmation that comes back at the end.</string>
     <string name="show_details">Details</string>
     <string name="hide_details">Hide details</string>
     <!-- Pubblicità e donazioni -->
     <string name="ads_why_title">Why the ads?</string>
-    <string name="ads_why_body">Songport is free, with no subscriptions and no locked features. One small banner, never full-screen, pays for the developer\'s coffee and the hours spent keeping every service working. If it ever bothers you, open an issue on GitHub.</string>
-    <string name="settings_free_note">Songport is free, with no ads and no subscriptions. Nothing leaves the phone except the requests to the music services you connect.</string>
+    <string name="ads_why_body">Trackhop is free, with no subscriptions and no locked features. One small banner, never full-screen, pays for the developer\'s coffee and the hours spent keeping every service working. If it ever bothers you, open an issue on GitHub.</string>
+    <string name="settings_free_note">Trackhop is free, with no ads and no subscriptions. Nothing leaves the phone except the requests to the music services you connect.</string>
     <string name="free_why_title">Free, no ads</string>
-    <string name="free_why_body">Songport has no ads, no subscriptions and no locked features. It lives on voluntary contributions: if it saves you time, you can buy the developer a coffee.</string>
-    <string name="support_title">Like Songport?</string>
+    <string name="free_why_body">Trackhop has no ads, no subscriptions and no locked features. It lives on voluntary contributions: if it saves you time, you can buy the developer a coffee.</string>
+    <string name="support_title">Like Trackhop?</string>
     <string name="support_body">If you feel like it, buy the developer a coffee on Ko-fi. Totally optional: nothing is unlocked, the app stays complete for everyone.</string>
     <string name="support_button">Buy me a coffee</string>
     <string name="support_sponsors">GitHub Sponsors</string>
     <string name="support_prompt_title">You just moved %1$s tracks</string>
-    <string name="support_prompt_body">With the sync “%1$s”. Songport is free and ad-free, and it lives on voluntary contributions: if it saved you time, you can buy the developer a coffee.</string>
+    <string name="support_prompt_body">With the sync “%1$s”. Trackhop is free and ad-free, and it lives on voluntary contributions: if it saved you time, you can buy the developer a coffee.</string>
     <string name="support_prompt_later">Not now</string>
     <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
     <string name="share_sheet_title">Add to…</string>
     <string name="share_sheet_from">Shared from %1$s</string>
-    <string name="share_sheet_unknown">Songport could not read this track’s title. Search for it by hand below.</string>
+    <string name="share_sheet_unknown">Trackhop could not read this track’s title. Search for it by hand below.</string>
     <string name="share_sheet_open">Open in %1$s</string>
     <string name="share_sheet_copy">Copy link</string>
     <string name="share_sheet_copied">Link copied</string>
@@ -739,8 +739,8 @@
     <string name="share_sheet_no_match">Not found on %1$s. Search by hand, or pick another service.</string>
     <string name="share_sheet_add">Add to playlist…</string>
     <string name="share_sheet_change">Change</string>
-    <string name="settings_music_links">Offer Songport for music links</string>
-    <string name="settings_music_links_desc">A Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link can then open in Songport, which adds the track to a playlist on any of your services. Android still asks which app to use, or keeps the one set in its link settings: Songport never takes a link by itself.</string>
+    <string name="settings_music_links">Offer Trackhop for music links</string>
+    <string name="settings_music_links_desc">A Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link can then open in Trackhop, which adds the track to a playlist on any of your services. Android still asks which app to use, or keeps the one set in its link settings: Trackhop never takes a link by itself.</string>
     <!-- Cards: "how compatible are we?" and the playlist poster. -->
     <string name="tools_compat_title">How compatible are we?</string>
     <string name="tools_compat_desc">Compare two playlists, from any services: tracks in common, shared artists, a score and a card to share.</string>
@@ -778,18 +778,18 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_dynamic_color">Dynamic colours (Material You)</string>
-    <string name="settings_dynamic_color_desc">The colours of your wallpaper instead of Songport\'s own. The title banner keeps the brand colours.</string>
+    <string name="settings_dynamic_color_desc">The colours of your wallpaper instead of Trackhop\'s own. The title banner keeps the brand colours.</string>
     <string name="settings_dynamic_color_unavailable">Needs Android 12 or newer.</string>
 
     <!-- Unplayable tracks tool -->
     <string name="tools_unplayable_title">Unplayable tracks</string>
     <string name="tools_unplayable_desc">Finds the tracks a service lists but can no longer play (greyed out) and replaces them with a version that plays.</string>
     <string name="unplayable_title">Unplayable tracks: %1$s</string>
-    <string name="unplayable_unsupported">%1$s does not say which tracks it can no longer play, so Songport cannot check here.</string>
+    <string name="unplayable_unsupported">%1$s does not say which tracks it can no longer play, so Trackhop cannot check here.</string>
     <string name="unplayable_all_playlists">All my playlists</string>
     <string name="unplayable_scan">Check</string>
     <string name="unplayable_scanning">Checking %1$s…</string>
-    <string name="unplayable_hint">For each one Songport proposes a version that plays. Accept it, search another, remove the entry or skip it. Nothing changes until you apply.</string>
+    <string name="unplayable_hint">For each one Trackhop proposes a version that plays. Accept it, search another, remove the entry or skip it. Nothing changes until you apply.</string>
     <string name="unplayable_searching">Looking for a version that plays…</string>
     <string name="unplayable_no_proposal">No convincing version found: open the entry to search by hand, or remove it.</string>
     <string name="unplayable_proposal">Replacement: %1$s (%2$d%% match)</string>
@@ -802,7 +802,7 @@
     <string name="unplayable_apply">Apply %1$d changes</string>
     <string name="unplayable_applying">Applying %1$d/%2$d…</string>
     <string name="unplayable_confirm_title">Apply the changes?</string>
-    <string name="unplayable_confirm_body">%1$d tracks get a playable version, %2$d entries are removed. The originals stay in Songport\'s log so you can undo.</string>
+    <string name="unplayable_confirm_body">%1$d tracks get a playable version, %2$d entries are removed. The originals stay in Trackhop\'s log so you can undo.</string>
     <string name="unplayable_no_removal">%1$s does not let apps remove tracks: the playable version is added and the unplayable entry stays.</string>
     <string name="unplayable_done">%1$d replaced, %2$d removed</string>
     <string name="unplayable_undo">Undo</string>
@@ -815,7 +815,7 @@
     <string name="unplayable_reason_deleted">Deleted</string>
     <string name="unplayable_reason_unknown">Unplayable</string>
     <string name="settings_unplayable">Weekly check for unplayable tracks</string>
-    <string name="settings_unplayable_desc">Once a week Songport looks through your playlists and tells you when a track can no longer be played. Nothing is changed by itself.</string>
+    <string name="settings_unplayable_desc">Once a week Trackhop looks through your playlists and tells you when a track can no longer be played. Nothing is changed by itself.</string>
     <string name="notif_unplayable_title">Unplayable tracks</string>
     <plurals name="notif_unplayable_text">
         <item quantity="one">%1$d track in your playlists can no longer be played. Tap to replace it.</item>
@@ -868,7 +868,7 @@
     <string name="soundcloud_label">SoundCloud (public links, unofficial)</string>
     <string name="provider_note_soundcloud">Public SoundCloud sets and likes pages, read-only and without signing in: paste the link as the source of a sync. Not an official interface: it can stop working when SoundCloud changes its site.</string>
     <string name="soundcloud_not_public">This SoundCloud playlist is private or doesn\'t exist: only public links work</string>
-    <string name="soundcloud_player_changed">SoundCloud changed its web player; Songport needs an update</string>
+    <string name="soundcloud_player_changed">SoundCloud changed its web player; Trackhop needs an update</string>
     <string name="job_color">Colour</string>
     <string name="job_color_default">Default</string>
     <string name="color_red">Red</string>
@@ -889,7 +889,7 @@
         <item quantity="other">%d syncs running</item>
     </plurals>
     <string name="error_ampache_subsonic_password">Ampache refused the password. For Subsonic apps Ampache does not accept your account password: in Ampache open Preferences → Account, set a Subsonic password (or copy your API key) and enter it here as the password.</string>
-    <string name="shazam_share_hint">Shazam a lot? In Shazam\'s settings, connect Spotify or Apple Music: every song you Shazam lands in a “My Shazam Tracks” playlist. Songport can keep it in sync on any of your services.</string>
+    <string name="shazam_share_hint">Shazam a lot? In Shazam\'s settings, connect Spotify or Apple Music: every song you Shazam lands in a “My Shazam Tracks” playlist. Trackhop can keep it in sync on any of your services.</string>
     <string name="shazam_share_hint_button">Sync my Shazams</string>
     <string name="shazam_editor_suggest">Your Shazams: %1$s</string>
     <string name="syncs_find_hint">Find a sync</string>
@@ -905,7 +905,7 @@
         <item quantity="one">%1$d of %2$d sync</item>
         <item quantity="other">%1$d of %2$d syncs</item>
     </plurals>
-    <string name="stats_title">Songport in numbers</string>
+    <string name="stats_title">Trackhop in numbers</string>
     <string name="stats_row_desc">What your syncs have done so far, as a card to share</string>
     <string name="stats_hero_link">Your numbers</string>
     <string name="stats_tracks_moved">Tracks moved</string>
@@ -942,7 +942,7 @@
         <item quantity="one">Only the latest sync (%1$d) is kept on this phone: older ones are not in these numbers.</item>
         <item quantity="other">Only the latest %1$d syncs are kept on this phone: older ones are not in these numbers.</item>
     </plurals>
-    <string name="stats_local_note">Counted on this phone from the sync history Songport already keeps. Nothing is sent anywhere unless you share the card.</string>
+    <string name="stats_local_note">Counted on this phone from the sync history Trackhop already keeps. Nothing is sent anywhere unless you share the card.</string>
     <string name="stats_empty_title">No numbers yet</string>
     <string name="stats_empty_body">They appear after your first completed sync, counted from the history kept on this phone.</string>
     <string name="stats_share_title">Share your numbers</string>
@@ -955,11 +955,11 @@
     <string name="settings_section_backups">Backups</string>
     <string name="settings_section_advanced">Advanced</string>
     <string name="settings_isrc_summary">Look up missing ISRC codes on Deezer, for exact matches.</string>
-    <string name="settings_music_links_summary">Open music links in Songport to add the track to a playlist.</string>
+    <string name="settings_music_links_summary">Open music links in Trackhop to add the track to a playlist.</string>
     <string name="settings_unplayable_summary">Tells you about tracks that stop playing. Changes nothing.</string>
     <string name="settings_notifications_system">System notification settings</string>
     <string name="settings_notifications_system_desc">Sound, vibration and which notifications Android shows.</string>
-    <string name="settings_security_summary">Encrypted, revocable sign-ins on this phone; no Songport server.</string>
+    <string name="settings_security_summary">Encrypted, revocable sign-ins on this phone; no Trackhop server.</string>
     <string name="settings_keys_summary">Your own developer keys for the services that need one.</string>
     <string name="backup_folder_stop">Stop copying to this folder</string>
     <string name="nav_back">Back</string>
@@ -987,8 +987,8 @@
     <string name="tools_row_compat">Compare two playlists and get a score to share.</string>
     <string name="tools_row_poster">A shareable card with covers and a QR code.</string>
     <string name="tools_row_unplayable">Find greyed-out tracks and swap in versions that play.</string>
-    <string name="settings_battery_summary">Some phones stop background apps: exclude Songport from battery optimisation.</string>
-    <string name="settings_dynamic_color_summary">Your wallpaper\'s colours instead of Songport\'s.</string>
+    <string name="settings_battery_summary">Some phones stop background apps: exclude Trackhop from battery optimisation.</string>
+    <string name="settings_dynamic_color_summary">Your wallpaper\'s colours instead of Trackhop\'s.</string>
     <string name="settings_notifications_summary">When a scheduled sync changes tracks or fails.</string>
     <string name="settings_developer_summary">Connections log, technical report, traffic capture.</string>
     <string name="settings_new_look_summary">Sync cards with run numbers and recent history.</string>

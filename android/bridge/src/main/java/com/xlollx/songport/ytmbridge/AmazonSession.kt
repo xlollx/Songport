@@ -9,7 +9,7 @@ import androidx.security.crypto.MasterKey
 /**
  * The Amazon Music session: cookies of the login completed in the WebView plus the regional domain
  * the account lives on (music.amazon.it, music.amazon.de, ...). Encrypted with the Android Keystore,
- * never handed to Songport.
+ * never handed to Trackhop.
  */
 object AmazonSession {
     @Volatile private var cached: SharedPreferences? = null
@@ -45,7 +45,7 @@ object AmazonSession {
 
     /**
      * The API headers of the player, captured while it was running, kept encrypted next to the
-     * session. They carry an access token, so they live here and are never handed to Songport.
+     * session. They carry an access token, so they live here and are never handed to Trackhop.
      */
     fun saveHeaders(ctx: Context, headers: String, userAgent: String?, host: String?) {
         prefs(ctx).edit()

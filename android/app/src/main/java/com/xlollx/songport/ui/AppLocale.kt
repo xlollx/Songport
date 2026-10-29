@@ -11,7 +11,7 @@ import java.util.Locale
 
 /**
  * The app language, chosen inside the app. On Android 13+ it is stored with the system (the same
- * setting as Settings > Apps > Songport > Language); before that in preferences, applied by wrapping
+ * setting as Settings > Apps > Trackhop > Language); before that in preferences, applied by wrapping
  * every activity's base context. In both cases the current activity is recreated at once, so the
  * change is visible immediately even while a sync is running.
  */

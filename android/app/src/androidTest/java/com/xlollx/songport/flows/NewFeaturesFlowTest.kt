@@ -22,7 +22,7 @@ import org.junit.runner.RunWith
 
 /**
  * The 1.1 additions, lightly: a sync's colour, the tappable figures of its last run, find and
- * filter with many syncs, the "Sync all" pill, "Songport in numbers", and a song shared from Shazam.
+ * filter with many syncs, the "Sync all" pill, "Trackhop in numbers", and a song shared from Shazam.
  */
 @RunWith(AndroidJUnit4::class)
 class NewFeaturesFlowTest : FlowTest() {

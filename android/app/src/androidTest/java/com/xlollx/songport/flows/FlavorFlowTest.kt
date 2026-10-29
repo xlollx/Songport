@@ -56,6 +56,11 @@ class FlavorFlowTest : FlowTest() {
     }
 
     @Test
+    fun theAppIsCalledTrackhopInEveryBuild() {
+        assertEquals("Trackhop", s(R.string.app_name))
+    }
+
+    @Test
     fun soundCloudLinksOnlyInTheFullBuild() {
         installConnectors()
         if (full) assertNotNull(Providers.byId("soundcloud")) else assertNull(Providers.byId("soundcloud"))

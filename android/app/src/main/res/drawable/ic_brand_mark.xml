@@ -4,7 +4,7 @@
     android:height="24dp"
     android:viewportWidth="66"
     android:viewportHeight="66">
-    <!-- Marchio Songport per la UI (stesso disegno dell'icona, ritagliato alla zona sicura). -->
+    <!-- Marchio Trackhop per la UI (stesso disegno dell'icona, ritagliato alla zona sicura). -->
     <group android:translateX="-21" android:translateY="-21">
         <path android:pathData="M30.6,40.5 A27,27 0 0 1 77.4,40.5"
             android:strokeColor="#FFFFFFFF" android:strokeWidth="5.5" android:strokeLineCap="round" />

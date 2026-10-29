@@ -21,7 +21,7 @@ from Play and keep it installed; nothing else counts and nothing can replace the
 ## Where the testers come from
 
 - People who already use the GitHub or F-Droid build (issues, stars, the F-Droid MR followers): they
-  must uninstall Songport first, it is the same package id, and the data does not carry over unless
+  must uninstall that build first, it is the same package id, and the data does not carry over unless
   they export a backup from Files first.
 - Friends and colleagues: the app is useful to anyone with two music services; a 30-second favour.
 - Tester exchanges, where developers in the same situation test each other's apps:
@@ -34,20 +34,20 @@ from Play and keep it installed; nothing else counts and nothing can replace the
 Replace `OPT-IN-LINK` with the real link.
 
 ### Italiano
-> **Cercasi 12 tester per Trackhop su Google Play.** Trackhop (Songport su GitHub/F-Droid) sincronizza
+> **Cercasi 12 tester per Trackhop su Google Play.** Trackhop (già su GitHub e F-Droid) sincronizza
 > le playlist tra Spotify, Apple Music, YouTube Music, TIDAL, Deezer, server personali e file. È gratuita
 > e open source; Google chiede 12 tester per 14 giorni prima di poterla pubblicare. Basta aprire
 > OPT-IN-LINK con l'account Google del telefono, toccare "Diventa tester", installare da Play e tenerla
 > installata due settimane. Usarla è gradito, non obbligatorio: qualsiasi problema va in
-> github.com/xlollx/Songport/issues. Grazie!
+> github.com/xlollx/Trackhop/issues. Grazie!
 
 ### English
-> **Looking for 12 testers for Trackhop on Google Play.** Trackhop (Songport on GitHub/F-Droid) keeps
+> **Looking for 12 testers for Trackhop on Google Play.** Trackhop (already on GitHub and F-Droid) keeps
 > playlists in sync across Spotify, Apple Music, YouTube Music, TIDAL, Deezer, personal servers and
 > files. Free and open source; Google requires 12 testers for 14 days before it can be published.
 > Open OPT-IN-LINK with the Google account of your phone, tap "Become a tester", install from Play and
 > keep it for two weeks. Using it is welcome, not required: anything odd goes to
-> github.com/xlollx/Songport/issues. Thank you!
+> github.com/xlollx/Trackhop/issues. Thank you!
 
 ### Short (chat / tester exchanges)
 > Trackhop – playlist sync between music services, open source, no account needed. Opt-in:

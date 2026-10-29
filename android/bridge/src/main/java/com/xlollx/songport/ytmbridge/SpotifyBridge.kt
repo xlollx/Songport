@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit
 /**
  * Spotify through the web player session.
  *
- * The user signs in once on accounts.spotify.com inside a WebView. Whenever Songport needs to talk to
+ * The user signs in once on accounts.spotify.com inside a WebView. Whenever Trackhop needs to talk to
  * Spotify, the Bridge loads open.spotify.com in a hidden WebView and captures the access token the
  * web player itself requests at start-up (`/api/token`). That token is a first-party token that the
- * public Web API accepts, so Songport reuses its normal Spotify code; it lasts about an hour and is
+ * public Web API accepts, so Trackhop reuses its normal Spotify code; it lasts about an hour and is
  * renewed the same way. Letting the real web player fetch the token keeps this working when Spotify
  * changes the anti-abuse parameters of that endpoint, because the page computes them.
  *

@@ -272,7 +272,7 @@ class SpotifyContractTest : ContractTest() {
 
     /**
      * Regression: a local file (or an entry the catalogue lost) is in the playlist but not in the
-     * listing Songport reads, so the listing's indices are not the playlist's positions. The move
+     * listing Trackhop reads, so the listing's indices are not the playlist's positions. The move
      * must name the playlist's own positions, or "keep order" moves the wrong tracks.
      */
     @Test fun reorderCountsEntriesTheListingSkips() = runBlocking {

@@ -373,7 +373,7 @@ object AmazonBridge {
           var grab = function(h){
             try { var o = plain(h); if (o['csrf-token']) { window.__amzLast = o; AmzBridge.headers(JSON.stringify(o), navigator.userAgent, location.host); } } catch(e){}
           };
-          // A call Songport asks for, sent by the page itself with the headers the player last used.
+          // A call Trackhop asks for, sent by the page itself with the headers the player last used.
           window.__amzCall = function(id, body){
             var done = function(st, t){ try { AmzBridge.result(id, st, String(t)); } catch(e){} };
             try {

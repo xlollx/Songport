@@ -114,7 +114,7 @@ private fun statsCard(ctx: Context, t: StatsText): Cards.StatsCard {
 }
 
 /**
- * "Songport in numbers": what the syncs have done, counted from the history the app already keeps
+ * "Trackhop in numbers": what the syncs have done, counted from the history the app already keeps
  * ([UsageStats]), and a story or square card to share it. Nothing leaves the phone except the card
  * the user shares; a figure the history cannot back is not shown.
  */
@@ -206,7 +206,7 @@ fun StatsScreen(data: StoreData, onClose: () -> Unit) {
             Spacer(Modifier.height(4.dp))
             Text(stringResource(R.string.stats_share_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
             CardActions(
-                bitmaps, "songport-in-numbers", busy = bitmaps == null, onRender = null, renderLabel = "",
+                bitmaps, "trackhop-in-numbers", busy = bitmaps == null, onRender = null, renderLabel = "",
                 previewDescription = stringResource(R.string.stats_card_preview),
             )
 

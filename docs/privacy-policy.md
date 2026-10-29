@@ -1,12 +1,12 @@
-# Songport – Privacy Policy / Informativa sulla privacy
+# Trackhop – Privacy Policy / Informativa sulla privacy
 
-_Last updated / Ultimo aggiornamento: 2026-09-12_
+_Last updated / Ultimo aggiornamento: 2026-10-29_
 
 ## English
 
-_This policy covers the app published on GitHub and F-Droid as **Songport** and on Google Play as **Trackhop**: the same app, with the one difference described under "Advertising data"._
+_This policy covers the app **Trackhop** (called Songport up to version 1.1), published on GitHub, F-Droid and Google Play: the same app, with the one difference described under "Advertising data"._
 
-**Controller**: the independent developer of Songport / Trackhop (contact on the Google Play listing).
+**Controller**: the independent developer of Trackhop (contact on the Google Play listing).
 
 **What the app does**: syncs playlists between music services you connect (Spotify, Apple Music, YouTube Music,
 TIDAL, Deezer) and local files. All processing happens **on your device**.
@@ -41,7 +41,7 @@ TIDAL, Deezer) and local files. All processing happens **on your device**.
   consent you give in the GDPR form (Google UMP). See https://policies.google.com/technologies/partner-sites.
   You can change your choice in *Settings › Ad privacy options*.
 
-**What we do NOT do**: no Songport account, no developer servers, no collection of e-mail,
+**What we do NOT do**: no Trackhop account, no developer servers, no collection of e-mail,
 contacts, location or files; no sale of data.
 
 **Third parties**: requests go directly to the official APIs of the connected services (Spotify,
@@ -56,9 +56,9 @@ Questions: contact on the Play Store listing.
 
 ## Italiano
 
-_Questa informativa riguarda l'app pubblicata su GitHub e F-Droid come **Songport** e su Google Play come **Trackhop**: la stessa app, con l'unica differenza descritta in "Dati pubblicitari"._
+_Questa informativa riguarda l'app **Trackhop** (chiamata Songport fino alla versione 1.1), pubblicata su GitHub, F-Droid e Google Play: la stessa app, con l'unica differenza descritta in "Dati pubblicitari"._
 
-**Titolare**: lo sviluppatore indipendente dell'app Songport / Trackhop (contatti nella scheda Google Play).
+**Titolare**: lo sviluppatore indipendente dell'app Trackhop (contatti nella scheda Google Play).
 
 **Cosa fa l'app**: sincronizza playlist tra i servizi musicali che l'utente collega (Spotify, Apple Music,
 YouTube Music, TIDAL, Deezer) e file locali. Tutta l'elaborazione avviene **sul dispositivo**.
@@ -88,7 +88,7 @@ YouTube Music, TIDAL, Deezer) e file locali. Tutta l'elaborazione avviene **sul 
   Informativa Google: https://policies.google.com/technologies/partner-sites.
   Il consenso può essere modificato in *Impostazioni › Opzioni privacy annunci*.
 
-**Cosa NON facciamo**: nessun account Songport, nessun server dello sviluppatore, nessuna
+**Cosa NON facciamo**: nessun account Trackhop, nessun server dello sviluppatore, nessuna
 raccolta di e-mail, contatti, posizione o file; nessuna vendita di dati.
 
 **Terze parti**: le richieste vanno direttamente alle API ufficiali dei servizi collegati (Spotify,

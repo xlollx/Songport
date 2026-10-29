@@ -33,6 +33,8 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
     override val supportsArtists = true
     override val loginForm = LoginForm(needsUrl = true, needsUser = true, needsSecret = true, hintName = "login_hint_jellyfin")
 
+    // Client and DeviceId stay "Songport" after the rename to Trackhop: they are identifiers, not a
+    // name the user reads, and Jellyfin files existing sign-ins under them in its Devices list.
     private fun authHeader(token: String?) =
         "MediaBrowser Client=\"Songport\", Device=\"Android\", DeviceId=\"songport-android\", Version=\"1.0\"" +
             (token?.let { ", Token=\"$it\"" } ?: "")

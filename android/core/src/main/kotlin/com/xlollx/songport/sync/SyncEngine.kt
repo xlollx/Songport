@@ -800,6 +800,7 @@ class SyncEngine(
         if (host !in SHORT_LINK_HOSTS) return null
         return withContext(kotlinx.coroutines.Dispatchers.IO) {
             runCatching {
+                // The User-Agent keeps "Songport" after the rename to Trackhop: an identifier the hosts already see.
                 val req = okhttp3.Request.Builder().url(url).header("User-Agent", "Mozilla/5.0 (Linux; Android 14) Songport").build()
                 com.xlollx.songport.net.Http.client.newCall(req).execute().use { it.request.url.toString() }
             }.getOrNull()

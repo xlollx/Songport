@@ -1,4 +1,4 @@
-// End-to-end test of the Songport server's web page, driven with Playwright like a user would,
+// End-to-end test of the Trackhop server's web page, driven with Playwright like a user would,
 // against a running container and the local Navidrome and Jellyfin of scripts/live_servers.sh.
 // Run it with server/e2e/run.sh (it builds the image, starts everything and cleans up), or by hand:
 //   SONGPORT_E2E_URL=http://127.0.0.1:18080 SONGPORT_E2E_PASSWORD=... SONGPORT_E2E_CONTAINER=songport-e2e \
@@ -228,7 +228,7 @@ async function phaseAuth() {
   await bad.close();
   const page = await newPage();
   const r2 = await page.goto(BASE + '/');
-  check(A, 'browser with the (non-ASCII) password gets in', r2.status() === 200 && (await page.title()).includes('Songport'));
+  check(A, 'browser with the (non-ASCII) password gets in', r2.status() === 200 && (await page.title()).includes('Trackhop'));
   await page.context().close();
 }
 
@@ -545,7 +545,7 @@ async function phaseRobust() {
   await reconnect(page, 'jellyfin', JF.url, JF.user, JF.pass);
   proxy.server.close();
 
-  // Bad credentials on a connected service: Jellyfin's token ends behind Songport's back.
+  // Bad credentials on a connected service: Jellyfin's token ends behind Trackhop's back.
   if (CONTAINER) {
     const tokens = JSON.parse(docker('exec', CONTAINER, 'cat', '/data/tokens.json'));
     const tok = tokens.jellyfin.accessToken;

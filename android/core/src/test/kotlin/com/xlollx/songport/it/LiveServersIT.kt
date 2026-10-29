@@ -354,7 +354,7 @@ class LiveServersIT {
 
         /**
          * A sync to "a new playlist" on Plex: the connector makes it under the name asked for, with
-         * Songport's description as its summary, and the engine fills it; a second run changes nothing.
+         * Trackhop's description as its summary, and the engine fills it; a second run changes nothing.
          */
         @Test fun newPlaylistOnPlex() = runBlocking {
             val (plex) = connect(PLEX)

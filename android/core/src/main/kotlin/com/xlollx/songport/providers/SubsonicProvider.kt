@@ -55,6 +55,8 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
         var version = t.extra["v"] ?: API_VERSION
         while (true) {
             val salt = ByteArray(8).also { SecureRandom().nextBytes(it) }.joinToString("") { "%02x".format(it) }
+            // "c" stays "Songport" after the rename to Trackhop: Navidrome and others register a player
+            // per client name, with the admin's settings (transcoding, ...) attached to it.
             val common = listOf(
                 "u" to t.userName, "t" to md5(t.accessToken + salt), "s" to salt,
                 "v" to version, "c" to "Songport", "f" to "json",

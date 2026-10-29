@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
 /**
  * The user signs in on accounts.google.com inside a WebView, exactly as in a browser. When Google
  * lands on music.youtube.com with a session cookie, the cookies are stored encrypted and the
- * activity closes. Songport starts this screen with the action `com.xlollx.songport.ytmbridge.LOGIN`.
+ * activity closes. Trackhop starts this screen with the action `com.xlollx.songport.ytmbridge.LOGIN`.
  *
  * The WebView keeps its default user agent on purpose. Overriding it with a desktop string makes
  * Google reject the sign-in ("this browser or app may not be secure") because the string no longer
@@ -30,7 +30,7 @@ class LoginActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // The liability notice comes first, also when Songport starts this screen directly.
+        // The liability notice comes first, also when Trackhop starts this screen directly.
         Disclaimer.require(this) { setup() }
     }
 

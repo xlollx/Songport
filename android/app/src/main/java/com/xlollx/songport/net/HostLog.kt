@@ -10,7 +10,7 @@ import okhttp3.Response
  * Il registro delle connessioni: quali host l'app ha contattato, quante volte, l'ultima quando.
  * Nessun contenuto, solo il nome dell'host. E' la risposta verificabile alla domanda "dove va la mia
  * chiave?": in Opzioni si legge l'elenco, e se compare solo il fornitore scelto e i servizi
- * collegati, la promessa "nessun server Songport" e' li' da controllare, non da credere. I connettori
+ * collegati, la promessa "nessun server Trackhop" e' li' da controllare, non da credere. I connettori
  * web (YouTube Music, Amazon) parlano anche attraverso il motore del browser, che qui non passa: la
  * schermata lo dice.
  */

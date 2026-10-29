@@ -1,6 +1,6 @@
 name: Build
 
-# Compila Songport. Parte a ogni push su main, sulle pull request e a mano
+# Compila Trackhop. Parte a ogni push su main, sulle pull request e a mano
 # da GitHub -> Actions -> "Build" -> "Run workflow".
 on:
   push:
@@ -65,12 +65,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: '8.14.3'
-
-      - name: Stringhe del brand Play aggiornate
-        # Su Google Play l'app si chiama Trackhop: le stringhe che nominano l'app vengono generate
-        # da scripts/play_strings.py. Se qualcuno tocca strings.xml senza rilanciarlo, la build si ferma qui.
-        working-directory: .
-        run: python3 scripts/play_strings.py --check
 
       - name: Test unitari
         # :bridge:testDebugUnitTest: the web connectors' contract tests (Robolectric, local mock server only).
@@ -153,6 +147,8 @@ jobs:
 
       - name: Name release assets after the version
         if: ${{ steps.rel.outputs.tag != '' }}
+        # The assets keep the "Songport-" prefix after the rename to Trackhop: F-Droid's Binaries
+        # pattern and Obtainium setups match these names.
         run: |
           cp app/build/outputs/apk/full/release/app-full-release.apk "$GITHUB_WORKSPACE/Songport-${{ steps.rel.outputs.tag }}.apk"
           cp app/build/outputs/bundle/playRelease/app-play-release.aab "$GITHUB_WORKSPACE/Songport-${{ steps.rel.outputs.tag }}-play.aab"

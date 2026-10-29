@@ -284,7 +284,7 @@ fun CompatibilityCard(snackbar: SnackbarHostState, initialLinks: Pair<String, St
                 }
             }
         }
-        CardActions(bitmaps, "songport-compatibility", busy || a == null || b == null, onRender = { run() }, renderLabel = stringResource(if (result == null) R.string.card_compat_run else R.string.card_again))
+        CardActions(bitmaps, "trackhop-compatibility", busy || a == null || b == null, onRender = { run() }, renderLabel = stringResource(if (result == null) R.string.card_compat_run else R.string.card_again))
     }
 }
 
@@ -369,11 +369,11 @@ fun PosterCard(snackbar: SnackbarHostState) {
         AiCoverOption(ai, aiSupport, aiCover) { aiCover = it; bitmaps = null }
         if (drawing) Text(stringResource(R.string.card_ai_drawing), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (bitmaps != null && qr == null) Text(stringResource(R.string.card_poster_no_qr), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        CardActions(bitmaps, "songport-poster", busy || pick == null, onRender = { run() }, renderLabel = stringResource(if (bitmaps == null) R.string.card_poster_run else R.string.card_again))
+        CardActions(bitmaps, "trackhop-poster", busy || pick == null, onRender = { run() }, renderLabel = stringResource(if (bitmaps == null) R.string.card_poster_run else R.string.card_again))
         if (aiCover && drawn != null && bitmaps != null) {
             androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 OutlinedButton(enabled = !busy, onClick = { run(newCover = true) }) { Text(stringResource(R.string.card_ai_again)) }
-                TextButton(onClick = { saveCover.launch("songport-cover.png") }) { Text(stringResource(R.string.card_ai_save)) }
+                TextButton(onClick = { saveCover.launch("trackhop-cover.png") }) { Text(stringResource(R.string.card_ai_save)) }
             }
         }
     }

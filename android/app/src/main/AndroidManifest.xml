@@ -18,7 +18,7 @@
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https" />
         </intent>
-        <!-- Connector plugins: apps implementing Songport's open connector interface advertise this action. -->
+        <!-- Connector plugins: apps implementing Trackhop's open connector interface advertise this action. -->
         <intent>
             <action android:name="com.xlollx.songport.action.CONNECTOR" />
         </intent>
@@ -47,7 +47,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-            <!-- "Condividi con Songport" da Spotify, Apple Music, YouTube…: il link diventa l'origine di una sync. -->
+            <!-- "Condividi con Trackhop" da Spotify, Apple Music, YouTube…: il link diventa l'origine di una sync. -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -55,8 +55,8 @@
             </intent-filter>
         </activity>
 
-        <!-- "Open with Songport" for track and playlist links: off until the user turns it on in Settings
-             (PackageManager enables the alias). No autoVerify on purpose: Android offers Songport next to
+        <!-- "Open with Trackhop" for track and playlist links: off until the user turns it on in Settings
+             (PackageManager enables the alias). No autoVerify on purpose: Android offers Trackhop next to
              the service's app in its chooser; it never takes a link by itself. -->
         <activity-alias
             android:name=".MusicLinkActivity"

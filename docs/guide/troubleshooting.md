@@ -43,11 +43,11 @@ Use the quick route for big playlists.
 
 ## Personal servers
 
-**Ampache: "Ampache refused the password".** Songport connects to Ampache through its Subsonic
+**Ampache: "Ampache refused the password".** Trackhop connects to Ampache through its Subsonic
 API, with *Subsonic / Navidrome*. Ampache checks those sign-ins against a separate **Subsonic
 password**, never against the password you use on its web page. In Ampache open *Preferences →
 Account*, set a *Subsonic Password* (or copy your *API key*), save with *Update Account*, and enter
-that in Songport as the password. The username stays the same.
+that in Trackhop as the password. The username stays the same.
 
 **Plex: where does a new playlist go?** A sync to "create a new playlist" makes a music playlist on
 the server, as Plex's own apps do; it shows up under *Playlists* in Plex.
@@ -55,7 +55,7 @@ the server, as Plex's own apps do; it shows up under *Playlists* in Plex.
 ## Scheduled syncs do not run
 
 Some phones (Samsung, Xiaomi, Huawei, Oppo) stop background apps. *Settings → Battery* excludes
-Songport from battery optimisation. A scheduled run the system interrupts resumes by itself
+Trackhop from battery optimisation. A scheduled run the system interrupts resumes by itself
 ("paused by the system … will resume" in the log is normal).
 
 ## A sync wants to remove many tracks

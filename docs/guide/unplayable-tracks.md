@@ -3,7 +3,7 @@
 
 Every long-lived playlist collects a few greyed-out entries: a track pulled from the catalogue, one
 the label stopped licensing in your country, one outside your plan, a YouTube video gone private.
-The services show them and leave them there. Songport finds them and offers the same recording
+The services show them and leave them there. Trackhop finds them and offers the same recording
 under an id that plays.
 
 ## Where
@@ -41,7 +41,7 @@ included where the service has them) and tap **Check**.
 
 ## The weekly check
 
-Settings → **Weekly check for unplayable tracks**. Once a week Songport looks through your
+Settings → **Weekly check for unplayable tracks**. Once a week Trackhop looks through your
 playlists and sends a notification when something can no longer be played. It never changes
 anything by itself: the notification opens the tool, and you decide.
 

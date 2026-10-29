@@ -100,7 +100,7 @@ private fun LogList(data: StoreData, snackbar: SnackbarHostState, onResolve: (St
                 // toglie quel che vuole e la invia con il proprio account. Nulla parte da solo.
                 TextButton(onClick = {
                     val body = Diagnostics.report(ctx).take(5000)
-                    val url = "https://github.com/xlollx/Songport/issues/new?title=" + Uri.encode("[Sync error] ") +
+                    val url = "https://github.com/xlollx/Trackhop/issues/new?title=" + Uri.encode("[Sync error] ") +
                         "&body=" + Uri.encode("<!-- Describe what you were doing. Remove anything you prefer not to share. -->\n\n```\n$body\n```")
                     runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
                 }) { Text(stringResource(R.string.report_issue)) }

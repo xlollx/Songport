@@ -14,7 +14,7 @@ import com.xlollx.songport.ytmbridge.pending
 
 /**
  * GitHub and F-Droid build: the web connectors (YouTube Music, Amazon Music, Spotify and Apple Music
- * web sign-in) run inside Songport, from the :bridge module. They answer the same methods the Songport
+ * web sign-in) run inside Trackhop, from the :bridge module. They answer the same methods the Trackhop
  * Bridge app answers through its ContentProvider, called in-process: no second app, no signature check.
  */
 object BuiltIn {

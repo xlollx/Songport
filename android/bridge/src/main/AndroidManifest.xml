@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
-        <!-- Sign-in screens, started by Songport itself: nothing here is reachable from other apps. -->
+        <!-- Sign-in screens, started by Trackhop itself: nothing here is reachable from other apps. -->
         <activity
             android:name=".LoginActivity"
             android:exported="false"

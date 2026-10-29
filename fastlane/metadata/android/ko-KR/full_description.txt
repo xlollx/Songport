@@ -11,4 +11,4 @@
 <p>Spotify, Apple Music, YouTube Music, TIDAL, Deezer, Subsonic/Navidrome, Jellyfin, Plex 서버, 원본으로 쓰는 Last.fm과 ListenBrainz, 그리고 파일과 함께 작동해요. 개발자 키가 필요한 서비스는 앱 내 안내로 설정하며, 키와 모든 액세스 토큰은 기기에 암호화되어 보관돼요. Deezer 로그인은 Deezer가 요구하는 https 리디렉션인 xlollx.github.io의 정적 페이지를 거쳐 돌아오는데, 이 페이지는 앱으로 전달만 할 뿐 아무것도 저장하지 않아요.</p>
 <p>YouTube Music, Amazon Music, 그리고 개발자 키 없는 Spotify와 Apple Music 로그인은 앱에 내장된 각 서비스의 웹 플레이어로 작동해요. 공식 API가 아니므로 첫 로그인 전에 앱이 안내를 표시해요.</p>
 <p>그 밖의 연결은 모두 선택 사항이며 계정이 필요 없어요: 곡에 ISRC가 없을 때 조회하는 Deezer 공개 카탈로그(설정에서 끌 수 있어요), Spotify 웹 플레이어의 쿼리 해시를 담은 GitHub의 정적 레지스트리, 검토 화면의 추가 결과를 위한 song.link, 그리고 플레이리스트 생성기에 직접 설정하는 AI 제공자(OpenAI, Anthropic, Google Gemini 또는 호환 서버. 입력한 텍스트만 전송돼요).</p>
-<p>Songport는 이들 서비스와 아무 관련이 없으며, 서비스 이름은 호환성을 나타내기 위해서만 사용해요.</p>
+<p>Trackhop은 이들 서비스와 아무 관련이 없으며, 서비스 이름은 호환성을 나타내기 위해서만 사용해요.</p>

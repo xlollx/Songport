@@ -11,7 +11,7 @@ Two playlists in, a score out. Each side can be:
   SoundCloud in the GitHub/F-Droid build; short share links too), or
 - one of **your own playlists** on a connected service, liked songs included.
 
-Sharing **two playlist links at once** to Songport (select both messages in a chat, or paste two
+Sharing **two playlist links at once** to Trackhop (select both messages in a chat, or paste two
 links in one share) opens the comparison directly.
 
 The two lists are matched the way a sync matches them: an identical ISRC is the same recording,
@@ -72,5 +72,5 @@ does not pay twice, **Another cover** asks for a new one, **Save cover** keeps i
 ## Sharing and saving
 
 **Share** opens the system share sheet with the PNG; **Save image** asks where to put the file.
-Cards carry a small "Songport · xlollx.github.io/Songport" line at the bottom: that is how people
+Cards carry a small "Trackhop · xlollx.github.io/Trackhop" line at the bottom: that is how people
 who see one find the app.

@@ -93,7 +93,7 @@ private fun openUrl(ctx: android.content.Context, url: String) {
     runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }
 
-private const val SOURCE_URL = "https://github.com/xlollx/Songport"
+private const val SOURCE_URL = "https://github.com/xlollx/Trackhop"
 
 /** The little arrow of a row that leaves the app (browser, system settings). */
 @Composable
@@ -176,7 +176,7 @@ fun SettingsScreen(
                 Icons.Filled.BatteryAlert, stringResource(R.string.settings_battery), stringResource(R.string.settings_battery_summary),
                 trailing = { ExternalMark() },
             ) {
-                // Apre l'elenco di sistema (nessun permesso speciale): l'utente sceglie Songport e lo esclude.
+                // Apre l'elenco di sistema (nessun permesso speciale): l'utente sceglie Trackhop e lo esclude.
                 runCatching { ctx.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) }
             }
         }

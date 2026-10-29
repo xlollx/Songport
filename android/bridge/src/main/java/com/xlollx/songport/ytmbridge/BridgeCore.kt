@@ -8,14 +8,14 @@ import kotlinx.serialization.encodeToString
 /**
  * The connectors' methods, the same the Songport Bridge app answers through its ContentProvider
  * (`status`, `playlists`, `tracks`, `search`, `add`, `amazon.*`, `spotify.*`, `apple.*`...), called by
- * Songport in-process. No caller check is needed: nothing outside this app can reach it.
+ * Trackhop in-process. No caller check is needed: nothing outside this app can reach it.
  * Callers block, so this is never called on the main thread.
  */
 object BridgeCore {
     /** Reported as "version" by the status calls: the built-in connectors have every feature. */
     const val VERSION = 1000
     const val PAGE = 400
-    /** Songport's ids for the library objects, the same on every connector. */
+    /** Trackhop's ids for the library objects, the same on every connector. */
     const val ALBUMS = "__albums__"
     const val ARTISTS = "__artists__"
     const val RECENT = "__recent__"
@@ -118,7 +118,7 @@ object BridgeCore {
                         .forEach { c.removeTrack(pid, it); Thread.sleep(150) }
                     Bundle()
                 }
-                // ---- Spotify web session: Songport gets a short-lived Web API token, never the cookies.
+                // ---- Spotify web session: Trackhop gets a short-lived Web API token, never the cookies.
                 "spotify.status" -> Bundle().apply {
                     putBoolean("connected", SpotifyBridge.session.isConnected(ctx))
                     putString("account", SpotifyBridge.session.account(ctx))

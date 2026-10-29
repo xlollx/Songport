@@ -20,7 +20,7 @@ import kotlin.concurrent.thread
 /**
  * Shared sign-in screen for the web sessions (Spotify, Apple Music). The user signs in on the
  * service's own page; the activity polls the cookie jar of the service's domain and, as soon as the
- * session cookie is there, stores the cookies encrypted and closes. Songport starts it with the
+ * session cookie is there, stores the cookies encrypted and closes. Trackhop starts it with the
  * actions declared in the manifest.
  */
 class WebLoginActivity : ComponentActivity() {

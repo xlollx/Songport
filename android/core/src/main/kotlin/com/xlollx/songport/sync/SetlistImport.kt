@@ -21,6 +21,7 @@ object SetlistImport {
     data class Setlist(val name: String, val artist: String, val tracks: List<Track>)
 
     suspend fun fetch(url: String): Setlist {
+        // The User-Agent keeps "Songport" after the rename to Trackhop: an identifier the sites already see.
         val r = Http.send("GET", url, mapOf("User-Agent" to "Mozilla/5.0 (Linux; Android 14) Songport", "Accept" to "text/html"))
         if (!r.ok) throw ProviderException("setlist.fm ${r.code}")
         return parse(r.body)

@@ -25,7 +25,7 @@ import kotlinx.serialization.json.JsonElement
 /**
  * YouTube Music through the optional companion app "Songport YTM Bridge".
  *
- * Songport itself never talks to YouTube here: it asks the Bridge, installed separately (not from
+ * Trackhop itself never talks to YouTube here: it asks the Bridge, installed separately (not from
  * Google Play), through a ContentProvider. The Bridge holds the login and answers with playlists and
  * tracks. No Google Cloud project, no quota. The official Data API route stays available as
  * [YouTubeProvider] for whoever prefers it.

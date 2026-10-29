@@ -12,9 +12,9 @@ Users can still switch to their own credentials in the app.
 
 ## 2. Google Auth Platform
 
-1. **Branding**: app name `Songport`, user support e-mail, app logo (`docs/store/icon512.png`
-   scaled to 120×120), application home page `https://xlollx.github.io/Songport/`, privacy policy
-   `https://xlollx.github.io/Songport/privacy-policy`, terms of service (optional), authorized
+1. **Branding**: app name `Trackhop`, user support e-mail, app logo (`docs/store/icon512.png`
+   scaled to 120×120), application home page `https://xlollx.github.io/Trackhop/`, privacy policy
+   `https://xlollx.github.io/Trackhop/privacy-policy`, terms of service (optional), authorized
    domain `xlollx.github.io`, developer contact e-mail.
 2. **Audience**: user type **External**. While the app is in *Testing*, only the listed test users
    (max 100) can log in. Press **Publish app** when you are ready for verification.
@@ -22,10 +22,10 @@ Users can still switch to their own credentials in the app.
    *sensitive* (not *restricted*), so verification does not require a security assessment.
    Justification text that matches what the app does:
 
-   > Songport keeps a user's playlists in sync between music services. With the youtube scope the
+   > Trackhop keeps a user's playlists in sync between music services. With the youtube scope the
    > app reads the user's YouTube playlists and their items, creates playlists in the user's own
    > channel and adds or removes playlist items, only when the user starts or schedules a sync.
-   > Data is processed on the user's device only; there is no Songport server.
+   > Data is processed on the user's device only; there is no Trackhop server.
 
 ## 3. The Android OAuth client
 
@@ -50,7 +50,7 @@ Prepare, in this order:
 1. **Home page** on the authorized domain that describes the app and how it uses Google user data
    (`docs/index.md` already does), linking to the privacy policy.
 2. **Domain ownership**: Google Search Console → add the URL-prefix property
-   `https://xlollx.github.io/Songport/` and verify it with the HTML file method (drop the file in
+   `https://xlollx.github.io/Trackhop/` and verify it with the HTML file method (drop the file in
    `docs/`). The account doing this must be an owner of the Cloud project.
 3. **Demo video** (unlisted YouTube video, 1–3 minutes): open the app, tap Connect on YouTube
    Music, show the Google consent screen with the app name and the requested permission, complete
@@ -64,7 +64,7 @@ Until verification completes the app stays usable through the test-user list.
 
 ## 5. Quota
 
-YouTube Data API v3 gives **10,000 units per day per project**. Songport's costs:
+YouTube Data API v3 gives **10,000 units per day per project**. Trackhop's costs:
 
 | Call | Units | When |
 |------|-------|------|
@@ -82,7 +82,7 @@ a ring and estimates the cost of each sync before running it.
 *Queries per day* → *Request quota increase*. Google redirects to the *YouTube API Services –
 Audit and Quota Extension Form*. A justification that fits this app:
 
-> Songport is a free, open-source Android app (https://github.com/xlollx/Songport) that syncs a
+> Trackhop is a free, open-source Android app (https://github.com/xlollx/Trackhop) that syncs a
 > user's playlists between music services on the user's own device. It uses search.list to find
 > the YouTube video for a track (about 100 units per new track), playlistItems.insert/delete to
 > mirror the user's playlist and playlists.list/playlistItems.list to read state. Every match is

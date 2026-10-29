@@ -5,7 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 
 /**
- * The liability notice. Every sign-in (YouTube Music or Amazon Music, started here or by Songport)
+ * The liability notice. Every sign-in (YouTube Music or Amazon Music, started here or by Trackhop)
  * requires the user to have accepted it once; the acceptance is stored on this device only.
  */
 object Disclaimer {

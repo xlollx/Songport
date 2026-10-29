@@ -4,7 +4,7 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Il marchio Songport: una nota dentro un anello di sincronizzazione. Tutto nella zona sicura (r=33). -->
+    <!-- Il marchio Trackhop: una nota dentro un anello di sincronizzazione. Tutto nella zona sicura (r=33). -->
     <!-- Anello: due archi -->
     <path android:pathData="M30.6,40.5 A27,27 0 0 1 77.4,40.5"
         android:strokeColor="#FFFFFFFF" android:strokeWidth="5.5" android:strokeLineCap="round" />

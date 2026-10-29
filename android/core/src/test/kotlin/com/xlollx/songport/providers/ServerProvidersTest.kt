@@ -182,14 +182,14 @@ class FakeServerProvidersTest {
         val p = PlexProvider()
         assertTrue(p.canCreatePlaylists && p.canRenamePlaylists && p.canDeletePlaylists)
         p.login(ctx, url, "", "token")
-        val pl = p.createPlaylist(ctx, "Café & Co", "Made with Songport")
+        val pl = p.createPlaylist(ctx, "Café & Co", "Made with Trackhop")
         assertEquals("21" to "Café & Co", pl.id to pl.name)
         val post = requests.single { it.method == "POST" }
         assertEquals(listOf("audio"), post.query["type"])
         assertEquals(listOf("0"), post.query["smart"])
         assertEquals(listOf("Café & Co"), post.query["title"])
         assertEquals(listOf("server://abc/com.plexapp.plugins.library"), post.query["uri"])
-        assertEquals(listOf("Made with Songport"), requests.single { it.method == "PUT" }.query["summary"])
+        assertEquals(listOf("Made with Trackhop"), requests.single { it.method == "PUT" }.query["summary"])
     }
 
     @Test fun plexCreatesThePlaylistEvenWhenTheSummaryIsRefused() = runBlocking {

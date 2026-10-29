@@ -64,7 +64,7 @@ import kotlinx.coroutines.launch
 private const val PAGES = 3
 
 /**
- * Primo avvio, in tre pagine: what Songport does (the services it joins), the three moves, and how
+ * Primo avvio, in tre pagine: what Trackhop does (the services it joins), the three moves, and how
  * logins are kept and why the app is free (or has ads). Skip goes straight to the app; the last
  * page's button starts it.
  */

@@ -1,10 +1,10 @@
 # Google Play listing – texts, answers and checklist
 
-On Google Play the app is **Trackhop** ("SongPort" is an unrelated link converter, see
-`docs/ROADMAP.md` › Name). Same code, same package id `com.xlollx.songport`, same signing key as every
-other build: the `play` flavor only changes the name (`scripts/play_strings.py`), drops the built-in
-web connectors and adds the AdMob banner with the UMP consent form. Upload **only the `play` AAB**
-(`Songport-release-aab` artifact of a CI run on `main`, or `Songport-vX-play.aab` in a GitHub Release).
+The app is **Trackhop** on Google Play as everywhere else (see `docs/ROADMAP.md` › Name). Same code,
+same name, same package id `com.xlollx.songport`, same signing key as every other build: the `play`
+flavor only drops the built-in web connectors, describes plugin-based services generically and
+adds the AdMob banner with the UMP consent form. Upload **only the `play` AAB** (the
+`Songport-release-aab` artifact of a CI run on `main`, or `Songport-vX-play.aab` in a GitHub Release).
 
 Rule for everything below: the listing describes official-API services and files only. No companion
 app, no plugin, no link to one; screenshots taken from the `play` build on a phone without plugins.
@@ -86,12 +86,12 @@ Application · **Music & Audio** · tags: Music, Playlists, Productivity. Free a
 
 ### Graphics
 - Icon 512×512: `docs/store/icon512.png` (also `fastlane/metadata/android/en-US/images/icon.png`).
-- Feature graphic 1024×500: `docs/store/feature_en.png`, `feature_it.png` (they say Songport: regenerate
-  with "Trackhop" before uploading, or upload without text).
+- Feature graphic 1024×500: `docs/store/feature_en.png`, `feature_it.png` (they still say Songport:
+  regenerate with "Trackhop" before uploading, or upload without text).
 - Phone screenshots: 2 to 8, JPEG/PNG, 320–3840 px per side, **long side at most twice the short
   one**. The F-Droid captures in `fastlane/metadata/android/en-US/images/phoneScreenshots/` are
   1080×2340 and taller (two are 1080×3755 and 1080×2659), so Play refuses them as they are, and they
-  show the Songport name. Take fresh ones from the `play` build and run
+  show the old Songport name. Take fresh ones from the `play` build and run
   `scripts/play_screenshots.sh <files>`: it crops anything taller than 2:1, keeping the top, into a
   `play/` folder next to the originals.
 - No service logos anywhere (icon, screenshots, feature graphic): names in text only.
@@ -100,7 +100,7 @@ Application · **Music & Audio** · tags: Music, Playlists, Productivity. Free a
 
 | Declaration | Answer |
 |---|---|
-| Privacy policy | URL of the published `docs/privacy-policy.md` (it names both Songport and Trackhop). Same URL as the `PRIVACY_POLICY_URL` repository variable, which the app shows in Settings. |
+| Privacy policy | URL of the published `docs/privacy-policy.md` (it names Trackhop and its former name, Songport). Same URL as the `PRIVACY_POLICY_URL` repository variable, which the app shows in Settings. |
 | Ads | **Yes**, the app contains ads (AdMob banner, one per screen at most). |
 | App access | **All or some functionality is restricted**. Instructions for the reviewer: "Every feature can be exercised with playlist files (Files › Import, or share a text with one track per line) without any account. Music services require the reviewer's own account and, for Spotify, YouTube Music, TIDAL and Deezer, a free developer key created through the in-app wizard (about two minutes). No credentials can be supplied by the developer: the app has no accounts of its own." |
 | Content rating (IARC) | Category **Utility, Productivity, Communication or Other**. Violence, sexuality, language, controlled substances: none. Users cannot interact with or share content with other users: **No**. Shares location: **No**. Digital purchases: **No**. Contains ads: **Yes**. Expected result: PEGI 3 / Everyone. |
@@ -170,7 +170,7 @@ has run.
    them the opt-in link; the console states the current requirement (12 testers opted in for 14
    continuous days at the time of writing; it was 20 before). Recruiting texts, group setup and the
    final questionnaire are in `docs/play-testers.md`. Testers install from Play, so they must
-   uninstall the GitHub/F-Droid Songport first: same package id.
+   uninstall the GitHub/F-Droid build first: same package id.
 7. **Apply for production access** when the test is complete (Dashboard › Apply for production): a few
    questions on who tested, what they found and how it was fixed. Google answers within a few days.
 8. **Production release**: upload the AAB (a newer one if the version moved on), release notes

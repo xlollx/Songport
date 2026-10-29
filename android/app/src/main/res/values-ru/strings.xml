@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Songport</string>
+    <string name="app_name">Trackhop</string>
 
     <string name="tab_syncs">Синхронизации</string>
     <string name="tab_accounts">Аккаунты</string>
@@ -91,7 +91,7 @@
     <string name="connected_as">Подключено как %1$s</string>
     <string name="not_connected">Не подключено</string>
     <string name="not_configured">Требуется настройка</string>
-    <string name="not_configured_hint">Songport поставляется без ключей сервисов. Создайте свой бесплатный ключ на странице сервиса для разработчиков: это занимает около двух минут, и приложение проведёт вас по шагам.</string>
+    <string name="not_configured_hint">Trackhop поставляется без ключей сервисов. Создайте свой бесплатный ключ на странице сервиса для разработчиков: это занимает около двух минут, и приложение проведёт вас по шагам.</string>
     <string name="setup_now">Настроить</string>
     <string name="connect">Подключить</string>
     <string name="disconnect">Отключить</string>
@@ -115,13 +115,13 @@
     <string name="settings_notifications">Уведомлять после каждой синхронизации</string>
     <string name="settings_notifications_desc">Показывать уведомление, когда синхронизация по расписанию добавляет или удаляет треки либо завершается ошибкой.</string>
     <string name="settings_isrc">Точная запись через Deezer</string>
-    <string name="settings_isrc_desc">Если у трека нет ISRC (веб-пути, файлы), Songport один раз ищет его в открытом каталоге Deezer, чтобы Spotify, Apple Music и TIDAL вернули именно ту запись, а не похожую. Анонимный запрос, без аккаунта.</string>
+    <string name="settings_isrc_desc">Если у трека нет ISRC (веб-пути, файлы), Trackhop один раз ищет его в открытом каталоге Deezer, чтобы Spotify, Apple Music и TIDAL вернули именно ту запись, а не похожую. Анонимный запрос, без аккаунта.</string>
     <string name="settings_language">Язык</string>
-    <string name="settings_language_desc">Songport использует язык системы: английский, итальянский, французский, немецкий, испанский, португальский, польский, русский, турецкий, китайский, японский, корейский.</string>
+    <string name="settings_language_desc">Trackhop использует язык системы: английский, итальянский, французский, немецкий, испанский, португальский, польский, русский, турецкий, китайский, японский, корейский.</string>
     <string name="settings_language_open">Изменить</string>
     <string name="settings_language_system">Язык системы</string>
     <string name="settings_advanced">Ключи сервисов</string>
-    <string name="settings_advanced_desc">Songport поставляется без собственных ключей: Spotify, YouTube Music, TIDAL, Deezer, Last.fm и Apple Music подключаются через бесплатный ключ, созданный на ваше имя, поэтому их лимиты и квоты принадлежат только вам. Здесь их можно посмотреть и изменить.</string>
+    <string name="settings_advanced_desc">Trackhop поставляется без собственных ключей: Spotify, YouTube Music, TIDAL, Deezer, Last.fm и Apple Music подключаются через бесплатный ключ, созданный на ваше имя, поэтому их лимиты и квоты принадлежат только вам. Здесь их можно посмотреть и изменить.</string>
     <string name="settings_privacy_options">Настройки конфиденциальности рекламы</string>
     <string name="settings_privacy_policy">Политика конфиденциальности</string>
     <string name="settings_about">О приложении</string>
@@ -129,7 +129,7 @@
     <string name="settings_developer_switch">Показывать инструменты разработчика</string>
     <string name="settings_developer_desc">Журнал соединений, технический отчёт для отправки, запись трафика веб-коннекторов. В выключенном состоянии они не мешают.</string>
     <string name="settings_version">Версия %1$s</string>
-    <string name="settings_ads_note">Songport бесплатен и без подписок. Его поддерживает один небольшой баннер; данные не продаются, и с телефона уходят только запросы к подключённым музыкальным сервисам.</string>
+    <string name="settings_ads_note">Trackhop бесплатен и без подписок. Его поддерживает один небольшой баннер; данные не продаются, и с телефона уходят только запросы к подключённым музыкальным сервисам.</string>
     <string name="settings_csv">Файлы</string>
     <string name="csv_import">Импортировать файл</string>
     <string name="csv_export">Экспорт</string>
@@ -138,7 +138,7 @@
     <string name="csv_imported">Импортировано треков: %1$d</string>
     <string name="csv_exported">Файл экспортирован</string>
     <string name="log_save_file">Сохранить как файл…</string>
-    <string name="note_file_target">Сохранено внутри Songport: нажмите «Сохранить как файл» здесь или откройте Настройки → Файлы, чтобы получить CSV или M3U.</string>
+    <string name="note_file_target">Сохранено внутри Trackhop: нажмите «Сохранить как файл» здесь или откройте Настройки → Файлы, чтобы получить CSV или M3U.</string>
 
     <string name="auth_done">Подключено к %1$s</string>
     <string name="auth_failed">Ошибка входа: %1$s</string>
@@ -178,7 +178,7 @@
     <string name="note_removals_capped">Удаления сдержаны: этот запуск удалил бы %1$d из %2$d треков в цели. Откройте предпросмотр, чтобы увидеть их и подтвердить; если источник на самом деле их не терял, сервис выдал неполный список, и удалять ничего не нужно.</string>
     <string name="note_unchanged">С последнего запуска ничего не изменилось ни с одной стороны: пропущено.</string>
     <string name="review_share">Поделиться списком</string>
-    <string name="note_search_interrupted">Проверено %1$d из %2$d треков, затем сервис потребовал более долгую паузу (%3$s). Это ограничение сервиса, а не ошибка Songport: найденное применено и запомнено. Запустите синхронизацию снова через несколько минут, чтобы продолжить с этого места.</string>
+    <string name="note_search_interrupted">Проверено %1$d из %2$d треков, затем сервис потребовал более долгую паузу (%3$s). Это ограничение сервиса, а не ошибка Trackhop: найденное применено и запомнено. Запустите синхронизацию снова через несколько минут, чтобы продолжить с этого места.</string>
     <string name="error_no_removals">%1$s не может удалять треки из плейлиста</string>
     <string name="log_notes_title">Примечания</string>
     <string name="editor_mirror_unsupported">%1$s может только добавлять треки: удаления будут пропущены.</string>
@@ -206,7 +206,7 @@
     <string name="setup_why_deezer">Deezer требует приложение, зарегистрированное на ваше имя. Страницу https-редиректа предоставляет проект.</string>
     <string name="setup_why_apple">Токен разработчика принадлежит вашему аккаунту Apple Developer и истекает не позднее чем через шесть месяцев.</string>
     <string name="error_dev_mode_limit">%1$s допускает лишь несколько пользователей на приложение. Настройте собственные учётные данные: это бесплатно и занимает около двух минут.</string>
-    <string name="error_network">телефон не смог связаться с сервисом (ошибка DNS). Проверьте подключение, VPN или частный DNS, а также разрешена ли Songport передача данных в фоне, затем попробуйте снова.</string>
+    <string name="error_network">телефон не смог связаться с сервисом (ошибка DNS). Проверьте подключение, VPN или частный DNS, а также разрешена ли Trackhop передача данных в фоне, затем попробуйте снова.</string>
     <string name="auth_timeout">нет ответа от браузера, время вышло</string>
 
     <string name="tab_tools">Инструменты</string>
@@ -260,7 +260,7 @@
     <string name="result_ignored">Пропущено: %1$d</string>
     <string name="tools_pick_service">Сервис</string>
     <string name="files_row_desc">Импортированные списки и плейлисты, записанные синхронизацией в «Файл»: импорт, вставка, экспорт.</string>
-    <string name="ai_row_desc">Опишите плейлист; ваш ИИ его составит, а Songport найдёт треки.</string>
+    <string name="ai_row_desc">Опишите плейлист; ваш ИИ его составит, а Trackhop найдёт треки.</string>
     <string name="tools_backup_row_desc">Все плейлисты, любимые треки, альбомы и исполнители этого сервиса, сохранённые как файлы с датой.</string>
     <string name="tools_none">Сначала подключите сервис.</string>
     <string name="spotify_forbidden">Spotify отклонил запрос (%1$s). Приложения в режиме Development Mode не могут читать плейлисты, созданные самим Spotify (Discover Weekly, Release Radar, редакционные миксы), и обслуживают только аккаунты из списка User Management приложения. Выберите плейлист, созданный вами или другим пользователем, или добавьте аккаунт на developer.spotify.com.</string>
@@ -351,7 +351,7 @@
     </plurals>
     <string name="transfer_started">Создано и запущено синхронизаций: %1$d. Следите за ними в «Синхронизациях».</string>
     <string name="ai_title">Генератор плейлистов</string>
-    <string name="ai_desc">Опишите нужный плейлист, и ваш ИИ его составит; затем Songport найдёт треки на выбранном сервисе, как при обычной синхронизации, так что всё, в чём ИИ ошибся, попадёт в список на проверку. У Songport нет собственного ИИ: вы подключаете свой (OpenAI, Anthropic, Google Gemini или любой сервер, совместимый с OpenAI, даже локальный) с ключом из вашего аккаунта, и ему отправляется только введённый здесь текст.</string>
+    <string name="ai_desc">Опишите нужный плейлист, и ваш ИИ его составит; затем Trackhop найдёт треки на выбранном сервисе, как при обычной синхронизации, так что всё, в чём ИИ ошибся, попадёт в список на проверку. У Trackhop нет собственного ИИ: вы подключаете свой (OpenAI, Anthropic, Google Gemini или любой сервер, совместимый с OpenAI, даже локальный) с ключом из вашего аккаунта, и ему отправляется только введённый здесь текст.</string>
     <string name="ai_setup">Подключить ИИ</string>
     <string name="ai_setup_change">Изменить</string>
     <string name="ai_setup_title">Ваш ИИ</string>
@@ -390,7 +390,7 @@
     <string name="ai_check">Проверить</string>
     <string name="ai_checking">Проверка модели…</string>
     <string name="ai_check_ok">Модель готова</string>
-    <string name="ai_free_hint">Попробовать бесплатно: у Google Gemini и Groq есть бесплатный тариф, у OpenRouter — бесплатные модели (с окончанием «:free»). Ключ создаётся за минуту на сайте провайдера. Songport не может поставлять общий ключ: он был бы виден в открытом исходном коде и исчерпан за день.</string>
+    <string name="ai_free_hint">Попробовать бесплатно: у Google Gemini и Groq есть бесплатный тариф, у OpenRouter — бесплатные модели (с окончанием «:free»). Ключ создаётся за минуту на сайте провайдера. Trackhop не может поставлять общий ключ: он был бы виден в открытом исходном коде и исчерпан за день.</string>
     <string name="ai_badge_desc">Составлен вашим ИИ</string>
     <string name="ai_extend">Добавить треки с помощью ИИ</string>
     <string name="ai_extend_title">Дополнить плейлист</string>
@@ -466,7 +466,7 @@
     </plurals>
     <string name="settings_battery">Синхронизации по расписанию не запускаются?</string>
     <string name="backup_folder_title">Резервная копия в папку</string>
-    <string name="backup_folder_desc">Songport уже хранит резервные копии ваших плейлистов с датами внутри приложения. Выберите папку (SD-карта, Nextcloud, Drive, любое приложение, которое её предоставляет), и новые версии будут копироваться и туда, чтобы пережить телефон. Для восстановления импортируйте файл из этой папки в «Файлах».</string>
+    <string name="backup_folder_desc">Trackhop уже хранит резервные копии ваших плейлистов с датами внутри приложения. Выберите папку (SD-карта, Nextcloud, Drive, любое приложение, которое её предоставляет), и новые версии будут копироваться и туда, чтобы пережить телефон. Для восстановления импортируйте файл из этой папки в «Файлах».</string>
     <string name="backup_folder_none">Папка не выбрана</string>
     <string name="backup_folder_hint">Копируются только файлы, которых ещё нет в папке.</string>
     <string name="backup_folder_pick">Выбрать папку</string>
@@ -475,7 +475,7 @@
     <string name="backup_folder_forget">Остановить</string>
     <string name="backup_folder_missing">Папка резервных копий больше недоступна: она удалена, карта извлечена или приложение потеряло к ней доступ. Выберите папку заново.</string>
     <string name="backup_last_ok">Последняя копия: %1$s</string>
-    <string name="settings_battery_desc">Некоторые телефоны (Xiaomi, Huawei, Oppo, Samsung) останавливают фоновые приложения. Исключите Songport из оптимизации батареи, чтобы расписание соблюдалось.</string>
+    <string name="settings_battery_desc">Некоторые телефоны (Xiaomi, Huawei, Oppo, Samsung) останавливают фоновые приложения. Исключите Trackhop из оптимизации батареи, чтобы расписание соблюдалось.</string>
     <string name="settings_battery_button">Открыть настройки батареи</string>
     <string name="share_received">Ссылка получена: выберите, куда её синхронизировать.</string>
     <string name="share_invalid">В переданном тексте нет распознаваемой ссылки на плейлист.</string>
@@ -495,7 +495,7 @@
     <string name="login_token">Токен</string>
     <string name="login_submit">Проверить и сохранить</string>
     <string name="login_checking">Проверка…</string>
-    <string name="login_trust_server">Ваши учётные данные хранятся на этом телефоне в зашифрованном виде. Songport обращается только к серверу, который вы здесь укажете.</string>
+    <string name="login_trust_server">Ваши учётные данные хранятся на этом телефоне в зашифрованном виде. Trackhop обращается только к серверу, который вы здесь укажете.</string>
     <string name="login_hint_subsonic">Введите адрес вашего сервера Navidrome, Airsonic или другого Subsonic-совместимого (например, https://music.example.com), имя пользователя и пароль. Пароль никогда не передаётся как есть: в каждом запросе используется хеш с солью. Ampache: используйте пароль Subsonic или ключ API из «Настройки» → «Учётная запись», а не пароль от учётной записи.</string>
     <string name="login_hint_jellyfin">Введите адрес вашего сервера Jellyfin (например, https://jellyfin.example.com), имя пользователя и пароль.</string>
     <string name="login_hint_plex">Введите адрес вашего Plex Media Server (например, http://192.168.1.10:32400) и ваш X-Plex-Token. Как найти токен, Plex объясняет на страницах поддержки («Finding an authentication token»).</string>
@@ -509,12 +509,12 @@
     <string name="error_read_only">%1$s доступен только для чтения: может быть только источником.</string>
     <string name="error_create_unsupported">%1$s не может создавать плейлисты из приложения: создайте его в %1$s и выберите здесь.</string>
     <string name="connect_title">Подключение %1$s</string>
-    <string name="connect_where_oauth">Вы войдёте на %1$s в браузере. Songport никогда не видит ваш пароль.</string>
-    <string name="connect_where_web">Вы войдёте на собственной странице %1$s, показанной внутри приложения. Songport никогда не видит ваш пароль, только оставшуюся после входа сессию.</string>
-    <string name="connect_where_apple">Вы войдёте с Apple ID в собственном окне Apple. Songport никогда не видит ваш пароль.</string>
-    <string name="connect_where_server">Данные вашего сервера хранятся на этом телефоне в зашифрованном виде. Songport обращается только к вашему серверу.</string>
-    <string name="connect_token">Songport получает лишь ограниченное отзываемое разрешение, хранящееся на этом телефоне в зашифрованном виде (Android Keystore).</string>
-    <string name="connect_noserver">У Songport нет сервера: данные передаются только между этим телефоном и %1$s.</string>
+    <string name="connect_where_oauth">Вы войдёте на %1$s в браузере. Trackhop никогда не видит ваш пароль.</string>
+    <string name="connect_where_web">Вы войдёте на собственной странице %1$s, показанной внутри приложения. Trackhop никогда не видит ваш пароль, только оставшуюся после входа сессию.</string>
+    <string name="connect_where_apple">Вы войдёте с Apple ID в собственном окне Apple. Trackhop никогда не видит ваш пароль.</string>
+    <string name="connect_where_server">Данные вашего сервера хранятся на этом телефоне в зашифрованном виде. Trackhop обращается только к вашему серверу.</string>
+    <string name="connect_token">Trackhop получает лишь ограниченное отзываемое разрешение, хранящееся на этом телефоне в зашифрованном виде (Android Keystore).</string>
+    <string name="connect_noserver">У Trackhop нет сервера: данные передаются только между этим телефоном и %1$s.</string>
     <string name="connect_revoke">Отозвать можно в любой момент: здесь кнопкой «Отключить» или из вашего аккаунта %1$s.</string>
     <string name="connect_continue">Продолжить</string>
     <string name="connect_continue_browser">Продолжить в браузере</string>
@@ -544,8 +544,8 @@
     <string name="connector_pick_hint">К некоторым сервисам есть два пути. Простой: вход на сайте, ничего создавать не нужно. Официальный: собственный API сервиса с вашим бесплатным ключом, стабильнее.</string>
     <string name="route_easy">Быстрый путь</string>
     <string name="route_official">Официальный путь</string>
-    <string name="route_note_web">Вы входите на собственной странице сервиса, как в браузере: Songport никогда не видит ваш пароль, а хранит только сессию, зашифрованную на этом телефоне. Ничего создавать не нужно. Неофициальный интерфейс: может перестать работать при изменении сайта.</string>
-    <string name="route_note_web_only">Вы входите на собственной странице сервиса, как в браузере: Songport никогда не видит ваш пароль, только сессию, зашифрованную на этом телефоне. Официального API нет: может перестать работать при изменении сайта.</string>
+    <string name="route_note_web">Вы входите на собственной странице сервиса, как в браузере: Trackhop никогда не видит ваш пароль, а хранит только сессию, зашифрованную на этом телефоне. Ничего создавать не нужно. Неофициальный интерфейс: может перестать работать при изменении сайта.</string>
+    <string name="route_note_web_only">Вы входите на собственной странице сервиса, как в браузере: Trackhop никогда не видит ваш пароль, только сессию, зашифрованную на этом телефоне. Официального API нет: может перестать работать при изменении сайта.</string>
     <string name="route_note_api">Ваш собственный бесплатный ключ API, создаваемый на странице сервиса для разработчиков примерно за две минуты. Официально и стабильно.</string>
     <string name="route_note_spotify_api">Ваш собственный бесплатный ключ API, создаваемый на developer.spotify.com примерно за две минуты. Официально и стабильно. Spotify позволяет создать его только аккаунтам с Premium (правило Spotify с февраля 2026 года): без Premium пункт «Web API» там остаётся неактивным.</string>
     <string name="route_note_apple_api">Токен разработчика из аккаунта Apple Developer (платного). Официально.</string>
@@ -555,7 +555,7 @@
     <string name="connector_name_label">Название коннектора</string>
     <string name="connector_rename">Переименовать</string>
     <string name="connect_switch_account">В браузере может быть уже выполнен вход в другой аккаунт %1$s. На странице входа выберите «Не вы?» или смените аккаунт, затем продолжите с аккаунтом для этого коннектора.</string>
-    <string name="provider_note_amazon">У Amazon нет открытого API: Songport использует интерфейс веб-плеера, поэтому может перестать работать, когда Amazon его изменит. Поддерживаются плейлисты, поиск, создание, добавление и удаление.</string>
+    <string name="provider_note_amazon">У Amazon нет открытого API: Trackhop использует интерфейс веб-плеера, поэтому может перестать работать, когда Amazon его изменит. Поддерживаются плейлисты, поиск, создание, добавление и удаление.</string>
     <string name="amazon_not_installed_hint">Установите или обновите приложение-компаньон «Songport Bridge» (1.3.1 или новее) с GitHub, затем вернитесь сюда и нажмите «Подключить».</string>
     <string name="sync_pause">Пауза</string>
     <string name="sync_resume">Продолжить</string>
@@ -578,14 +578,14 @@
     <string name="settings_source_code">Исходный код и документация</string>
     <string name="plugins_more">Другие сервисы можно добавить плагинами-коннекторами: как это работает.</string>
     <string name="security_title">Как защищены ваши входы</string>
-    <string name="security_fact_1">Пароли вводятся на собственных страницах сервисов, никогда в Songport.</string>
-    <string name="security_fact_2">Songport хранит только отзываемые токены доступа, зашифрованные с помощью Android Keystore.</string>
-    <string name="security_fact_3">У Songport нет сервера и не нужно создавать аккаунт: с телефона уходят только запросы к подключённым сервисам.</string>
+    <string name="security_fact_1">Пароли вводятся на собственных страницах сервисов, никогда в Trackhop.</string>
+    <string name="security_fact_2">Trackhop хранит только отзываемые токены доступа, зашифрованные с помощью Android Keystore.</string>
+    <string name="security_fact_3">У Trackhop нет сервера и не нужно создавать аккаунт: с телефона уходят только запросы к подключённым сервисам.</string>
     <string name="security_fact_4">Отключение удаляет токен с телефона; каждый сервис также позволяет отозвать его на странице аккаунта.</string>
     <string name="ai_trust_title">Куда уходит ключ?</string>
     <string name="ai_trust_1">Он хранится только на этом телефоне, зашифрованный с помощью Android Keystore, как и токены ваших музыкальных сервисов.</string>
-    <string name="ai_trust_2">Он покидает телефон только в сторону %1$s, с каждым вашим запросом. У Songport нет собственного сервера: Настройки → Безопасность → Соединения показывает все хосты, к которым это приложение когда-либо обращалось, так что вы можете проверить.</string>
-    <string name="ai_trust_3">«Забыть ключ» удаляет его сразу. Ещё безопаснее: создайте ключ только для Songport с лимитом расходов и отзывайте его, когда захотите.</string>
+    <string name="ai_trust_2">Он покидает телефон только в сторону %1$s, с каждым вашим запросом. У Trackhop нет собственного сервера: Настройки → Безопасность → Соединения показывает все хосты, к которым это приложение когда-либо обращалось, так что вы можете проверить.</string>
+    <string name="ai_trust_3">«Забыть ключ» удаляет его сразу. Ещё безопаснее: создайте ключ только для Trackhop с лимитом расходов и отзывайте его, когда захотите.</string>
     <string name="ai_limits">Задать лимит расходов</string>
     <string name="security_connections">Показать соединения</string>
     <string name="security_connections_desc">Все хосты, к которым это приложение обращалось с момента установки, и как часто. Записывается только имя хоста, никогда содержимое запросов.</string>
@@ -594,9 +594,9 @@
     <string name="security_connections_clear">Очистить список</string>
     <string name="security_connections_count">Запросов: %1$d · последний %2$s</string>
     <string name="security_lock">Требовать разблокировку при открытии</string>
-    <string name="security_lock_desc">Отпечаток, лицо или PIN-код телефона перед открытием Songport.</string>
+    <string name="security_lock_desc">Отпечаток, лицо или PIN-код телефона перед открытием Trackhop.</string>
     <string name="security_lock_unavailable">На этом телефоне не настроена блокировка экрана.</string>
-    <string name="lock_title">Songport заблокирован</string>
+    <string name="lock_title">Trackhop заблокирован</string>
     <string name="lock_subtitle">Разблокируйте отпечатком, лицом или PIN-кодом</string>
     <string name="lock_unlock">Разблокировать</string>
     <string name="review_title">На проверку: %1$s</string>
@@ -612,15 +612,15 @@
     <string name="restored_done">Восстановлено треков: %1$d</string>
     <string name="restored_note">Удалённых треков восстановлено вручную: %1$d.</string>
     <string name="quota_used">Использовано %1$s / %2$s единиц YouTube сегодня</string>
-    <string name="quota_note">Дневной лимит задаёт YouTube (Google), а не Songport. Сбрасывается в полночь по тихоокеанскому времени. Поиск стоит 100 единиц, добавление трека — 50.</string>
-    <string name="quota_note_shared">Дневной лимит задаёт YouTube (Google), а не Songport; он общий для всех, кто использует встроенный ключ: расход других пользователей здесь не учитывается. Собственные учётные данные дают вам отдельную квоту.</string>
+    <string name="quota_note">Дневной лимит задаёт YouTube (Google), а не Trackhop. Сбрасывается в полночь по тихоокеанскому времени. Поиск стоит 100 единиц, добавление трека — 50.</string>
+    <string name="quota_note_shared">Дневной лимит задаёт YouTube (Google), а не Trackhop; он общий для всех, кто использует встроенный ключ: расход других пользователей здесь не учитывается. Собственные учётные данные дают вам отдельную квоту.</string>
     <string name="quota_estimate">Эта синхронизация использует около %1$s единиц.</string>
     <string name="quota_estimate_over">Этой синхронизации нужно около %1$s единиц, но на сегодня осталось только %2$s: она завершится в ближайшие дни.</string>
     <string name="editor_bidirectional">Двусторонняя</string>
     <string name="editor_bidirectional_desc">Также создаёт зеркальную синхронизацию в обратном направлении, без удалений, чтобы оба плейлиста оставались полными.</string>
     <string name="editor_bidirectional_unavailable">Доступно с существующим целевым плейлистом и источником, доступным для записи.</string>
     <string name="editor_bidirectional_not_owned">Недоступно с публичной ссылкой или чужим плейлистом в качестве источника: его можно читать, но не записывать.</string>
-    <string name="onboarding_title">Добро пожаловать в Songport</string>
+    <string name="onboarding_title">Добро пожаловать в Trackhop</string>
     <string name="onboarding_intro">Держите плейлисты одинаковыми на разных музыкальных сервисах, вручную или по расписанию. Бесплатно, без подписки и без создания аккаунта.</string>
     <string name="onboarding_step1_title">1. Подключите сервисы</string>
     <string name="onboarding_step1_desc">Spotify, Apple Music, YouTube Music, TIDAL, Deezer, ваш собственный сервер или файл.</string>
@@ -628,8 +628,8 @@
     <string name="onboarding_step2_desc">Выберите исходный плейлист и цель. Предпросмотр показывает, что именно изменится, прежде чем что-то произойдёт.</string>
     <string name="onboarding_step3_title">3. Пусть работает</string>
     <string name="onboarding_step3_desc">Каждый час, день или неделю. Треки, которые не удалось сопоставить, выводятся списком, чтобы вы могли исправить их сами.</string>
-    <string name="onboarding_security">Вы входите на собственной странице каждого сервиса. Songport хранит только зашифрованный отзываемый токен на этом телефоне, и у него нет собственного сервера.</string>
-    <string name="onboarding_credentials">Songport поставляется без собственных ключей сервисов: для Spotify, YouTube Music, TIDAL и Deezer вы создаёте бесплатный ключ на странице сервиса для разработчиков, и приложение проведёт вас по шагам примерно за две минуты. Ваши данные затем передаются только между телефоном и вашим ключом.</string>
+    <string name="onboarding_security">Вы входите на собственной странице каждого сервиса. Trackhop хранит только зашифрованный отзываемый токен на этом телефоне, и у него нет собственного сервера.</string>
+    <string name="onboarding_credentials">Trackhop поставляется без собственных ключей сервисов: для Spotify, YouTube Music, TIDAL и Deezer вы создаёте бесплатный ключ на странице сервиса для разработчиков, и приложение проведёт вас по шагам примерно за две минуты. Ваши данные затем передаются только между телефоном и вашим ключом.</string>
     <string name="onboarding_start">Начать</string>
     <string name="settings_show_onboarding">Показать введение снова</string>
     <string name="paste_list">Вставить список</string>
@@ -660,16 +660,16 @@
     </plurals>
     <string-array name="setup_steps_spotify">
         <item>Войдите на developer.spotify.com с аккаунтом Spotify, которым пользуетесь каждый день. Spotify требует, чтобы у этого аккаунта был Premium; если попросят принять условия для разработчиков, примите их. Если на этой странице «Web API» неактивен, у аккаунта нет Premium: Spotify не выдаёт ключ, используйте другой путь.</item>
-        <item>Нажмите «Create app». Название и описание на ваше усмотрение (например, «Songport»). «Website» оставьте пустым.</item>
+        <item>Нажмите «Create app». Название и описание на ваше усмотрение (например, «Trackhop»). «Website» оставьте пустым.</item>
         <item>В «Redirect URIs» вставьте в точности адрес, показанный ниже, и нажмите «Add». Без него вход не сможет вернуться в приложение.</item>
         <item>В «Which API/SDKs are you planning to use?» отметьте «Web API», примите условия и нажмите «Save».</item>
         <item>Откройте созданное приложение, нажмите «Settings» (справа вверху) и скопируйте сюда «Client ID». Client secret не нужен.</item>
         <item>Необязательно: «User Management» позволяет добавить до 5 других аккаунтов Spotify (имя и e-mail), которые могут использовать ваш ключ, например членов семьи.</item>
     </string-array>
     <string-array name="setup_steps_youtube">
-        <item>Войдите на console.cloud.google.com с аккаунтом Google и создайте проект. Подойдёт любое название, например «Songport». Дождитесь уведомления о создании, затем выберите его.</item>
+        <item>Войдите на console.cloud.google.com с аккаунтом Google и создайте проект. Подойдёт любое название, например «Trackhop». Дождитесь уведомления о создании, затем выберите его.</item>
         <item>Включите YouTube Data API v3: ссылка открывает его страницу в библиотеке, нажмите «Enable».</item>
-        <item>Google Auth Platform, «Overview», нажмите «Get started»: название приложения «Songport», ваш e-mail как адрес поддержки, аудитория «External», ваш e-mail как контакт. Примите условия и нажмите «Create».</item>
+        <item>Google Auth Platform, «Overview», нажмите «Get started»: название приложения «Trackhop», ваш e-mail как адрес поддержки, аудитория «External», ваш e-mail как контакт. Примите условия и нажмите «Create».</item>
         <item>Google Auth Platform, «Audience»: в «Test users» нажмите «Add users» и добавьте свой адрес Gmail, затем сохраните. Без этого шага Google отклоняет вход с сообщением «access blocked».</item>
         <item>Google Auth Platform, «Clients», «Create client»: тип приложения «Desktop app», любое название. Скопируйте сюда Client ID и Client secret. Больше ничего регистрировать не нужно: приложение принимает вход на 127.0.0.1.</item>
     </string-array>
@@ -723,26 +723,26 @@
     <string name="settings_log">Журнал синхронизаций</string>
     <string name="settings_log_desc">Итоги последних синхронизаций и технические детали для отчёта об ошибке.</string>
     <string name="settings_open">Открыть</string>
-    <string name="accounts_intro">Вы входите на официальной странице каждого сервиса. Songport никогда не видит ваш пароль.</string>
-    <string name="web_auth_hint">Войдите на собственной странице %1$s. Songport получает только подтверждение, которое приходит в конце.</string>
+    <string name="accounts_intro">Вы входите на официальной странице каждого сервиса. Trackhop никогда не видит ваш пароль.</string>
+    <string name="web_auth_hint">Войдите на собственной странице %1$s. Trackhop получает только подтверждение, которое приходит в конце.</string>
     <string name="show_details">Подробности</string>
     <string name="hide_details">Скрыть подробности</string>
     <string name="ads_why_title">Почему реклама?</string>
-    <string name="ads_why_body">Songport бесплатен, без подписок и закрытых функций. Один небольшой баннер, никогда не на весь экран, оплачивает разработчику кофе и часы, потраченные на поддержку работы каждого сервиса. Если он вам мешает, откройте issue на GitHub.</string>
-    <string name="settings_free_note">Songport бесплатен, без рекламы и подписок. С телефона уходят только запросы к подключённым музыкальным сервисам.</string>
+    <string name="ads_why_body">Trackhop бесплатен, без подписок и закрытых функций. Один небольшой баннер, никогда не на весь экран, оплачивает разработчику кофе и часы, потраченные на поддержку работы каждого сервиса. Если он вам мешает, откройте issue на GitHub.</string>
+    <string name="settings_free_note">Trackhop бесплатен, без рекламы и подписок. С телефона уходят только запросы к подключённым музыкальным сервисам.</string>
     <string name="free_why_title">Бесплатно, без рекламы</string>
-    <string name="free_why_body">В Songport нет рекламы, подписок и закрытых функций. Он живёт на добровольные взносы: если он экономит вам время, можете угостить разработчика кофе.</string>
-    <string name="support_title">Нравится Songport?</string>
+    <string name="free_why_body">В Trackhop нет рекламы, подписок и закрытых функций. Он живёт на добровольные взносы: если он экономит вам время, можете угостить разработчика кофе.</string>
+    <string name="support_title">Нравится Trackhop?</string>
     <string name="support_body">Если хотите, угостите разработчика кофе на Ko-fi. Совершенно необязательно: ничего не открывается, приложение остаётся полным для всех.</string>
     <string name="support_button">Угостить кофе</string>
     <string name="support_sponsors">GitHub Sponsors</string>
     <string name="support_prompt_title">Вы только что перенесли %1$s треков</string>
-    <string name="support_prompt_body">С помощью синхронизации «%1$s». Songport бесплатен и без рекламы, он живёт на добровольные взносы: если он сэкономил вам время, можете угостить разработчика кофе.</string>
+    <string name="support_prompt_body">С помощью синхронизации «%1$s». Trackhop бесплатен и без рекламы, он живёт на добровольные взносы: если он сэкономил вам время, можете угостить разработчика кофе.</string>
     <string name="support_prompt_later">Не сейчас</string>
     <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
     <string name="share_sheet_title">Добавить в…</string>
     <string name="share_sheet_from">Отправлено из %1$s</string>
-    <string name="share_sheet_unknown">Songport не смог прочитать название этого трека. Найдите его вручную ниже.</string>
+    <string name="share_sheet_unknown">Trackhop не смог прочитать название этого трека. Найдите его вручную ниже.</string>
     <string name="share_sheet_open">Открыть в %1$s</string>
     <string name="share_sheet_copy">Копировать ссылку</string>
     <string name="share_sheet_copied">Ссылка скопирована</string>
@@ -754,8 +754,8 @@
     <string name="share_sheet_no_match">Не найдено в %1$s. Найдите вручную или выберите другой сервис.</string>
     <string name="share_sheet_add">Добавить в плейлист…</string>
     <string name="share_sheet_change">Изменить</string>
-    <string name="settings_music_links">Предлагать Songport для музыкальных ссылок</string>
-    <string name="settings_music_links_desc">Ссылка Spotify, Apple Music, YouTube Music, Amazon Music, Deezer или TIDAL сможет открываться в Songport, который добавит трек в плейлист в любом из ваших сервисов. Android по-прежнему спрашивает, какое приложение использовать, или использует заданное в настройках ссылок: Songport никогда не перехватывает ссылку сам.</string>
+    <string name="settings_music_links">Предлагать Trackhop для музыкальных ссылок</string>
+    <string name="settings_music_links_desc">Ссылка Spotify, Apple Music, YouTube Music, Amazon Music, Deezer или TIDAL сможет открываться в Trackhop, который добавит трек в плейлист в любом из ваших сервисов. Android по-прежнему спрашивает, какое приложение использовать, или использует заданное в настройках ссылок: Trackhop никогда не перехватывает ссылку сам.</string>
     <!-- Cards: "how compatible are we?" and the playlist poster. -->
     <string name="tools_compat_title">Насколько мы совпадаем?</string>
     <string name="tools_compat_desc">Сравнивает два плейлиста, даже из разных сервисов: общие треки, общие исполнители, оценка и карточка, которой можно поделиться.</string>
@@ -795,18 +795,18 @@
     <string name="settings_theme_light">Светлая</string>
     <string name="settings_theme_dark">Тёмная</string>
     <string name="settings_dynamic_color">Динамические цвета (Material You)</string>
-    <string name="settings_dynamic_color_desc">Цвета ваших обоев вместо цветов Songport. Заголовок сохраняет фирменные цвета.</string>
+    <string name="settings_dynamic_color_desc">Цвета ваших обоев вместо цветов Trackhop. Заголовок сохраняет фирменные цвета.</string>
     <string name="settings_dynamic_color_unavailable">Нужен Android 12 или новее.</string>
 
     <!-- Unplayable tracks tool -->
     <string name="tools_unplayable_title">Недоступные треки</string>
     <string name="tools_unplayable_desc">Находит треки, которые сервис показывает, но больше не воспроизводит (серые), и заменяет их версией, которая играет.</string>
     <string name="unplayable_title">Недоступные треки: %1$s</string>
-    <string name="unplayable_unsupported">%1$s не сообщает, какие треки больше не воспроизводит, поэтому Songport не может проверить здесь.</string>
+    <string name="unplayable_unsupported">%1$s не сообщает, какие треки больше не воспроизводит, поэтому Trackhop не может проверить здесь.</string>
     <string name="unplayable_all_playlists">Все мои плейлисты</string>
     <string name="unplayable_scan">Проверить</string>
     <string name="unplayable_scanning">Проверяю %1$s…</string>
-    <string name="unplayable_hint">Для каждого Songport предлагает версию, которая играет. Примите её, найдите другую, удалите запись или пропустите. Ничего не меняется, пока вы не примените.</string>
+    <string name="unplayable_hint">Для каждого Trackhop предлагает версию, которая играет. Примите её, найдите другую, удалите запись или пропустите. Ничего не меняется, пока вы не примените.</string>
     <string name="unplayable_searching">Ищу версию, которая играет…</string>
     <string name="unplayable_no_proposal">Убедительной версии нет: откройте запись, чтобы поискать вручную, или удалите её.</string>
     <string name="unplayable_proposal">Замена: %1$s (совпадение %2$d%%)</string>
@@ -819,7 +819,7 @@
     <string name="unplayable_apply">Применить изменения: %1$d</string>
     <string name="unplayable_applying">Применяю %1$d/%2$d…</string>
     <string name="unplayable_confirm_title">Применить изменения?</string>
-    <string name="unplayable_confirm_body">%1$d треков получат играющую версию, %2$d записей будут удалены. Оригиналы остаются в журнале Songport, так что это можно отменить.</string>
+    <string name="unplayable_confirm_body">%1$d треков получат играющую версию, %2$d записей будут удалены. Оригиналы остаются в журнале Trackhop, так что это можно отменить.</string>
     <string name="unplayable_no_removal">%1$s не позволяет приложениям удалять треки: играющая версия добавляется, а недоступная запись остаётся.</string>
     <string name="unplayable_done">Заменено %1$d, удалено %2$d</string>
     <string name="unplayable_undo">Отменить</string>
@@ -832,7 +832,7 @@
     <string name="unplayable_reason_deleted">Удалено</string>
     <string name="unplayable_reason_unknown">Не воспроизводится</string>
     <string name="settings_unplayable">Еженедельная проверка недоступных треков</string>
-    <string name="settings_unplayable_desc">Раз в неделю Songport просматривает ваши плейлисты и сообщает, если трек больше нельзя воспроизвести. Сам ничего не меняет.</string>
+    <string name="settings_unplayable_desc">Раз в неделю Trackhop просматривает ваши плейлисты и сообщает, если трек больше нельзя воспроизвести. Сам ничего не меняет.</string>
     <string name="notif_unplayable_title">Недоступные треки</string>
     <plurals name="notif_unplayable_text">
         <item quantity="one">%1$d трек в ваших плейлистах больше не воспроизводится. Нажмите, чтобы заменить.</item>
@@ -893,7 +893,7 @@
     <string name="soundcloud_label">SoundCloud (публичные ссылки, неофициально)</string>
     <string name="provider_note_soundcloud">Публичные сеты и страницы лайков SoundCloud, только чтение и без входа: вставьте ссылку как источник синхронизации. Это неофициальный интерфейс: он может перестать работать, когда SoundCloud изменит свой сайт.</string>
     <string name="soundcloud_not_public">Этот плейлист SoundCloud приватный или не существует: работают только публичные ссылки</string>
-    <string name="soundcloud_player_changed">SoundCloud изменил свой веб-плеер; Songport нужно обновить</string>
+    <string name="soundcloud_player_changed">SoundCloud изменил свой веб-плеер; Trackhop нужно обновить</string>
     <string name="job_color">Цвет</string>
     <string name="job_color_default">По умолчанию</string>
     <string name="color_red">Красный</string>
@@ -916,7 +916,7 @@
         <item quantity="other">%d синхронизации выполняется</item>
     </plurals>
     <string name="error_ampache_subsonic_password">Ampache отклонил пароль. Для приложений Subsonic Ampache не принимает пароль от учётной записи: в Ampache откройте «Настройки» → «Учётная запись», задайте пароль Subsonic (или скопируйте ключ API) и введите его здесь как пароль.</string>
-    <string name="shazam_share_hint">Часто пользуетесь Shazam? В настройках Shazam подключите Spotify или Apple Music: каждый распознанный трек попадёт в плейлист «My Shazam Tracks». Songport будет синхронизировать его с любым вашим сервисом.</string>
+    <string name="shazam_share_hint">Часто пользуетесь Shazam? В настройках Shazam подключите Spotify или Apple Music: каждый распознанный трек попадёт в плейлист «My Shazam Tracks». Trackhop будет синхронизировать его с любым вашим сервисом.</string>
     <string name="shazam_share_hint_button">Синхронизировать мои Shazam</string>
     <string name="shazam_editor_suggest">Ваши Shazam: %1$s</string>
     <string name="syncs_find_hint">Найти синхронизацию</string>
@@ -934,7 +934,7 @@
         <item quantity="many">%1$d из %2$d синхронизаций</item>
         <item quantity="other">%1$d из %2$d синхронизации</item>
     </plurals>
-    <string name="stats_title">Songport в цифрах</string>
+    <string name="stats_title">Trackhop в цифрах</string>
     <string name="stats_row_desc">Что ваши синхронизации уже сделали — в карточке, которой можно поделиться</string>
     <string name="stats_hero_link">Ваши цифры</string>
     <string name="stats_tracks_moved">Перенесённые треки</string>
@@ -981,7 +981,7 @@
         <item quantity="many">На этом телефоне хранятся только %1$d последних синхронизаций: более старые сюда не входят.</item>
         <item quantity="other">На этом телефоне хранятся только %1$d последних синхронизаций: более старые сюда не входят.</item>
     </plurals>
-    <string name="stats_local_note">Подсчитано на этом телефоне по истории синхронизаций, которую Songport уже хранит. Ничего не отправляется, если вы сами не поделитесь карточкой.</string>
+    <string name="stats_local_note">Подсчитано на этом телефоне по истории синхронизаций, которую Trackhop уже хранит. Ничего не отправляется, если вы сами не поделитесь карточкой.</string>
     <string name="stats_empty_title">Цифр пока нет</string>
     <string name="stats_empty_body">Они появятся после первой завершённой синхронизации и будут подсчитаны по истории на этом телефоне.</string>
     <string name="stats_share_title">Поделитесь своими цифрами</string>
@@ -994,11 +994,11 @@
     <string name="settings_section_backups">Резервные копии</string>
     <string name="settings_section_advanced">Дополнительно</string>
     <string name="settings_isrc_summary">Ищет недостающие коды ISRC в Deezer для точных совпадений.</string>
-    <string name="settings_music_links_summary">Открывайте музыкальные ссылки в Songport, чтобы добавить трек в плейлист.</string>
+    <string name="settings_music_links_summary">Открывайте музыкальные ссылки в Trackhop, чтобы добавить трек в плейлист.</string>
     <string name="settings_unplayable_summary">Сообщает о треках, которые перестали играть. Ничего не меняет.</string>
     <string name="settings_notifications_system">Системные настройки уведомлений</string>
     <string name="settings_notifications_system_desc">Звук, вибрация и какие уведомления показывает Android.</string>
-    <string name="settings_security_summary">Зашифрованные, отзываемые входы на этом телефоне; никакого сервера Songport.</string>
+    <string name="settings_security_summary">Зашифрованные, отзываемые входы на этом телефоне; никакого сервера Trackhop.</string>
     <string name="settings_keys_summary">Ваши собственные ключи разработчика для сервисов, которым они нужны.</string>
     <string name="backup_folder_stop">Больше не копировать в эту папку</string>
     <string name="nav_back">Назад</string>
@@ -1026,8 +1026,8 @@
     <string name="tools_row_compat">Сравните два плейлиста и получите оценку, которой можно поделиться.</string>
     <string name="tools_row_poster">Карточка с обложками и QR-кодом, чтобы поделиться.</string>
     <string name="tools_row_unplayable">Найдите серые треки и замените их версиями, которые играют.</string>
-    <string name="settings_battery_summary">Некоторые телефоны останавливают фоновые приложения: исключите Songport из оптимизации батареи.</string>
-    <string name="settings_dynamic_color_summary">Цвета ваших обоев вместо цветов Songport.</string>
+    <string name="settings_battery_summary">Некоторые телефоны останавливают фоновые приложения: исключите Trackhop из оптимизации батареи.</string>
+    <string name="settings_dynamic_color_summary">Цвета ваших обоев вместо цветов Trackhop.</string>
     <string name="settings_notifications_summary">Когда синхронизация по расписанию меняет треки или завершается ошибкой.</string>
     <string name="settings_developer_summary">Журнал подключений, технический отчёт, запись трафика.</string>
     <string name="settings_new_look_summary">Карточки синхронизаций с цифрами и недавней историей.</string>

@@ -57,7 +57,7 @@ open class AppleMusicProvider(override val slot: String = "") : MusicProvider {
 
     override val setupGuide: SetupGuide? = SetupGuide(
         dashboardUrl = "https://developer.apple.com/account/resources/authkeys/list",
-        stepUrls = listOf("https://developer.apple.com/programs/enroll/", "https://developer.apple.com/account/resources/identifiers/list/musicId", "https://developer.apple.com/account/resources/authkeys/add", "https://github.com/xlollx/Songport#api-configuration", null),
+        stepUrls = listOf("https://developer.apple.com/programs/enroll/", "https://developer.apple.com/account/resources/identifiers/list/musicId", "https://developer.apple.com/account/resources/authkeys/add", "https://github.com/xlollx/Trackhop#api-configuration", null),
         whyName = "setup_why_apple",
         stepsArrayName = "setup_steps_apple",
         fieldLabelName = "setup_field_apple_token",

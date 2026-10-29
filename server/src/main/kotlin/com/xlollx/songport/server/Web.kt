@@ -76,7 +76,7 @@ class Web(
         // Health checks (Docker, a reverse proxy) need no password.
         if (path == listOf("health")) return send(ex, 200, "ok", "text/plain")
         if (!authorized(ex)) {
-            ex.responseHeaders.add("WWW-Authenticate", "Basic realm=\"Songport\", charset=\"UTF-8\"")
+            ex.responseHeaders.add("WWW-Authenticate", "Basic realm=\"Trackhop\", charset=\"UTF-8\"")
             return send(ex, 401, "Password required", "text/plain")
         }
         val method = ex.requestMethod.uppercase()
@@ -309,7 +309,7 @@ class Web(
 
     private fun ytmNote(): String = """<div class="card"><p><span class="badge">unofficial</span> <span class="alpha">alpha</span></p>
 <p>YouTube Music through the music.youtube.com web player, signed in with the cookies of a browser where you are signed in. Not an official API: Google can change it, or block it, at any time.</p>
-<p class="muted">Without the app's hidden browser every call is plain HTTP, which Google's abuse detection stops sooner, above all from a datacenter address: a server at home works best. When Google blocks this network, open music.youtube.com in a browser on the same network as this server, pass Google's check, then paste fresh cookies here. Signing out in that browser ends these cookies too. <a href="https://xlollx.github.io/Songport/guide/docker#youtube-music-unofficial">How to copy them</a></p></div>"""
+<p class="muted">Without the app's hidden browser every call is plain HTTP, which Google's abuse detection stops sooner, above all from a datacenter address: a server at home works best. When Google blocks this network, open music.youtube.com in a browser on the same network as this server, pass Google's check, then paste fresh cookies here. Signing out in that browser ends these cookies too. <a href="https://xlollx.github.io/Trackhop/guide/docker#youtube-music-unofficial">How to copy them</a></p></div>"""
 
     /** The pasted cookies: a Cookie header, cookies.txt or a JSON export, and optionally the browser's user agent. */
     private fun ytmForm(p: YtmServerProvider): String =

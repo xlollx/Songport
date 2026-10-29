@@ -1,6 +1,6 @@
 # F-Droid
 
-Songport's GitHub build (`full` flavor) is F-Droid compatible: only free libraries (AndroidX, Kotlin,
+Trackhop's GitHub build (`full` flavor) is F-Droid compatible: only free libraries (AndroidX, Kotlin,
 OkHttp, Tink), no ads SDK, no trackers, no prebuilt binaries in the repository, no self-updater. It
 includes the web connectors (`android/bridge`), which use the services' web interfaces rather than
 official APIs: that is what the NonFreeNet anti-feature describes. The `play` flavor carries the ads

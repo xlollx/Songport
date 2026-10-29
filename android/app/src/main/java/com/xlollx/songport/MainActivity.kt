@@ -112,7 +112,7 @@ class MainActivity : ComponentActivity() {
     private val tabRequests = MutableStateFlow(-1)
     /** A tool a notification asks to open (TOOL_*), once the Tools tab is up. */
     private val toolRequests = MutableStateFlow<String?>(null)
-    /** Testo arrivato con "Condividi con Songport": contiene (si spera) il link di una playlist. */
+    /** Testo arrivato con "Condividi con Trackhop": contiene (si spera) il link di una playlist. */
     private val sharedText = MutableStateFlow<String?>(null)
     /** Scorciatoia "Nuova sync" dall'icona: apre subito l'editor. */
     private val newSyncRequests = MutableStateFlow(false)
@@ -180,7 +180,7 @@ class MainActivity : ComponentActivity() {
             i.getStringExtra(Intent.EXTRA_TEXT)?.let { sharedText.value = it }
             i.action = null
         }
-        // A music link opened with Songport (the MusicLinkActivity alias, off unless the user turns it on
+        // A music link opened with Trackhop (the MusicLinkActivity alias, off unless the user turns it on
         // in Settings): the address is handled like a shared one. The app's own callback links stay apart.
         if (i?.action == Intent.ACTION_VIEW) {
             val url = i.dataString
@@ -242,7 +242,7 @@ private fun MainScreen(
     var filesOpen by rememberSaveable { mutableStateOf(false) }
     var logOpen by rememberSaveable { mutableStateOf(false) }
     var transferOpen by rememberSaveable { mutableStateOf(false) }
-    // "Songport in numbers", from the Tools list or the Syncs header.
+    // "Trackhop in numbers", from the Tools list or the Syncs header.
     var statsOpen by rememberSaveable { mutableStateOf(false) }
     var manageProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
     var scanProvider by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }

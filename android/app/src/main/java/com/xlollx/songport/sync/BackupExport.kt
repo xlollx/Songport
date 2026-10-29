@@ -118,7 +118,7 @@ object BackupExport {
         copied
     }
 
-    /** Nome leggibile della cartella scelta, dall'ultimo pezzo del suo id ("primary:Music/Songport" -> "Music/Songport"). */
+    /** Nome leggibile della cartella scelta, dall'ultimo pezzo del suo id ("primary:Music/Trackhop" -> "Music/Trackhop"). */
     fun folderLabel(uriString: String): String = runCatching {
         DocumentsContract.getTreeDocumentId(Uri.parse(uriString)).substringAfter(':').ifBlank { uriString }
     }.getOrDefault(uriString)

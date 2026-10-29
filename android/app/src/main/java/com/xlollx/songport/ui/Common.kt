@@ -265,7 +265,7 @@ fun OverflowMenu(actions: List<MenuAction>, enabled: Boolean = true) {
     }
 }
 
-/** Il marchio Songport (nota nell'anello), tinto con il colore che serve. */
+/** Il marchio Trackhop (nota nell'anello), tinto con il colore che serve. */
 @Composable
 fun BrandMark(size: Dp = 28.dp, tint: Color = MaterialTheme.colorScheme.primary) {
     Icon(painterResource(R.drawable.ic_brand_mark), contentDescription = null, tint = tint, modifier = Modifier.size(size))
