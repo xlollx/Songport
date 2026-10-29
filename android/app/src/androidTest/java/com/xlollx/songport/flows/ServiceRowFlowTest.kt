@@ -42,7 +42,8 @@ class ServiceRowFlowTest : FlowTest() {
         })
         // Jellyfin, the fifth, is the selected source tile, and not cut by the edge.
         val tile = hasClickAction() and isSelected() and hasText("Jellyfin", substring = true)
-        waitNode("Jellyfin selected", tile)
+        // The merged tree: the tile's name is on its children, its click and selection on the tile.
+        waitFor("Jellyfin selected") { compose.onAllNodes(tile).fetchSemanticsNodes().isNotEmpty() }
         waitFor("Jellyfin's tile wholly in view") {
             compose.onAllNodes(tile).fetchSemanticsNodes().any { n -> n.boundsInRoot.width >= n.size.width - 1f && n.boundsInRoot.width > 0f }
         }
