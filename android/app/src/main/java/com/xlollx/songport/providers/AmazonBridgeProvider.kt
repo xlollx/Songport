@@ -139,12 +139,21 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     override val listsUntitledEntries: Boolean get() = true
 
     override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
-        if (tracks.isEmpty()) return
-        withContext(Dispatchers.IO) {
-            call(ctx, "amazon.remove", playlistId, Bundle().apply {
+        removeTracksReportingKept(ctx, playlistId, tracks)
+    }
+
+    /**
+     * The tracks the playlist still lists after Amazon answered their removal, from the Bridge's
+     * "kept" (it reads the playlist again): not removed. A Bridge app older than this answer reports none.
+     */
+    override suspend fun removeTracksReportingKept(ctx: Env, playlistId: String, tracks: List<Track>): Set<String> {
+        if (tracks.isEmpty()) return emptySet()
+        return withContext(Dispatchers.IO) {
+            val b = call(ctx, "amazon.remove", playlistId, Bundle().apply {
                 putStringArray("ids", tracks.map { it.id }.toTypedArray())
                 putStringArray("entryIds", tracks.map { it.itemId ?: "" }.toTypedArray())
             })
+            b.getStringArray("kept")?.toSet() ?: emptySet()
         }
     }
 

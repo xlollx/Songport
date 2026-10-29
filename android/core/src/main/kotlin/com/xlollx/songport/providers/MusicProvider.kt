@@ -198,6 +198,17 @@ interface MusicProvider {
      */
     val listsUntitledEntries: Boolean get() = false
     suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>)
+
+    /**
+     * [removeTracks], answering which of [tracks] (by id) the playlist still lists after the
+     * removal the service said it made. Amazon Music answers a removal by cursor with the playlist's
+     * id whether or not the entry went: the sync then counts such a track as not removed and leaves
+     * it alone for a while, instead of "removing" it again on every run. Default: every track removed.
+     */
+    suspend fun removeTracksReportingKept(ctx: Env, playlistId: String, tracks: List<Track>): Set<String> {
+        removeTracks(ctx, playlistId, tracks)
+        return emptySet()
+    }
     suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         throw com.xlollx.songport.model.ProviderException(ctx.text("error_manage_unsupported", displayName))
     }

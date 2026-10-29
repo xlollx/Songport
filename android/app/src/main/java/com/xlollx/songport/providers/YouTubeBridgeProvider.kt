@@ -158,13 +158,23 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     }
 
     override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
-        if (tracks.isEmpty()) return
-        withContext(Dispatchers.IO) {
-            call(ctx, "add", playlistId, Bundle().apply {
+        addTracksReportingPresent(ctx, playlistId, tracks)
+    }
+
+    /**
+     * Towards Liked songs, the likes YouTube answered as going to Liked videos (the Bridge's
+     * "present"): liked, but Liked music will not list them, so the sync counts them as present.
+     * An older Bridge app, and every playlist, report none.
+     */
+    override suspend fun addTracksReportingPresent(ctx: Env, playlistId: String, tracks: List<Track>): Set<String> {
+        if (tracks.isEmpty()) return emptySet()
+        return withContext(Dispatchers.IO) {
+            val b = call(ctx, "add", playlistId, Bundle().apply {
                 putStringArray("ids", tracks.map { it.id }.toTypedArray())
                 // Albums are liked through their playlist id, which the row carried as uri when it had one.
                 if (playlistId == MusicProvider.ALBUMS_ID) putStringArray("uris", tracks.map { it.uri ?: "" }.toTypedArray())
             })
+            b.getStringArray("present")?.toSet() ?: emptySet()
         }
     }
 

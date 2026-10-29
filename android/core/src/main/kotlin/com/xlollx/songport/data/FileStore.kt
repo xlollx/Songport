@@ -86,6 +86,14 @@ data class StoreData(
      * added again on every run.
      */
     val presentUnlisted: Map<String, Long> = emptyMap(),
+    /**
+     * Target entries a Mirror sync removed and found again on its next run (Amazon Music answering
+     * the removal without taking the entry away), same keys as [presentUnlisted] -> when (epoch ms):
+     * left alone instead of removed again on every run, until the memory expires.
+     */
+    val keptOnRemoval: Map<String, Long> = emptyMap(),
+    /** What each sync added to and removed from its target in its last run, by job id: the next run checks it. */
+    val lastWrites: Map<String, LastWrites> = emptyMap(),
     /** Source tracks the user declared absent from a destination service (same keys as the caches). */
     val ignoredTracks: Set<String> = emptySet(),
     val settings: Settings = Settings(),
@@ -94,6 +102,15 @@ data class StoreData(
     /** Large removals the user confirmed in a preview, by job id: one use, by the next run started by hand. */
     val removalConfirmations: Map<String, RemovalConfirmation> = emptyMap(),
 )
+
+/**
+ * The target ids one run of a sync added and removed on [targetId]. The next run compares them with
+ * the target's listing: an id added a moment ago that the listing still leaves out is on the target
+ * but unlisted (YouTube's Liked music keeps out a liked video), an id removed a moment ago that is
+ * still listed is one the service does not let go.
+ */
+@Serializable
+data class LastWrites(val targetId: String, val added: Set<String> = emptySet(), val removed: Set<String> = emptySet(), val at: Long = 0)
 
 /** The target track ids the user saw in the preview and agreed to remove, and when. */
 @Serializable
@@ -252,6 +269,37 @@ open class FileStore(dir: File) {
             var m = d.presentUnlisted.filterValues { now - it < PRESENT_TTL_MS } + trackIds.associate { presentKey(dstProvider, playlistId, it) to now }
             if (m.size > MAX_CACHE) m = m.entries.drop(m.size - MAX_CACHE).associate { it.key to it.value }
             d.copy(presentUnlisted = m)
+        }
+    }
+
+    /**
+     * The service did not take [trackId] out of [playlistId] when asked: Mirror leaves it there for a
+     * month instead of removing it again on every run, then tries once more.
+     */
+    fun isKeptOnRemoval(dstProvider: String, playlistId: String, trackId: String): Boolean {
+        val at = data.keptOnRemoval[presentKey(dstProvider, playlistId, trackId)] ?: return false
+        return System.currentTimeMillis() - at < PRESENT_TTL_MS
+    }
+
+    fun putKeptOnRemoval(dstProvider: String, playlistId: String, trackIds: Collection<String>) {
+        if (trackIds.isEmpty()) return
+        val now = System.currentTimeMillis()
+        update { d ->
+            var m = d.keptOnRemoval.filterValues { now - it < PRESENT_TTL_MS } + trackIds.associate { presentKey(dstProvider, playlistId, it) to now }
+            if (m.size > MAX_CACHE) m = m.entries.drop(m.size - MAX_CACHE).associate { it.key to it.value }
+            d.copy(keptOnRemoval = m)
+        }
+    }
+
+    /** What the last run of [jobId] wrote on its target; null before the first run that recorded it. */
+    fun lastWrites(jobId: String): LastWrites? = data.lastWrites[jobId]
+
+    /** Replaces what [jobId] wrote last; entries of syncs that no longer exist go. */
+    fun putLastWrites(jobId: String, writes: LastWrites) {
+        if (writes.added.isEmpty() && writes.removed.isEmpty() && jobId !in data.lastWrites) return
+        update { d ->
+            val jobs = d.jobs.map { it.id }.toHashSet()
+            d.copy(lastWrites = d.lastWrites.filterKeys { it in jobs } + (jobId to writes))
         }
     }
 

@@ -2,6 +2,7 @@ package com.xlollx.songport.sync
 
 import com.xlollx.songport.providers.*
 import com.xlollx.songport.data.FileStore
+import com.xlollx.songport.data.LastWrites
 import com.xlollx.songport.platform.Env
 import kotlinx.coroutines.sync.withPermit
 import com.xlollx.songport.model.MatchPolicy
@@ -116,7 +117,7 @@ class SyncEngine(
             // WorkManager la fara' ripartire; gli abbinamenti fatti finora sono gia' in cache.
             throw e
         } catch (e: Exception) {
-            env.log("engine", "${job.name}: ${e.javaClass.simpleName}: ${e.message}")
+            env.log("engine", "${job.name}: ${describe(e)}")
             SyncReport(reportId, job.id, job.name, started, System.currentTimeMillis() - started,
                 error = e.message ?: e.javaClass.simpleName)
         }
@@ -142,6 +143,19 @@ class SyncEngine(
         if (isSource && runCatching { p.playlistInfo(env, playlistId) }.isSuccess) return
         throw ProviderException(str(if (isSource) "error_source_gone" else "error_target_gone", name.ifBlank { playlistId }, p.label(env)))
     }
+
+    /**
+     * An error for the log. A [ProviderException] is said by its message alone: its class name is
+     * not ours to show, and in a release build R8 shortens it to a letter ("Liked songs: c: …").
+     */
+    private fun describe(e: Exception): String =
+        if (e is ProviderException) e.message ?: "error" else "${e.javaClass.simpleName}: ${e.message}"
+
+    /** A track as the log names it: artist and title, never an id alone (an untitled entry says so). */
+    private fun named(tracks: Collection<Track>, max: Int = 20): String =
+        tracks.take(max).joinToString("; ") { it.toString().ifBlank { "an entry listed without a title" } } + if (tracks.size > max) "; …" else ""
+
+    private fun tracksWord(n: Int) = if (n == 1) "track" else "tracks"
 
     /** Below this many removals a scheduled run proceeds whatever the share of the target they are. */
     private val REMOVAL_CAP_MIN = 10
@@ -232,6 +246,11 @@ class SyncEngine(
         // DUPLICATE_TRACK): present, so it is not added, and so not counted as added, on every run.
         val listedId: String = targetId
         fun unlistedPresent(trackId: String) = !targetCreated && store.isPresentUnlisted(dst.id, listedId, trackId)
+        // What this sync wrote on this target in its last run: an id it added then that the listing
+        // still leaves out is on the target but not shown (YouTube's Liked music leaves out a liked
+        // video); one it removed then that is listed again is one the service does not let go.
+        val last = if (targetCreated) null else store.lastWrites(job.id)?.takeIf { it.targetId == listedId }
+        val unlistedAfterAdd = LinkedHashMap<String, Track>()
 
         // 1) brani gia' presenti nella destinazione
         for (s in srcTracks) {
@@ -273,7 +292,9 @@ class SyncEngine(
                 // edition): by ISRC or by name it counts as present, and nothing is added twice.
                 val present = dstById[found.id] ?: if (found.id in matchedDstIds || unlistedPresent(found.id)) found else index.best(found)
                 val target = present ?: found
-                if (present == null) toAdd[found.id] = found
+                // Added by the last run and still not listed: the service took it and shows it
+                // elsewhere, or not at all. Present, not added again (and not counted) on every run.
+                if (present == null) { if (last != null && found.id in last.added) unlistedAfterAdd[found.id] = found else toAdd[found.id] = found }
                 matchedDstIds += target.id
                 newCache[FileStore.cacheKey(src.id, s.id, dst.id)] = target.id
                 if (score != null && score < job.policy.reviewThreshold) {
@@ -287,6 +308,12 @@ class SyncEngine(
         // Il servizio ha smesso di rispondere (limiti, sessione): si applica quanto trovato finora e
         // la prossima esecuzione riparte dalla cache, senza rifare le ricerche.
         if (interrupted != null) notes += str("note_search_interrupted", searched, toSearch.size, interrupted)
+        if (unlistedAfterAdd.isNotEmpty()) {
+            // Remembered as the tracks the service refuses as duplicates are: for a month, then tried
+            // once more, so one the user removed on the target in the meantime comes back.
+            store.putPresentUnlisted(dst.id, listedId, unlistedAfterAdd.keys)
+            env.log("engine", "${job.name}: ${unlistedAfterAdd.size} ${tracksWord(unlistedAfterAdd.size)} added before but not shown by ${dst.displayName}: ${named(unlistedAfterAdd.values)}")
+        }
 
         // 3) rimozioni: solo cio' che nella destinazione non corrisponde a nulla dell'origine
         var toRemove: List<Track> = emptyList()
@@ -300,7 +327,19 @@ class SyncEngine(
             // under another id: it stays (see MusicProvider.listsUntitledEntries).
             val untitled = if (dst.listsUntitledEntries) dstTracks.count { it.id !in matchedDstIds && it.title.isBlank() } else 0
             if (untitled > 0) env.log("engine", "${job.name}: $untitled entries of the target listed without a title on ${dst.displayName}, matching no source track: not removed")
-            val extra = dstTracks.filter { it.id !in matchedDstIds && !(dst.listsUntitledEntries && it.title.isBlank()) }
+            val unmatchedOnTarget = dstTracks.filter { it.id !in matchedDstIds && !(dst.listsUntitledEntries && it.title.isBlank()) }
+            // Removed by the last run and listed again now: the service answered the removal without
+            // taking the entry away (or it came back). Removing it again would only repeat that on every
+            // run: it stays, said once, and is left alone for a month, like a track the service keeps
+            // after a removal it reported ([MusicProvider.removeTracksReportingKept]).
+            val keptBefore = unmatchedOnTarget.filter { store.isKeptOnRemoval(dst.id, listedId, it.id) }.map { it.id }.toHashSet()
+            val back = unmatchedOnTarget.filter { last != null && it.id in last.removed && it.id !in keptBefore }
+            if (back.isNotEmpty()) {
+                store.putKeptOnRemoval(dst.id, listedId, back.map { it.id })
+                env.log("engine", "${job.name}: ${dst.displayName} keeps ${back.size} ${tracksWord(back.size)} that removing does not take away: ${named(back)}")
+            }
+            val stays = keptBefore + back.map { it.id }
+            val extra = unmatchedOnTarget.filter { it.id !in stays }
             // Un quarto o piu' della destinazione (playlist svuotata per sbaglio, account cambiato, o un
             // elenco letto a meta' dal servizio): solo una persona puo' dire se va tolto davvero.
             val large = extra.size > REMOVAL_CAP_MIN && extra.size * 4 > dstTracks.size
@@ -699,13 +738,14 @@ class SyncEngine(
         }
 
         var removed = 0
+        var removedList: List<Track> = emptyList()
         if (plan.toRemove.isNotEmpty()) {
             onProgress(Progress(Progress.Step.REMOVING, 0, plan.toRemove.size, plan.toRemove.first().live()))
             var blockWaits = 0
+            var kept: Set<String> = emptySet()
             while (true) {
                 try {
-                    dst.removeTracks(env, targetId, plan.toRemove)
-                    plan.toRemove.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.REMOVED)) }
+                    kept = dst.removeTracksReportingKept(env, targetId, plan.toRemove)
                     break
                 }
                 catch (e: Exception) {
@@ -714,8 +754,19 @@ class SyncEngine(
                     throw e
                 }
             }
-            removed = plan.toRemove.size
+            val (stayed, gone) = plan.toRemove.partition { it.id in kept }
+            gone.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.REMOVED)) }
+            removedList = gone
+            removed = gone.size
+            if (gone.isNotEmpty()) env.log("engine", "${job.name}: ${gone.size} ${tracksWord(gone.size)} removed from ${dst.displayName}: ${named(gone)}")
+            if (stayed.isNotEmpty()) {
+                // Still listed after a removal the service answered: counted as nothing removed, and left alone for a while.
+                store.putKeptOnRemoval(dst.id, targetId, stayed.map { it.id })
+                env.log("engine", "${job.name}: ${dst.displayName} keeps ${stayed.size} ${tracksWord(stayed.size)} that removing does not take away: ${named(stayed)}")
+            }
         }
+        // What this run wrote, for the next one to check against the target's listing.
+        store.putLastWrites(job.id, LastWrites(targetId, addedList.map { it.id }.toSet(), removedList.map { it.id }.toSet(), System.currentTimeMillis()))
 
         store.putMatches(plan.newMatches)
         // Quanto l'utente ha gia' sistemato dal report provvisorio non deve ricomparire.
@@ -736,7 +787,7 @@ class SyncEngine(
             unmatchedTracks = unmatched,
             ignored = plan.ignored,
             reviewTracks = reviews,
-            removedTracks = if (removed > 0) plan.toRemove else emptyList(),
+            removedTracks = removedList,
             // Favourites are added last-first: listed back in the source's order.
             addedTracks = (if (MusicProvider.isLibrary(targetId)) addedList.asReversed() else addedList).take(MAX_LISTED),
             notes = notes,
@@ -783,6 +834,9 @@ class SyncEngine(
         val targetId = job.target.playlistId ?: throw ProviderException("No target playlist")
         if (report.removedTracks.isEmpty()) return
         dst.addTracks(env, targetId, report.removedTracks)
+        // Put back by the user: not a track the service kept after a removal (see plan()).
+        val back = report.removedTracks.map { it.id }.toSet()
+        store.lastWrites(job.id)?.let { w -> if (w.removed.any { it in back }) store.putLastWrites(job.id, w.copy(removed = w.removed - back)) }
         store.updateReport(report.id) { r ->
             r.copy(removedTracks = emptyList(), notes = r.notes + str("restored_note", report.removedTracks.size))
         }
