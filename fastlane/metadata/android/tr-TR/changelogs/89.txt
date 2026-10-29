@@ -1,0 +1,1 @@
+Hizmet listesi, bu sürümün bağlayamadığı hizmetleri gizlemek yerine gösteriyor. YouTube API'nin günlük kotası dolduğunda mesaj, sınırın kime ait olduğunu ve ne zaman sıfırlandığını söylüyor.

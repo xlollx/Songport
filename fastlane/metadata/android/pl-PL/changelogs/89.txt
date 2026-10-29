@@ -1,0 +1,1 @@
+Lista usług pokazuje, których usług ta wersja nie może połączyć, zamiast je ukrywać. Gdy dzienny limit API YouTube się wyczerpie, komunikat mówi, czyj to limit i kiedy się odnawia.

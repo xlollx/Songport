@@ -1,0 +1,1 @@
+La liste des services indique ceux que cette version ne peut pas connecter, au lieu de les masquer. Quand le quota quotidien de l'API YouTube est épuisé, le message dit à qui appartient la limite et quand elle se réinitialise.

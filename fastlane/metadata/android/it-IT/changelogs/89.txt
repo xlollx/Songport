@@ -1,0 +1,1 @@
+L'elenco dei servizi mostra quali servizi questa versione non può collegare, invece di nasconderli. Quando finisce la quota giornaliera dell'API di YouTube, il messaggio dice di chi è il limite e quando si azzera.

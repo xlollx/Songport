@@ -1,0 +1,1 @@
+Die Dienstliste zeigt, welche Dienste diese Version nicht verbinden kann, statt sie auszublenden. Ist das tägliche YouTube-API-Kontingent aufgebraucht, sagt die Meldung, wessen Limit es ist und wann es zurückgesetzt wird.

@@ -1,0 +1,1 @@
+The service list shows which services this version cannot connect, instead of leaving them out. When YouTube's daily API quota runs out, the message says whose limit it is and when it resets.
