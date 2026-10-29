@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">Leer lassen, um den Namen der Quell-Playlist zu übernehmen.</string>
     <string name="editor_schedule">Automatischer Zeitplan</string>
     <string name="editor_mirror">Entfernungen spiegeln</string>
-    <string name="editor_mirror_desc">Titel, die nicht mehr in der Quelle sind, auch aus dem Ziel entfernen. Aus = nur hinzufügen.</string>
+    <string name="editor_mirror_desc">Entfernt aus dem Ziel jeden Titel, der nicht in der Quelle ist, auch dort von Hand hinzugefügte. Aus = nur hinzufügen.</string>
     <string name="editor_keep_order">Reihenfolge der Quelle beibehalten</string>
     <string name="editor_keep_order_desc">Nach dem Hinzufügen wird das Ziel in die Reihenfolge der Quelle gebracht. Spotify, YouTube Music und Deezer können das.</string>
     <string name="note_order_aligned">Reihenfolge an die Quelle angeglichen.</string>
@@ -175,7 +175,7 @@
     <string name="link_resolving">Playlist wird gelesen…</string>
     <string name="note_no_removals">%1$s erlaubt über seine API kein Entfernen von Titeln aus einer Playlist: %2$d Titel wurden belassen.</string>
     <string name="note_removals_deferred">Entfernungen verschoben: Die Suche wurde nicht abgeschlossen, daher bleiben %1$d Titel im Ziel ohne Entsprechung vorerst stehen. Sie werden geprüft, wenn ein Lauf ganz durchläuft.</string>
-    <string name="note_removals_capped">Entfernungen zurückgehalten: dieser Lauf würde %1$d der %2$d Titel im Ziel entfernen. Öffne die Vorschau, um sie zu sehen und zu bestätigen; hat die Quelle sie nicht wirklich verloren, hat der Dienst sie unvollständig gelesen und nichts darf weg.</string>
+    <string name="note_removals_capped">Entfernungen zurückgehalten: dieser Lauf würde %1$d der %2$d Titel im Ziel entfernen. Tippe auf den Status des Syncs, um die Vorschau zu öffnen und sie zu sehen; sollen sie wirklich weg, hake dort „Diese Titel entfernen“ an und starte ihn. Hat die Quelle sie nicht wirklich verloren, hat der Dienst sie unvollständig gelesen und nichts darf weg.</string>
     <string name="note_unchanged">Seit dem letzten Lauf hat sich auf keiner Seite etwas geändert: übersprungen.</string>
     <string name="review_share">Liste teilen</string>
     <string name="note_search_interrupted">%1$d von %2$d Titeln gesucht, dann hat der Dienst eine längere Pause verlangt (%3$s). Das ist eine Grenze des Dienstes, kein Fehler von Trackhop: Das Gefundene wurde übernommen und gemerkt. Starte den Sync in ein paar Minuten erneut, um dort weiterzumachen.</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">%1$d bereits auf dem Ziel</string>
     <string name="preview_add">%1$d hinzuzufügen</string>
     <string name="preview_remove">%1$d zu entfernen</string>
-    <string name="preview_remove_warning">Das würde %1$d der %2$d Titel im Ziel entfernen. Prüfe vor dem Bestätigen, ob die Quelle wirklich so wenige Titel hat: eine unvollständige Liste vom Dienst sieht genau so aus.</string>
+    <string name="preview_remove_warning">Das würde %1$d der %2$d Titel im Ziel entfernen. Prüfe, ob die Quelle wirklich so wenige Titel hat: eine unvollständige Liste vom Dienst sieht genau so aus. Ohne den Haken unten fügt der Lauf Titel hinzu und behält diese.</string>
     <string name="preview_unmatched">%1$d nicht gefunden</string>
     <string name="preview_ignored">%1$d ignoriert</string>
     <string name="preview_target_new">Die Ziel-Playlist wird erstellt.</string>
@@ -454,9 +454,9 @@
     </plurals>
     <string name="settings_battery">Geplante Syncs laufen nicht?</string>
     <string name="backup_folder_title">Backup in einen Ordner</string>
-    <string name="backup_folder_desc">Trackhop bewahrt in der App bereits datierte Backups deiner Playlists auf. Wähle einen Ordner (SD-Karte, Nextcloud, Drive, jede App, die einen anbietet), und neue Versionen werden auch dorthin kopiert, damit sie das Telefon überdauern. Zum Wiederherstellen importierst du eine Datei aus diesem Ordner unter Dateien.</string>
+    <string name="backup_folder_desc">Wähle einen Ordner (SD-Karte, Nextcloud, Drive, jede App, die einen anbietet), und Trackhop speichert dort datierte Backups deiner Playlists, damit sie das Telefon überdauern. Gespeichert wird erst, wenn ein Backup läuft: nach dem Zeitplan unten oder mit „Jetzt kopieren“. Zum Wiederherstellen importierst du eine Datei aus diesem Ordner unter Dateien.</string>
     <string name="backup_folder_none">Kein Ordner gewählt</string>
-    <string name="backup_folder_hint">Nur Dateien, die im Ordner noch fehlen, werden kopiert.</string>
+    <string name="backup_folder_hint">„Jetzt kopieren“ sichert zuerst jeden verbundenen Dienst und kopiert dann die Dateien, die im Ordner noch fehlen.</string>
     <string name="backup_folder_pick">Ordner wählen</string>
     <string name="backup_folder_now">Jetzt kopieren</string>
     <string name="backup_folder_done">%1$d Dienste gesichert, %2$d neue Dateien kopiert</string>
@@ -604,7 +604,7 @@
     <string name="quota_estimate">Dieser Sync wird etwa %1$s Einheiten verbrauchen.</string>
     <string name="quota_estimate_over">Dieser Sync benötigt etwa %1$s Einheiten, heute sind aber nur noch %2$s übrig: Er wird in den nächsten Tagen abgeschlossen.</string>
     <string name="editor_bidirectional">Beidseitig</string>
-    <string name="editor_bidirectional_desc">Erstellt zusätzlich den gespiegelten Sync in die Gegenrichtung, ohne Entfernungen, damit beide Playlists vollständig bleiben.</string>
+    <string name="editor_bidirectional_desc">Erstellt zusätzlich den Sync in Gegenrichtung (mit ↔ markiert), damit auf einer Seite hinzugefügte Titel auch auf die andere kommen. Keiner von beiden entfernt Titel. Beide werden hier bearbeitet.</string>
     <string name="editor_bidirectional_unavailable">Verfügbar mit einer bestehenden Ziel-Playlist und einer beschreibbaren Quelle.</string>
     <string name="editor_bidirectional_not_owned">Nicht mit einem öffentlichen Link oder einer fremden Playlist als Quelle: sie lässt sich lesen, nicht beschreiben.</string>
     <string name="onboarding_title">Willkommen bei Trackhop</string>
@@ -1004,4 +1004,16 @@
     <string name="plugins_services">Dienste: %1$s</string>
     <string name="services_group_unavailable">In dieser Version nicht verfügbar</string>
     <string name="plugins_where">Plugins werden von ihren Autoren veröffentlicht, nicht über diese App: Auf GitHub tragen sie das Thema „trackhop-plugin“.</string>
+    <string name="preview_remove_confirm">Diese %1$d Titel aus dem Ziel entfernen</string>
+    <string name="note_two_way_no_removals">Entfernungen übersprungen: dies ist ein beidseitiger Sync, daher wurden die %1$d Titel im Ziel behalten, die nicht in der Quelle sind (der Sync in Gegenrichtung kopiert sie zurück). Schalte Beidseitig aus, um Entfernungen zu spiegeln.</string>
+    <string name="editor_mirror_two_way">Nicht mit Beidseitig: ein auf der anderen Seite hinzugefügter Titel könnte entfernt werden, bevor er zurückkopiert wird.</string>
+    <string name="editor_twin_note">„%1$s“ ist die Gegenrichtung dieses beidseitigen Syncs. Er folgt diesen Einstellungen, daher werden beide hier bearbeitet.</string>
+    <string name="editor_schedule_desc">Der erste Lauf startet wenige Minuten nach dem Speichern, danach etwa einmal pro Intervall; den genauen Zeitpunkt wählt Android.</string>
+    <string name="editor_wifi_only_desc">Geplante Läufe warten auf ein Netz ohne Volumenbegrenzung, meist WLAN. „Jetzt ausführen“ und „Alle jetzt synchronisieren“ ignorieren das.</string>
+    <string name="pill_held_back">Entfernungen warten</string>
+    <string name="pill_not_found">Nicht gefunden: %1$d</string>
+    <string name="pill_incomplete">Nicht fertig</string>
+    <string name="onboarding_docs_title">Dokumentation und Code</string>
+    <string name="onboarding_docs_body">Möchtest du über jede Funktion lesen oder den Code ansehen? Dokumentation und Quellcode findest du auf GitHub.</string>
+    <string name="onboarding_docs_open">Auf GitHub öffnen</string>
 </resources>

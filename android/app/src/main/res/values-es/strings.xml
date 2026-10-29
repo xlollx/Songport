@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">Déjalo vacío para usar el nombre de la playlist de origen.</string>
     <string name="editor_schedule">Programación automática</string>
     <string name="editor_mirror">Replicar eliminaciones</string>
-    <string name="editor_mirror_desc">Quita también del destino las canciones que ya no están en el origen. Desactivado = solo añadir.</string>
+    <string name="editor_mirror_desc">Quita del destino cada pista que no esté en el origen, también las añadidas allí a mano. Desactivado = solo añadir.</string>
     <string name="editor_keep_order">Mantener el orden del origen</string>
     <string name="editor_keep_order_desc">Tras añadir, el destino se pone en el orden del origen. Lo permiten Spotify, YouTube Music y Deezer.</string>
     <string name="note_order_aligned">Orden alineado con el origen.</string>
@@ -175,7 +175,7 @@
     <string name="link_resolving">Leyendo la playlist…</string>
     <string name="note_no_removals">%1$s no permite quitar canciones de una playlist a través de su API: %2$d canciones se quedaron donde estaban.</string>
     <string name="note_removals_deferred">Eliminaciones aplazadas: la búsqueda no se completó, así que %1$d canciones del destino que aún no coincidían con nada se dejaron donde estaban. Se revisarán cuando una ejecución termine por completo.</string>
-    <string name="note_removals_capped">Eliminaciones retenidas: esta ejecución quitaría %1$d de las %2$d pistas del destino. Abre la vista previa para verlas y confirmar; si el origen no las ha perdido de verdad, el servicio lo leyó a medias y no debe quitarse nada.</string>
+    <string name="note_removals_capped">Eliminaciones retenidas: esta ejecución quitaría %1$d de las %2$d pistas del destino. Toca el estado de la sincronización para abrir la vista previa y verlas; si de verdad sobran, marca allí “Quitar estas pistas” y ejecútala. Si el origen no las ha perdido de verdad, el servicio lo leyó a medias y no debe quitarse nada.</string>
     <string name="note_unchanged">Nada ha cambiado en ninguno de los dos lados desde la última ejecución: omitido.</string>
     <string name="review_share">Compartir la lista</string>
     <string name="note_search_interrupted">Se buscaron %1$d de %2$d canciones y luego el servicio pidió una pausa más larga (%3$s). Es un límite del servicio, no un error de Trackhop: lo encontrado ya se aplicó y queda guardado. Vuelve a ejecutar la sincronización en unos minutos para seguir desde ahí.</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">%1$d ya en el destino</string>
     <string name="preview_add">%1$d por añadir</string>
     <string name="preview_remove">%1$d por quitar</string>
-    <string name="preview_remove_warning">Quitaría %1$d de las %2$d pistas del destino. Antes de confirmar, comprueba que el origen tenga de verdad tan pocas pistas: una lectura incompleta por parte del servicio se ve exactamente así.</string>
+    <string name="preview_remove_warning">Quitaría %1$d de las %2$d pistas del destino. Comprueba que el origen tenga de verdad tan pocas pistas: una lectura incompleta por parte del servicio se ve exactamente así. Si no marcas la casilla de abajo, la ejecución añade pistas y conserva estas.</string>
     <string name="preview_unmatched">%1$d no encontradas</string>
     <string name="preview_ignored">%1$d ignoradas</string>
     <string name="preview_target_new">Se creará la playlist de destino.</string>
@@ -454,9 +454,9 @@
     </plurals>
     <string name="settings_battery">¿No se ejecutan las sincronizaciones programadas?</string>
     <string name="backup_folder_title">Copia de seguridad en una carpeta</string>
-    <string name="backup_folder_desc">Trackhop ya guarda dentro de la app copias fechadas de tus playlists. Elige una carpeta (tarjeta SD, Nextcloud, Drive, cualquier app que ofrezca una) y las versiones nuevas se copian también allí, para que sobrevivan al teléfono. Para restaurar, importa un archivo de esa carpeta en Archivos.</string>
+    <string name="backup_folder_desc">Elige una carpeta (tarjeta SD, Nextcloud, Drive, cualquier app que ofrezca una) y Trackhop guarda allí copias fechadas de tus playlists, para que sobrevivan al teléfono. No hay nada hasta que se hace una copia: con la programación de abajo o con Copiar ahora. Para restaurar, importa un archivo de esa carpeta en Archivos.</string>
     <string name="backup_folder_none">Ninguna carpeta elegida</string>
-    <string name="backup_folder_hint">Solo se copian los archivos que aún no están en la carpeta.</string>
+    <string name="backup_folder_hint">Copiar ahora primero hace la copia de cada servicio conectado y luego copia los archivos que aún no están en la carpeta.</string>
     <string name="backup_folder_pick">Elegir una carpeta</string>
     <string name="backup_folder_now">Copiar ahora</string>
     <string name="backup_folder_done">%1$d servicios respaldados, %2$d archivos nuevos copiados</string>
@@ -604,7 +604,7 @@
     <string name="quota_estimate">Esta sincronización usará unas %1$s unidades.</string>
     <string name="quota_estimate_over">Esta sincronización necesita unas %1$s unidades, pero hoy solo quedan %2$s: terminará en los próximos días.</string>
     <string name="editor_bidirectional">Bidireccional</string>
-    <string name="editor_bidirectional_desc">Crea también la sincronización espejo en sentido contrario, sin eliminaciones, para que las dos playlists sigan completas.</string>
+    <string name="editor_bidirectional_desc">Crea también la sincronización inversa (marcada con ↔), para que lo añadido en un lado llegue al otro. Ninguna de las dos quita pistas. Ambas se editan aquí.</string>
     <string name="editor_bidirectional_unavailable">Disponible con una playlist de destino existente y un origen en el que se pueda escribir.</string>
     <string name="editor_bidirectional_not_owned">No con un enlace público o una lista de otra persona como origen: se puede leer, no escribir.</string>
     <string name="onboarding_title">Te damos la bienvenida a Trackhop</string>
@@ -1011,4 +1011,16 @@
     <string name="plugins_services">Servicios: %1$s</string>
     <string name="services_group_unavailable">No disponibles en esta versión</string>
     <string name="plugins_where">Los plugins los publican sus propios autores, no esta app: en GitHub llevan el tema «trackhop-plugin».</string>
+    <string name="preview_remove_confirm">Quitar estas %1$d pistas del destino</string>
+    <string name="note_two_way_no_removals">Eliminaciones omitidas: es una sincronización bidireccional, así que se conservaron las %1$d pistas del destino que no están en el origen (la sincronización inversa las devuelve). Desactiva Bidireccional para replicar eliminaciones.</string>
+    <string name="editor_mirror_two_way">No con Bidireccional: una pista añadida en el otro lado podría quitarse antes de copiarse de vuelta.</string>
+    <string name="editor_twin_note">“%1$s” es la mitad inversa de esta sincronización bidireccional. Sigue estos ajustes, así que ambas se editan aquí.</string>
+    <string name="editor_schedule_desc">La primera ejecución empieza a los pocos minutos de guardar y luego más o menos una vez por intervalo; Android elige el momento exacto.</string>
+    <string name="editor_wifi_only_desc">Las ejecuciones programadas esperan una red sin límite de datos, normalmente Wi‑Fi. Ejecutar ahora y Sincronizar todo no lo tienen en cuenta.</string>
+    <string name="pill_held_back">Eliminaciones en espera</string>
+    <string name="pill_not_found">No encontradas: %1$d</string>
+    <string name="pill_incomplete">Sin terminar</string>
+    <string name="onboarding_docs_title">Documentación y código</string>
+    <string name="onboarding_docs_body">¿Quieres leer sobre cada función, o ver el código? La documentación y el código fuente están en GitHub.</string>
+    <string name="onboarding_docs_open">Abrir en GitHub</string>
 </resources>

@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">空のままにすると元のプレイリストの名前を使います。</string>
     <string name="editor_schedule">自動スケジュール</string>
     <string name="editor_mirror">削除も反映</string>
-    <string name="editor_mirror_desc">同期元にない曲を同期先からも削除します。オフの場合は追加のみ行います。</string>
+    <string name="editor_mirror_desc">同期元にない曲は、手動で追加したものも含めて同期先からすべて削除します。オフの場合は追加のみ行います。</string>
     <string name="editor_keep_order">元の順序を保つ</string>
     <string name="editor_keep_order_desc">追加後、同期先を元の順序に並べ替えます。Spotify、YouTube Music、Deezer で使えます。</string>
     <string name="note_order_aligned">順序を元に合わせました。</string>
@@ -175,7 +175,7 @@
     <string name="link_resolving">プレイリストを読み込み中…</string>
     <string name="note_no_removals">%1$s は API によるプレイリストからの曲の削除に対応していないため、%2$d 曲はそのまま残しました。</string>
     <string name="note_removals_deferred">削除を延期しました：検索が完了しなかったため、同期先でまだどの曲とも一致していない %1$d 曲はそのまま残しました。実行が最後まで完了したときに確認されます。</string>
-    <string name="note_removals_capped">削除を保留しました：この実行では移動先の %2$d 曲のうち %1$d 曲が削除されます。プレビューを開いて確認してください。移動元が本当に失ったのでなければ、サービスが一覧を途中までしか読めなかったということで、何も削除してはいけません。</string>
+    <string name="note_removals_capped">削除を保留しました：この実行では移動先の %2$d 曲のうち %1$d 曲が削除されます。同期のステータスをタップしてプレビューを開き、確認してください。本当に削除してよい場合は、そこで「これらの曲を削除」にチェックを入れて実行します。移動元が本当に失ったのでなければ、サービスが一覧を途中までしか読めなかったということで、何も削除してはいけません。</string>
     <string name="note_unchanged">前回の実行から両側とも変更がありません。スキップしました。</string>
     <string name="review_share">リストを共有</string>
     <string name="note_search_interrupted">%2$d 曲中 %1$d 曲を検索したところで、サービスがより長い休止を求めました（%3$s）。これはサービス側の制限で、Trackhop のエラーではありません。見つかった曲は反映され、記憶されています。数分後にもう一度同期を実行すると、続きから再開します。</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">%1$d 曲は同期先にあります</string>
     <string name="preview_add">%1$d 曲を追加</string>
     <string name="preview_remove">%1$d 曲を削除</string>
-    <string name="preview_remove_warning">移動先の %2$d 曲のうち %1$d 曲が削除されます。確認する前に、移動元が本当にそれほど少ないか確かめてください。サービスの読み込みが不完全な場合、まさにこのように見えます。</string>
+    <string name="preview_remove_warning">移動先の %2$d 曲のうち %1$d 曲が削除されます。移動元が本当にそれほど少ないか確かめてください。サービスの読み込みが不完全な場合、まさにこのように見えます。下のチェックを入れない限り、実行では曲を追加し、これらの曲は残します。</string>
     <string name="preview_unmatched">%1$d 曲が見つかりません</string>
     <string name="preview_ignored">%1$d 曲を無視</string>
     <string name="preview_target_new">同期先プレイリストが作成されます。</string>
@@ -449,9 +449,9 @@
     </plurals>
     <string name="settings_battery">スケジュールした同期が実行されない場合</string>
     <string name="backup_folder_title">フォルダーにバックアップ</string>
-    <string name="backup_folder_desc">Trackhop はすでにアプリ内に日付付きのプレイリストのバックアップを保存しています。フォルダー（SD カード、Nextcloud、Drive、フォルダーを提供する任意のアプリ）を選ぶと、新しいバージョンがそこにもコピーされ、スマートフォンが変わっても残ります。復元するには、「ファイル」でそのフォルダーからファイルをインポートします。</string>
+    <string name="backup_folder_desc">フォルダー（SD カード、Nextcloud、Drive、フォルダーを提供する任意のアプリ）を選ぶと、Trackhop がそこに日付付きのプレイリストのバックアップを保存し、スマートフォンが変わっても残ります。バックアップが実行されるまで何も保存されません（下のスケジュール、または「今すぐコピー」）。復元するには、「ファイル」でそのフォルダーからファイルをインポートします。</string>
     <string name="backup_folder_none">フォルダー未選択</string>
-    <string name="backup_folder_hint">フォルダーにまだないファイルだけをコピーします。</string>
+    <string name="backup_folder_hint">「今すぐコピー」は、まず接続中のすべてのサービスをバックアップし、その後フォルダーにまだないファイルをコピーします。</string>
     <string name="backup_folder_pick">フォルダーを選ぶ</string>
     <string name="backup_folder_now">今すぐコピー</string>
     <string name="backup_folder_done">%1$d 件のサービスをバックアップ、%2$d 件の新しいファイルをコピーしました</string>
@@ -599,7 +599,7 @@
     <string name="quota_estimate">この同期では約 %1$s ユニットを使用します。</string>
     <string name="quota_estimate_over">この同期には約 %1$s ユニットが必要ですが、本日の残りは %2$s ユニットのみです。数日かけて完了します。</string>
     <string name="editor_bidirectional">双方向</string>
-    <string name="editor_bidirectional_desc">逆方向のミラー同期（削除なし）も作成し、両方のプレイリストにすべての曲がそろうようにします。</string>
+    <string name="editor_bidirectional_desc">逆方向の同期（↔ で表示）も作成し、どちらに追加した曲ももう一方に届くようにします。どちらも曲を削除しません。設定は両方ともここで編集します。</string>
     <string name="editor_bidirectional_unavailable">既存の同期先プレイリストと書き込み可能な同期元がある場合に利用できます。</string>
     <string name="editor_bidirectional_not_owned">公開リンクや他人のプレイリストを元にする場合は使えません。読み取りはできても書き込みはできません。</string>
     <string name="onboarding_title">Trackhop へようこそ</string>
@@ -984,4 +984,16 @@
     <string name="plugins_services">サービス: %1$s</string>
     <string name="services_group_unavailable">このバージョンでは利用できません</string>
     <string name="plugins_where">プラグインはこのアプリではなく各作者が公開しています。GitHub ではトピック「trackhop-plugin」が付いています。</string>
+    <string name="preview_remove_confirm">これらの %1$d 曲を同期先から削除</string>
+    <string name="note_two_way_no_removals">削除をスキップしました：双方向の同期のため、同期元にない同期先の %1$d 曲は残しました（逆方向の同期がそれらをコピーし戻します）。削除を反映するには「双方向」をオフにしてください。</string>
+    <string name="editor_mirror_two_way">双方向とは併用できません：もう一方に追加した曲が、コピーし戻される前に削除されるおそれがあります。</string>
+    <string name="editor_twin_note">「%1$s」はこの双方向同期の逆方向側です。この設定に従うため、両方ともここで編集します。</string>
+    <string name="editor_schedule_desc">最初の実行は保存から数分以内に始まり、その後はおおよそ間隔ごとに 1 回実行されます。正確な時刻は Android が決めます。</string>
+    <string name="editor_wifi_only_desc">スケジュール実行は従量制でないネットワーク（通常は Wi‑Fi）を待ちます。「今すぐ実行」と「すべて同期」には適用されません。</string>
+    <string name="pill_held_back">削除が保留中</string>
+    <string name="pill_not_found">見つからず：%1$d</string>
+    <string name="pill_incomplete">未完了</string>
+    <string name="onboarding_docs_title">ドキュメントとコード</string>
+    <string name="onboarding_docs_body">すべての機能について読んだり、コードを見たりしたいですか？ドキュメントとソースコードは GitHub にあります。</string>
+    <string name="onboarding_docs_open">GitHub で開く</string>
 </resources>

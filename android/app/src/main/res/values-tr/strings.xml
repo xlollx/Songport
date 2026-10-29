@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">Kaynak çalma listesinin adını kullanmak için boş bırakın.</string>
     <string name="editor_schedule">Otomatik zamanlama</string>
     <string name="editor_mirror">Kaldırmaları yansıt</string>
-    <string name="editor_mirror_desc">Kaynakta artık bulunmayan parçaları hedeften de kaldırır. Kapalı = yalnızca ekler.</string>
+    <string name="editor_mirror_desc">Kaynakta olmayan her parçayı, elle eklenenler dahil, hedeften kaldırır. Kapalı = yalnızca ekler.</string>
     <string name="editor_keep_order">Kaynak sırasını koru</string>
     <string name="editor_keep_order_desc">Ekleme sonrasında hedef, kaynağın sırasına göre düzenlenir. Spotify, YouTube Music ve Deezer bunu destekler.</string>
     <string name="note_order_aligned">Sıra kaynağa göre hizalandı.</string>
@@ -175,7 +175,7 @@
     <string name="link_resolving">Çalma listesi okunuyor…</string>
     <string name="note_no_removals">%1$s, API\'si üzerinden çalma listesinden parça kaldırmaya izin vermiyor: %2$d parça yerinde bırakıldı.</string>
     <string name="note_removals_deferred">Kaldırmalar ertelendi: arama tamamlanmadığından, hedefte henüz hiçbir şeyle eşleşmeyen %1$d parça yerinde bırakıldı. Bir çalıştırma tamamlandığında yeniden değerlendirilecek.</string>
-    <string name="note_removals_capped">Kaldırmalar bekletildi: bu çalıştırma hedefteki %1$d parçayı kaldıracaktı (toplam %2$d). Görmek ve onaylamak için önizlemeyi açın; kaynak bunları gerçekten kaybetmediyse servis listeyi eksik vermiştir ve hiçbir şey kaldırılmamalıdır.</string>
+    <string name="note_removals_capped">Kaldırmalar bekletildi: bu çalıştırma hedefteki %1$d parçayı kaldıracaktı (toplam %2$d). Önizlemeyi açıp görmek için senkronizasyonun durumuna dokunun; gerçekten kaldırılmaları gerekiyorsa orada “Bu parçaları kaldır” seçeneğini işaretleyip çalıştırın. Kaynak bunları gerçekten kaybetmediyse servis listeyi eksik vermiştir ve hiçbir şey kaldırılmamalıdır.</string>
     <string name="note_unchanged">Son çalıştırmadan beri iki tarafta da değişiklik yok: atlandı.</string>
     <string name="review_share">Listeyi paylaş</string>
     <string name="note_search_interrupted">%1$d / %2$d parça arandı, ardından servis daha uzun bir ara istedi (%3$s). Bu servisin bir sınırıdır, Trackhop hatası değil: bulunanlar uygulandı ve hatırlanacak. Kaldığı yerden devam etmek için senkronizasyonu birkaç dakika sonra yeniden çalıştırın.</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">%1$d zaten hedefte</string>
     <string name="preview_add">%1$d eklenecek</string>
     <string name="preview_remove">%1$d kaldırılacak</string>
-    <string name="preview_remove_warning">Bu işlem hedefteki %1$d parçayı kaldıracak (toplam %2$d). Onaylamadan önce kaynağın gerçekten bu kadar az parça listelediğini kontrol edin: servisin eksik bir listelemesi tam olarak böyle görünür.</string>
+    <string name="preview_remove_warning">Bu işlem hedefteki %1$d parçayı kaldıracak (toplam %2$d). Kaynağın gerçekten bu kadar az parça listelediğini kontrol edin: servisin eksik bir listelemesi tam olarak böyle görünür. Aşağıdaki kutuyu işaretlemezseniz çalıştırma parça ekler ve bunları tutar.</string>
     <string name="preview_unmatched">%1$d bulunamadı</string>
     <string name="preview_ignored">%1$d yoksayıldı</string>
     <string name="preview_target_new">Hedef çalma listesi oluşturulacak.</string>
@@ -454,9 +454,9 @@
     </plurals>
     <string name="settings_battery">Zamanlanmış senkronizasyonlar çalışmıyor mu?</string>
     <string name="backup_folder_title">Klasöre yedekle</string>
-    <string name="backup_folder_desc">Trackhop çalma listelerinizin tarihli yedeklerini zaten uygulama içinde tutar. Bir klasör seçin (SD kart, Nextcloud, Drive, klasör sunan herhangi bir uygulama); yeni sürümler oraya da kopyalanır, böylece telefon gitse bile kalırlar. Geri yüklemek için Dosyalar\'dan o klasördeki bir dosyayı içe aktarın.</string>
+    <string name="backup_folder_desc">Bir klasör seçin (SD kart, Nextcloud, Drive, klasör sunan herhangi bir uygulama); Trackhop çalma listelerinizin tarihli yedeklerini oraya kaydeder, böylece telefon gitse bile kalırlar. Bir yedekleme çalışana kadar orada hiçbir şey olmaz: aşağıdaki zamanlamayla ya da Şimdi kopyala ile. Geri yüklemek için Dosyalar\'dan o klasördeki bir dosyayı içe aktarın.</string>
     <string name="backup_folder_none">Klasör seçilmedi</string>
-    <string name="backup_folder_hint">Yalnızca klasörde henüz olmayan dosyalar kopyalanır.</string>
+    <string name="backup_folder_hint">Şimdi kopyala önce bağlı her servisin yedeğini alır, sonra klasörde henüz olmayan dosyaları kopyalar.</string>
     <string name="backup_folder_pick">Klasör seç</string>
     <string name="backup_folder_now">Şimdi kopyala</string>
     <string name="backup_folder_done">%1$d servis yedeklendi, %2$d yeni dosya kopyalandı</string>
@@ -604,7 +604,7 @@
     <string name="quota_estimate">Bu senkronizasyon yaklaşık %1$s birim kullanacak.</string>
     <string name="quota_estimate_over">Bu senkronizasyon yaklaşık %1$s birim gerektiriyor ama bugün yalnızca %2$s kaldı: önümüzdeki günlerde tamamlanacak.</string>
     <string name="editor_bidirectional">Çift yönlü</string>
-    <string name="editor_bidirectional_desc">Ters yönde, kaldırmasız bir ayna senkronizasyonu da oluşturur; böylece iki çalma listesi de eksiksiz kalır.</string>
+    <string name="editor_bidirectional_desc">Ters yönde bir senkronizasyon da oluşturur (↔ ile işaretli); böylece bir tarafa eklenen parçalar diğerine de ulaşır. İkisi de parça kaldırmaz. İkisi de buradan düzenlenir.</string>
     <string name="editor_bidirectional_unavailable">Mevcut bir hedef çalma listesi ve yazılabilir bir kaynakla kullanılabilir.</string>
     <string name="editor_bidirectional_not_owned">Kaynak olarak herkese açık bir bağlantı veya başkasının çalma listesiyle olmaz: okunabilir, yazılamaz.</string>
     <string name="onboarding_title">Trackhop\'a hoş geldiniz</string>
@@ -1002,4 +1002,16 @@
     <string name="plugins_services">Hizmetler: %1$s</string>
     <string name="services_group_unavailable">Bu sürümde kullanılamaz</string>
     <string name="plugins_where">Eklentileri bu uygulama değil, kendi geliştiricileri yayınlar: GitHub\'da “trackhop-plugin” konusunu taşırlar.</string>
+    <string name="preview_remove_confirm">Bu %1$d parçayı hedeften kaldır</string>
+    <string name="note_two_way_no_removals">Kaldırmalar atlandı: bu çift yönlü bir senkronizasyon, bu yüzden hedefte olup kaynakta olmayan %1$d parça tutuldu (ters senkronizasyon onları geri kopyalar). Kaldırmaları yansıtmak için Çift yönlü\'yü kapatın.</string>
+    <string name="editor_mirror_two_way">Çift yönlü ile olmaz: diğer tarafa eklenen bir parça geri kopyalanmadan önce kaldırılabilir.</string>
+    <string name="editor_twin_note">“%1$s”, bu çift yönlü senkronizasyonun ters yarısıdır. Bu ayarları izler, bu yüzden ikisi de buradan düzenlenir.</string>
+    <string name="editor_schedule_desc">İlk çalıştırma kaydettikten birkaç dakika sonra başlar, sonra yaklaşık her aralıkta bir kez; kesin zamanı Android seçer.</string>
+    <string name="editor_wifi_only_desc">Zamanlanmış çalıştırmalar sınırsız bir ağı, genellikle Wi‑Fi\'ı bekler. Şimdi çalıştır ve Tümünü senkronize et bunu dikkate almaz.</string>
+    <string name="pill_held_back">Kaldırmalar bekliyor</string>
+    <string name="pill_not_found">Bulunamadı: %1$d</string>
+    <string name="pill_incomplete">Tamamlanmadı</string>
+    <string name="onboarding_docs_title">Belgeler ve kod</string>
+    <string name="onboarding_docs_body">Her özelliği okumak ya da koda bakmak mı istiyorsunuz? Belgeler ve kaynak kodu GitHub\'da.</string>
+    <string name="onboarding_docs_open">GitHub\'da aç</string>
 </resources>

@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">留空则使用来源歌单的名称。</string>
     <string name="editor_schedule">自动计划</string>
     <string name="editor_mirror">同步删除</string>
-    <string name="editor_mirror_desc">同时从目标中移除来源里已不存在的歌曲。关闭则只添加。</string>
+    <string name="editor_mirror_desc">从目标中移除来源里没有的每一首歌，包括手动添加到目标的歌曲。关闭则只添加。</string>
     <string name="editor_keep_order">保持来源的顺序</string>
     <string name="editor_keep_order_desc">添加完成后，目标会按来源的顺序排列。Spotify、YouTube Music 和 Deezer 支持。</string>
     <string name="note_order_aligned">顺序已与来源对齐。</string>
@@ -175,7 +175,7 @@
     <string name="link_resolving">正在读取歌单…</string>
     <string name="note_no_removals">%1$s 的 API 不允许从歌单中移除歌曲：已保留 %2$d 首歌曲。</string>
     <string name="note_removals_deferred">移除已推迟：搜索尚未完成，因此目标中暂未匹配的 %1$d 首歌曲已保留。完整运行一次后会重新检查它们。</string>
-    <string name="note_removals_capped">已暂缓删除：本次运行将从目标中移除 %2$d 首中的 %1$d 首。请打开预览查看并确认；如果来源并未真的失去这些歌曲，说明服务只读取了一部分，不应移除任何内容。</string>
+    <string name="note_removals_capped">已暂缓删除：本次运行将从目标中移除 %2$d 首中的 %1$d 首。点按同步的状态打开预览查看；如果确实应当移除，请在那里勾选“移除这些歌曲”再运行。如果来源并未真的失去这些歌曲，说明服务只读取了一部分，不应移除任何内容。</string>
     <string name="note_unchanged">自上次运行以来两边都没有变化：已跳过。</string>
     <string name="review_share">分享列表</string>
     <string name="note_search_interrupted">已搜索 %2$d 首中的 %1$d 首，随后服务要求更长的暂停（%3$s）。这是服务的限制，不是 Trackhop 的错误：已找到的结果已应用并记住。几分钟后再次运行同步即可从此处继续。</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">%1$d 首已在目标中</string>
     <string name="preview_add">%1$d 首待添加</string>
     <string name="preview_remove">%1$d 首待移除</string>
-    <string name="preview_remove_warning">这将从目标中移除 %2$d 首中的 %1$d 首。确认前请检查来源是否真的只有这么少的歌曲：服务读取不完整时正是这种表现。</string>
+    <string name="preview_remove_warning">这将从目标中移除 %2$d 首中的 %1$d 首。请检查来源是否真的只有这么少的歌曲：服务读取不完整时正是这种表现。除非勾选下方的选项，运行只会添加歌曲并保留这些歌曲。</string>
     <string name="preview_unmatched">%1$d 首未找到</string>
     <string name="preview_ignored">%1$d 首已忽略</string>
     <string name="preview_target_new">将创建目标歌单。</string>
@@ -449,9 +449,9 @@
     </plurals>
     <string name="settings_battery">计划同步没有运行？</string>
     <string name="backup_folder_title">备份到文件夹</string>
-    <string name="backup_folder_desc">Trackhop 已在应用内保存带日期的歌单备份。选择一个文件夹（SD 卡、Nextcloud、Drive 或任何提供文件夹的应用），新版本也会复制到那里，即使换手机也不会丢失。要恢复，请在“文件”中从该文件夹导入。</string>
+    <string name="backup_folder_desc">选择一个文件夹（SD 卡、Nextcloud、Drive 或任何提供文件夹的应用），Trackhop 会把带日期的歌单备份保存到那里，即使换手机也不会丢失。在备份运行之前那里没有任何内容（按下方的计划，或点“立即复制”）。要恢复，请在“文件”中从该文件夹导入。</string>
     <string name="backup_folder_none">未选择文件夹</string>
-    <string name="backup_folder_hint">只复制文件夹中尚不存在的文件。</string>
+    <string name="backup_folder_hint">“立即复制”会先备份每个已连接的服务，再复制文件夹中尚不存在的文件。</string>
     <string name="backup_folder_pick">选择文件夹</string>
     <string name="backup_folder_now">立即复制</string>
     <string name="backup_folder_done">已备份 %1$d 个服务，复制了 %2$d 个新文件</string>
@@ -599,7 +599,7 @@
     <string name="quota_estimate">此同步大约将使用 %1$s 个单位。</string>
     <string name="quota_estimate_over">此同步大约需要 %1$s 个单位，但今天只剩 %2$s 个：将在接下来几天内完成。</string>
     <string name="editor_bidirectional">双向</string>
-    <string name="editor_bidirectional_desc">同时创建反方向的镜像同步（不移除歌曲），让两个歌单都保持完整。</string>
+    <string name="editor_bidirectional_desc">同时创建反方向的同步（标有 ↔），让任一侧添加的歌曲都会出现在另一侧。两者都不会移除歌曲。两者都在这里编辑。</string>
     <string name="editor_bidirectional_unavailable">需要已有的目标歌单和可写入的来源。</string>
     <string name="editor_bidirectional_not_owned">来源是公开链接或他人的歌单时不可用：只能读取，不能写入。</string>
     <string name="onboarding_title">欢迎使用 Trackhop</string>
@@ -984,4 +984,16 @@
     <string name="plugins_services">服务：%1$s</string>
     <string name="services_group_unavailable">此版本不可用</string>
     <string name="plugins_where">插件由各自的作者发布，而不是由本应用提供：在 GitHub 上它们带有主题“trackhop-plugin”。</string>
+    <string name="preview_remove_confirm">从目标中移除这 %1$d 首歌</string>
+    <string name="note_two_way_no_removals">已跳过删除：这是双向同步，因此保留了目标中来源没有的 %1$d 首歌（反向同步会把它们复制回去）。要同步删除，请关闭“双向”。</string>
+    <string name="editor_mirror_two_way">不能与“双向”同时使用：在另一侧添加的歌曲可能在被复制回去之前就被移除。</string>
+    <string name="editor_twin_note">“%1$s”是这个双向同步的反向部分。它沿用这里的设置，所以两者都在这里编辑。</string>
+    <string name="editor_schedule_desc">保存后几分钟内开始第一次运行，之后大约每个间隔运行一次；具体时间由 Android 决定。</string>
+    <string name="editor_wifi_only_desc">计划运行会等待不按流量计费的网络，通常是 Wi‑Fi。“立即运行”和“全部同步”不受此限制。</string>
+    <string name="pill_held_back">删除待确认</string>
+    <string name="pill_not_found">未找到：%1$d</string>
+    <string name="pill_incomplete">未完成</string>
+    <string name="onboarding_docs_title">文档和代码</string>
+    <string name="onboarding_docs_body">想了解每项功能，或者看看代码？文档和源代码都在 GitHub 上。</string>
+    <string name="onboarding_docs_open">在 GitHub 上打开</string>
 </resources>

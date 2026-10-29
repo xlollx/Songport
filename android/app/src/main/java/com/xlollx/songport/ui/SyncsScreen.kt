@@ -41,6 +41,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.clickable
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.ui.semantics.Role
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -146,6 +148,7 @@ fun SyncsScreen(
     onReview: (String) -> Unit = {},
     onOpenTarget: (SyncJob) -> Unit = {},
     onStats: () -> Unit = {},
+    onOpenLog: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val running by SyncState.running.collectAsState()
@@ -242,7 +245,7 @@ fun SyncsScreen(
             if (shown.isEmpty()) item(key = "nomatch") { SyncFinderEmpty { filter = SyncFilter() } }
             items(shown, key = { it.id }) { job ->
                 Box(Modifier.animateItem()) {
-                    JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget)
+                    JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget, onOpenLog)
                 }
             }
         }
@@ -295,7 +298,7 @@ private fun RunAllPill(runningCount: Int, onClick: () -> Unit) {
 private fun JobCard(
     job: SyncJob, data: StoreData, progress: Progress?, isRunning: Boolean,
     onEdit: (SyncJob) -> Unit, onPreview: (SyncJob) -> Unit, onRun: (SyncJob) -> Unit, onDelete: (SyncJob) -> Unit,
-    onReview: (String) -> Unit = {}, onOpenTarget: (SyncJob) -> Unit = {},
+    onReview: (String) -> Unit = {}, onOpenTarget: (SyncJob) -> Unit = {}, onOpenLog: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
     var colorOpen by remember { mutableStateOf(false) }
@@ -366,8 +369,13 @@ private fun JobCard(
                     isRunning -> StatusPill(stringResource(R.string.pill_running), Tone.Accent, Icons.Filled.Sync)
                     !job.enabled -> StatusPill(stringResource(R.string.disabled), Tone.Neutral)
                     report == null -> StatusPill(stringResource(R.string.pill_never), Tone.Neutral)
-                    report.ok -> StatusPill(stringResource(R.string.pill_ok), Tone.Ok, Icons.Filled.CheckCircle)
-                    else -> StatusPill(stringResource(R.string.pill_error), Tone.Error, Icons.Filled.Warning)
+                    !report.ok -> StatusPill(stringResource(R.string.pill_error), Tone.Error, Icons.Filled.Warning)
+                    // A run without errors can still leave something for the user: the pill says what,
+                    // and a tap leads where it is handled.
+                    report.heldBack > 0 -> ActionPill(stringResource(R.string.pill_held_back), Tone.Warning) { onPreview(job) }
+                    report.searchInterrupted -> ActionPill(stringResource(R.string.pill_incomplete), Tone.Warning, onOpenLog)
+                    report.unmatchedTracks.isNotEmpty() -> ActionPill(stringResource(R.string.pill_not_found, report.unmatchedTracks.size), Tone.Warning) { onReview(report.id) }
+                    else -> StatusPill(stringResource(R.string.pill_ok), Tone.Ok, Icons.Filled.CheckCircle)
                 }
             }
             if (isRunning) {
@@ -439,7 +447,8 @@ private fun JobCard(
                 Spacer(Modifier.width(6.dp))
                 val last = if (job.lastRunEpoch > 0) formatDate(job.lastRunEpoch) else stringResource(R.string.last_run_never)
                 Text(
-                    scheduleLabel(job.schedule) + (if (job.mirrorRemovals) " · " + stringResource(R.string.editor_mirror) else "") + " · " + last,
+                    // A two-way pair never removes, whatever an older version saved.
+                    scheduleLabel(job.schedule) + (if (job.mirrorRemovals && job.linkedJobId == null) " · " + stringResource(R.string.editor_mirror) else "") + " · " + last,
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
                 )
@@ -475,6 +484,25 @@ private fun JobCard(
             dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(R.string.no)) } },
         )
     }
+}
+
+/** A status pill that leads somewhere: the warning icon, and a tap target as tall as a button. */
+@Composable
+private fun ActionPill(text: String, tone: Tone, onClick: () -> Unit) {
+    StatusPill(
+        text, tone, Icons.Filled.Warning,
+        Modifier.minimumInteractiveComponentSize().clip(RoundedCornerShape(50)).clickable(role = Role.Button, onClick = onClick),
+    )
+}
+
+/**
+ * The original sync of [job]'s two-way pair when [job] is the "↔" half the editor made, else null.
+ * Pairs saved before the [SyncJob.twin] flag are told apart by the name the editor gave the twin.
+ */
+fun twinOriginal(job: SyncJob, jobs: List<SyncJob>): SyncJob? {
+    val other = job.linkedJobId?.let { id -> jobs.firstOrNull { it.id == id } } ?: return null
+    if (other.twin) return null
+    return other.takeIf { job.twin || job.name == other.name + " ↔" }
 }
 
 /** Live view of a running sync: what was searched, found, taken from the cache or not found. */
@@ -565,7 +593,7 @@ private val PolicySaver = androidx.compose.runtime.saveable.Saver<com.xlollx.son
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () -> Unit = {}, onSave: (SyncJob, SyncJob?) -> Unit) {
+fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () -> Unit = {}, twinName: String? = null, onSave: (SyncJob, SyncJob?) -> Unit) {
     val ctx = LocalContext.current
     ScreenBackHandler(onCancel)
     val saveHaptic = rememberConfirmHaptic()
@@ -657,14 +685,32 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
             schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
             keepOrder = keepOrder, color = color,
         )
-        val reverse = if (bidirectional && !createNew && dp != null) SyncJob(
-            id = job.linkedJobId ?: UUID.randomUUID().toString(),
-            name = "${main.name} ↔",
-            source = target,
-            target = source,
-            schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
-            linkedJobId = job.id, color = color,
-        ) else null
+        // The other half of the pair takes only what the two share (schedule, rules, the two playlists
+        // swapped); its name, ignore list, reports and order setting stay its own. A pair never removes.
+        val partner = job.linkedJobId?.let { Store.get(ctx).job(it) }
+        val reverse = if (bidirectional && !createNew && dp != null) {
+            if (partner != null) {
+                val moved = partner.source != target || partner.target != source
+                partner.copy(
+                    // Renamed with this sync only when it carries the name the editor gave it.
+                    name = if (partner.name == "${job.name} ↔") "${main.name} ↔" else partner.name,
+                    // Pairs saved before the flag existed get it here.
+                    twin = partner.twin || partner.name == "${job.name} ↔",
+                    source = target, target = source,
+                    schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
+                    linkedJobId = job.id, color = color,
+                    sourceVersion = if (moved) null else partner.sourceVersion,
+                    targetVersion = if (moved) null else partner.targetVersion,
+                )
+            } else SyncJob(
+                id = UUID.randomUUID().toString(),
+                name = "${main.name} ↔",
+                source = target,
+                target = source,
+                schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
+                linkedJobId = job.id, color = color, twin = true,
+            )
+        } else null
         saveHaptic()
         onSave(main.copy(linkedJobId = reverse?.id), reverse)
     }
@@ -690,6 +736,15 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
         },
     ) { padding ->
         Column(Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            // Opened from the "↔" card: its settings follow this sync, so this is where they change.
+            if (twinName != null) {
+                Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+                    Text(
+                        stringResource(R.string.editor_twin_note, twinName), style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.padding(16.dp),
+                    )
+                }
+            }
             // Nothing to sync from yet, or only one service to sync between: say so, with the way to connect one.
             if (loginServices == 0) {
                 ConnectServiceCard(stringResource(R.string.no_connected_providers), onConnectService)
@@ -768,7 +823,17 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
                     Schedule.entries.forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
                 }
-                SwitchRow(stringResource(R.string.editor_mirror), stringResource(R.string.editor_mirror_desc), mirror) { mirror = it }
+                if (schedule != Schedule.MANUAL) {
+                    Text(stringResource(R.string.editor_schedule_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                // Two-way and Mirror removals don't go together: a track added on the target could be
+                // removed by this sync before the reverse one copies it back.
+                if (bidirectional && mirror) mirror = false
+                SwitchRow(
+                    stringResource(R.string.editor_mirror),
+                    stringResource(if (bidirectional) R.string.editor_mirror_two_way else R.string.editor_mirror_desc),
+                    mirror, enabled = !bidirectional,
+                ) { mirror = it }
                 if (Providers.byId(dstProvider)?.canReorder == true) {
                     SwitchRow(stringResource(R.string.editor_keep_order), stringResource(R.string.editor_keep_order_desc), keepOrder) { keepOrder = it }
                 }
@@ -804,7 +869,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                     }
                     Switch(checked = bidirectional, enabled = biAllowed, onCheckedChange = { bidirectional = it })
                 }
-                SwitchRow(stringResource(R.string.editor_wifi_only), null, wifiOnly) { wifiOnly = it }
+                SwitchRow(stringResource(R.string.editor_wifi_only), stringResource(R.string.editor_wifi_only_desc), wifiOnly) { wifiOnly = it }
                 SwitchRow(stringResource(R.string.editor_enabled), null, enabled) { enabled = it }
 
                 // How candidates are chosen: folded, because the defaults suit most syncs.

@@ -107,7 +107,8 @@ fun ProviderBadge(p: MusicProvider?, size: Dp = 36.dp) = ServiceLogo(p, size)
 // Blocchi di interfaccia condivisi
 // ---------------------------------------------------------------------------------------------
 
-enum class Tone { Ok, Error, Neutral, Accent }
+/** Warning: nothing failed, but something waits for the user (held-back removals, tracks not found). */
+enum class Tone { Ok, Error, Neutral, Accent, Warning }
 
 /** Etichetta di stato: colore + icona + testo, mai solo il colore. */
 @Composable
@@ -117,12 +118,14 @@ fun StatusPill(text: String, tone: Tone, icon: ImageVector? = null, modifier: Mo
         Tone.Error -> MaterialTheme.colorScheme.errorContainer
         Tone.Accent -> MaterialTheme.colorScheme.primaryContainer
         Tone.Neutral -> MaterialTheme.colorScheme.surfaceContainerHighest
+        Tone.Warning -> MaterialTheme.colorScheme.tertiaryContainer
     }
     val fg = when (tone) {
         Tone.Ok -> Tones.onSuccessContainer()
         Tone.Error -> MaterialTheme.colorScheme.onErrorContainer
         Tone.Accent -> MaterialTheme.colorScheme.onPrimaryContainer
         Tone.Neutral -> MaterialTheme.colorScheme.onSurfaceVariant
+        Tone.Warning -> MaterialTheme.colorScheme.onTertiaryContainer
     }
     Row(
         modifier.clip(RoundedCornerShape(50)).background(bg).padding(horizontal = 10.dp, vertical = 4.dp),

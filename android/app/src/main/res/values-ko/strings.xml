@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">비워 두면 원본 플레이리스트의 이름을 사용해요.</string>
     <string name="editor_schedule">자동 실행 주기</string>
     <string name="editor_mirror">삭제도 반영</string>
-    <string name="editor_mirror_desc">원본에서 사라진 곡을 대상에서도 삭제해요. 끄면 추가만 합니다.</string>
+    <string name="editor_mirror_desc">원본에 없는 곡은 직접 추가한 곡까지 모두 대상에서 삭제해요. 끄면 추가만 합니다.</string>
     <string name="editor_keep_order">원본 순서 유지</string>
     <string name="editor_keep_order_desc">추가한 뒤 대상을 원본과 같은 순서로 정렬해요. Spotify, YouTube Music, Deezer에서 가능합니다.</string>
     <string name="note_order_aligned">순서를 원본에 맞췄어요.</string>
@@ -175,7 +175,7 @@
     <string name="link_resolving">플레이리스트 읽는 중…</string>
     <string name="note_no_removals">%1$s API로는 플레이리스트에서 곡을 삭제할 수 없어요. %2$d곡을 그대로 두었습니다.</string>
     <string name="note_removals_deferred">삭제를 미뤘어요. 검색이 끝나지 않아, 아직 아무것과도 일치하지 않은 대상의 %1$d곡을 그대로 두었습니다. 실행이 완료되면 다시 검토해요.</string>
-    <string name="note_removals_capped">삭제를 보류했어요. 이번 실행은 대상에서 %1$d곡을 삭제하게 돼요(대상 전체는 %2$d곡). 미리보기를 열어 확인한 뒤 승인하세요. 원본에서 정말 사라진 게 아니라면 서비스가 목록을 불완전하게 보낸 것이니 아무것도 삭제하면 안 돼요.</string>
+    <string name="note_removals_capped">삭제를 보류했어요. 이번 실행은 대상에서 %1$d곡을 삭제하게 돼요(대상 전체는 %2$d곡). 동기화 상태를 탭해 미리보기를 열고 확인하세요. 정말 삭제해야 한다면 거기서 ‘이 곡들 삭제’에 체크한 뒤 실행하세요. 원본에서 정말 사라진 게 아니라면 서비스가 목록을 불완전하게 보낸 것이니 아무것도 삭제하면 안 돼요.</string>
     <string name="note_unchanged">마지막 실행 이후 양쪽 모두 바뀐 게 없어 건너뛰었어요.</string>
     <string name="review_share">목록 공유</string>
     <string name="note_search_interrupted">%1$d곡을 검색했어요(전체 %2$d곡). 그 뒤 서비스가 더 긴 대기를 요청했어요(%3$s). 이는 Trackhop 오류가 아니라 서비스의 제한이에요. 찾은 곡은 적용하고 기억해 두었으니, 몇 분 뒤 동기화를 다시 실행하면 거기서부터 이어집니다.</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">%1$d곡 이미 대상에 있음</string>
     <string name="preview_add">%1$d곡 추가 예정</string>
     <string name="preview_remove">%1$d곡 삭제 예정</string>
-    <string name="preview_remove_warning">대상에서 %1$d곡을 삭제하게 돼요(대상 전체는 %2$d곡). 승인하기 전에 원본에 정말 그만큼만 있는지 확인하세요. 서비스가 목록을 불완전하게 보내도 꼭 이렇게 보여요.</string>
+    <string name="preview_remove_warning">대상에서 %1$d곡을 삭제하게 돼요(대상 전체는 %2$d곡). 원본에 정말 그만큼만 있는지 확인하세요. 서비스가 목록을 불완전하게 보내도 꼭 이렇게 보여요. 아래 상자에 체크하지 않으면 실행은 곡을 추가하고 이 곡들은 그대로 둬요.</string>
     <string name="preview_unmatched">%1$d곡 찾지 못함</string>
     <string name="preview_ignored">%1$d곡 무시됨</string>
     <string name="preview_target_new">대상 플레이리스트를 새로 만들어요.</string>
@@ -448,9 +448,9 @@
     </plurals>
     <string name="settings_battery">예약 동기화가 실행되지 않나요?</string>
     <string name="backup_folder_title">폴더에 백업</string>
-    <string name="backup_folder_desc">Trackhop은 이미 앱 안에 플레이리스트의 날짜별 백업을 보관해요. 폴더(SD 카드, Nextcloud, Drive 등 폴더를 제공하는 앱)를 고르면 새 버전이 거기에도 복사되어 휴대폰이 바뀌어도 남아요. 복원하려면 파일에서 그 폴더의 파일을 가져오세요.</string>
+    <string name="backup_folder_desc">폴더(SD 카드, Nextcloud, Drive 등 폴더를 제공하는 앱)를 고르면 Trackhop이 플레이리스트의 날짜별 백업을 그곳에 저장해, 휴대폰이 바뀌어도 남아요. 백업이 실행되기 전에는 아무것도 저장되지 않아요(아래 일정 또는 지금 복사). 복원하려면 파일에서 그 폴더의 파일을 가져오세요.</string>
     <string name="backup_folder_none">선택한 폴더 없음</string>
-    <string name="backup_folder_hint">폴더에 아직 없는 파일만 복사해요.</string>
+    <string name="backup_folder_hint">지금 복사는 먼저 연결된 모든 서비스를 백업한 뒤, 폴더에 아직 없는 파일을 복사해요.</string>
     <string name="backup_folder_pick">폴더 선택</string>
     <string name="backup_folder_now">지금 복사</string>
     <string name="backup_folder_done">서비스 %1$d개 백업됨, 새 파일 %2$d개 복사됨</string>
@@ -598,7 +598,7 @@
     <string name="quota_estimate">이 동기화는 약 %1$s단위를 써요.</string>
     <string name="quota_estimate_over">이 동기화에는 약 %1$s단위가 필요한데 오늘 남은 건 %2$s단위뿐이에요. 며칠에 걸쳐 완료됩니다.</string>
     <string name="editor_bidirectional">양방향</string>
-    <string name="editor_bidirectional_desc">반대 방향의 미러 동기화도 삭제 없이 만들어, 양쪽 플레이리스트가 모두 완전하게 유지돼요.</string>
+    <string name="editor_bidirectional_desc">반대 방향 동기화(↔ 표시)도 만들어, 어느 쪽에 추가한 곡이든 다른 쪽에도 들어가요. 둘 다 곡을 삭제하지 않아요. 두 동기화 모두 여기서 편집해요.</string>
     <string name="editor_bidirectional_unavailable">기존 대상 플레이리스트와 쓰기 가능한 원본이 있을 때 사용할 수 있어요.</string>
     <string name="editor_bidirectional_not_owned">공개 링크나 다른 사람의 플레이리스트가 원본이면 사용할 수 없어요. 읽기만 되고 쓸 수는 없거든요.</string>
     <string name="onboarding_title">Trackhop에 오신 것을 환영해요</string>
@@ -983,4 +983,16 @@
     <string name="plugins_services">서비스: %1$s</string>
     <string name="services_group_unavailable">이 버전에서는 사용할 수 없음</string>
     <string name="plugins_where">플러그인은 이 앱이 아니라 각 제작자가 배포합니다. GitHub에서는 “trackhop-plugin” 주제가 붙어 있습니다.</string>
+    <string name="preview_remove_confirm">대상에서 이 %1$d곡 삭제</string>
+    <string name="note_two_way_no_removals">삭제를 건너뛰었어요. 양방향 동기화라서 원본에 없는 대상의 %1$d곡은 그대로 두었어요(반대 방향 동기화가 다시 복사해요). 삭제를 반영하려면 양방향을 끄세요.</string>
+    <string name="editor_mirror_two_way">양방향과 함께 쓸 수 없어요. 다른 쪽에 추가한 곡이 다시 복사되기 전에 삭제될 수 있어요.</string>
+    <string name="editor_twin_note">‘%1$s’은(는) 이 양방향 동기화의 반대 방향이에요. 이 설정을 따르므로 둘 다 여기서 편집해요.</string>
+    <string name="editor_schedule_desc">첫 실행은 저장 후 몇 분 안에 시작되고, 그다음에는 대략 주기마다 한 번 실행돼요. 정확한 시각은 Android가 정해요.</string>
+    <string name="editor_wifi_only_desc">예약 실행은 데이터 무제한 네트워크(보통 Wi‑Fi)를 기다려요. 지금 실행과 모두 동기화에는 적용되지 않아요.</string>
+    <string name="pill_held_back">삭제 대기 중</string>
+    <string name="pill_not_found">찾지 못함: %1$d</string>
+    <string name="pill_incomplete">완료되지 않음</string>
+    <string name="onboarding_docs_title">문서와 코드</string>
+    <string name="onboarding_docs_body">모든 기능에 대해 읽거나 코드를 보고 싶으신가요? 문서와 소스 코드는 GitHub에 있어요.</string>
+    <string name="onboarding_docs_open">GitHub에서 열기</string>
 </resources>

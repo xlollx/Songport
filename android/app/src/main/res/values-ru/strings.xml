@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">Оставьте пустым, чтобы использовать название исходного плейлиста.</string>
     <string name="editor_schedule">Расписание</string>
     <string name="editor_mirror">Зеркалировать удаления</string>
-    <string name="editor_mirror_desc">Также удалять из цели треки, которых больше нет в источнике. Выкл. = только добавлять.</string>
+    <string name="editor_mirror_desc">Удалять из цели каждый трек, которого нет в источнике, включая добавленные туда вручную. Выкл. = только добавлять.</string>
     <string name="editor_keep_order">Сохранять порядок источника</string>
     <string name="editor_keep_order_desc">После добавления треки в цели выстраиваются в порядке источника. Поддерживают Spotify, YouTube Music и Deezer.</string>
     <string name="note_order_aligned">Порядок приведён к источнику.</string>
@@ -175,7 +175,7 @@
     <string name="link_resolving">Чтение плейлиста…</string>
     <string name="note_no_removals">%1$s не позволяет удалять треки из плейлиста через свой API: %2$d треков оставлено на месте.</string>
     <string name="note_removals_deferred">Удаления отложены: поиск не был завершён, поэтому %1$d треков в цели, пока ничему не соответствующих, оставлены на месте. Они будут проверены, когда запуск завершится.</string>
-    <string name="note_removals_capped">Удаления сдержаны: этот запуск удалил бы %1$d из %2$d треков в цели. Откройте предпросмотр, чтобы увидеть их и подтвердить; если источник на самом деле их не терял, сервис выдал неполный список, и удалять ничего не нужно.</string>
+    <string name="note_removals_capped">Удаления сдержаны: этот запуск удалил бы %1$d из %2$d треков в цели. Нажмите на статус синхронизации, чтобы открыть предпросмотр и увидеть их; если их действительно нужно удалить, отметьте там «Удалить эти треки» и запустите. Если источник на самом деле их не терял, сервис выдал неполный список, и удалять ничего не нужно.</string>
     <string name="note_unchanged">С последнего запуска ничего не изменилось ни с одной стороны: пропущено.</string>
     <string name="review_share">Поделиться списком</string>
     <string name="note_search_interrupted">Проверено %1$d из %2$d треков, затем сервис потребовал более долгую паузу (%3$s). Это ограничение сервиса, а не ошибка Trackhop: найденное применено и запомнено. Запустите синхронизацию снова через несколько минут, чтобы продолжить с этого места.</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">Уже в цели: %1$d</string>
     <string name="preview_add">К добавлению: %1$d</string>
     <string name="preview_remove">К удалению: %1$d</string>
-    <string name="preview_remove_warning">Будет удалено %1$d из %2$d треков в цели. Перед подтверждением убедитесь, что в источнике действительно так мало треков: неполный список от сервиса выглядит точно так же.</string>
+    <string name="preview_remove_warning">Будет удалено %1$d из %2$d треков в цели. Убедитесь, что в источнике действительно так мало треков: неполный список от сервиса выглядит точно так же. Без отметки ниже запуск добавит треки и оставит эти.</string>
     <string name="preview_unmatched">Не найдено: %1$d</string>
     <string name="preview_ignored">Пропущено: %1$d</string>
     <string name="preview_target_new">Целевой плейлист будет создан.</string>
@@ -466,9 +466,9 @@
     </plurals>
     <string name="settings_battery">Синхронизации по расписанию не запускаются?</string>
     <string name="backup_folder_title">Резервная копия в папку</string>
-    <string name="backup_folder_desc">Trackhop уже хранит резервные копии ваших плейлистов с датами внутри приложения. Выберите папку (SD-карта, Nextcloud, Drive, любое приложение, которое её предоставляет), и новые версии будут копироваться и туда, чтобы пережить телефон. Для восстановления импортируйте файл из этой папки в «Файлах».</string>
+    <string name="backup_folder_desc">Выберите папку (SD-карта, Nextcloud, Drive, любое приложение, которое её предоставляет), и Trackhop будет сохранять туда резервные копии плейлистов с датами, чтобы они пережили телефон. Там ничего нет, пока не пройдёт резервное копирование: по расписанию ниже или по кнопке «Скопировать сейчас». Для восстановления импортируйте файл из этой папки в «Файлах».</string>
     <string name="backup_folder_none">Папка не выбрана</string>
-    <string name="backup_folder_hint">Копируются только файлы, которых ещё нет в папке.</string>
+    <string name="backup_folder_hint">«Скопировать сейчас» сначала делает резервную копию каждого подключённого сервиса, затем копирует файлы, которых ещё нет в папке.</string>
     <string name="backup_folder_pick">Выбрать папку</string>
     <string name="backup_folder_now">Скопировать сейчас</string>
     <string name="backup_folder_done">Сервисов скопировано: %1$d, новых файлов: %2$d</string>
@@ -616,7 +616,7 @@
     <string name="quota_estimate">Эта синхронизация использует около %1$s единиц.</string>
     <string name="quota_estimate_over">Этой синхронизации нужно около %1$s единиц, но на сегодня осталось только %2$s: она завершится в ближайшие дни.</string>
     <string name="editor_bidirectional">Двусторонняя</string>
-    <string name="editor_bidirectional_desc">Также создаёт зеркальную синхронизацию в обратном направлении, без удалений, чтобы оба плейлиста оставались полными.</string>
+    <string name="editor_bidirectional_desc">Также создаёт обратную синхронизацию (отмечена ↔), чтобы треки, добавленные с одной стороны, попадали на другую. Ни одна из них не удаляет треки. Обе настраиваются здесь.</string>
     <string name="editor_bidirectional_unavailable">Доступно с существующим целевым плейлистом и источником, доступным для записи.</string>
     <string name="editor_bidirectional_not_owned">Недоступно с публичной ссылкой или чужим плейлистом в качестве источника: его можно читать, но не записывать.</string>
     <string name="onboarding_title">Добро пожаловать в Trackhop</string>
@@ -1044,4 +1044,16 @@
     <string name="plugins_services">Сервисы: %1$s</string>
     <string name="services_group_unavailable">Недоступно в этой версии</string>
     <string name="plugins_where">Плагины публикуют их авторы, а не это приложение: на GitHub у них тема «trackhop-plugin».</string>
+    <string name="preview_remove_confirm">Удалить эти треки из цели (%1$d)</string>
+    <string name="note_two_way_no_removals">Удаления пропущены: это двусторонняя синхронизация, поэтому треки в цели, которых нет в источнике (%1$d), сохранены — обратная синхронизация копирует их назад. Выключите «Двусторонняя», чтобы зеркалировать удаления.</string>
+    <string name="editor_mirror_two_way">Не с двусторонней: трек, добавленный с другой стороны, может быть удалён до того, как его скопируют обратно.</string>
+    <string name="editor_twin_note">«%1$s» — обратная половина этой двусторонней синхронизации. Она следует этим настройкам, поэтому обе настраиваются здесь.</string>
+    <string name="editor_schedule_desc">Первый запуск начнётся через несколько минут после сохранения, затем примерно раз в интервал; точное время выбирает Android.</string>
+    <string name="editor_wifi_only_desc">Запуски по расписанию ждут безлимитную сеть, обычно Wi‑Fi. «Запустить» и «Синхронизировать всё» это не учитывают.</string>
+    <string name="pill_held_back">Удаления ждут</string>
+    <string name="pill_not_found">Не найдено: %1$d</string>
+    <string name="pill_incomplete">Не завершено</string>
+    <string name="onboarding_docs_title">Документация и код</string>
+    <string name="onboarding_docs_body">Хотите прочитать о каждой функции или посмотреть код? Документация и исходный код — на GitHub.</string>
+    <string name="onboarding_docs_open">Открыть на GitHub</string>
 </resources>

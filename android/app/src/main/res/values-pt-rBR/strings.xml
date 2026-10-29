@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">Deixe vazio para usar o nome da playlist de origem.</string>
     <string name="editor_schedule">Agendamento automático</string>
     <string name="editor_mirror">Espelhar remoções</string>
-    <string name="editor_mirror_desc">Remove do destino também as faixas que não estão mais na origem. Desligado = só adiciona.</string>
+    <string name="editor_mirror_desc">Remove do destino toda faixa que não está na origem, inclusive as adicionadas lá à mão. Desligado = só adiciona.</string>
     <string name="editor_keep_order">Manter a ordem da origem</string>
     <string name="editor_keep_order_desc">Depois de adicionar, o destino é colocado na ordem da origem. Spotify, YouTube Music e Deezer permitem isso.</string>
     <string name="note_order_aligned">Ordem alinhada à origem.</string>
@@ -175,7 +175,7 @@
     <string name="link_resolving">Lendo a playlist…</string>
     <string name="note_no_removals">%1$s não permite remover faixas de uma playlist pela API: %2$d faixas foram deixadas no lugar.</string>
     <string name="note_removals_deferred">Remoções adiadas: a busca não foi concluída, então %1$d faixas do destino que ainda não corresponderam a nada foram deixadas no lugar. Serão revistas quando uma execução terminar.</string>
-    <string name="note_removals_capped">Remoções retidas: esta execução removeria %1$d das %2$d faixas do destino. Abra a prévia para vê-las e confirmar; se a origem não as perdeu de verdade, o serviço a listou de forma incompleta e nada deve sair.</string>
+    <string name="note_removals_capped">Remoções retidas: esta execução removeria %1$d das %2$d faixas do destino. Toque no status da sincronização para abrir a prévia e vê-las; se devem mesmo sair, marque lá “Remover estas faixas” e execute. Se a origem não as perdeu de verdade, o serviço a listou de forma incompleta e nada deve sair.</string>
     <string name="note_unchanged">Nada mudou de nenhum lado desde a última execução: pulada.</string>
     <string name="review_share">Compartilhar a lista</string>
     <string name="note_search_interrupted">%1$d de %2$d faixas pesquisadas, depois o serviço pediu uma pausa mais longa (%3$s). É um limite do serviço, não um erro do Trackhop: o que foi encontrado foi aplicado e memorizado. Execute a sincronização de novo em alguns minutos para continuar de onde parou.</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">%1$d já no destino</string>
     <string name="preview_add">%1$d a adicionar</string>
     <string name="preview_remove">%1$d a remover</string>
-    <string name="preview_remove_warning">Isso removeria %1$d das %2$d faixas do destino. Antes de confirmar, verifique se a origem realmente tem tão poucas: uma listagem incompleta pelo serviço parece exatamente isso.</string>
+    <string name="preview_remove_warning">Isso removeria %1$d das %2$d faixas do destino. Verifique se a origem realmente tem tão poucas: uma listagem incompleta pelo serviço parece exatamente isso. Sem marcar a caixa abaixo, a execução adiciona faixas e mantém estas.</string>
     <string name="preview_unmatched">%1$d não encontradas</string>
     <string name="preview_ignored">%1$d ignoradas</string>
     <string name="preview_target_new">A playlist de destino será criada.</string>
@@ -454,9 +454,9 @@
     </plurals>
     <string name="settings_battery">Sincronizações agendadas não rodam?</string>
     <string name="backup_folder_title">Backup em uma pasta</string>
-    <string name="backup_folder_desc">O Trackhop já guarda backups datados das suas playlists dentro do app. Escolha uma pasta (cartão SD, Nextcloud, Drive, qualquer app que ofereça uma) e as novas versões são copiadas para lá também, para sobreviverem ao celular. Para restaurar, importe um arquivo dessa pasta em Arquivos.</string>
+    <string name="backup_folder_desc">Escolha uma pasta (cartão SD, Nextcloud, Drive, qualquer app que ofereça uma) e o Trackhop salva lá backups datados das suas playlists, para sobreviverem ao celular. Nada é salvo até um backup rodar: pela programação abaixo ou com Copiar agora. Para restaurar, importe um arquivo dessa pasta em Arquivos.</string>
     <string name="backup_folder_none">Nenhuma pasta escolhida</string>
-    <string name="backup_folder_hint">Só os arquivos que ainda não estão na pasta são copiados.</string>
+    <string name="backup_folder_hint">Copiar agora primeiro faz o backup de cada serviço conectado e depois copia os arquivos que ainda não estão na pasta.</string>
     <string name="backup_folder_pick">Escolher uma pasta</string>
     <string name="backup_folder_now">Copiar agora</string>
     <string name="backup_folder_done">%1$d serviços com backup, %2$d arquivos novos copiados</string>
@@ -604,7 +604,7 @@
     <string name="quota_estimate">Esta sincronização vai usar cerca de %1$s unidades.</string>
     <string name="quota_estimate_over">Esta sincronização precisa de cerca de %1$s unidades, mas só restam %2$s hoje: vai terminar ao longo dos próximos dias.</string>
     <string name="editor_bidirectional">Bidirecional</string>
-    <string name="editor_bidirectional_desc">Cria também a sincronização espelhada na direção oposta, sem remoções, para que as duas playlists fiquem completas.</string>
+    <string name="editor_bidirectional_desc">Cria também a sincronização inversa (marcada com ↔), para que faixas adicionadas de um lado cheguem ao outro. Nenhuma das duas remove faixas. As duas são editadas aqui.</string>
     <string name="editor_bidirectional_unavailable">Disponível com uma playlist de destino existente e uma origem gravável.</string>
     <string name="editor_bidirectional_not_owned">Não com um link público ou a playlist de outra pessoa como origem: ela pode ser lida, não gravada.</string>
     <string name="onboarding_title">Bem-vindo ao Trackhop</string>
@@ -1011,4 +1011,16 @@
     <string name="plugins_services">Serviços: %1$s</string>
     <string name="services_group_unavailable">Indisponíveis nesta versão</string>
     <string name="plugins_where">Os plugins são publicados pelos próprios autores, não por este app: no GitHub eles têm o tópico “trackhop-plugin”.</string>
+    <string name="preview_remove_confirm">Remover estas %1$d faixas do destino</string>
+    <string name="note_two_way_no_removals">Remoções ignoradas: esta é uma sincronização bidirecional, então as %1$d faixas do destino que não estão na origem foram mantidas (a sincronização inversa as copia de volta). Desligue Bidirecional para espelhar remoções.</string>
+    <string name="editor_mirror_two_way">Não com Bidirecional: uma faixa adicionada do outro lado poderia ser removida antes de ser copiada de volta.</string>
+    <string name="editor_twin_note">“%1$s” é a metade inversa desta sincronização bidirecional. Ela segue estas configurações, então as duas são editadas aqui.</string>
+    <string name="editor_schedule_desc">A primeira execução começa poucos minutos depois de salvar e depois cerca de uma vez por intervalo; o Android escolhe o momento exato.</string>
+    <string name="editor_wifi_only_desc">Execuções programadas esperam uma rede ilimitada, geralmente Wi‑Fi. Executar agora e Sincronizar tudo ignoram isso.</string>
+    <string name="pill_held_back">Remoções pendentes</string>
+    <string name="pill_not_found">Não encontradas: %1$d</string>
+    <string name="pill_incomplete">Não concluída</string>
+    <string name="onboarding_docs_title">Documentação e código</string>
+    <string name="onboarding_docs_body">Quer ler sobre cada recurso, ou ver o código? A documentação e o código-fonte estão no GitHub.</string>
+    <string name="onboarding_docs_open">Abrir no GitHub</string>
 </resources>

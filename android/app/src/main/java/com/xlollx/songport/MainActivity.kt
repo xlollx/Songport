@@ -97,6 +97,7 @@ import com.xlollx.songport.ui.PlaylistsScreen
 import com.xlollx.songport.ui.LibraryScanScreen
 import com.xlollx.songport.ui.UnplayableScreen
 import com.xlollx.songport.ui.SyncsScreen
+import com.xlollx.songport.ui.twinOriginal
 import com.xlollx.songport.ui.ToolsScreen
 import com.xlollx.songport.ui.UnmatchedScreen
 import com.xlollx.songport.ui.FilesScreen
@@ -241,6 +242,8 @@ private fun MainScreen(
     val snackbar = remember { SnackbarHostState() }
     // The screen on top survives a rotation and a fold: jobs travel as JSON, providers by id.
     var editing by rememberSaveable(stateSaver = JobSaver) { mutableStateOf<SyncJob?>(null) }
+    // The "↔" card whose Edit opened its original sync instead: the editor names it in a note.
+    var editingTwinId by rememberSaveable { mutableStateOf<String?>(null) }
     var wizardFor by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
     var unmatchedReport by rememberSaveable { mutableStateOf<String?>(null) }
     var filesOpen by rememberSaveable { mutableStateOf(false) }
@@ -472,6 +475,7 @@ private fun MainScreen(
                     onCancel = { editing = null },
                     // To Accounts with its service grid open; the sync not saved yet is left.
                     onConnectService = { editing = null; tab = MainActivity.TAB_ACCOUNTS; addConnector = true },
+                    twinName = editingTwinId?.let { store.job(it) }?.takeIf { it.linkedJobId == current.id }?.name,
                     onSave = { job, reverse ->
                         val previous = store.job(job.id)
                         store.upsertJob(job)
@@ -564,7 +568,12 @@ private fun MainScreen(
             TabContent(tab) { shown -> when (shown) {
                 MainActivity.TAB_SYNCS -> SyncsScreen(
                     data = data,
-                    onEdit = { editing = it },
+                    // The "↔" half of a two-way pair is edited through its original: one set of settings for both.
+                    onEdit = { j ->
+                        val original = twinOriginal(j, store.data.jobs)
+                        editingTwinId = if (original != null) j.id else null
+                        editing = original ?: j
+                    },
                     onPreview = { previewJob = it },
                     onRun = { Scheduler.runNow(ctx, it.id) },
                     onRunAll = { Scheduler.runNow(ctx, SyncWorker.ALL) },
@@ -576,6 +585,7 @@ private fun MainScreen(
                     onReview = { unmatchedReport = it },
                     onOpenTarget = { targetJob = it },
                     onStats = { statsOpen = true },
+                    onOpenLog = { logOpen = true },
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
                 MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks, onSubpage = { toolSubpage = it }, onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS }, onStats = { statsOpen = true }, onCompareClosed = { compareLinks = null })

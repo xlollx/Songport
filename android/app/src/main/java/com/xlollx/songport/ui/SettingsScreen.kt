@@ -96,7 +96,7 @@ private fun openUrl(ctx: android.content.Context, url: String) {
     runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }
 
-private const val SOURCE_URL = "https://github.com/xlollx/Trackhop"
+internal const val SOURCE_URL = "https://github.com/xlollx/Trackhop"
 
 /** The little arrow of a row that leaves the app (browser, system settings). */
 @Composable
@@ -312,7 +312,8 @@ fun SettingsScreen(
                     BridgePlugin.installedPlugins(ctx).map { it to if (it.packageName == active) services else emptyList() }
                 }
             }
-            PrefSection(stringResource(R.string.plugins_title), footer = stringResource(R.string.plugins_desc) + "\n\n" + stringResource(R.string.plugins_where)) {
+            // What a plugin is above the list, where plugins come from below it: two texts, each its own node.
+            PrefSection(stringResource(R.string.plugins_title), description = stringResource(R.string.plugins_desc), footer = stringResource(R.string.plugins_where)) {
                 val list = plugins
                 if (list != null && list.isEmpty()) PrefRow(Icons.Filled.Extension, stringResource(R.string.plugins_none))
                 list?.forEach { (p, services) ->

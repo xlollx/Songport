@@ -100,6 +100,11 @@ data class SyncJob(
     val keepOrder: Boolean = false,
     /** The card's colour, chosen by the user to tell syncs apart at a glance (a key like "teal"); null = the default look. */
     val color: String? = null,
+    /**
+     * The "↔" half of a two-way pair, made by the editor from the sync [linkedJobId] names: it is
+     * edited through that sync, and keeps its own name, ignore list and reports.
+     */
+    val twin: Boolean = false,
 )
 
 /**
@@ -162,6 +167,10 @@ data class SyncReport(
      * della destinazione): una proposta da accettare con un tocco, senza rifare la ricerca.
      */
     val suggestions: Map<String, Track> = emptyMap(),
+    /** Removals the safety cap held back: they wait for a confirmation in the preview. */
+    val heldBack: Int = 0,
+    /** The search stopped early (limits of the service): the next run continues it. */
+    val searchInterrupted: Boolean = false,
 ) {
     val ok: Boolean get() = error == null
 }
@@ -189,6 +198,12 @@ data class SyncPlan(
     val sourceOrder: List<String> = emptyList(),
     /** How many tracks the target listed: the scale a removal count is read against. */
     val targetCount: Int = 0,
+    /** A preview plan whose removals a normal run would hold back: they need the user's confirmation. */
+    val removalsNeedConfirmation: Boolean = false,
+    /** Removals held back by the safety cap in this (non-preview) plan. */
+    val heldBackRemovals: Int = 0,
+    /** The search stopped before the end. */
+    val searchInterrupted: Boolean = false,
 )
 
 /** Progresso di una sync in corso, mostrato nella UI. */

@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">Zostaw puste, aby użyć nazwy playlisty źródłowej.</string>
     <string name="editor_schedule">Harmonogram automatyczny</string>
     <string name="editor_mirror">Odzwierciedlaj usunięcia</string>
-    <string name="editor_mirror_desc">Usuwaj z celu także utwory, których nie ma już w źródle. Wyłączone = tylko dodawanie.</string>
+    <string name="editor_mirror_desc">Usuwa z celu każdy utwór, którego nie ma w źródle, także dodane tam ręcznie. Wyłączone = tylko dodawanie.</string>
     <string name="editor_keep_order">Zachowaj kolejność źródła</string>
     <string name="editor_keep_order_desc">Po dodaniu cel jest układany w kolejności źródła. Potrafią to Spotify, YouTube Music i Deezer.</string>
     <string name="note_order_aligned">Kolejność dopasowana do źródła.</string>
@@ -175,7 +175,7 @@
     <string name="link_resolving">Odczytywanie playlisty…</string>
     <string name="note_no_removals">%1$s nie pozwala usuwać utworów z playlisty przez swoje API: pozostawiono %2$d utworów.</string>
     <string name="note_removals_deferred">Usunięcia odłożone: wyszukiwanie nie zostało ukończone, więc %1$d utworów w celu, które jeszcze do niczego nie pasowały, pozostawiono na miejscu. Zostaną sprawdzone, gdy jakieś uruchomienie się zakończy.</string>
-    <string name="note_removals_capped">Usunięcia wstrzymane: to uruchomienie usunęłoby %1$d z %2$d utworów w celu. Otwórz podgląd, aby je zobaczyć i potwierdzić; jeśli źródło naprawdę ich nie straciło, serwis podał niepełną listę i nic nie powinno zniknąć.</string>
+    <string name="note_removals_capped">Usunięcia wstrzymane: to uruchomienie usunęłoby %1$d z %2$d utworów w celu. Stuknij status synchronizacji, aby otworzyć podgląd i je zobaczyć; jeśli naprawdę mają zniknąć, zaznacz tam „Usuń te utwory” i uruchom. Jeśli źródło naprawdę ich nie straciło, serwis podał niepełną listę i nic nie powinno zniknąć.</string>
     <string name="note_unchanged">Od ostatniego uruchomienia nic się nie zmieniło po żadnej stronie: pominięto.</string>
     <string name="review_share">Udostępnij listę</string>
     <string name="note_search_interrupted">Przeszukano %1$d z %2$d utworów, po czym serwis poprosił o dłuższą przerwę (%3$s). To ograniczenie serwisu, nie błąd Trackhop: to, co znaleziono, zostało zastosowane i zapamiętane. Uruchom synchronizację ponownie za kilka minut, aby kontynuować od tego miejsca.</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">Już w celu: %1$d</string>
     <string name="preview_add">Do dodania: %1$d</string>
     <string name="preview_remove">Do usunięcia: %1$d</string>
-    <string name="preview_remove_warning">To usunęłoby %1$d z %2$d utworów w celu. Zanim potwierdzisz, sprawdź, czy źródło naprawdę zawiera tak mało: niepełna lista z serwisu wygląda dokładnie tak samo.</string>
+    <string name="preview_remove_warning">To usunęłoby %1$d z %2$d utworów w celu. Sprawdź, czy źródło naprawdę zawiera tak mało: niepełna lista z serwisu wygląda dokładnie tak samo. Bez zaznaczenia pola poniżej uruchomienie doda utwory i zachowa te.</string>
     <string name="preview_unmatched">Nie znaleziono: %1$d</string>
     <string name="preview_ignored">Zignorowano: %1$d</string>
     <string name="preview_target_new">Playlista docelowa zostanie utworzona.</string>
@@ -466,9 +466,9 @@
     </plurals>
     <string name="settings_battery">Zaplanowane synchronizacje nie działają?</string>
     <string name="backup_folder_title">Kopia zapasowa do folderu</string>
-    <string name="backup_folder_desc">Trackhop już przechowuje w aplikacji kopie zapasowe twoich playlist z datą. Wybierz folder (karta SD, Nextcloud, Drive, dowolna aplikacja, która go udostępnia), a nowe wersje będą kopiowane także tam, więc przetrwają telefon. Aby przywrócić, zaimportuj plik z tego folderu w Plikach.</string>
+    <string name="backup_folder_desc">Wybierz folder (karta SD, Nextcloud, Drive, dowolna aplikacja, która go udostępnia), a Trackhop zapisze w nim kopie zapasowe twoich playlist z datą, więc przetrwają telefon. Nic tam nie ma, dopóki nie zostanie wykonana kopia: według harmonogramu poniżej albo przyciskiem Kopiuj teraz. Aby przywrócić, zaimportuj plik z tego folderu w Plikach.</string>
     <string name="backup_folder_none">Nie wybrano folderu</string>
-    <string name="backup_folder_hint">Kopiowane są tylko pliki, których jeszcze nie ma w folderze.</string>
+    <string name="backup_folder_hint">Kopiuj teraz najpierw robi kopię każdego połączonego serwisu, a potem kopiuje pliki, których jeszcze nie ma w folderze.</string>
     <string name="backup_folder_pick">Wybierz folder</string>
     <string name="backup_folder_now">Kopiuj teraz</string>
     <string name="backup_folder_done">Serwisy z kopią: %1$d, skopiowane nowe pliki: %2$d</string>
@@ -616,7 +616,7 @@
     <string name="quota_estimate">Ta synchronizacja zużyje około %1$s jednostek.</string>
     <string name="quota_estimate_over">Ta synchronizacja potrzebuje około %1$s jednostek, ale dziś zostało tylko %2$s: zakończy się w ciągu kolejnych dni.</string>
     <string name="editor_bidirectional">Dwukierunkowa</string>
-    <string name="editor_bidirectional_desc">Tworzy też lustrzaną synchronizację w przeciwnym kierunku, bez usunięć, aby obie playlisty pozostały kompletne.</string>
+    <string name="editor_bidirectional_desc">Tworzy też synchronizację w przeciwnym kierunku (oznaczoną ↔), aby utwory dodane po jednej stronie trafiały na drugą. Żadna z nich nie usuwa utworów. Obie edytujesz tutaj.</string>
     <string name="editor_bidirectional_unavailable">Dostępne z istniejącą playlistą docelową i zapisywalnym źródłem.</string>
     <string name="editor_bidirectional_not_owned">Nie z publicznym linkiem ani cudzą playlistą jako źródłem: można ją odczytać, ale nie zapisać.</string>
     <string name="onboarding_title">Witaj w Trackhop</string>
@@ -1046,4 +1046,16 @@
     <string name="plugins_services">Usługi: %1$s</string>
     <string name="services_group_unavailable">Niedostępne w tej wersji</string>
     <string name="plugins_where">Wtyczki publikują ich autorzy, nie ta aplikacja: na GitHubie mają temat „trackhop-plugin”.</string>
+    <string name="preview_remove_confirm">Usuń te %1$d utworów z celu</string>
+    <string name="note_two_way_no_removals">Usunięcia pominięte: to synchronizacja dwukierunkowa, więc %1$d utworów w celu, których nie ma w źródle, zostało zachowanych (synchronizacja odwrotna kopiuje je z powrotem). Wyłącz Dwukierunkową, aby odzwierciedlać usunięcia.</string>
+    <string name="editor_mirror_two_way">Nie z Dwukierunkową: utwór dodany po drugiej stronie mógłby zostać usunięty, zanim zostanie skopiowany z powrotem.</string>
+    <string name="editor_twin_note">„%1$s” to odwrotna połowa tej synchronizacji dwukierunkowej. Korzysta z tych ustawień, więc obie edytujesz tutaj.</string>
+    <string name="editor_schedule_desc">Pierwsze uruchomienie startuje kilka minut po zapisaniu, potem mniej więcej raz na okres; dokładny moment wybiera Android.</string>
+    <string name="editor_wifi_only_desc">Zaplanowane uruchomienia czekają na sieć bez limitu danych, zwykle Wi‑Fi. Uruchom teraz i Synchronizuj wszystko to ignorują.</string>
+    <string name="pill_held_back">Usunięcia czekają</string>
+    <string name="pill_not_found">Nieznalezione: %1$d</string>
+    <string name="pill_incomplete">Niedokończona</string>
+    <string name="onboarding_docs_title">Dokumentacja i kod</string>
+    <string name="onboarding_docs_body">Chcesz poczytać o każdej funkcji albo zajrzeć do kodu? Dokumentacja i kod źródłowy są na GitHubie.</string>
+    <string name="onboarding_docs_open">Otwórz na GitHubie</string>
 </resources>

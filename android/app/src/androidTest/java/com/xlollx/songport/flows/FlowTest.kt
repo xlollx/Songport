@@ -267,6 +267,14 @@ abstract class FlowTest {
                         // Where the app's own threads are: a request or a lock that never returns shows here.
                         Thread.getAllStackTraces().filter { (t, st) -> st.any { it.className.startsWith("com.xlollx.songport") && !it.className.contains(".flows.") } }
                             .forEach { (t, st) -> Log.e("UiFlowThreads", "$name ${t.name}\n" + st.take(40).joinToString("\n") { "  at $it" }) }
+                        // A coroutine waiting on another thread shows no app frame: the main thread and
+                        // every busy worker (network, coroutines) too, idle pool threads left out.
+                        val idle = listOf("CoroutineScheduler\$Worker.park", "CoroutineScheduler\$Worker.tryPark", "LinkedBlockingQueue.take", "SynchronousQueue", "nativePollOnce")
+                        Thread.getAllStackTraces().filter { (t, st) ->
+                            t === android.os.Looper.getMainLooper().thread ||
+                                (st.any { f -> f.className.startsWith("okhttp3") || f.className.startsWith("kotlinx.coroutines") || f.className.startsWith("java.net") } &&
+                                    st.none { f -> idle.any { "${f.className}.${f.methodName}".contains(it) } })
+                        }.forEach { (t, st) -> Log.e("UiFlowThreads", "$name busy ${t.name} (${t.state})\n" + st.take(30).joinToString("\n") { "  at $it" }) }
                     }
                     runCatching {
                         compose.onAllNodes(isRoot()).fetchSemanticsNodes().indices.forEach { i ->

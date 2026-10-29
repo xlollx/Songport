@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">Laissez vide pour reprendre le nom de la playlist d\'origine.</string>
     <string name="editor_schedule">Planification automatique</string>
     <string name="editor_mirror">Refléter les retraits</string>
-    <string name="editor_mirror_desc">Retire aussi de la cible les titres qui ne sont plus dans la source. Désactivé = ajout uniquement.</string>
+    <string name="editor_mirror_desc">Retire de la cible chaque titre absent de la source, y compris ceux ajoutés à la main. Désactivé = ajout uniquement.</string>
     <string name="editor_keep_order">Garder l\'ordre de la source</string>
     <string name="editor_keep_order_desc">Après les ajouts, la destination est remise dans l\'ordre de la source. Possible avec Spotify, YouTube Music et Deezer.</string>
     <string name="note_order_aligned">Ordre aligné sur la source.</string>
@@ -175,7 +175,7 @@
     <string name="link_resolving">Lecture de la playlist…</string>
     <string name="note_no_removals">%1$s ne permet pas de retirer des titres d\'une playlist via son API : %2$d titres ont été laissés en place.</string>
     <string name="note_removals_deferred">Suppressions reportées : la recherche n\'a pas été terminée, donc %1$d titres de la destination sans correspondance pour l\'instant restent en place. Ils seront réexaminés quand une exécution ira jusqu\'au bout.</string>
-    <string name="note_removals_capped">Suppressions retenues : cette exécution retirerait %1$d des %2$d titres de la destination. Ouvrez l\'aperçu pour les voir et confirmer ; si la source ne les a pas vraiment perdus, le service l\'a lue à moitié et rien ne doit partir.</string>
+    <string name="note_removals_capped">Suppressions retenues : cette exécution retirerait %1$d des %2$d titres de la destination. Touchez l\'état de la sync pour ouvrir l\'aperçu et les voir ; s\'ils doivent vraiment partir, cochez-y « Retirer ces titres » et lancez-la. Si la source ne les a pas vraiment perdus, le service l\'a lue à moitié et rien ne doit partir.</string>
     <string name="note_unchanged">Rien n\'a changé d\'un côté ni de l\'autre depuis la dernière exécution : ignoré.</string>
     <string name="review_share">Partager la liste</string>
     <string name="note_search_interrupted">%1$d titres sur %2$d recherchés, puis le service a demandé une pause plus longue (%3$s). C\'est une limite du service, pas une erreur de Trackhop : ce qui a été trouvé a été appliqué et mémorisé. Relancez la sync dans quelques minutes pour continuer.</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">%1$d déjà sur la cible</string>
     <string name="preview_add">%1$d à ajouter</string>
     <string name="preview_remove">%1$d à retirer</string>
-    <string name="preview_remove_warning">Cela retirerait %1$d des %2$d titres de la destination. Avant de confirmer, vérifiez que la source en compte vraiment si peu : une lecture incomplète par le service ressemble exactement à cela.</string>
+    <string name="preview_remove_warning">Cela retirerait %1$d des %2$d titres de la destination. Vérifiez que la source en compte vraiment si peu : une lecture incomplète par le service ressemble exactement à cela. Sans la case ci-dessous cochée, l\'exécution ajoute des titres et garde ceux-ci.</string>
     <string name="preview_unmatched">%1$d introuvables</string>
     <string name="preview_ignored">%1$d ignorés</string>
     <string name="preview_target_new">La playlist cible sera créée.</string>
@@ -454,9 +454,9 @@
     </plurals>
     <string name="settings_battery">Les syncs planifiées ne se lancent pas ?</string>
     <string name="backup_folder_title">Sauvegarde dans un dossier</string>
-    <string name="backup_folder_desc">Trackhop garde déjà dans l\'app des sauvegardes datées de vos playlists. Choisissez un dossier (carte SD, Nextcloud, Drive, toute app qui en propose un) et les nouvelles versions y sont copiées aussi, pour survivre au téléphone. Pour restaurer, importez un fichier de ce dossier dans Fichiers.</string>
+    <string name="backup_folder_desc">Choisissez un dossier (carte SD, Nextcloud, Drive, toute app qui en propose un) et Trackhop y enregistre des sauvegardes datées de vos playlists, pour survivre au téléphone. Rien n\'y est tant qu\'aucune sauvegarde n\'a eu lieu : selon le calendrier ci-dessous ou avec Copier maintenant. Pour restaurer, importez un fichier de ce dossier dans Fichiers.</string>
     <string name="backup_folder_none">Aucun dossier choisi</string>
-    <string name="backup_folder_hint">Seuls les fichiers absents du dossier sont copiés.</string>
+    <string name="backup_folder_hint">Copier maintenant sauvegarde d\'abord chaque service connecté, puis copie les fichiers absents du dossier.</string>
     <string name="backup_folder_pick">Choisir un dossier</string>
     <string name="backup_folder_now">Copier maintenant</string>
     <string name="backup_folder_done">%1$d services sauvegardés, %2$d nouveaux fichiers copiés</string>
@@ -604,7 +604,7 @@
     <string name="quota_estimate">Cette sync utilisera environ %1$s unités.</string>
     <string name="quota_estimate_over">Cette sync nécessite environ %1$s unités, mais il n\'en reste que %2$s aujourd\'hui : elle se terminera au cours des prochains jours.</string>
     <string name="editor_bidirectional">Bidirectionnelle</string>
-    <string name="editor_bidirectional_desc">Crée aussi la sync miroir dans l\'autre sens, sans retraits, pour que les deux playlists restent complètes.</string>
+    <string name="editor_bidirectional_desc">Crée aussi la sync inverse (marquée ↔), pour que les titres ajoutés d\'un côté arrivent de l\'autre. Aucune des deux ne retire de titres. Les deux se modifient ici.</string>
     <string name="editor_bidirectional_unavailable">Disponible avec une playlist cible existante et une source modifiable.</string>
     <string name="editor_bidirectional_not_owned">Pas avec un lien public ou la playlist de quelqu\'un d\'autre comme source : on peut la lire, pas y écrire.</string>
     <string name="onboarding_title">Bienvenue dans Trackhop</string>
@@ -1011,4 +1011,16 @@
     <string name="plugins_services">Services : %1$s</string>
     <string name="services_group_unavailable">Indisponibles dans cette version</string>
     <string name="plugins_where">Les plugins sont publiés par leurs auteurs, pas par cette app : sur GitHub, ils portent le sujet « trackhop-plugin ».</string>
+    <string name="preview_remove_confirm">Retirer ces %1$d titres de la destination</string>
+    <string name="note_two_way_no_removals">Suppressions ignorées : c\'est une sync bidirectionnelle, donc les %1$d titres de la destination absents de la source ont été gardés (la sync inverse les recopie). Désactivez Bidirectionnelle pour refléter les retraits.</string>
+    <string name="editor_mirror_two_way">Pas avec Bidirectionnelle : un titre ajouté de l\'autre côté pourrait être retiré avant d\'être recopié.</string>
+    <string name="editor_twin_note">« %1$s » est la moitié inverse de cette sync bidirectionnelle. Elle suit ces réglages : les deux se modifient ici.</string>
+    <string name="editor_schedule_desc">La première exécution démarre quelques minutes après l\'enregistrement, puis environ une fois par intervalle ; Android choisit le moment exact.</string>
+    <string name="editor_wifi_only_desc">Les exécutions planifiées attendent un réseau non limité, en général le Wi‑Fi. Lancer maintenant et Tout synchroniser n\'en tiennent pas compte.</string>
+    <string name="pill_held_back">Retraits en attente</string>
+    <string name="pill_not_found">Introuvables : %1$d</string>
+    <string name="pill_incomplete">Inachevée</string>
+    <string name="onboarding_docs_title">Documentation et code</string>
+    <string name="onboarding_docs_body">Envie de lire sur chaque fonction, ou de voir le code ? La documentation et le code source sont sur GitHub.</string>
+    <string name="onboarding_docs_open">Ouvrir sur GitHub</string>
 </resources>

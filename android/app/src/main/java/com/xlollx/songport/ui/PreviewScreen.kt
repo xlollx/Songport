@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -68,6 +71,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
     var plan by remember { mutableStateOf<SyncPlan?>(null) }
     var progress by remember { mutableStateOf<Progress?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
+    var confirmRemovals by remember { mutableStateOf(false) }
     ScreenBackHandler(onClose)
 
     LaunchedEffect(job.id) {
@@ -104,8 +108,8 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                             Text(stringResource(R.string.preview_present, p.alreadyPresent))
                             Text(stringResource(R.string.preview_add, p.toAdd.size))
                             if (job.mirrorRemovals) Text(stringResource(R.string.preview_remove, p.toRemove.size))
-                            // A quarter of the target or more: the one case where "confirm" deserves a second look.
-                            if (p.toRemove.size > 10 && p.toRemove.size * 4 > p.targetCount) {
+                            // A large share of the target: a normal run holds these back unless the box below is ticked.
+                            if (p.removalsNeedConfirmation) {
                                 Text(stringResource(R.string.preview_remove_warning, p.toRemove.size, p.targetCount), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                             }
                             Text(stringResource(R.string.preview_unmatched, p.unmatched.size))
@@ -123,7 +127,22 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                         }
                     }
                     if (hasWork) {
-                        Button(onClick = { onRun(job) }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.run_now)) }
+                        // The one place large removals are confirmed: a deliberate tick, then Run now.
+                        // Unticked, the run adds as usual and holds the removals back again.
+                        if (p.removalsNeedConfirmation) {
+                            Row(
+                                Modifier.fillMaxWidth().toggleable(value = confirmRemovals, role = Role.Checkbox, onValueChange = { confirmRemovals = it }),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Checkbox(checked = confirmRemovals, onCheckedChange = null)
+                                Spacer(Modifier.width(8.dp))
+                                Text(stringResource(R.string.preview_remove_confirm, p.toRemove.size), style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
+                        Button(onClick = {
+                            if (p.removalsNeedConfirmation && confirmRemovals) store.confirmRemovals(job.id, p.toRemove.map { it.id })
+                            onRun(job)
+                        }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.run_now)) }
                     }
                     if (p.uncertain.isNotEmpty()) {
                         Text(stringResource(R.string.review_section_uncertain, p.uncertain.size), style = MaterialTheme.typography.titleMedium)
@@ -133,7 +152,11 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                                 review = review, dstName = dstName,
                                 expanded = openReview == review.source.id,
                                 onToggle = { openReview = if (openReview == review.source.id) null else review.source.id },
-                                onKeep = { plan = p.copy(uncertain = p.uncertain - review) },
+                                onKeep = {
+                                    // Settled here: remembered, so the run does not ask again.
+                                    engine.rematchInPlan(job, review, review.chosen)
+                                    plan = p.copy(uncertain = p.uncertain - review)
+                                },
                                 search = { q -> engine.searchOnTarget(job, q, review.source) },
                                 webSearchUrl = dst?.let { d -> { q: String -> d.webSearchUrl(ctx, q) } },
                                 onReplace = { chosen ->

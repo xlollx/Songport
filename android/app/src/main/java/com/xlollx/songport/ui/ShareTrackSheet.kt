@@ -1,5 +1,7 @@
 package com.xlollx.songport.ui
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import com.xlollx.songport.providers.*
 import android.content.Intent
@@ -106,23 +108,33 @@ fun ShareTrackSheet(
         exact = null; best = null; changing = false
         if (dst == null || src == null) return@LaunchedEffect
         searching = true
-        try {
-            // A service that never answers must not leave the sheet on "Finding it…": after a while
-            // the manual search takes over, where the user can try again or type the title.
-            val done = withTimeoutOrNull(SEARCH_TIMEOUT_MS) {
-                exact = exactOn(app, dst, ref, link)
-                if (exact == null && src.title.isNotBlank()) {
-                    val job = jobFor(dst)
-                    val found = engine.searchOnTarget(job, queryOf(src), src)
-                    best = found.hits.maxByOrNull { it.score }?.takeIf { it.score >= Matcher.DEFAULT_THRESHOLD }
-                    if (best == null) changing = true
-                } else if (exact == null) changing = true
-            }
-            if (done == null) changing = true
+        trace("lookup on ${dst.id} for ${ref.service}:${ref.trackId}")
+        // The whole lookup (song.link, the service, the matching) is one step off the main thread,
+        // and its result is shown in one go. A service that never answers must not leave the sheet
+        // on "Finding it…": after a while (real time, whatever the screen's dispatcher) the manual
+        // search takes over, where the user can try again or type the title.
+        val found: Lookup? = try {
+            withContext(Dispatchers.IO) {
+                withTimeoutOrNull(SEARCH_TIMEOUT_MS) {
+                    val e = exactOn(app, dst, ref, link)
+                    trace("exact: ${e?.id}")
+                    if (e != null || src.title.isBlank()) Lookup(e, null)
+                    else {
+                        val hits = engine.searchOnTarget(jobFor(dst), queryOf(src), src).hits
+                        trace("search: ${hits.size} hits")
+                        Lookup(null, hits.maxByOrNull { it.score }?.takeIf { it.score >= Matcher.DEFAULT_THRESHOLD })
+                    }
+                }
+            }.also { if (it == null) trace("timed out") }
         } catch (e: CancellationException) { throw e } catch (e: Exception) {
-            onMessage(e.message ?: ctx.getString(R.string.error_generic)); changing = true
+            trace("failed: $e")
+            onMessage(e.message ?: ctx.getString(R.string.error_generic)); null
         }
+        exact = found?.exact
+        best = found?.best
+        changing = exact == null && best == null
         searching = false
+        trace("shown: exact=${exact != null} best=${best != null}")
     }
 
     fun open(p: MusicProvider, t: Track) {
@@ -212,6 +224,15 @@ fun ShareTrackSheet(
 
 private const val SEARCH_TIMEOUT_MS = 30_000L
 
+/** What the lookup found on the target: the very recording, or the best of a search. */
+private class Lookup(val exact: Track?, val best: TargetSearch.Hit?)
+
+/** The lookup's steps in the debug log (UI test failures show where it stopped). */
+private fun trace(msg: String) { if (com.xlollx.songport.BuildConfig.DEBUG) android.util.Log.d("ShareSheet", "[${Thread.currentThread().name}] $msg") }
+
+/** [block]'s result, or null on failure; a cancellation is passed on, never taken for a failure. */
+private inline fun <T> attempt(block: () -> T?): T? = try { block() } catch (e: CancellationException) { throw e } catch (e: Exception) { null }
+
 @Composable
 private fun Actions(p: MusicProvider, t: Track, canOpen: Boolean, onAdd: () -> Unit, onOpen: () -> Unit, onChange: () -> Unit) {
     val ctx = LocalContext.current
@@ -239,11 +260,11 @@ private fun serviceName(service: String) = when (service) {
 private suspend fun describe(app: android.content.Context, ref: TrackLinks.Ref, link: String): Track? {
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(app) }
     connected.firstOrNull { TrackLinks.matches(ref.service, it.serviceId) }?.let { own ->
-        runCatching { own.track(app, ref.trackId) }.getOrNull()?.takeIf { it.title.isNotBlank() }?.let { return it }
+        attempt { own.track(app, ref.trackId) }?.takeIf { it.title.isNotBlank() }?.let { return it }
     }
     for (p in connected.filter { !TrackLinks.matches(ref.service, it.serviceId) }) {
-        val there = runCatching { TrackLinks.viaOdesli(link, p.serviceId) }.getOrNull() ?: continue
-        runCatching { p.track(app, there.trackId) }.getOrNull()?.takeIf { it.title.isNotBlank() }?.let { return it }
+        val there = attempt { TrackLinks.viaOdesli(link, p.serviceId) } ?: continue
+        attempt { p.track(app, there.trackId) }?.takeIf { it.title.isNotBlank() }?.let { return it }
     }
     return TrackLookup.describe(ref, link)
 }
@@ -253,6 +274,6 @@ private suspend fun exactOn(app: android.content.Context, dst: MusicProvider, re
     // Shazam's ids are its own: the song is found by searching what it is called.
     if (ref.service == ShazamShare.SERVICE) return null
     val id = if (TrackLinks.matches(ref.service, dst.serviceId)) ref.trackId
-        else runCatching { TrackLinks.viaOdesli(link, dst.serviceId) }.getOrNull()?.trackId ?: return null
-    return runCatching { dst.track(app, id) }.getOrNull()?.takeIf { it.title.isNotBlank() }
+        else attempt { TrackLinks.viaOdesli(link, dst.serviceId) }?.trackId ?: return null
+    return attempt { dst.track(app, id) }?.takeIf { it.title.isNotBlank() }
 }
