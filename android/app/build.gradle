@@ -30,13 +30,17 @@ def googleScheme = googleClientId
         ? 'com.googleusercontent.apps.' + googleClientId.replace('.apps.googleusercontent.com', '')
         : 'com.googleusercontent.apps.unconfigured'
 
-// AdMob. Gli ID veri di Songport sono il default della build di release (non sono segreti: stanno in
-// ogni APK); le build di debug usano sempre gli ID DI TEST di Google, cosi' chi sviluppa non genera
+// AdMob. Gli ID veri sono il default della build di release quando ADMOB_LIVE e' attivo (non sono
+// segreti: stanno in ogni APK); le build di debug usano sempre gli ID DI TEST di Google, cosi' chi sviluppa non genera
 // traffico non valido. Un fork deve mettere i propri (variabili ADMOB_APP_ID / ADMOB_BANNER_ID).
 def admobTestAppId    = 'ca-app-pub-3940256099942544~3347511713'
 def admobTestBannerId = 'ca-app-pub-3940256099942544/9214589741'
-def admobAppId    = cfg('ADMOB_APP_ID', 'ca-app-pub-8339336051440231~4237888161')
-def admobBannerId = cfg('ADMOB_BANNER_ID', 'ca-app-pub-8339336051440231/9729887992')
+// Until the Play listing is in production the release build shows Google's test ads too: closed
+// testers (some of them paid testers) tapping real ads would count as invalid traffic on the AdMob
+// account. ADMOB_LIVE=true (repository variable, or this default) switches the release to the real ids.
+def admobLive     = cfg('ADMOB_LIVE', 'false') == 'true'
+def admobAppId    = admobLive ? cfg('ADMOB_APP_ID', 'ca-app-pub-8339336051440231~4237888161') : admobTestAppId
+def admobBannerId = admobLive ? cfg('ADMOB_BANNER_ID', 'ca-app-pub-8339336051440231/9729887992') : admobTestBannerId
 // Dispositivi di test AdMob (id hash separati da virgola): ricevono annunci di prova anche con gli ID
 // veri, cosi' chi sviluppa non genera traffico non valido sul proprio telefono.
 def admobTestDevices = cfg('ADMOB_TEST_DEVICES', '')

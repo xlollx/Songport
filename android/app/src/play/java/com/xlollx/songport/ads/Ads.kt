@@ -3,7 +3,11 @@ package com.xlollx.songport.ads
 import com.xlollx.songport.providers.*
 import android.app.Activity
 import android.content.Context
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -81,8 +85,18 @@ fun AdBanner(modifier: Modifier = Modifier) {
     val can by Ads.canRequestAds.collectAsState()
     if (!can) return
     val widthDp = LocalConfiguration.current.screenWidthDp
+    // A gap between the ad and the tabs right under it: AdMob asks for ads not to sit against
+    // controls, where a tap meant for a tab lands on the ad.
+    Column(modifier.fillMaxWidth()) {
+        AnchoredBanner(widthDp)
+        Spacer(Modifier.height(10.dp))
+    }
+}
+
+@Composable
+private fun AnchoredBanner(widthDp: Int) {
     AndroidView(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         factory = { ctx ->
             AdView(ctx).apply {
                 adUnitId = BuildConfig.ADMOB_BANNER_ID
