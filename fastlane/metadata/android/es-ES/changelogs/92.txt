@@ -1,0 +1,1 @@
+Amazon Music: las canciones que Amazon ya tiene pero no muestra en la lista de la playlist ya no se vuelven a añadir en cada sincronización ni se cuentan como añadidas. El registro las nombra, para que sea fácil informar de ello.

@@ -1,0 +1,1 @@
+Amazon Music: Titel, die Amazon schon hat, aber in der Playlist-Liste nicht anzeigt, werden nicht mehr bei jeder Synchronisierung erneut hinzugefügt oder als hinzugefügt gezählt. Das Protokoll nennt sie, damit sich so etwas leicht melden lässt.
