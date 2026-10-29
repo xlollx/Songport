@@ -86,7 +86,8 @@ class FlavorFlowTest : FlowTest() {
         installConnectors()
         launch(tabIntent(MainActivity.TAB_SETTINGS))
         waitText(s(if (full) R.string.settings_free_note else R.string.settings_ads_note))
-        assertEquals("the neutral plugins section", !full, exists(s(R.string.plugins_desc)))
+        // The section's footer is the description followed by where plugins are published (1.2.6).
+        assertEquals("the neutral plugins section", !full, exists(s(R.string.plugins_desc), substring = true))
         // No plugin on the test device: the Play build says so, and names nothing.
         if (!full) waitText(s(R.string.plugins_none))
     }
