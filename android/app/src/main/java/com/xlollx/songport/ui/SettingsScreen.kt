@@ -58,6 +58,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -235,23 +236,24 @@ fun SettingsScreen(
                     scheduleOpen = false
                     store.updateSettings { it.copy(backupSchedule = s) }; Scheduler.applyBackup(ctx)
                 }
-                var exporting by remember { mutableStateOf(false) }
-                var exportStep by remember { mutableStateOf("") }
+                val exporting by BackupExport.running.collectAsState()
+                val exportStep by BackupExport.step.collectAsState()
+                // The copy runs in the app's scope (see BackupExport.start): its outcome arrives here
+                // whenever the screen is showing, once.
+                val done by BackupExport.finished.collectAsState()
+                LaunchedEffect(done) {
+                    val r = done ?: return@LaunchedEffect
+                    BackupExport.finished.value = null
+                    stateVersion++
+                    snackbar.showSnackbar(if (r.folderMissing) r.failed.first() else ctx.getString(R.string.backup_folder_done, r.services, r.copied) + (if (r.failed.isNotEmpty()) " · " + r.failed.first() else ""))
+                }
                 PrefRow(
                     Icons.Filled.CloudUpload, stringResource(R.string.backup_folder_now),
                     if (exporting && exportStep.isNotBlank()) exportStep else stringResource(R.string.backup_folder_hint),
                     enabled = !exporting,
                     chevron = false,
                     trailing = if (exporting) { { CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) } } else null,
-                ) {
-                    exporting = true
-                    scope.launch {
-                        val r = BackupExport.run(ctx) { exportStep = it }
-                        exporting = false
-                        stateVersion++
-                        snackbar.showSnackbar(if (r.folderMissing) r.failed.first() else ctx.getString(R.string.backup_folder_done, r.services, r.copied) + (if (r.failed.isNotEmpty()) " · " + r.failed.first() else ""))
-                    }
-                }
+                ) { BackupExport.start(ctx) }
                 PrefRow(Icons.Filled.LinkOff, stringResource(R.string.backup_folder_stop), null, enabled = !exporting, danger = true, chevron = false) {
                     store.updateSettings { it.copy(backupFolder = "", backupSchedule = Schedule.MANUAL) }; Scheduler.applyBackup(ctx)
                 }
