@@ -100,11 +100,11 @@
 
     <string name="provider_note_spotify">Erfordert ein Spotify-Konto. Playlists und Lieblingssongs.</string>
     <string name="provider_note_ytm">YouTube-Music-Playlists und Lieblingssongs über die Schnittstelle des Web-Players, in diese Version eingebaut: Anmeldung mit deinem Google-Konto, ohne Google-Cloud-Projekt und ohne Kontingent. Keine offizielle Google-API: lies den Hinweis, der vor der Anmeldung erscheint.</string>
-    <string name="ytm_not_installed_hint">Installiere die Begleit-App \"Songport YTM Bridge\" von GitHub, komm dann hierher zurück und tippe auf Verbinden. Lieber der offizielle Weg? Nutze die Karte \"YouTube Music (Google API)\" unten.</string>
-    <string name="ytm_not_installed">Songport YTM Bridge ist nicht installiert.</string>
+    <string name="ytm_not_installed_hint">Installiere die Begleit-App \"Trackhop Bridge\" von GitHub, komm dann hierher zurück und tippe auf Verbinden. Lieber der offizielle Weg? Nutze die Karte \"YouTube Music (Google API)\" unten.</string>
+    <string name="ytm_not_installed">Trackhop Bridge ist nicht installiert.</string>
     <string name="ytm_install">Bridge holen</string>
     <string name="report_issue">Auf GitHub melden</string>
-    <string name="provider_note_youtube">Offizielle YouTube Data API mit deinem eigenen Google Cloud-Projekt. Optional: Die einfache Karte \"YouTube Music\" oben funktioniert auch ohne. Das Tageskontingent ist begrenzt: Große Syncs können mehrere Tage dauern.</string>
+    <string name="provider_note_youtube">Offizielle YouTube Data API mit deinem eigenen Google Cloud-Projekt. Das Tageskontingent ist begrenzt: Große Syncs können mehrere Tage dauern.</string>
     <string name="provider_note_tidal">TIDAL-Playlists (Beta).</string>
     <string name="provider_note_deezer">Deezer-Playlists und Favoriten (Beta).</string>
 
@@ -113,7 +113,7 @@
     <string name="log_duration">%1$d s</string>
 
     <string name="settings_notifications">Nach jedem Sync benachrichtigen</string>
-    <string name="settings_notifications_desc">Eine Benachrichtigung anzeigen, wenn ein geplanter Sync Titel hinzufügt oder entfernt oder fehlschlägt.</string>
+    <string name="settings_notifications_desc">Eine Benachrichtigung anzeigen, wenn ein geplanter Sync Titel hinzufügt oder entfernt und wenn irgendein Sync fehlschlägt.</string>
     <string name="settings_isrc">Exakte Aufnahme über Deezer</string>
     <string name="settings_isrc_desc">Fehlt einem Titel der ISRC (Web-Wege, Dateien), sucht Trackhop ihn einmal im öffentlichen Deezer-Katalog, damit Spotify, Apple Music und TIDAL die exakte Aufnahme liefern statt einer ähnlichen. Anonyme Anfrage, kein Konto beteiligt.</string>
     <string name="settings_language">Sprache</string>
@@ -121,7 +121,7 @@
     <string name="settings_language_open">Ändern</string>
     <string name="settings_language_system">Systemsprache</string>
     <string name="settings_advanced">Dienst-Schlüssel</string>
-    <string name="settings_advanced_desc">Trackhop wird ohne eigene Schlüssel ausgeliefert: Spotify, YouTube Music, TIDAL, Deezer, Last.fm und Apple Music werden über einen kostenlosen, auf deinen Namen erstellten Schlüssel verbunden, sodass deren Limits und Kontingente dir allein gehören. Hier kannst du sie einsehen und ändern.</string>
+    <string name="settings_advanced_desc">Trackhop wird ohne eigene Schlüssel ausgeliefert: Die offiziellen Wege von Spotify, YouTube, TIDAL, Deezer, Last.fm und Apple Music nutzen einen kostenlosen, auf deinen Namen erstellten Schlüssel, sodass deren Limits und Kontingente dir allein gehören. Hier kannst du sie einsehen und ändern.</string>
     <string name="settings_privacy_options">Datenschutzoptionen für Werbung</string>
     <string name="settings_privacy_policy">Datenschutzerklärung</string>
     <string name="settings_about">Info</string>
@@ -129,7 +129,7 @@
     <string name="settings_developer_switch">Entwicklerwerkzeuge anzeigen</string>
     <string name="settings_developer_desc">Verbindungsprotokoll, technischer Bericht zum Teilen, Aufzeichnung des Datenverkehrs der Web-Konnektoren. Ausgeschaltet stören sie nicht.</string>
     <string name="settings_version">Version %1$s</string>
-    <string name="settings_ads_note">Trackhop ist kostenlos und ohne Abos. Finanziert wird es durch ein einzelnes kleines Werbebanner; es werden keine Daten verkauft, und nichts verlässt dein Handy außer den Anfragen an die Musikdienste, die du verbindest.</string>
+    <string name="settings_ads_note">Trackhop ist kostenlos und ohne Abos. Finanziert wird es durch ein einzelnes kleines Werbebanner; es werden keine Daten verkauft, und abgesehen von der Werbung verlässt nichts dein Handy außer den Anfragen an die Musikdienste, die du verbindest.</string>
     <string name="settings_csv">Dateien</string>
     <string name="csv_import">Datei importieren</string>
     <string name="csv_export">Exportieren</string>
@@ -138,7 +138,7 @@
     <string name="csv_imported">%1$d Titel importiert</string>
     <string name="csv_exported">Datei exportiert</string>
     <string name="log_save_file">Als Datei speichern…</string>
-    <string name="note_file_target">In Trackhop gespeichert: Nutze hier „Als Datei speichern“ oder Einstellungen → Dateien, um eine CSV- oder M3U-Datei zu erhalten.</string>
+    <string name="note_file_target">In Trackhop gespeichert: Nutze hier „Als Datei speichern“ oder Werkzeuge › Datei-Playlists, um eine CSV- oder M3U-Datei zu erhalten.</string>
 
     <string name="auth_done">Verbunden mit %1$s</string>
     <string name="auth_failed">Anmeldung fehlgeschlagen: %1$s</string>
@@ -151,7 +151,7 @@
     <string name="notif_sync_title">Sync: %1$s</string>
 
     <string name="delete_confirm_title">Diesen Sync löschen?</string>
-    <string name="delete_confirm_text">Die Playlists auf den Diensten bleiben unverändert.</string>
+    <string name="delete_confirm_text">Die Playlists auf den Diensten bleiben unverändert. Bei einem beidseitigen Sync werden beide Hälften gelöscht, und ignorierte Titel bleiben ignoriert.</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="ok">OK</string>
@@ -164,7 +164,7 @@
     <string name="provider_note_files">Lokale Dateien: Importiere eine aus einem beliebigen Dienst exportierte Playlist (CSV, M3U, Apple Music/iTunes-XML, JSON oder eine einfache Liste) und synchronisiere sie überallhin. Die Brücke für Dienste ohne offene API: Amazon Music, Qobuz, SoundCloud.</string>
     <string name="apple_token_missing">Noch kein Apple Music Developer token. Gib deinen unter Konten, Apple Music, Einrichten ein.</string>
     <string name="apple_subscription_needed">%1$s: Die Mediathek braucht ein aktives Apple-Music-Abo; Apple hat abgelehnt (403: %2$s).</string>
-    <string name="link_paste">Oder füge den Link einer öffentlichen Playlist ein</string>
+    <string name="link_paste">Link einer öffentlichen Playlist einfügen</string>
     <string name="link_use">Link verwenden</string>
     <string name="link_invalid">Link nicht erkannt. Unterstützt: Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL.</string>
     <string name="editor_source_link">Aus Link</string>
@@ -571,7 +571,7 @@
     <string name="security_fact_4">Trennen löscht den Token vom Handy; jeder Dienst lässt dich ihn außerdem auf deiner Kontoseite widerrufen.</string>
     <string name="ai_trust_title">Wohin geht der Schlüssel?</string>
     <string name="ai_trust_1">Er bleibt nur auf diesem Telefon, verschlüsselt mit dem Android Keystore, wie die Tokens deiner Musikdienste.</string>
-    <string name="ai_trust_2">Er verlässt das Telefon nur in Richtung %1$s, bei jeder Anfrage, die du stellst. Trackhop hat keinen eigenen Server: Optionen → Sicherheit → Verbindungen listet jeden Host, den diese App je kontaktiert hat, zum Nachprüfen.</string>
+    <string name="ai_trust_2">Er verlässt das Telefon nur in Richtung %1$s, bei jeder Anfrage, die du stellst. Trackhop hat keinen eigenen Server: Einstellungen › Erweitert › Entwicklerwerkzeuge anzeigen › Verbindungen anzeigen listet jeden Host, den diese App je kontaktiert hat, zum Nachprüfen.</string>
     <string name="ai_trust_3">„Schlüssel vergessen“ löscht ihn sofort. Noch sicherer: Erstelle einen Schlüssel nur für Trackhop, mit Ausgabenlimit, und widerrufe ihn, wann du willst.</string>
     <string name="ai_limits">Ausgabenlimit setzen</string>
     <string name="security_connections">Verbindungen anzeigen</string>
@@ -608,7 +608,7 @@
     <string name="editor_bidirectional_unavailable">Verfügbar mit einer bestehenden Ziel-Playlist und einer beschreibbaren Quelle.</string>
     <string name="editor_bidirectional_not_owned">Nicht mit einem öffentlichen Link oder einer fremden Playlist als Quelle: sie lässt sich lesen, nicht beschreiben.</string>
     <string name="onboarding_title">Willkommen bei Trackhop</string>
-    <string name="onboarding_intro">Halte deine Playlists über alle Musikdienste hinweg identisch, von Hand oder nach Zeitplan. Kostenlos, kein Abo, kein Konto anzulegen.</string>
+    <string name="onboarding_intro">Kopiere deine Playlists von einem Musikdienst zum anderen und halte sie aktuell, von Hand oder nach Zeitplan. Kostenlos, kein Abo, kein Konto anzulegen.</string>
     <string name="onboarding_step1_title">1. Verbinde deine Dienste</string>
     <string name="onboarding_step1_desc">Spotify, Apple Music, YouTube Music, TIDAL, Deezer, dein eigener Server oder eine Datei.</string>
     <string name="onboarding_step2_title">2. Erstelle einen Sync</string>
@@ -616,7 +616,7 @@
     <string name="onboarding_step3_title">3. Lass ihn laufen</string>
     <string name="onboarding_step3_desc">Jede Stunde, jeden Tag oder jede Woche. Titel, die nicht zugeordnet werden können, werden aufgelistet, damit du sie selbst beheben kannst.</string>
     <string name="onboarding_security">Du meldest dich auf der Seite jedes Dienstes selbst an. Trackhop speichert nur einen verschlüsselten, widerrufbaren Token auf diesem Handy und hat keinen eigenen Server.</string>
-    <string name="onboarding_credentials">Trackhop wird ohne eigene Dienst-Schlüssel ausgeliefert: Für Spotify, YouTube Music, TIDAL und Deezer erstellst du einen kostenlosen Schlüssel auf der Entwicklerseite des Dienstes, und die App führt dich in etwa zwei Minuten hindurch. Deine Daten fließen dann nur zwischen deinem Handy und deinem eigenen Schlüssel.</string>
+    <string name="onboarding_credentials">Trackhop wird ohne eigene Dienst-Schlüssel ausgeliefert. Wo der offizielle Weg eines Dienstes einen braucht, erstellst du einen kostenlosen Schlüssel auf dessen Entwicklerseite, und die App führt dich in etwa zwei Minuten hindurch. Deine Daten fließen dann nur zwischen deinem Handy und dem Dienst.</string>
     <string name="onboarding_start">Los geht\'s</string>
     <string name="settings_show_onboarding">Einführung erneut anzeigen</string>
     <string name="paste_list">Liste einfügen</string>
@@ -962,7 +962,7 @@
     <string name="backup_folder_stop">Nicht mehr in diesen Ordner kopieren</string>
     <string name="nav_back">Zurück</string>
     <string name="tools_service_title">Dienst für die Werkzeuge</string>
-    <string name="tools_service_hint">Werkzeuge mit seinem Logo arbeiten mit diesem Dienst.</string>
+    <string name="tools_service_hint">Die Werkzeuge unten arbeiten mit diesem Dienst; was er nicht kann, ist ausgegraut.</string>
     <string name="tools_go_accounts">Zu den Konten</string>
     <string name="tools_unavailable_on">Nicht verfügbar bei %1$s</string>
     <string name="tools_section_music">Deine Musik</string>
@@ -987,7 +987,7 @@
     <string name="tools_row_unplayable">Ausgegraute Songs finden und durch abspielbare Versionen ersetzen.</string>
     <string name="settings_battery_summary">Manche Handys stoppen Hintergrund-Apps: nimm Trackhop von der Akku-Optimierung aus.</string>
     <string name="settings_dynamic_color_summary">Die Farben deines Hintergrundbilds statt der von Trackhop.</string>
-    <string name="settings_notifications_summary">Wenn ein geplanter Sync Songs ändert oder fehlschlägt.</string>
+    <string name="settings_notifications_summary">Wenn ein geplanter Sync Songs ändert oder ein Sync fehlschlägt.</string>
     <string name="settings_developer_summary">Verbindungsprotokoll, technischer Bericht, Traffic-Mitschnitt.</string>
     <string name="settings_new_look_summary">Sync-Karten mit Zahlen und dem Verlauf der letzten Läufe.</string>
     <string name="settings_log_summary">Ergebnisse der letzten Syncs und technische Details.</string>
@@ -1003,7 +1003,6 @@
     <string name="plugins_none">Kein Plugin installiert</string>
     <string name="plugins_services">Dienste: %1$s</string>
     <string name="services_group_unavailable">In dieser Version nicht verfügbar</string>
-    <string name="plugins_where">Plugins werden von ihren Autoren veröffentlicht, nicht über diese App: Auf GitHub tragen sie das Thema „trackhop-plugin“.</string>
     <string name="preview_remove_confirm">Diese %1$d Titel aus dem Ziel entfernen</string>
     <string name="note_two_way_no_removals">Entfernungen übersprungen: dies ist ein beidseitiger Sync, daher wurden die %1$d Titel im Ziel behalten, die nicht in der Quelle sind (der Sync in Gegenrichtung kopiert sie zurück). Schalte Beidseitig aus, um Entfernungen zu spiegeln.</string>
     <string name="editor_mirror_two_way">Nicht mit Beidseitig: ein auf der anderen Seite hinzugefügter Titel könnte entfernt werden, bevor er zurückkopiert wird.</string>
@@ -1016,4 +1015,95 @@
     <string name="onboarding_docs_title">Dokumentation und Code</string>
     <string name="onboarding_docs_body">Möchtest du über jede Funktion lesen oder den Code ansehen? Dokumentation und Quellcode findest du auf GitHub.</string>
     <string name="onboarding_docs_open">Auf GitHub öffnen</string>
+    <!-- Contextual help: the "?" sheets -->
+    <string name="help_cd">Hilfe: %1$s</string>
+    <string name="help_example">Beispiel:</string>
+    <string name="help_cards_title">Sync-Karten</string>
+    <string name="help_status_title">Status</string>
+    <string name="help_status_body">Die Markierung zeigt, wie der letzte Lauf war. Aktuell: Er ist durchgelaufen und nichts wartet auf dich. Entfernungen warten, Nicht fertig und Nicht gefunden: N heißen, dass du etwas ansehen solltest – ein Tipp auf die Markierung bringt dich hin. Bitte prüfen: Der Lauf ist fehlgeschlagen.</string>
+    <string name="help_status_example">„Nicht gefunden: 12“ öffnet die Prüfung, in der du diese 12 Titel von Hand auswählst.</string>
+    <string name="help_route_title">→ und ↔</string>
+    <string name="help_route_body">→ ist ein Sync in eine Richtung, von der Quelle zum Ziel. ↔ kennzeichnet ein beidseitiges Paar: zwei Syncs, einer je Richtung, als zwei Karten. Bearbeiten der ↔-Karte öffnet den ursprünglichen Sync, und wer einen löscht, löscht beide.</string>
+    <string name="help_figures_title">Zahlen</string>
+    <string name="help_figures_body">Hinzugefügt, entfernt und nicht gefunden zählen den letzten Lauf: Tippe auf eine Zahl, um die Titel zu sehen. Titel ist die Größe der Quelle ohne die ignorierten Titel; ein Tipp öffnet die Ziel-Playlist. Die Striche darunter sind die letzten Läufe: blass, wenn sich nichts geändert hat, rot, wenn ein Lauf fehlgeschlagen ist.</string>
+    <string name="help_to_fix_title">Zu klären</string>
+    <string name="help_to_fix_body">Die Titel, die der letzte Lauf nicht gefunden hat, und die Zuordnungen, bei denen er unsicher war. Du kannst schon loslegen, während der Sync noch hinzufügt, und jede Entscheidung wird für spätere Läufe gemerkt.</string>
+    <string name="help_run_now_body">▶ führt diesen Sync sofort aus, auch wenn er deaktiviert oder auf „Nur über WLAN“ gestellt ist. Praktisch nach einer Playlist-Änderung, statt auf den Zeitplan zu warten. Große Entfernungen bleiben trotzdem zurückgehalten, außer du hast sie vorher in der Vorschau bestätigt.</string>
+    <string name="help_sync_all_body">Führt alle aktivierten Syncs nacheinander aus und ignoriert dabei „Nur über WLAN“; deaktivierte werden übersprungen. Die Liste nach unten ziehen bewirkt dasselbe. Während Syncs laufen, springt ein Tipp auf die Schaltfläche zur ersten laufenden Karte.</string>
+    <string name="help_sync_all_example">Bei 5 Syncs, davon einer deaktiviert, laufen 4.</string>
+    <string name="help_cached_title">Aus einer früheren Zuordnung</string>
+    <string name="help_cached_body">Der Titel wurde in einem früheren Lauf zugeordnet und wird ohne neue Suche wiederverwendet. Ist die Zuordnung falsch, ändere sie in der Prüfung: Deine Wahl ersetzt sie für alle späteren Läufe.</string>
+    <string name="help_one_service_title">Nur ein Dienst verbunden</string>
+    <string name="help_one_service_body">Mit nur einem verbundenen Dienst kann ein Sync nur in eine Datei innerhalb von Trackhop gehen – deshalb ist in Schritt 2 „File“ vorausgewählt. Verbinde einen zweiten Dienst, um zwischen zwei Diensten zu synchronisieren.</string>
+    <string name="help_one_service_example">Ist nur Spotify verbunden, bietet Schritt 2 Spotify und File an, und File ist gewählt.</string>
+    <string name="help_library_title">Playlists und Mediathek</string>
+    <string name="help_library_body">Unter Playlists stehen deine Playlists und die Lieblingssongs. Die Mediathek enthält gespeicherte Alben, gefolgte Künstler, Podcasts und, nur als Quelle, zuletzt Gehörtes. Als Ziel werden nur Playlists angezeigt, die dir gehören.</string>
+    <string name="help_link_body">Füge den Teilen-Link einer öffentlichen Playlist ein: Kurzlinks werden aufgelöst und der Name wird gelesen. Die Playlist wird nur gelesen, nie geschrieben, daher kann sie nicht beidseitig sein. Manche Dienste müssen verbunden sein, selbst um einen öffentlichen Link zu lesen.</string>
+    <string name="help_target_body">Wohin die Titel gehen. Trackhop wählt einen Dienst vor: Prüfe ihn vor dem Speichern. Wählst du einen anderen Dienst, wird die gewählte Playlist zurückgesetzt.</string>
+    <string name="help_liked_body">Sind die Lieblingssongs die Quelle und kennt der Zieldienst „Gefällt mir“, werden die Lieblingssongs dieses Dienstes zum Ziel, und jeder synchronisierte Titel wird dort mit „Gefällt mir“ markiert. Mit „Entfernungen spiegeln“ verlieren Titel, die in der Quelle nicht markiert sind, im Ziel ihr „Gefällt mir“.</string>
+    <string name="help_liked_example">Spotify-Lieblingssongs → Deezer: Jeder Titel landet in deinen Deezer-Favoriten.</string>
+    <string name="help_new_playlist_body">Die Playlist wird beim ersten Lauf erstellt, nicht beim Speichern, und heißt wie die Quelle, wenn du keinen Namen eingibst. Löschst du sie später beim Dienst, hält der Sync an und bittet dich, sie neu zu erstellen oder eine andere zu wählen.</string>
+    <string name="help_schedule_body">Führt den Sync im Hintergrund etwa stündlich, alle 6 Stunden, täglich oder wöchentlich aus. Den genauen Zeitpunkt wählt Android, und es kann ihn verschieben, vor allem im Energiesparmodus. Der erste Lauf startet wenige Minuten nach dem Speichern. Ein geplanter Lauf, der beide Playlists unverändert vorfindet, endet sofort.</string>
+    <string name="help_schedule_example">Täglich, um 18 Uhr gespeichert: Der erste Lauf kommt wenige Minuten später, der nächste etwa einen Tag danach.</string>
+    <string name="help_mirror_body">Das Ziel wird zur Kopie der Quelle: Jeder Titel im Ziel, der zu nichts in der Quelle passt, wird entfernt – auch solche, die du selbst dort hinzugefügt hast. Nutze es nur, wenn die Quelle deine Hauptliste ist. Würde ein Lauf mehr als 10 Titel und über ein Viertel des Ziels entfernen, werden sie zurückgehalten, bis du sie in der Vorschau bestätigst. Entfernte Titel lassen sich im Sync-Protokoll wiederherstellen.</string>
+    <string name="help_mirror_example">Lösche einen Song aus deiner Spotify-Playlist, und beim nächsten Lauf verschwindet er auch aus der Kopie.</string>
+    <string name="help_keep_order_body">Nach dem Hinzufügen wird das Ziel in die Reihenfolge der Quelle gebracht; Titel, die nur im Ziel sind, kommen ans Ende. Entfällt bei Lieblingssongs und über 1.500 Titeln. Lehnt der Dienst ab, gelingt der Lauf trotzdem, und das Sync-Protokoll vermerkt es.</string>
+    <string name="help_two_way_body">Legt einen zweiten Sync in Gegenrichtung an (die ↔-Karte), damit Titel, die auf einer Seite hinzukommen, auch auf der anderen ankommen. Keine Hälfte entfernt Titel, darum bleibt „Entfernungen spiegeln“ aus: Ein auf einer Seite gelöschter Titel kommt meist von der anderen zurück. Beide Hälften teilen Zeitplan und Regeln und werden beide hier bearbeitet, im ursprünglichen Sync.</string>
+    <string name="help_enabled_body">Aus pausiert den Zeitplan und lässt den Sync bei „Alle synchronisieren“, im Widget und in der Kachel aus. Mit ▶ Jetzt ausführen kannst du ihn trotzdem starten.</string>
+    <string name="help_strictness_body">Wie sicher Trackhop sein muss, bevor es einen Titel selbst hinzufügt. Streng fügt weniger automatisch hinzu und fragt dich öfter; Locker fügt mehr hinzu, mit höherem Risiko einer falschen Version.</string>
+    <string name="help_strictness_example">Bei einer Playlist voller Remixe verhindert Streng, dass der Radio Edit gewählt wird.</string>
+    <string name="help_explicit_body">Wo ein Dienst angibt, ob ein Titel explizit ist, bevorzugt Trackhop die gewählte Version. Es ist eine Vorliebe, kein Filter: Gibt es nur die andere Version, wird diese genommen.</string>
+    <string name="help_same_album_body">Bevorzugt deutlich dasselbe Album wie in der Quelle. Schalte es ein, wenn eine Single- oder Compilation-Version falsch wäre.</string>
+    <string name="help_same_album_example">Ein Titel von einem Live-Album bleibt live und wird nicht gegen die Studio-Single getauscht.</string>
+    <string name="help_preview_body">Zeigt, was ein Lauf tun würde, ohne etwas zu ändern. Dazu sucht sie jeden fehlenden Titel im Ziel, das kann also dauern, und bei YouTube verbraucht es Kontingent. Ignoriert zählt die Titel, die du ignorieren lässt.</string>
+    <string name="help_preview_run_body">Führt den Sync sofort aus. Er rechnet alles neu, nutzt aber die hier gefundenen Zuordnungen und ist daher viel schneller. Unsichere Zuordnungen, die du hier nicht geklärt hast, werden nach dem Lauf in der Prüfung erneut abgefragt.</string>
+    <string name="help_removals_title">Große Entfernungen</string>
+    <string name="help_removals_body">Dieser Lauf würde einen großen Teil des Ziels entfernen. Prüfe zuerst die Quelle: Ein Dienst, der eine Playlist nur teilweise liefert, sieht genau so aus. Sollen die Titel wirklich weg, setze den Haken und tippe auf „Jetzt ausführen“. Der Haken gilt nur für diesen von Hand gestarteten Lauf und nur für die hier gelisteten Titel; geplante Läufe halten sie weiter zurück.</string>
+    <string name="help_uncertain_title">Unsichere Zuordnungen</string>
+    <string name="help_uncertain_body">Zuordnungen, bei denen Trackhop unsicher ist. Tippe auf „Passt“, um eine zu behalten, oder auf „Ändern“, um einen anderen Titel zu wählen – beides wird gemerkt. Was du hier offen lässt, wird nach dem Lauf in der Prüfung erneut abgefragt.</string>
+    <string name="help_quota_title">YouTube-Einheiten</string>
+    <string name="help_quota_body">YouTube erlaubt eine feste Zahl an Einheiten pro Tag: Eine Suche kostet 100, das Hinzufügen eines Titels 50. Der Zähler wird um Mitternacht pazifischer Zeit zurückgesetzt. Ein großer erster Sync kann mehrere Tage dauern und läuft von selbst weiter.</string>
+    <string name="help_review_title">Titel klären</string>
+    <string name="help_change_body">Ersetzt den von Trackhop gewählten Titel durch deinen: Der falsche wird aus dem Ziel entfernt, wo der Dienst es erlaubt, und deine Wahl wird für spätere Läufe gemerkt.</string>
+    <string name="help_proposal_body">Der ähnlichste gefundene Titel, aber nicht ähnlich genug, um ihn selbst hinzuzufügen: Tippe auf „Hinzufügen“, wenn er stimmt. Nicht gefundene Titel werden nach einer Woche erneut gesucht; öffne einen, um gleich zu suchen.</string>
+    <string name="help_proposal_example">„Song (Remastered 2011)“ vorgeschlagen für „Song“.</string>
+    <string name="help_ignore_body">Beendet die Suche nach diesem Titel und meldet ihn nicht mehr, für alle Syncs zu diesem Dienst. Das lässt sich noch nicht rückgängig machen – nimm es für Titel, die es dort nicht gibt, etwa eine eigene Aufnahme.</string>
+    <string name="help_results_title">Suchergebnisse</string>
+    <string name="help_results_body">„Wahrscheinlichste“ zeigt die besten Treffer. Darunter eingeklappt: die Titel des Quellalbums im Ziel, weitere Ergebnisse und bei YouTube Music Videos aus dem größeren YouTube-Katalog.</string>
+    <string name="help_ask_ai_body">Bittet die KI, die du unter Einstellungen › Erweitert › Deine KI eingerichtet hast, um eine bessere Suche. Der Titel und die bisherigen Ergebnisse gehen an deinen KI-Anbieter, sonst nirgendwohin.</string>
+    <string name="help_notes_body">Was ein Lauf bewusst nicht getan hat, und warum: zurückgehaltene Entfernungen, eine vom Dienst abgebrochene Suche, eine Reihenfolge, die sich nicht anwenden ließ. Ist eine Suche nicht fertig geworden, verweist die Sync-Karte hierher.</string>
+    <string name="help_restore_title">Entfernte wiederherstellen</string>
+    <string name="help_restore_body">Holt die Titel zurück, die dieser Lauf mit „Entfernungen spiegeln“ entfernt hat. Nur die letzten 200 Berichte werden aufbewahrt, also stelle sie bald wieder her.</string>
+    <string name="help_connectors_title">Connectors</string>
+    <string name="help_connectors_body">Ein Connector ist ein Konto bei einem Dienst. Füge zwei Spotify-Connectors hinzu, um zwischen zwei Spotify-Konten zu synchronisieren; der Name ist nur eine Beschriftung der Karte.</string>
+    <string name="help_tags_title">Kennzeichen</string>
+    <string name="help_tags_body">Nur lesen: Der Dienst kann nur Quelle sein. Beta: Funktioniert, wurde aber weniger genutzt. Einrichtung nötig: Erstelle zuerst deinen Schlüssel.</string>
+    <string name="help_disconnect_body">Löscht die Anmeldung von diesem Handy. Syncs mit diesem Konto schlagen fehl, bis du dich wieder verbindest; um einen Sync zu pausieren, deaktiviere ihn lieber.</string>
+    <string name="help_remove_account_body">Trennt die Verbindung und entfernt die Karte. Gesperrt, solange ein Sync das Konto nutzt: Lösche oder ändere zuerst diese Syncs.</string>
+    <string name="help_test_body">Prüft die Anmeldung, das Lesen der Playlists und eine Probesuche, mit je einem Aufruf. Wenn etwas fehlschlägt, füge dieses Ergebnis einer Fehlermeldung bei.</string>
+    <string name="help_extra_actions_title">Mehr im Menü</string>
+    <string name="help_extra_actions_body">„Google-Bestätigungsseite“ öffnet Googles eigene Seite, wenn Google die Anmeldung bei YouTube Music blockiert. Mit eingeschalteten Entwicklerwerkzeugen hilft der Traffic-Mitschnitt, Amazon Music nach Änderungen der Website zu reparieren.</string>
+    <string name="help_routes_title">Schneller und offizieller Weg</string>
+    <string name="help_routes_body">Schnell: Du meldest dich auf der Seite des Dienstes an, ohne etwas anzulegen, aber es kann aufhören zu funktionieren, wenn sich die Website ändert. Offiziell: die API des Dienstes mit einem kostenlosen Schlüssel auf deinen Namen; stabiler, in ein paar Minuten eingerichtet.</string>
+    <string name="help_unavailable_body">Diese Version von Trackhop kann diese Dienste nicht aus eigener Kraft erreichen.</string>
+    <string name="help_connector_name">Eine Beschriftung für diese Karte, praktisch bei mehreren Konten eines Dienstes.</string>
+    <string name="help_redirect_title">Weiterleitungs-URI</string>
+    <string name="help_redirect_body">Die Adresse, zu der dich der Dienst nach der Anmeldung zurückschickt. Kopiere sie exakt auf die Entwicklerseite des Dienstes, sonst findet die Anmeldung nicht zu Trackhop zurück.</string>
+    <string name="help_keys_title">Dein Schlüssel</string>
+    <string name="help_fields_title">Client ID und die anderen Felder</string>
+    <string name="help_fields_body">Die Kennungen der kostenlosen App, die du auf der Entwicklerseite des Dienstes anlegst. Füge sie genau so ein, wie sie dort stehen; sie bleiben verschlüsselt auf diesem Handy.</string>
+    <string name="help_clear_key_body">Löscht deinen Schlüssel von diesem Handy. Du musst ihn neu einrichten, bevor du dich verbinden kannst.</string>
+    <string name="help_files_body">Listen innerhalb von Trackhop: importierte Dateien, eingefügte Listen, Backups und Playlists, die ein Sync in „File“ geschrieben hat. Jedes Backup fügt eine datierte Version hinzu; die letzten 5 bleiben erhalten, unter der neuesten eingeklappt.</string>
+    <string name="help_export_title">Exportformate</string>
+    <string name="help_export_body">CSV öffnet sich in Tabellenprogrammen, M3U in den meisten Musikplayern, XSPF und JSPF in Playern, die sie unterstützen, und Text hat einen Titel pro Zeile.</string>
+    <string name="help_make_body">Erstellt aus bestehenden Playlists eine neue Playlist beim selben Dienst. Das ist kein Sync: Das Ergebnis wird später nicht aktualisiert.</string>
+    <string name="help_make_example">Zwei Playlists zu einer zusammenführen oder eine lange in Teile zu 50 aufteilen.</string>
+    <string name="help_transfer_body">Jeder legt eine neue Playlist im Ziel an und fügt nur hinzu; eine Playlist, die schon einen Sync hat, nutzt diesen. Alle übernehmen den Zeitplan, den du hier wählst.</string>
+    <string name="help_transfer_example">20 Playlists mit „Täglich“ zu übertragen, erstellt 20 tägliche Syncs.</string>
+    <string name="help_dedupe_body">Entfernt die doppelten Titel sofort, ohne weitere Rückfrage: derselbe Titel zweimal, auch in einer anderen Veröffentlichung, wobei die erste Kopie bleibt. Live- und Remix-Versionen zählen als andere Songs. Bei Diensten, die einen Titel samt aller Kopien entfernen, etwa Spotify und Deezer, rückt die behaltene Kopie ans Ende.</string>
+    <string name="help_unplayable_body">Für jeden ausgegrauten Titel schlägt Trackhop eine abspielbare Version vor. Nichts ändert sich, bis du übernimmst, und „Letzte Korrektur rückgängig“ holt die Originale zurück. Gründe wie „Nicht in deinem Abo“ kommen vom Dienst.</string>
+    <string name="help_backup_body">Trackhop speichert datierte Kopien aller deiner Playlists in einem Ordner deiner Wahl, damit sie das Handy überdauern. Jeder Lauf liest alle verbundenen Dienste, speichert Geändertes und kopiert die neuen Dateien; bei YouTube verbraucht das Kontingent. Der Zeitplan startet ihn von selbst, „Jetzt kopieren“ sofort.</string>
+    <string name="help_backup_example">Um eine Playlist wiederherzustellen, importiere ihre Datei aus diesem Ordner unter Werkzeuge › Datei-Playlists und synchronisiere die Datei dann zu einem beliebigen Dienst.</string>
+    <string name="help_plugins_body">Ein installiertes Plugin erscheint hier mit den Diensten, die es bereitstellt, und diese Dienste erscheinen unter Konten. Entfernst du das Plugin, werden sie getrennt, und Syncs, die sie nutzen, schlagen fehl.</string>
+    <string name="help_ai_body">Dein eigenes KI-Konto, für den Playlist-Generator, „KI fragen“ in der Prüfung und Poster-Cover. Der Schlüssel bleibt verschlüsselt auf diesem Handy und geht nur an den Anbieter, den du wählst.</string>
 </resources>

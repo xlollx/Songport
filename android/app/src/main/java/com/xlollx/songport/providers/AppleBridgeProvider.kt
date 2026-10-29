@@ -138,7 +138,7 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
         } catch (e: Exception) {
             throw ProviderException("Connector plugin: ${e.message ?: e.javaClass.simpleName}")
         } ?: throw ProviderException("Connector plugin: no answer")
-        b.getString("error")?.let { throw ProviderException("Apple Music (Bridge): $it") }
+        b.getString("error")?.let { throw ProviderException("$displayName: $it") }
         return b
     }
 

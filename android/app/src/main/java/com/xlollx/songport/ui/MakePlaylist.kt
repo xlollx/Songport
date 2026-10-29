@@ -100,7 +100,10 @@ fun MakePlaylistCard(provider: MusicProvider, snackbar: SnackbarHostState) {
 
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.tools_make_title), style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.tools_make_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                HelpButton(Helps.make)
+            }
             Spacer(Modifier.height(6.dp))
             Text(stringResource(R.string.tools_make_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (!provider.canWrite || !provider.canCreatePlaylists) {

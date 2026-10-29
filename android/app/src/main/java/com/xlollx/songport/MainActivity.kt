@@ -77,6 +77,7 @@ import com.xlollx.songport.sync.PlaylistLinks
 import com.xlollx.songport.sync.Scheduler
 import com.xlollx.songport.sync.SyncWorker
 import com.xlollx.songport.ui.AccountsScreen
+import com.xlollx.songport.ui.Helps
 import com.xlollx.songport.ui.AddTrackDialog
 import com.xlollx.songport.ui.AppTopBar
 import com.xlollx.songport.ui.AppTheme
@@ -514,7 +515,21 @@ private fun MainScreen(
             // An open tool shows its own bar with the way back: no tab header above it.
             if (!(tab == MainActivity.TAB_TOOLS && toolSubpage)) {
                 val label = tabs.firstOrNull { it.third == tab }?.first ?: R.string.app_name
-                AppTopBar(stringResource(if (tab == MainActivity.TAB_SYNCS) R.string.app_name else label))
+                AppTopBar(stringResource(if (tab == MainActivity.TAB_SYNCS) R.string.app_name else label)) {
+                    // What the parts of a sync card and of an account card mean: one "?" for each list.
+                    when (tab) {
+                        MainActivity.TAB_SYNCS -> if (data.jobs.isNotEmpty()) com.xlollx.songport.ui.HelpButton(
+                            Helps.status, Helps.route, Helps.figures, Helps.toFix, Helps.runNow, label = stringResource(R.string.help_cards_title),
+                        )
+                        MainActivity.TAB_ACCOUNTS -> {
+                            val topics = listOfNotNull(
+                                Helps.connectors, Helps.tags, Helps.disconnect, Helps.removeAccount, Helps.test,
+                                Helps.extraActions.takeIf { BridgePlugin.builtIn },
+                            )
+                            com.xlollx.songport.ui.HelpButton(*topics.toTypedArray(), label = stringResource(R.string.tab_accounts))
+                        }
+                    }
+                }
             }
         },
         snackbarHost = { SnackbarHost(snackbar) },

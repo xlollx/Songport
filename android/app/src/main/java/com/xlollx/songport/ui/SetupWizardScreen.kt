@@ -102,6 +102,7 @@ fun SetupWizardScreen(provider: MusicProvider, onClose: () -> Unit) {
                 navigationIcon = {
                     IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) }
                 },
+                actions = { HelpButton(Helps.fields, Helps.clearKey, label = stringResource(R.string.help_keys_title)) },
             )
         },
     ) { padding ->
@@ -137,8 +138,10 @@ fun SetupWizardScreen(provider: MusicProvider, onClose: () -> Unit) {
             guide.redirectUri?.let { uri ->
                 Card(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp)) {
-                        Text(stringResource(R.string.setup_redirect_label), style = MaterialTheme.typography.labelMedium)
-                        Spacer(Modifier.height(4.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(stringResource(R.string.setup_redirect_label), style = MaterialTheme.typography.labelMedium, modifier = Modifier.weight(1f))
+                            HelpButton(Helps.redirect)
+                        }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(uri, fontFamily = FontFamily.Monospace, modifier = Modifier.weight(1f))
                             TextButton(onClick = { clipboard.setText(AnnotatedString(uri)); copied = true }) {

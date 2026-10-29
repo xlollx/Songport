@@ -62,15 +62,25 @@ fun PrefSection(
     modifier: Modifier = Modifier,
     description: String? = null,
     footer: String? = null,
+    help: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(modifier.fillMaxWidth()) {
-        Text(
+        if (help == null) Text(
             title,
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = if (description == null) 8.dp else 2.dp).semantics { heading() },
-        )
+        ) else Row(verticalAlignment = Alignment.CenterVertically) {
+            // The "?" keeps its 48dp target at the end of the heading.
+            Text(
+                title,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.weight(1f).padding(start = 16.dp).semantics { heading() },
+            )
+            Box(Modifier.padding(end = 4.dp)) { help() }
+        }
         if (description != null) Text(
             description,
             style = MaterialTheme.typography.bodySmall,
@@ -170,6 +180,7 @@ fun PrefSwitch(
     summary: String?,
     checked: Boolean,
     enabled: Boolean = true,
+    help: (@Composable () -> Unit)? = null,
     onChange: (Boolean) -> Unit,
 ) {
     val haptics = LocalHapticFeedback.current
@@ -190,7 +201,7 @@ fun PrefSwitch(
             Text(title, style = MaterialTheme.typography.bodyLarge)
             if (!summary.isNullOrBlank()) Text(summary, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Spacer(Modifier.width(12.dp))
+        if (help != null) help() else Spacer(Modifier.width(12.dp))
         // The row owns the toggle; the switch only shows the state.
         Switch(checked = checked, onCheckedChange = null, enabled = enabled)
     }

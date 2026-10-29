@@ -155,6 +155,8 @@ fun EmptyState(
     body: String,
     ctaLabel: String? = null,
     onCta: (() -> Unit)? = null,
+    secondaryLabel: String? = null,
+    onSecondary: (() -> Unit)? = null,
 ) {
     Column(
         Modifier.fillMaxSize().padding(32.dp),
@@ -174,6 +176,10 @@ fun EmptyState(
         if (ctaLabel != null && onCta != null) {
             Spacer(Modifier.height(20.dp))
             Button(onClick = onCta) { Text(ctaLabel) }
+        }
+        if (secondaryLabel != null && onSecondary != null) {
+            Spacer(Modifier.height(if (ctaLabel != null) 4.dp else 20.dp))
+            androidx.compose.material3.TextButton(onClick = onSecondary, modifier = Modifier.heightIn(min = 48.dp)) { Text(secondaryLabel) }
         }
     }
 }
@@ -203,7 +209,7 @@ fun SectionCard(title: String? = null, modifier: Modifier = Modifier, content: @
 @Composable
 fun SwitchRow(
     title: String, subtitle: String?, checked: Boolean, enabled: Boolean = true,
-    modifier: Modifier = Modifier, onChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier, help: (@Composable () -> Unit)? = null, onChange: (Boolean) -> Unit,
 ) {
     val haptics = LocalHapticFeedback.current
     Row(
@@ -219,7 +225,8 @@ fun SwitchRow(
             Text(title, style = MaterialTheme.typography.bodyLarge)
             if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Spacer(Modifier.width(16.dp))
+        // A "?" sits between the words and the switch: its own target, outside the toggle.
+        if (help != null) help() else Spacer(Modifier.width(16.dp))
         // The row owns the toggle; the switch only shows the state.
         Switch(checked = checked, onCheckedChange = null, enabled = enabled)
     }
