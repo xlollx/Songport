@@ -218,7 +218,7 @@ fun ShareTrackSheet(
                         initialQuery = queryOf(src), targetName = dstName, pickLabel = stringResource(R.string.share_sheet_add),
                         search = { q -> engine.searchOnTarget(job, q, src.takeIf { it.title.isNotBlank() }) },
                         onPick = { t -> add(dst, t) }, onError = onMessage, autoSearch = src.title.isNotBlank(),
-                        webSearchUrl = { q -> dst.webSearchUrl(app, q) },
+                        webSearchUrl = remember(dst.id) { dst.webSearch(app) },
                     )
                 }
             }

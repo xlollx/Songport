@@ -15,6 +15,8 @@ import com.xlollx.songport.net.parseJson
 import com.xlollx.songport.net.str
 import com.xlollx.songport.sync.Matcher
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import java.security.MessageDigest
 import java.security.SecureRandom
 
@@ -40,7 +42,8 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
         val base = normalizeUrl(url)
         var t = Tokens(accessToken = secret, userName = user.trim(), extra = mapOf("url" to base))
         // The version this server speaks, when it refuses ours: every later call is made with it.
-        call(ctx, "ping", emptyList(), t) { v -> t = t.copy(extra = t.extra + ("v" to v)) }
+        // Its kind too ("navidrome", ...), which says whether it has a web search to open.
+        call(ctx, "ping", emptyList(), t, onType = { ty -> t = t.copy(extra = t.extra + (TYPE to ty)) }) { v -> t = t.copy(extra = t.extra + ("v" to v)) }
         save(ctx, t)
     }
 
@@ -50,6 +53,8 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
     /** Chiamata REST Subsonic; i parametri ripetibili (songIdToAdd…) passano come lista di coppie. */
     private suspend fun call(
         ctx: Env, method: String, params: List<Pair<String, String>>, t: Tokens = creds(ctx),
+        // Connections made before 1.3.2 never stored the server's kind: the first answer records it.
+        onType: (String) -> Unit = { ty -> ctx.tokens.get(id)?.let { cur -> save(ctx, cur.copy(extra = cur.extra + (TYPE to ty))) } },
         onVersion: (String) -> Unit = { v -> save(ctx, t.copy(extra = t.extra + ("v" to v))) },
     ): JsonElement {
         var version = t.extra["v"] ?: API_VERSION
@@ -65,7 +70,11 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
             val resp = Http.send("GET", "${t.extra["url"]}/rest/$method?$query", mapOf("Accept" to "application/json"))
             if (!resp.ok) throw ProviderException("$displayName: HTTP ${resp.code}")
             val r = parseJson(resp.body)["subsonic-response"] ?: throw ProviderException("$displayName: unexpected response")
-            if (r["status"].str == "ok") return r
+            if (r["status"].str == "ok") {
+                // OpenSubsonic servers name themselves in every answer; plain Subsonic ones do not.
+                r["type"].str?.lowercase()?.takeIf { it.isNotBlank() && it != t.extra[TYPE] }?.let(onType)
+                return r
+            }
             // Error 30, "server must upgrade": an older server (Airsonic-Advanced speaks 1.15.0) refuses a
             // newer client version. Its own version is in the answer; once per call, then remembered.
             val older = olderVersion(r, version)
@@ -89,6 +98,13 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
             isrc = s["isrc"].arr.firstNotNullOfOrNull { it.str } ?: s["isrc"].str,
             addedAt = com.xlollx.songport.sync.Durations.parseInstant(s["created"].str),
         )
+    }
+
+    /** Navidrome's own web player searches songs; other Subsonic servers have no search page to link. */
+    override fun webSearchUrl(ctx: Env, query: String): String? {
+        val t = ctx.tokens.get(id) ?: return null
+        val base = t.extra["url"] ?: return null
+        return if (t.extra[TYPE] == NAVIDROME) navidromeSearchUrl(base, query) else null
     }
 
     override suspend fun playlists(ctx: Env): List<Playlist> {
@@ -201,6 +217,16 @@ class SubsonicProvider(override val slot: String = "") : CredentialsProvider() {
     companion object {
         const val SERVICE = "subsonic"
         const val API_VERSION = "1.16.1"
+        /** Where the server's kind is kept in the account's extras, as its answers give it ("navidrome"). */
+        internal const val TYPE = "type"
+        internal const val NAVIDROME = "navidrome"
+
+        /**
+         * Navidrome's web UI (react-admin, hash routing, served under /app) on its songs list filtered by
+         * [query]: the "title" filter is the list's search box, a full-text search over title, artist and album.
+         */
+        internal fun navidromeSearchUrl(base: String, query: String): String =
+            "$base/app/#/song?filter=" + Http.enc(JsonObject(mapOf("title" to JsonPrimitive(query))).toString())
 
         /**
          * Ampache drops every query parameter whose value is "0" (PHP truthiness), so the first entry

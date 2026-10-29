@@ -153,6 +153,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                             HelpButton(Helps.uncertain)
                         }
                         var openReview by remember { mutableStateOf<String?>(null) }
+                        val webSearch = remember(dst) { dst?.webSearch(ctx) }
                         p.uncertain.forEach { review ->
                             ReviewRow(
                                 review = review, dstName = dstName,
@@ -164,7 +165,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                                     plan = p.copy(uncertain = p.uncertain - review)
                                 },
                                 search = { q -> engine.searchOnTarget(job, q, review.source) },
-                                webSearchUrl = dst?.let { d -> { q: String -> d.webSearchUrl(ctx, q) } },
+                                webSearchUrl = webSearch,
                                 onReplace = { chosen ->
                                     engine.rematchInPlan(job, review, chosen)
                                     plan = p.copy(

@@ -1,6 +1,7 @@
 package com.xlollx.songport.providers
 
 import com.sun.net.httpserver.HttpServer
+import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.it.TestEnv
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.net.get
@@ -10,6 +11,7 @@ import com.xlollx.songport.sync.Matcher
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -50,6 +52,52 @@ class ServerProvidersTest {
         val list = listOf(e("a", "1"), e("b", "2"), e("c", "3"), e("b", "2"))
         assertNull(JellyfinProvider.keptAfterRemoving(list, listOf("3")))
         assertNull(JellyfinProvider.keptAfterRemoving(list, listOf("2", "2")))
+    }
+
+    // ------------------------------------------------------------------ "Open in" web search
+
+    @Test fun navidromeSearchOpensTheSongsListFiltered() {
+        assertEquals(
+            "https://nd.casa.lan:4533/app/#/song?filter=%7B%22title%22%3A%22daft%20punk%20one%20more%20time%22%7D",
+            SubsonicProvider.navidromeSearchUrl("https://nd.casa.lan:4533", "daft punk one more time"),
+        )
+    }
+
+    @Test fun navidromeSearchKeepsQuotesAndAccentsAsJson() {
+        val q = "Beyoncé \"Halo\" & co #1"
+        val url = SubsonicProvider.navidromeSearchUrl("http://host/music", q)
+        assertTrue(url, url.startsWith("http://host/music/app/#/song?filter="))
+        val filter = url.substringAfter("filter=")
+        assertEquals(q, parseJson(URLDecoder.decode(filter, "UTF-8"))["title"].str)
+        // Nothing left raw that would end the hash route or start another parameter.
+        assertTrue(url, filter.none { it in "#&\" {}+" })
+    }
+
+    @Test fun jellyfinSearchOpensTheWebClientSearch() {
+        assertEquals("https://jf.lan/web/#/search?query=daft%20punk", JellyfinProvider.searchUrl("https://jf.lan", "daft punk"))
+        assertEquals("https://jf.lan/jellyfin/web/#/search?query=AC%2FDC%20%26%20%231", JellyfinProvider.searchUrl("https://jf.lan/jellyfin", "AC/DC & #1"))
+    }
+
+    private fun TestEnv.connect(p: MusicProvider, extra: Map<String, String>) =
+        tokens.set(p.id, Tokens(accessToken = "x", userName = "me", extra = extra))
+
+    @Test fun onlyServersWithAWebSearchOfferOne() {
+        val ctx = TestEnv()
+        val subsonic = SubsonicProvider(); val jellyfin = JellyfinProvider(); val plex = PlexProvider()
+        // Not connected: nothing to open.
+        assertFalse(subsonic.hasWebSearch(ctx)); assertFalse(jellyfin.hasWebSearch(ctx))
+        ctx.connect(subsonic, mapOf("url" to "https://nd.lan", "type" to "navidrome"))
+        assertEquals(SubsonicProvider.navidromeSearchUrl("https://nd.lan", "q"), subsonic.webSearchUrl(ctx, "q"))
+        assertTrue(subsonic.hasWebSearch(ctx))
+        // Gonic, Airsonic, an account from before the kind was stored: no button.
+        ctx.connect(subsonic, mapOf("url" to "https://gonic.lan", "type" to "gonic"))
+        assertNull(subsonic.webSearchUrl(ctx, "q")); assertFalse(subsonic.hasWebSearch(ctx))
+        ctx.connect(subsonic, mapOf("url" to "https://old.lan"))
+        assertFalse(subsonic.hasWebSearch(ctx))
+        ctx.connect(jellyfin, mapOf("url" to "https://jf.lan"))
+        assertEquals("https://jf.lan/web/#/search?query=q", jellyfin.webSearchUrl(ctx, "q"))
+        ctx.connect(plex, mapOf("url" to "https://plex.lan", "machine" to "m"))
+        assertFalse(plex.hasWebSearch(ctx))
     }
 
     @Test fun jellyfinRewritesTheListWhenACopyStays() {
@@ -146,6 +194,31 @@ class FakeServerProvidersTest {
         val found = p.search(ctx, Track(id = "q", title = "Home", artists = listOf("Beyoncé")))
         assertEquals(listOf("b", "m"), found.map { it.id })
         assertEquals(listOf("beyonce home", "home"), requests.filter { it.path.endsWith("search3") }.map { it.query["query"]?.single() })
+    }
+
+    @Test fun subsonicRemembersANavidromeServerAtLogin() = runBlocking {
+        answer = { 200 to subsonic("1.16.1", ""","type":"navidrome","serverVersion":"0.58.0","openSubsonic":true""") }
+        val p = SubsonicProvider()
+        p.login(ctx, url, "admin", "pw")
+        assertEquals("$url/app/#/song?filter=%7B%22title%22%3A%22q%22%7D", p.webSearchUrl(ctx, "q"))
+    }
+
+    @Test fun subsonicLearnsTheKindOfAnAccountConnectedBefore() = runBlocking {
+        // An account saved by 1.3.1: url and user, no kind. The next answer from Navidrome records it.
+        val p = SubsonicProvider()
+        ctx.tokens.set(p.id, Tokens(accessToken = "pw", userName = "admin", extra = mapOf("url" to url)))
+        answer = { 200 to subsonic("1.16.1", ""","type":"navidrome","playlists":{"playlist":[]}""") }
+        assertNull(p.webSearchUrl(ctx, "q"))
+        p.playlists(ctx)
+        assertTrue(p.hasWebSearch(ctx))
+        assertEquals("pw", ctx.tokens.get(p.id)!!.accessToken)
+    }
+
+    @Test fun subsonicWithoutAKindOffersNoWebSearch() = runBlocking {
+        answer = { 200 to subsonic("1.16.1") }
+        val p = SubsonicProvider()
+        p.login(ctx, url, "admin", "pw")
+        assertNull(p.webSearchUrl(ctx, "q"))
     }
 
     // ------------------------------------------------------------------ Plex

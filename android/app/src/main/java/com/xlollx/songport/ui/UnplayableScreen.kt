@@ -324,7 +324,7 @@ fun UnplayableScreen(provider: MusicProvider, onClose: () -> Unit) {
                                 onPick = { t -> decisions[k] = Decision.Replace(t); openKey = null },
                                 onError = { msg -> scope.launch { snackbar.showSnackbar(msg.ifBlank { ctx.getString(R.string.error_generic) }) } },
                                 autoSearch = false,
-                                webSearchUrl = { q -> provider.webSearchUrl(ctx, q) },
+                                webSearchUrl = remember(provider) { provider.webSearch(ctx) },
                                 extraActions = { busy ->
                                     if (provider.canRemoveTracks) TextButton(enabled = !busy, onClick = { decisions[k] = Decision.Remove; openKey = null }) { Text(stringResource(R.string.unplayable_remove_only)) }
                                     TextButton(enabled = !busy, onClick = { decisions[k] = Decision.Skip; openKey = null }) { Text(stringResource(R.string.unplayable_skip)) }

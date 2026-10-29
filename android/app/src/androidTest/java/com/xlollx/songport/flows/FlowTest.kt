@@ -136,14 +136,20 @@ abstract class FlowTest {
     protected fun rotate(to: Int) {
         val before = resumed()
         setRotation(to)
+        rotatedAway = to != UiAutomation.ROTATION_FREEZE_0
         waitForNewMain(before)
         compose.waitForIdle()
     }
+
+    /** The test left the screen turned or the app in another language: putting them back recreates the activity. */
+    private var rotatedAway = false
+    private var localeChanged = false
 
     private fun setRotation(r: Int) { runCatching { instr.uiAutomation.setRotation(r) } }
 
     /** The app's language, as the in-app picker sets it ("" = the phone's). */
     protected fun setLocale(tag: String) {
+        localeChanged = tag.isNotEmpty()
         if (Build.VERSION.SDK_INT < 33) {
             // Android 12 and older: the app keeps the choice itself (AppLocale) and applies it on the next activity.
             app.getSharedPreferences("app_locale", Context.MODE_PRIVATE).edit().putString("tag", tag).commit()
@@ -253,6 +259,25 @@ abstract class FlowTest {
 
     // ------------------------------------------------------------------ failures
 
+    /**
+     * Puts rotation and language back, then waits until the app is still. This runs inside the compose
+     * rule, whose teardown drains the frames still queued on its test clock from the instrumentation
+     * thread, laying out every compose root there: had the phone just been turned back, the recreated
+     * activity would be in its own first layout on the main thread at that moment, and Compose throws
+     * "performMeasureAndLayout called during measure layout" (CardsFlowTest.twoSharedLinksAreComparedAtOnce
+     * on API 34, ending in landscape). Waiting for the new activity and for idle here leaves no frame
+     * queued and no layout under way.
+     */
+    private fun restoreAndSettle() {
+        val recreates = rotatedAway || (localeChanged && Build.VERSION.SDK_INT >= 33)
+        val before = if (recreates) runCatching { resumed() }.getOrNull() else null
+        if (rotatedAway) setRotation(UiAutomation.ROTATION_FREEZE_0)
+        if (localeChanged) runCatching { setLocale("") }
+        rotatedAway = false; localeChanged = false
+        if (before is MainActivity) runCatching { waitForNewMain(before, ms = 10_000) }
+        runCatching { compose.waitForIdle() }
+    }
+
     /** On failure: the screen to a PNG and the semantics tree to the log. Always: rotation and locale put back. */
     private inner class FailureAndCleanup : TestRule {
         override fun apply(base: Statement, description: Description): Statement = object : Statement() {
@@ -287,8 +312,7 @@ abstract class FlowTest {
                 } finally {
                     if (semanticClicks.isNotEmpty()) log("${description.methodName}: touch not injectable on $semanticClicks")
                     if (attemptedHosts.isNotEmpty()) log("${description.methodName}: refused network requests to $attemptedHosts")
-                    runCatching { instr.uiAutomation.setRotation(UiAutomation.ROTATION_FREEZE_0) }
-                    runCatching { setLocale("") }
+                    restoreAndSettle()
                 }
             }
         }

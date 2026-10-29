@@ -216,6 +216,12 @@ interface MusicProvider {
     fun webSearchUrl(ctx: Env, query: String): String? = null
 
     /**
+     * Whether [webSearchUrl] leads anywhere for this account: screens decide up front whether to offer
+     * "Open in <service>", so a personal server without a web search shows no button that does nothing.
+     */
+    fun hasWebSearch(ctx: Env): Boolean = webSearchUrl(ctx, "x") != null
+
+    /**
      * The public page of a track on this service, for "open it there": built from the id, no
      * request. Null where there is no such page (personal servers, files).
      */

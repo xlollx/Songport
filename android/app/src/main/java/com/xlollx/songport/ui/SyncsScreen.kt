@@ -96,6 +96,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -195,6 +199,13 @@ fun SyncsScreen(
         starting = false
     }
     val pullOff = running.isNotEmpty() && !starting
+    // The pill's place in the list (after the hero and, when shown, the finder) and its height once laid out.
+    val runAllIndex = if (finder) 2 else 1
+    var pillHeight by remember { mutableIntStateOf(0) }
+    // Pinned once the list has scrolled past its place: the cards are then passing beneath it.
+    val pillPinned by remember(runAllIndex) {
+        derivedStateOf { listState.firstVisibleItemIndex > runAllIndex || (listState.firstVisibleItemIndex == runAllIndex && listState.firstVisibleItemScrollOffset > 0) }
+    }
     val pullGuard = remember { PullGuard() }
     SideEffect { pullGuard.blocked = pullOff }
     PullToRefreshBox(
@@ -226,18 +237,19 @@ fun SyncsScreen(
             // While syncs run it says how many, and a tap brings the first running card into view.
             if (data.jobs.size >= 2) stickyHeader(key = "runall") {
                 // Index of the first card: hero, finder, pill, then the support card when there is one.
-                val firstCard = 2 + (if (finder) 1 else 0) + (if (support != null || nudge) 1 else 0)
-                RunAllPill(running.size) {
+                val firstCard = runAllIndex + 1 + (if (support != null || nudge) 1 else 0)
+                // A card brought into view lands just under the pinned pill, not beneath it.
+                RunAllPill(running.size, pinned = pillPinned, modifier = Modifier.onSizeChanged { pillHeight = it.height }) {
                     val firstShown = shown.indexOfFirst { running.containsKey(it.id) }
                     val firstAll = data.jobs.indexOfFirst { running.containsKey(it.id) }
                     when {
-                        firstShown >= 0 -> scope.launch { listState.animateScrollToItem(firstCard + firstShown) }
+                        firstShown >= 0 -> scope.launch { listState.animateScrollToItem(firstCard + firstShown, -pillHeight) }
                         // Running, but hidden by the filter: show every card again, then go to it.
                         firstAll >= 0 -> {
                             filter = SyncFilter()
                             scope.launch {
                                 withTimeoutOrNull(1000) { snapshotFlow { listState.layoutInfo.totalItemsCount }.first { it > firstCard + firstAll } }
-                                listState.animateScrollToItem(firstCard + firstAll)
+                                listState.animateScrollToItem(firstCard + firstAll, -pillHeight)
                             }
                         }
                         else -> onRunAll()
@@ -267,15 +279,32 @@ private class PullGuard : NestedScrollConnection {
         if (blocked && source == NestedScrollSource.UserInput && available.y > 0f) Offset(0f, available.y) else Offset.Zero
 }
 
-/** The "sync all" pill: filled and inviting when idle, a quiet progress state while syncs run. */
+/**
+ * The "sync all" pill: filled and inviting when idle, a quiet progress state while syncs run.
+ *
+ * It sits on an opaque band of the screen's background, edge to edge (over the list's side padding
+ * too) and as tall as the pill with its shadow: pinned, the cards scroll beneath the band and none of
+ * them shows around the pill or its "?". Until 1.3.1 the band faded to transparent, and the first
+ * card's title, status and figures read through under the pill. Once cards are beneath it, a hairline
+ * marks its edge, as under a scrolled top bar.
+ */
 @Composable
-private fun RunAllPill(runningCount: Int, onClick: () -> Unit) {
+private fun RunAllPill(runningCount: Int, pinned: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val haptic = rememberConfirmHaptic()
     val busy = runningCount > 0
-    // When pinned, cards scroll under a fade instead of meeting the pill's edge.
     val bg = MaterialTheme.colorScheme.background
+    val line = MaterialTheme.colorScheme.outlineVariant
+    val lineAlpha by animateFloatAsState(if (pinned) 0.6f else 0f, label = "runall-edge")
     Box(
-        Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(bg, bg.copy(alpha = 0.85f), bg.copy(alpha = 0f))))
+        modifier.fillMaxWidth()
+            .drawBehind {
+                // The list pads its items by 16dp on each side: the band covers that gutter as well.
+                val gutter = 16.dp.toPx()
+                drawRect(bg, topLeft = Offset(-gutter, 0f), size = Size(size.width + 2 * gutter, size.height))
+                if (lineAlpha > 0f) drawRect(
+                    line.copy(alpha = lineAlpha), topLeft = Offset(-gutter, size.height - 1f), size = Size(size.width + 2 * gutter, 1f),
+                )
+            }
             .padding(top = 4.dp, bottom = 12.dp),
         contentAlignment = Alignment.Center,
     ) {
