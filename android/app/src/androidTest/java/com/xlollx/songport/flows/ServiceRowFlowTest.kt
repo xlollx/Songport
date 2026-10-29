@@ -35,10 +35,10 @@ class ServiceRowFlowTest : FlowTest() {
         click(s(R.string.edit))
         waitText(s(R.string.editor_title_edit))
 
-        // The row tells TalkBack it scrolls.
+        // The row tells TalkBack it scrolls. (The strings first: the matcher runs on the main thread, where plural() cannot.)
+        val hints = (2..20).map { k -> plural(R.plurals.service_tiles_scroll, k, k) }.toSet()
         waitNode("the row's scroll hint", SemanticsMatcher("says it scrolls") { n ->
-            val desc = n.config.getOrNull(SemanticsProperties.ContentDescription).orEmpty()
-            (2..20).any { k -> plural(R.plurals.service_tiles_scroll, k, k) in desc }
+            n.config.getOrNull(SemanticsProperties.ContentDescription).orEmpty().any { it in hints }
         })
         // Jellyfin, the fifth, is the selected source tile, and not cut by the edge.
         val tile = hasClickAction() and isSelected() and hasText("Jellyfin", substring = true)
