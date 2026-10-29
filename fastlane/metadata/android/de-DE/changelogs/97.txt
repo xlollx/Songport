@@ -1,0 +1,1 @@
+Synchronisierungen fügen nicht mehr bei jedem Lauf dieselben Titel hinzu oder entfernen sie, wenn ein Dienst die Änderung annimmt, aber nicht anzeigt (gesehen bei YouTube-Music-Likes und Amazon-Music-Entfernungen); das Protokoll nennt diese Titel. SoundCloud erneuert die Sitzung selbst, statt stündlich eine neue Anmeldung zu verlangen.

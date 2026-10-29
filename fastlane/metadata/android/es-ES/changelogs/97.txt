@@ -1,0 +1,1 @@
+Las sincronizaciones ya no añaden ni quitan las mismas canciones en cada ejecución cuando un servicio acepta el cambio pero no lo muestra (visto con los Me gusta de YouTube Music y las eliminaciones en Amazon Music); el registro nombra esas canciones. SoundCloud renueva la sesión solo en vez de pedirte entrar de nuevo cada hora.

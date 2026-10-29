@@ -1,0 +1,1 @@
+Les synchronisations n'ajoutent ni ne retirent plus les mêmes titres à chaque passage quand un service accepte le changement sans l'afficher (vu avec les J'aime de YouTube Music et les retraits sur Amazon Music) ; le journal nomme ces titres. SoundCloud renouvelle sa session tout seul au lieu de vous redemander de vous connecter chaque heure.

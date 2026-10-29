@@ -1,0 +1,1 @@
+Synchronizacje nie dodają ani nie usuwają już tych samych utworów przy każdym uruchomieniu, gdy usługa przyjmuje zmianę, ale jej nie pokazuje (widziane przy polubieniach YouTube Music i usuwaniu w Amazon Music); dziennik wymienia te utwory. SoundCloud sam odnawia sesję zamiast co godzinę prosić o ponowne logowanie.

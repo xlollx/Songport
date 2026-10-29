@@ -1,0 +1,1 @@
+Le sincronizzazioni non aggiungono né tolgono più gli stessi brani a ogni giro quando un servizio accetta la modifica ma non la mostra (visto con i Mi piace di YouTube Music e le rimozioni su Amazon Music); il registro elenca quei brani. SoundCloud rinnova da solo l'accesso invece di chiederti di rientrare ogni ora.
