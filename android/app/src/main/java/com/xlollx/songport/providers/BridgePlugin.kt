@@ -46,7 +46,7 @@ object BridgePlugin {
     val full: Boolean get() = builtIn || pluginVersion >= FULL_VERSION
 
     /** Where to get a plugin: nowhere to go when the connectors are built in, and never in the Play build. */
-    val installUrl: String? = if (BuildConfig.PLUGIN_LINKS && !BuiltIn.available) "https://github.com/xlollx/Songport-YTM-Bridge/releases/latest" else null
+    val installUrl: String? = if (BuildConfig.PLUGIN_LINKS && !BuiltIn.available) "https://github.com/xlollx/Trackhop-Bridge/releases/latest" else null
 
     class Info(val packageName: String, val authority: Uri)
 

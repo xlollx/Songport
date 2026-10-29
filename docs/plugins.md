@@ -19,7 +19,7 @@ package and signing certificate before answering.
 
 ### Trackhop Bridge
 
-[Trackhop Bridge](https://github.com/xlollx/Songport-YTM-Bridge) is the reference plugin, by the same
+[Trackhop Bridge](https://github.com/xlollx/Trackhop-Bridge) is the reference plugin, by the same
 author, free and open source (GPL-3.0). It is distributed on GitHub only, never on Google Play.
 It adds:
 
@@ -38,4 +38,4 @@ phone, and hands Trackhop only the data or short-lived tokens it needs.
 **The Trackhop APK from GitHub and the F-Droid version already include these connectors**: add the
 service from Accounts → + and sign in there, the notice comes first. The separate Bridge app is only
 for the Google Play version of Trackhop:
-[latest release](https://github.com/xlollx/Songport-YTM-Bridge/releases/latest).
+[latest release](https://github.com/xlollx/Trackhop-Bridge/releases/latest).
