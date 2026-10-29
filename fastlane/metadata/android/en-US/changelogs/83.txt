@@ -1,0 +1,1 @@
+Songport is now Trackhop. Same app, same code, same updates: your syncs and settings stay as they are. The name changed because an unrelated service called SongPort works in the same space. New address: github.com/xlollx/Trackhop (old links keep working).

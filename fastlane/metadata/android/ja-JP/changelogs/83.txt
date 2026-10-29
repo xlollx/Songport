@@ -1,0 +1,1 @@
+SongportはTrackhopに名前が変わりました。アプリもコードも更新も同じで、同期と設定はそのままです。同じ分野に無関係のSongPortというサービスがあるため名前を変更しました。新しいアドレス：github.com/xlollx/Trackhop（古いリンクも使えます）。
