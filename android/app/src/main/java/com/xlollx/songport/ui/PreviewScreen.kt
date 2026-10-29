@@ -84,6 +84,8 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
     val dstName = dst?.displayName ?: job.target.provider
     val p = plan
     val hasWork = p != null && (p.toAdd.isNotEmpty() || p.toRemove.isNotEmpty() || job.target.playlistId == null)
+    // Into Liked songs a removal is an unlike: the counts and the confirmation say so.
+    val unlikes = job.target.playlistId == MusicProvider.LIKED_ID
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
@@ -109,10 +111,13 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                             if (job.target.playlistId == null) Text(stringResource(R.string.preview_target_new), style = MaterialTheme.typography.bodyMedium)
                             Text(stringResource(R.string.preview_present, p.alreadyPresent))
                             Text(stringResource(R.string.preview_add, p.toAdd.size))
-                            if (job.mirrorRemovals) Text(stringResource(R.string.preview_remove, p.toRemove.size))
+                            if (job.mirrorRemovals) Text(stringResource(if (unlikes) R.string.preview_unlike else R.string.preview_remove, p.toRemove.size))
                             // A large share of the target: a normal run holds these back unless the box below is ticked.
                             if (p.removalsNeedConfirmation) {
-                                Text(stringResource(R.string.preview_remove_warning, p.toRemove.size, p.targetCount), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                                Text(
+                                    stringResource(if (unlikes) R.string.preview_unlike_warning else R.string.preview_remove_warning, p.toRemove.size, p.targetCount),
+                                    style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error,
+                                )
                             }
                             Text(stringResource(R.string.preview_unmatched, p.unmatched.size))
                             if (p.uncertain.isNotEmpty()) Text(stringResource(R.string.preview_uncertain, p.uncertain.size), color = MaterialTheme.colorScheme.tertiary)
@@ -138,7 +143,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                             ) {
                                 Checkbox(checked = confirmRemovals, onCheckedChange = null)
                                 Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.preview_remove_confirm, p.toRemove.size), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                                Text(stringResource(if (unlikes) R.string.preview_unlike_confirm else R.string.preview_remove_confirm, p.toRemove.size), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
                                 HelpButton(Helps.removals)
                             }
                         }

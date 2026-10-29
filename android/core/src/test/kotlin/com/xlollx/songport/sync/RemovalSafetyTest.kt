@@ -70,6 +70,32 @@ class RemovalSafetyTest {
         assertEquals(0, plan.heldBackRemovals)
     }
 
+    /**
+     * The owner's case: Liked songs (3 tracks, one not found) into a Liked songs that holds hundreds,
+     * Mirror on. The hold is in the report the card reads, next to the not found, and the note speaks
+     * of unliking.
+     */
+    @Test fun likedIntoALargeLikedHoldsTheUnlikesBackNextToANotFound() = runBlocking {
+        val liked = MusicProvider.LIKED_ID
+        src.lists[liked] = mutableListOf(t("a", "Alpha"), t("b", "Beta"), t("c", "Gamma"))
+        dst.catalogue += listOf(t("da", "Alpha"), t("db", "Beta"))
+        dst.lists[liked] = (listOf(t("da", "Alpha")) + (1..300).map { t("dx$it", "Extra $it") }).toMutableList()
+        val j = SyncJob(
+            id = "liked", name = "Liked songs", source = PlaylistRef("msrc", liked, "Liked songs"),
+            target = PlaylistRef("mdst", liked, "Liked songs"), mirrorRemovals = true,
+        ).also { env.store.upsertJob(it) }
+        val r = engine.run(j)
+        assertTrue(r.ok)
+        assertEquals(1, r.unmatchedTracks.size)
+        assertEquals(1, r.added)
+        assertEquals(0, r.removed)
+        assertEquals(300, r.heldBack)
+        assertTrue(r.notes.toString(), r.notes.any { it == "note_unlikes_capped(300,301)" })
+        val stored = env.store.report(env.store.job(j.id)!!.lastReportId!!)!!
+        assertEquals(300, stored.heldBack)
+        assertEquals(302, dst.lists[liked]!!.size)
+    }
+
     @Test fun aSmallRemovalNeedsNoConfirmation() = runBlocking {
         src.lists["p"] = mutableListOf(t("a", "Alpha"))
         dst.catalogue += t("da", "Alpha")

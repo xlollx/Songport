@@ -269,6 +269,24 @@ fun SyncsScreen(
     }
 }
 
+/** What a sync card's pill says. */
+internal enum class CardStatus { RUNNING, DISABLED, NEVER, ERROR, HELD_BACK, INCOMPLETE, NOT_FOUND, OK }
+
+/**
+ * The pill for a card, the most important first. Removals on hold come before "Not found: N": a few
+ * songs to look up by hand matter less than a target the sync would empty, which waits for the user.
+ */
+internal fun cardStatus(isRunning: Boolean, enabled: Boolean, report: SyncReport?): CardStatus = when {
+    isRunning -> CardStatus.RUNNING
+    !enabled -> CardStatus.DISABLED
+    report == null -> CardStatus.NEVER
+    !report.ok -> CardStatus.ERROR
+    report.heldBack > 0 -> CardStatus.HELD_BACK
+    report.searchInterrupted -> CardStatus.INCOMPLETE
+    report.unmatchedTracks.isNotEmpty() -> CardStatus.NOT_FOUND
+    else -> CardStatus.OK
+}
+
 /**
  * Turns the pull off while syncs run: it takes what the list leaves of a downward drag at its top,
  * so the pull-to-refresh around it never sees it. Everything else passes through untouched.
@@ -404,17 +422,17 @@ private fun JobCard(
                     )
                 }
                 Spacer(Modifier.width(8.dp))
-                when {
-                    isRunning -> StatusPill(stringResource(R.string.pill_running), Tone.Accent, Icons.Filled.Sync)
-                    !job.enabled -> StatusPill(stringResource(R.string.disabled), Tone.Neutral)
-                    report == null -> StatusPill(stringResource(R.string.pill_never), Tone.Neutral)
-                    !report.ok -> StatusPill(stringResource(R.string.pill_error), Tone.Error, Icons.Filled.Warning)
-                    // A run without errors can still leave something for the user: the pill says what,
-                    // and a tap leads where it is handled.
-                    report.heldBack > 0 -> ActionPill(stringResource(R.string.pill_held_back), Tone.Warning) { onPreview(job) }
-                    report.searchInterrupted -> ActionPill(stringResource(R.string.pill_incomplete), Tone.Warning, onOpenLog)
-                    report.unmatchedTracks.isNotEmpty() -> ActionPill(stringResource(R.string.pill_not_found, report.unmatchedTracks.size), Tone.Warning) { onReview(report.id) }
-                    else -> StatusPill(stringResource(R.string.pill_ok), Tone.Ok, Icons.Filled.CheckCircle)
+                // A run without errors can still leave something for the user: the pill says what,
+                // and a tap leads where it is handled.
+                when (cardStatus(isRunning, job.enabled, report)) {
+                    CardStatus.RUNNING -> StatusPill(stringResource(R.string.pill_running), Tone.Accent, Icons.Filled.Sync)
+                    CardStatus.DISABLED -> StatusPill(stringResource(R.string.disabled), Tone.Neutral)
+                    CardStatus.NEVER -> StatusPill(stringResource(R.string.pill_never), Tone.Neutral)
+                    CardStatus.ERROR -> StatusPill(stringResource(R.string.pill_error), Tone.Error, Icons.Filled.Warning)
+                    CardStatus.HELD_BACK -> ActionPill(stringResource(R.string.pill_held_back), Tone.Warning) { onPreview(job) }
+                    CardStatus.INCOMPLETE -> ActionPill(stringResource(R.string.pill_incomplete), Tone.Warning, onOpenLog)
+                    CardStatus.NOT_FOUND -> ActionPill(stringResource(R.string.pill_not_found, report!!.unmatchedTracks.size), Tone.Warning) { onReview(report!!.id) }
+                    CardStatus.OK -> StatusPill(stringResource(R.string.pill_ok), Tone.Ok, Icons.Filled.CheckCircle)
                 }
             }
             if (isRunning) {
@@ -881,6 +899,15 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                     // Towards Liked songs, mirroring means unliking: said where the switch is.
                     help = { if (MusicProvider.isLibrary(dstPlaylist?.id) && !createNew) HelpButton(Helps.mirror, Helps.liked, label = stringResource(R.string.editor_mirror)) else HelpButton(Helps.mirror) },
                 ) { mirror = it }
+                // Into Liked songs a removal is an unlike, of everything liked there that the source lacks:
+                // said in plain words under the switch, not only behind the "?".
+                if (mirror && !createNew && dstPlaylist?.id == MusicProvider.LIKED_ID) {
+                    Text(
+                        stringResource(R.string.editor_mirror_liked_warning),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
                 if (Providers.byId(dstProvider)?.canReorder == true) {
                     SwitchRow(stringResource(R.string.editor_keep_order), stringResource(R.string.editor_keep_order_desc), keepOrder, help = { HelpButton(Helps.keepOrder) }) { keepOrder = it }
                 }

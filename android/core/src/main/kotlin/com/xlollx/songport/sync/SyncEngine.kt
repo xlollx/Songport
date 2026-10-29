@@ -322,7 +322,8 @@ class SyncEngine(
                         env.log("engine", "${job.name}: ${extra.size} removals confirmed in the preview")
                     } else {
                         heldBack = extra.size
-                        notes += str("note_removals_capped", extra.size, dstTracks.size)
+                        // Towards Liked songs a removal is an unlike: the note says so, as the preview does.
+                        notes += str(if (targetId == MusicProvider.LIKED_ID) "note_unlikes_capped" else "note_removals_capped", extra.size, dstTracks.size)
                         env.log("engine", "${job.name}: removals held back, ${extra.size} of ${dstTracks.size} in the target matched none of the ${srcTracks.size} source tracks" +
                             if (confirmed != null) "; the confirmation did not cover them" else "")
                     }

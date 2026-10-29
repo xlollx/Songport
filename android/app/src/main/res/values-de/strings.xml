@@ -1163,4 +1163,9 @@
     <string name="provider_note_soundcloud_account">Melde dich auf der Seite von SoundCloud an: deine Sets und gelikten Titel werden zu Quellen und Zielen. Nutzt die Sitzung der Web-App: keine offizielle Schnittstelle, verstößt gegen die Bedingungen von SoundCloud und kann jederzeit aufhören zu funktionieren. Alpha. Nur wenige Titel auf SoundCloud haben einen ISRC, daher stützt sich die Zuordnung auf Titel, Interpret und Dauer.</string>
     <string name="alpha">Alpha</string>
     <string name="alpha_note">Alpha: noch nicht mit echten Konten getestet. Probiere es zuerst mit einer Test-Playlist aus und melde Probleme.</string>
+    <string name="editor_mirror_liked_warning">Spiegeln in die Lieblingssongs entfernt dort jedes „Gefällt mir“, dessen Song nicht in der Quelle ist.</string>
+    <string name="preview_unlike">%1$d „Gefällt mir“ zu entfernen</string>
+    <string name="preview_unlike_warning">Damit würde bei %1$d der %2$d Lieblingssongs das „Gefällt mir“ entfernt. Prüfe, ob die Quelle wirklich so wenige auflistet: Eine unvollständige Liste des Dienstes sieht genau so aus. Wenn du das Kästchen unten nicht anhakst, fügt der Lauf Songs hinzu und lässt diese markiert.</string>
+    <string name="preview_unlike_confirm">Bei diesen %1$d Songs „Gefällt mir“ entfernen</string>
+    <string name="note_unlikes_capped">„Gefällt mir“-Entfernungen zurückgehalten: Dieser Lauf würde bei %1$d der %2$d Lieblingssongs das „Gefällt mir“ entfernen. Tippe auf den Status der Synchronisierung, um die Vorschau zu öffnen und sie zu sehen; wenn sie wirklich weg sollen, hake dort das Kästchen an und starte sie. Hat die Quelle sie nicht wirklich verloren, hat der Dienst sie unvollständig aufgelistet, und nichts sollte entfernt werden.</string>
 </resources>

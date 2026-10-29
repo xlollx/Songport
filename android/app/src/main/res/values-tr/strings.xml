@@ -1161,4 +1161,9 @@
     <string name="provider_note_soundcloud_account">SoundCloud\'un kendi sayfasında oturum açın: setleriniz ve beğendiğiniz parçalar kaynak ve hedef olur. Web uygulamasının oturumunu kullanır: resmi bir arayüz değildir, SoundCloud\'un koşullarına aykırıdır ve çalışmayı bırakabilir. Alfa. SoundCloud\'daki az sayıda parçada ISRC vardır; eşleştirme başlık, sanatçı ve süreye dayanır.</string>
     <string name="alpha">alfa</string>
     <string name="alpha_note">Alfa: henüz gerçek hesaplarda denenmedi. Önce bir test çalma listesinde deneyin ve sorunları bildirin.</string>
+    <string name="editor_mirror_liked_warning">Beğenilen şarkılara yansıtmak, orada olup kaynakta olmayan her şeyin beğenisini kaldırır.</string>
+    <string name="preview_unlike">%1$d beğeni kaldırılacak</string>
+    <string name="preview_unlike_warning">Bu, Beğenilen şarkılardaki %2$d şarkının %1$d tanesinin beğenisini kaldırır. Kaynağın gerçekten bu kadar az şarkı listelediğini kontrol edin: hizmetin eksik bir listesi tam olarak böyle görünür. Aşağıdaki kutuyu işaretlemezseniz çalıştırma şarkı ekler ve bunları beğenilmiş bırakır.</string>
+    <string name="preview_unlike_confirm">Bu %1$d şarkının beğenisini kaldır</string>
+    <string name="note_unlikes_capped">Beğeni kaldırmalar bekletildi: bu çalıştırma Beğenilen şarkılardaki %2$d şarkının %1$d tanesinin beğenisini kaldırırdı. Önizlemeyi açıp görmek için senkronizasyonun durumuna dokunun; gerçekten gitmeleri gerekiyorsa orada kutuyu işaretleyip çalıştırın. Kaynak bunları gerçekten kaybetmediyse hizmet listeyi eksik vermiştir ve hiçbir şey gitmemelidir.</string>
 </resources>

@@ -1205,4 +1205,9 @@
     <string name="provider_note_soundcloud_account">Zaloguj się na stronie SoundCloud: Twoje playlisty i polubione utwory stają się źródłami i celami. Korzysta z sesji aplikacji internetowej: to nie jest oficjalny interfejs, narusza warunki SoundCloud i może przestać działać. Alfa. Niewiele utworów na SoundCloud ma kod ISRC, więc dopasowanie opiera się na tytule, wykonawcy i długości.</string>
     <string name="alpha">alfa</string>
     <string name="alpha_note">Alfa: jeszcze nie testowane na prawdziwych kontach. Najpierw wypróbuj na testowej playliście i zgłaszaj problemy.</string>
+    <string name="editor_mirror_liked_warning">Odzwierciedlanie w Polubionych utworach cofa polubienie wszystkiego, czego nie ma w źródle.</string>
+    <string name="preview_unlike">Do cofnięcia polubienia: %1$d</string>
+    <string name="preview_unlike_warning">To cofnęłoby polubienie %1$d z %2$d utworów w Polubionych utworach. Sprawdź, czy źródło naprawdę ma ich tak mało: niepełna lista z serwisu wygląda dokładnie tak. Jeśli nie zaznaczysz pola poniżej, synchronizacja doda utwory, a te pozostaną polubione.</string>
+    <string name="preview_unlike_confirm">Cofnij polubienie tych utworów (%1$d)</string>
+    <string name="note_unlikes_capped">Wstrzymano cofanie polubień: ta synchronizacja cofnęłaby polubienie %1$d z %2$d utworów w Polubionych utworach. Dotknij stanu synchronizacji, aby otworzyć podgląd i je zobaczyć; jeśli naprawdę mają zniknąć, zaznacz tam pole i uruchom ją. Jeśli źródło ich naprawdę nie straciło, serwis podał niepełną listę i nic nie powinno zniknąć.</string>
 </resources>

@@ -1142,4 +1142,9 @@
     <string name="provider_note_soundcloud_account">SoundCloud 자체 페이지에서 로그인해요. 내 플레이리스트와 좋아요한 트랙이 원본과 대상이 돼요. 웹 앱의 세션을 사용해요. 공식 인터페이스가 아니며 SoundCloud 약관에 어긋나고 작동이 멈출 수 있어요. 알파예요. SoundCloud 트랙에는 ISRC가 거의 없어서 제목, 아티스트, 길이로 매칭해요.</string>
     <string name="alpha">알파</string>
     <string name="alpha_note">알파: 아직 실제 계정으로 테스트하지 않았어요. 먼저 테스트용 플레이리스트로 써 보고 문제를 알려 주세요.</string>
+    <string name="editor_mirror_liked_warning">좋아요 표시한 곡으로 반영하면 원본에 없는 곡의 좋아요가 모두 취소돼요.</string>
+    <string name="preview_unlike">%1$d곡 좋아요 취소 예정</string>
+    <string name="preview_unlike_warning">좋아요 표시한 곡 %2$d곡 중 %1$d곡의 좋아요가 취소돼요. 원본에 정말 이만큼만 있는지 확인하세요. 서비스가 목록을 일부만 보낸 경우도 똑같이 보여요. 아래 상자를 체크하지 않으면 곡은 추가되고 이 곡들의 좋아요는 그대로 유지돼요.</string>
+    <string name="preview_unlike_confirm">이 %1$d곡의 좋아요 취소</string>
+    <string name="note_unlikes_capped">좋아요 취소 보류: 이번 실행은 좋아요 표시한 곡 %2$d곡 중 %1$d곡의 좋아요를 취소하게 돼요. 동기화 상태를 눌러 미리보기에서 확인하고, 정말 취소해야 한다면 거기서 상자를 체크한 뒤 실행하세요. 원본에서 실제로 사라진 게 아니라면 서비스가 목록을 일부만 보낸 것이니 아무것도 취소하면 안 돼요.</string>
 </resources>

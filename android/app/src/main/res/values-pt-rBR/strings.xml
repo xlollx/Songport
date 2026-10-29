@@ -1170,4 +1170,9 @@
     <string name="provider_note_soundcloud_account">Entre pela própria página do SoundCloud: suas playlists e faixas curtidas viram origens e destinos. Usa a sessão do app web: não é uma interface oficial, vai contra os termos do SoundCloud e pode parar de funcionar. Alfa. Poucas faixas do SoundCloud têm ISRC, então a correspondência usa título, artista e duração.</string>
     <string name="alpha">alfa</string>
     <string name="alpha_note">Alfa: ainda não testado em contas reais. Experimente primeiro numa playlist de teste e relate os problemas.</string>
+    <string name="editor_mirror_liked_warning">Espelhar em Músicas curtidas descurte tudo o que estiver lá e não estiver na origem.</string>
+    <string name="preview_unlike">%1$d a descurtir</string>
+    <string name="preview_unlike_warning">Isso descurtiria %1$d das %2$d músicas em Músicas curtidas. Confira se a origem lista mesmo tão poucas: uma lista incompleta do serviço fica exatamente assim. Se você não marcar a caixa abaixo, a execução adiciona músicas e mantém estas curtidas.</string>
+    <string name="preview_unlike_confirm">Descurtir estas %1$d músicas</string>
+    <string name="note_unlikes_capped">Descurtidas suspensas: esta execução descurtiria %1$d das %2$d músicas em Músicas curtidas. Toque no status da sincronização para abrir a prévia e vê-las; se devem mesmo sair, marque a caixa lá e execute. Se a origem não as perdeu de verdade, o serviço a listou de forma incompleta e nada deve sair.</string>
 </resources>

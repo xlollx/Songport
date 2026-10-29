@@ -1170,4 +1170,9 @@
     <string name="provider_note_soundcloud_account">Inicia sesión en la propia página de SoundCloud: tus listas y las canciones que te gustan pasan a ser orígenes y destinos. Usa la sesión de la app web: no es una interfaz oficial, va contra los términos de SoundCloud y puede dejar de funcionar. Alfa. Pocas canciones de SoundCloud tienen ISRC, así que la coincidencia se basa en título, artista y duración.</string>
     <string name="alpha">alfa</string>
     <string name="alpha_note">Alfa: aún no probado con cuentas reales. Pruébalo antes con una lista de prueba e informa de los problemas.</string>
+    <string name="editor_mirror_liked_warning">Replicar en Canciones que te gustan quita el «me gusta» a todo lo que haya allí y no esté en el origen.</string>
+    <string name="preview_unlike">%1$d a las que quitar el «me gusta»</string>
+    <string name="preview_unlike_warning">Esto quitaría el «me gusta» a %1$d de las %2$d canciones de Canciones que te gustan. Comprueba que el origen de verdad tenga tan pocas: una lista incompleta del servicio se ve exactamente así. Si no marcas la casilla de abajo, la ejecución añade canciones y mantiene el «me gusta» de estas.</string>
+    <string name="preview_unlike_confirm">Quitar el «me gusta» a estas %1$d canciones</string>
+    <string name="note_unlikes_capped">«Me gusta» retenidos: esta ejecución quitaría el «me gusta» a %1$d de las %2$d canciones de Canciones que te gustan. Toca el estado de la sincronización para abrir la vista previa y verlas; si de verdad deben irse, marca allí la casilla y ejecútala. Si el origen no las ha perdido de verdad, el servicio lo listó de forma incompleta y no debe quitarse nada.</string>
 </resources>

@@ -1170,4 +1170,9 @@
     <string name="provider_note_soundcloud_account">Connectez-vous sur la page de SoundCloud : vos playlists et vos titres aimés deviennent des sources et des destinations. Utilise la session de l\'app web : ce n\'est pas une interface officielle, c\'est contraire aux conditions de SoundCloud et cela peut cesser de fonctionner. Alpha. Peu de titres SoundCloud ont un ISRC : la correspondance repose sur le titre, l\'artiste et la durée.</string>
     <string name="alpha">alpha</string>
     <string name="alpha_note">Alpha : pas encore testé sur de vrais comptes. Essayez-le d\'abord sur une playlist de test et signalez les problèmes.</string>
+    <string name="editor_mirror_liked_warning">Refléter dans Titres likés retire le like de tout ce qui s\'y trouve sans être dans la source.</string>
+    <string name="preview_unlike">%1$d likes à retirer</string>
+    <string name="preview_unlike_warning">Cela retirerait le like de %1$d des %2$d titres de Titres likés. Vérifiez que la source en contient vraiment si peu : une liste incomplète du service ressemble exactement à ceci. Sans cocher la case ci-dessous, l\'exécution ajoute des titres et garde ceux-ci likés.</string>
+    <string name="preview_unlike_confirm">Retirer le like de ces %1$d titres</string>
+    <string name="note_unlikes_capped">Retraits de likes suspendus : cette exécution retirerait le like de %1$d des %2$d titres de Titres likés. Touchez l\'état de la synchro pour ouvrir l\'aperçu et les voir ; s\'ils doivent vraiment partir, cochez la case et lancez-la. Si la source ne les a pas vraiment perdus, le service l\'a listée de façon incomplète et rien ne doit partir.</string>
 </resources>

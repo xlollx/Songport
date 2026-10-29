@@ -1163,4 +1163,9 @@
     <string name="provider_note_soundcloud_account">Accedi dalla pagina di SoundCloud: le tue playlist e i brani che ti piacciono diventano origini e destinazioni. Usa la sessione dell\'app web: non è un\'interfaccia ufficiale, è contro i termini di SoundCloud e può smettere di funzionare. Alpha. Pochi brani su SoundCloud hanno un ISRC, quindi l\'abbinamento si basa su titolo, artista e durata.</string>
     <string name="alpha">alpha</string>
     <string name="alpha_note">Alpha: non ancora provato su account reali. Provalo prima su una playlist di test e segnala i problemi.</string>
+    <string name="editor_mirror_liked_warning">Rispecchiare nei Brani preferiti toglie dai preferiti tutto ciò che lì non è nell\'origine.</string>
+    <string name="preview_unlike">%1$d da togliere dai preferiti</string>
+    <string name="preview_unlike_warning">Toglierebbe dai preferiti %1$d dei %2$d brani nei Brani preferiti. Controlla che l\'origine ne elenchi davvero così pochi: un elenco incompleto del servizio ha esattamente questo aspetto. Se non spunti la casella qui sotto, l\'esecuzione aggiunge i brani e lascia questi nei preferiti.</string>
+    <string name="preview_unlike_confirm">Togli questi %1$d brani dai preferiti</string>
+    <string name="note_unlikes_capped">Rimozioni dai preferiti sospese: questa esecuzione toglierebbe dai preferiti %1$d dei %2$d brani nei Brani preferiti. Tocca lo stato della sync per aprire l\'anteprima e vederli; se vanno tolti davvero, spunta lì “Togli questi brani dai preferiti” ed eseguila. Se l\'origine non li ha persi davvero, il servizio l\'ha elencata in modo incompleto e non va tolto nulla.</string>
 </resources>

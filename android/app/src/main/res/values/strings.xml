@@ -1163,4 +1163,9 @@
     <string name="provider_note_soundcloud_account">Sign in on SoundCloud\'s own page: your sets and liked tracks become sources and destinations. Uses the web app\'s session: not an official interface, against SoundCloud\'s terms, may stop working. Alpha. Few SoundCloud tracks carry an ISRC, so matching relies on title, artist and duration.</string>
     <string name="alpha">alpha</string>
     <string name="alpha_note">Alpha: not yet tested on real accounts. Try it on a test playlist first and report problems.</string>
+    <string name="editor_mirror_liked_warning">Mirror into Liked songs unlikes everything there that isn\'t in the source.</string>
+    <string name="preview_unlike">%1$d to unlike</string>
+    <string name="preview_unlike_warning">This would unlike %1$d of the %2$d songs in Liked songs. Check that the source really lists that few: an incomplete listing by the service looks exactly like this. Unless you tick the box below, the run adds songs and keeps these liked.</string>
+    <string name="preview_unlike_confirm">Unlike these %1$d songs</string>
+    <string name="note_unlikes_capped">Unlikes held back: this run would unlike %1$d of the %2$d songs in Liked songs. Tap the sync\'s status to open the preview and see them; if they really should go, tick “Unlike these songs” there and run it. If the source has not really lost them, the service listed it incompletely and nothing should go.</string>
 </resources>
