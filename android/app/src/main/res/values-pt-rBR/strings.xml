@@ -544,7 +544,7 @@
     <string name="connector_rename">Renomear</string>
     <string name="connect_switch_account">O navegador pode já estar conectado a outra conta %1$s. Na página de login escolha “Não é você?” ou troque de conta, depois continue com a conta deste conector.</string>
     <string name="provider_note_amazon">A Amazon não tem API aberta: o Trackhop usa a interface do player web, então pode parar de funcionar quando a Amazon a mudar. Playlists, pesquisa, criar, adicionar e remover são suportados.</string>
-    <string name="amazon_not_installed_hint">Instale ou atualize o app complementar \"Songport Bridge\" (1.3.1 ou mais recente) pelo GitHub, depois volte aqui e toque em Conectar.</string>
+    <string name="amazon_not_installed_hint">Instale ou atualize o app complementar \"Trackhop Bridge\" (1.3.1 ou mais recente) pelo GitHub, depois volte aqui e toque em Conectar.</string>
     <string name="sync_pause">Pausar</string>
     <string name="sync_resume">Retomar</string>
     <string name="sync_stop">Parar</string>
@@ -562,7 +562,7 @@
     <string name="live_removed">Removida do destino</string>
     <string name="provider_note_spotify_bridge">Entre na página do próprio Spotify, sem app de desenvolvedor para criar. Usa a sessão do player web: não é uma via oficial, vai contra os termos do Spotify, pode parar de funcionar. A via oficial com sua própria chave continua disponível como \"Spotify\".</string>
     <string name="provider_note_apple_bridge">Entre com seu Apple ID, sem precisar do Apple Developer Program. Usa os tokens do player web: não é uma via oficial, vai contra os termos da Apple, pode parar de funcionar. A via oficial com seu próprio token de desenvolvedor continua disponível como \"Apple Music\".</string>
-    <string name="bridge_needed_hint">Instale ou atualize o app complementar \"Songport Bridge\" (1.2 ou mais recente) pelo GitHub, depois volte aqui e toque em Conectar.</string>
+    <string name="bridge_needed_hint">Instale ou atualize o app complementar \"Trackhop Bridge\" (1.2 ou mais recente) pelo GitHub, depois volte aqui e toque em Conectar.</string>
     <string name="settings_source_code">Código-fonte e documentação</string>
     <string name="plugins_more">Outros serviços podem ser adicionados por plugins de conector: como funciona.</string>
     <string name="security_title">Como seus logins são protegidos</string>

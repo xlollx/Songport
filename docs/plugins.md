@@ -17,9 +17,9 @@ package and signing certificate before answering.
 
 ## Known plugins
 
-### Songport Bridge
+### Trackhop Bridge
 
-[Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) is the reference plugin, by the same
+[Trackhop Bridge](https://github.com/xlollx/Songport-YTM-Bridge) is the reference plugin, by the same
 author, free and open source (GPL-3.0). It is distributed on GitHub only, never on Google Play.
 It adds:
 

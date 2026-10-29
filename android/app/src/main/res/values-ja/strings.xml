@@ -539,7 +539,7 @@
     <string name="connector_rename">名前を変更</string>
     <string name="connect_switch_account">ブラウザがすでに別の %1$s アカウントでログインしている可能性があります。ログインページで「別のアカウント」を選ぶかアカウントを切り替えてから、このコネクタ用のアカウントで続行してください。</string>
     <string name="provider_note_amazon">Amazon にはオープンな API がありません。Trackhop はウェブプレーヤーのインターフェースを利用しているため、Amazon がそれを変更すると動作しなくなる可能性があります。プレイリスト、検索、作成、追加、削除に対応しています。</string>
-    <string name="amazon_not_installed_hint">GitHub からコンパニオンアプリ「Songport Bridge」（1.3.1 以降）をインストールまたは更新し、ここに戻って「接続」をタップしてください。</string>
+    <string name="amazon_not_installed_hint">GitHub からコンパニオンアプリ「Trackhop Bridge」（1.3.1 以降）をインストールまたは更新し、ここに戻って「接続」をタップしてください。</string>
     <string name="sync_pause">一時停止</string>
     <string name="sync_resume">再開</string>
     <string name="sync_stop">停止</string>
@@ -557,7 +557,7 @@
     <string name="live_removed">同期先から削除しました</string>
     <string name="provider_note_spotify_bridge">Spotify 自身のページでログインするだけで、開発者アプリの作成は不要です。ウェブプレーヤーのセッションを使用します。公式の方法ではなく、Spotify の利用規約に反しており、動作しなくなる可能性があります。自分のキーを使う公式の方法は「Spotify」として引き続き利用できます。</string>
     <string name="provider_note_apple_bridge">Apple ID でサインインするだけで、Apple Developer Program は不要です。ウェブプレーヤーのトークンを使用します。公式の方法ではなく、Apple の利用規約に反しており、動作しなくなる可能性があります。自分のデベロッパートークンを使う公式の方法は「Apple Music」として引き続き利用できます。</string>
-    <string name="bridge_needed_hint">GitHub からコンパニオンアプリ「Songport Bridge」（1.2 以降）をインストールまたは更新し、ここに戻って「接続」をタップしてください。</string>
+    <string name="bridge_needed_hint">GitHub からコンパニオンアプリ「Trackhop Bridge」（1.2 以降）をインストールまたは更新し、ここに戻って「接続」をタップしてください。</string>
     <string name="settings_source_code">ソースコードとドキュメント</string>
     <string name="plugins_more">ほかのサービスはコネクタプラグインで追加できます。仕組みはこちら。</string>
     <string name="security_title">ログイン情報の保護について</string>

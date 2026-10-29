@@ -32,6 +32,19 @@ object BridgePlugin {
     /** True when the connectors are built into this app (GitHub and F-Droid build). */
     val builtIn: Boolean get() = BuiltIn.available
 
+    /**
+     * A plugin reporting this "version" (or more) in its status answers every method the built-in
+     * connectors do: albums, artists, history, rename, delete, reorder, visibility, unplayable tracks.
+     * Trackhop Bridge has done so since 1.4.0.
+     */
+    const val FULL_VERSION = 34
+
+    // The version the plugin's last status call reported; 0 until one has answered.
+    @Volatile private var pluginVersion = 0
+
+    /** Every feature of the built-in connectors is available, built in or through the plugin. */
+    val full: Boolean get() = builtIn || pluginVersion >= FULL_VERSION
+
     /** Where to get a plugin: nowhere to go when the connectors are built in, and never in the Play build. */
     val installUrl: String? = if (BuildConfig.PLUGIN_LINKS && !BuiltIn.available) "https://github.com/xlollx/Songport-YTM-Bridge/releases/latest" else null
 
@@ -60,7 +73,9 @@ object BridgePlugin {
     /** One call to the connectors: in-process when built in, otherwise through the plugin's provider. */
     fun call(ctx: Context, method: String, arg: String? = null, extras: Bundle? = null): Bundle? =
         if (builtIn) BuiltIn.call(ctx, method, arg, extras)
-        else ctx.contentResolver.call(authority(ctx), method, arg, extras)
+        else ctx.contentResolver.call(authority(ctx), method, arg, extras)?.also {
+            if (method == "status" || method.endsWith(".status")) pluginVersion = it.getInt("version", 0)
+        }
 
     /** Opens a connector's sign-in: the built-in screen, or the plugin's through its action. */
     fun startLogin(ctx: Context, action: String) {

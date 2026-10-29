@@ -15,7 +15,7 @@ import com.xlollx.songport.net.get
 import com.xlollx.songport.net.str
 
 /**
- * Apple Music through the companion app "Songport Bridge": the user signs in with their Apple ID on
+ * Apple Music through the companion app "Trackhop Bridge": the user signs in with their Apple ID on
  * music.apple.com inside the Bridge, no Apple Developer Program needed. The Bridge hands over the
  * web player's developer token and the music user token, and everything else is the normal
  * [AppleMusicProvider] code.
@@ -136,8 +136,8 @@ class AppleBridgeProvider(slot: String = "") : AppleMusicProvider(slot) {
         val b = try {
             BridgePlugin.call(ctx, method, arg, extras)
         } catch (e: Exception) {
-            throw ProviderException("Songport Bridge: ${e.message ?: e.javaClass.simpleName}")
-        } ?: throw ProviderException("Songport Bridge: no answer")
+            throw ProviderException("Connector plugin: ${e.message ?: e.javaClass.simpleName}")
+        } ?: throw ProviderException("Connector plugin: no answer")
         b.getString("error")?.let { throw ProviderException("Apple Music (Bridge): $it") }
         return b
     }

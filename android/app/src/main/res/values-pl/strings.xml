@@ -556,7 +556,7 @@
     <string name="connector_rename">Zmień nazwę</string>
     <string name="connect_switch_account">Przeglądarka może być już zalogowana na inne konto %1$s. Na stronie logowania wybierz „To nie ty?” lub zmień konto, a potem kontynuuj z kontem dla tego konektora.</string>
     <string name="provider_note_amazon">Amazon nie ma otwartego API: Trackhop używa interfejsu odtwarzacza internetowego, więc może przestać działać, gdy Amazon go zmieni. Obsługiwane: playlisty, wyszukiwanie, tworzenie, dodawanie i usuwanie.</string>
-    <string name="amazon_not_installed_hint">Zainstaluj lub zaktualizuj aplikację towarzyszącą „Songport Bridge” (1.3.1 lub nowszą) z GitHub, wróć tutaj i dotknij Połącz.</string>
+    <string name="amazon_not_installed_hint">Zainstaluj lub zaktualizuj aplikację towarzyszącą „Trackhop Bridge” (1.3.1 lub nowszą) z GitHub, wróć tutaj i dotknij Połącz.</string>
     <string name="sync_pause">Wstrzymaj</string>
     <string name="sync_resume">Wznów</string>
     <string name="sync_stop">Zatrzymaj</string>
@@ -574,7 +574,7 @@
     <string name="live_removed">Usunięto z celu</string>
     <string name="provider_note_spotify_bridge">Logujesz się na własnej stronie Spotify, bez tworzenia aplikacji dewelopera. Używa sesji odtwarzacza internetowego: nieoficjalna ścieżka, niezgodna z regulaminem Spotify, może przestać działać. Oficjalna ścieżka z własnym kluczem pozostaje dostępna jako „Spotify”.</string>
     <string name="provider_note_apple_bridge">Logujesz się swoim Apple ID, bez Apple Developer Program. Używa tokenów odtwarzacza internetowego: nieoficjalna ścieżka, niezgodna z regulaminem Apple, może przestać działać. Oficjalna ścieżka z własnym tokenem dewelopera pozostaje dostępna jako „Apple Music”.</string>
-    <string name="bridge_needed_hint">Zainstaluj lub zaktualizuj aplikację towarzyszącą „Songport Bridge” (1.2 lub nowszą) z GitHub, wróć tutaj i dotknij Połącz.</string>
+    <string name="bridge_needed_hint">Zainstaluj lub zaktualizuj aplikację towarzyszącą „Trackhop Bridge” (1.2 lub nowszą) z GitHub, wróć tutaj i dotknij Połącz.</string>
     <string name="settings_source_code">Kod źródłowy i dokumentacja</string>
     <string name="plugins_more">Inne serwisy można dodać przez wtyczki konektorów: jak to działa.</string>
     <string name="security_title">Jak chronione są twoje logowania</string>

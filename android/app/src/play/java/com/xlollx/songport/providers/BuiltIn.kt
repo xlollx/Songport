@@ -6,7 +6,7 @@ import android.os.Bundle
 
 /**
  * Google Play build: no built-in web connectors. YouTube Music, Amazon Music and the web sign-ins
- * are offered only when a connector plugin (the Songport Bridge app) is installed.
+ * are offered only when a connector plugin (Trackhop Bridge) is installed.
  */
 object BuiltIn {
     const val available = false

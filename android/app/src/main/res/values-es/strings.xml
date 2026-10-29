@@ -544,7 +544,7 @@
     <string name="connector_rename">Renombrar</string>
     <string name="connect_switch_account">Puede que el navegador ya tenga abierta la sesión de otra cuenta de %1$s. En la página de inicio de sesión elige “¿No eres tú?” o cambia de cuenta, y luego continúa con la cuenta de este conector.</string>
     <string name="provider_note_amazon">Amazon no tiene una API abierta: Trackhop usa la interfaz del reproductor web, así que puede dejar de funcionar cuando Amazon la cambie. Admite playlists, búsqueda, crear, añadir y quitar.</string>
-    <string name="amazon_not_installed_hint">Instala o actualiza la app complementaria \"Songport Bridge\" (1.3.1 o posterior) desde GitHub, luego vuelve aquí y toca Conectar.</string>
+    <string name="amazon_not_installed_hint">Instala o actualiza la app complementaria \"Trackhop Bridge\" (1.3.1 o posterior) desde GitHub, luego vuelve aquí y toca Conectar.</string>
     <string name="sync_pause">Pausar</string>
     <string name="sync_resume">Reanudar</string>
     <string name="sync_stop">Detener</string>
@@ -562,7 +562,7 @@
     <string name="live_removed">Quitada del destino</string>
     <string name="provider_note_spotify_bridge">Inicia sesión en la propia página de Spotify, sin crear ninguna app de desarrollador. Usa la sesión del reproductor web: no es una vía oficial, va contra los términos de Spotify y puede dejar de funcionar. La vía oficial con tu propia clave sigue disponible como \"Spotify\".</string>
     <string name="provider_note_apple_bridge">Inicia sesión con tu Apple ID, sin necesidad del Apple Developer Program. Usa los tokens del reproductor web: no es una vía oficial, va contra los términos de Apple y puede dejar de funcionar. La vía oficial con tu propio token de desarrollador sigue disponible como \"Apple Music\".</string>
-    <string name="bridge_needed_hint">Instala o actualiza la app complementaria \"Songport Bridge\" (1.2 o posterior) desde GitHub, luego vuelve aquí y toca Conectar.</string>
+    <string name="bridge_needed_hint">Instala o actualiza la app complementaria \"Trackhop Bridge\" (1.2 o posterior) desde GitHub, luego vuelve aquí y toca Conectar.</string>
     <string name="settings_source_code">Código fuente y documentación</string>
     <string name="plugins_more">Se pueden añadir otros servicios con plugins de conectores: cómo funciona.</string>
     <string name="security_title">Cómo se protegen tus inicios de sesión</string>

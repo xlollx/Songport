@@ -20,7 +20,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 
 /**
- * Amazon Music through the companion app "Songport Bridge", experimental.
+ * Amazon Music through the companion app "Trackhop Bridge", experimental.
  *
  * Amazon has no open API and its official one is reserved to approved partners, so the Bridge uses
  * the web player's interface, as it does for YouTube Music. Search and reading a playlist by id work;
@@ -31,7 +31,7 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     // Renaming and deleting were mapped from the desktop player's own calls; an older plugin lacks them.
     // The GraphQL player (October 2026) has no rename or visibility call we have seen yet.
     override val canRenamePlaylists: Boolean get() = false
-    override val canDeletePlaylists: Boolean get() = BridgePlugin.builtIn
+    override val canDeletePlaylists: Boolean get() = BridgePlugin.full
     override val serviceId = SERVICE
     override val displayName = "Amazon Music"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.EASY
@@ -154,8 +154,8 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
         val b = try {
             BridgePlugin.call(ctx, method, arg, extras)
         } catch (e: Exception) {
-            throw ProviderException("Songport Bridge: ${e.message ?: e.javaClass.simpleName}")
-        } ?: throw ProviderException("Songport Bridge: no answer")
+            throw ProviderException("Connector plugin: ${e.message ?: e.javaClass.simpleName}")
+        } ?: throw ProviderException("Connector plugin: no answer")
         b.getString("error")?.let { throw ProviderException("Amazon Music: $it") }
         return b
     }

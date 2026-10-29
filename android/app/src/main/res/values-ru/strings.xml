@@ -556,7 +556,7 @@
     <string name="connector_rename">Переименовать</string>
     <string name="connect_switch_account">В браузере может быть уже выполнен вход в другой аккаунт %1$s. На странице входа выберите «Не вы?» или смените аккаунт, затем продолжите с аккаунтом для этого коннектора.</string>
     <string name="provider_note_amazon">У Amazon нет открытого API: Trackhop использует интерфейс веб-плеера, поэтому может перестать работать, когда Amazon его изменит. Поддерживаются плейлисты, поиск, создание, добавление и удаление.</string>
-    <string name="amazon_not_installed_hint">Установите или обновите приложение-компаньон «Songport Bridge» (1.3.1 или новее) с GitHub, затем вернитесь сюда и нажмите «Подключить».</string>
+    <string name="amazon_not_installed_hint">Установите или обновите приложение-компаньон «Trackhop Bridge» (1.3.1 или новее) с GitHub, затем вернитесь сюда и нажмите «Подключить».</string>
     <string name="sync_pause">Пауза</string>
     <string name="sync_resume">Продолжить</string>
     <string name="sync_stop">Остановить</string>
@@ -574,7 +574,7 @@
     <string name="live_removed">Удалено из цели</string>
     <string name="provider_note_spotify_bridge">Вход на собственной странице Spotify, без создания приложения разработчика. Использует сессию веб-плеера: неофициальный путь, противоречит условиям Spotify, может перестать работать. Официальный путь с вашим ключом остаётся доступен как «Spotify».</string>
     <string name="provider_note_apple_bridge">Вход с Apple ID, без Apple Developer Program. Использует токены веб-плеера: неофициальный путь, противоречит условиям Apple, может перестать работать. Официальный путь с вашим токеном разработчика остаётся доступен как «Apple Music».</string>
-    <string name="bridge_needed_hint">Установите или обновите приложение-компаньон «Songport Bridge» (1.2 или новее) с GitHub, затем вернитесь сюда и нажмите «Подключить».</string>
+    <string name="bridge_needed_hint">Установите или обновите приложение-компаньон «Trackhop Bridge» (1.2 или новее) с GitHub, затем вернитесь сюда и нажмите «Подключить».</string>
     <string name="settings_source_code">Исходный код и документация</string>
     <string name="plugins_more">Другие сервисы можно добавить плагинами-коннекторами: как это работает.</string>
     <string name="security_title">Как защищены ваши входы</string>

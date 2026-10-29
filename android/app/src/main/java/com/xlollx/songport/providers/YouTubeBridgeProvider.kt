@@ -31,8 +31,8 @@ import kotlinx.serialization.json.JsonElement
  * [YouTubeProvider] for whoever prefers it.
  */
 class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
-    override val canRenamePlaylists: Boolean get() = BridgePlugin.builtIn
-    override val canDeletePlaylists: Boolean get() = BridgePlugin.builtIn
+    override val canRenamePlaylists: Boolean get() = BridgePlugin.full
+    override val canDeletePlaylists: Boolean get() = BridgePlugin.full
     override val serviceId = SERVICE
     override val displayName = "YouTube Music"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.EASY
@@ -43,9 +43,9 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
     /** Saved albums and subscribed artists: the built-in connectors know them, an old plugin may not. */
-    override val supportsAlbums: Boolean get() = BridgePlugin.builtIn
-    override val supportsArtists: Boolean get() = BridgePlugin.builtIn
-    override val supportsRecent: Boolean get() = BridgePlugin.builtIn
+    override val supportsAlbums: Boolean get() = BridgePlugin.full
+    override val supportsArtists: Boolean get() = BridgePlugin.full
+    override val supportsRecent: Boolean get() = BridgePlugin.full
     override val supportsMultipleAccounts = false
     override val authDomain = "accounts.google.com"
     override val revokeUrl = "https://myaccount.google.com/device-activity"
@@ -134,7 +134,7 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         withContext(Dispatchers.IO) { call(ctx, "rename", playlistId, Bundle().apply { putString("name", name) }) }
     }
 
-    override val canReorder: Boolean get() = BridgePlugin.builtIn
+    override val canReorder: Boolean get() = BridgePlugin.full
     override suspend fun reorderTracks(ctx: Env, playlistId: String, current: List<Track>, ordered: List<Track>) {
         // Entries move by their set id; a listing without them cannot be reordered.
         if (current.any { it.itemId.isNullOrEmpty() }) return
@@ -148,7 +148,7 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         }
     }
 
-    override val canSetVisibility: Boolean get() = BridgePlugin.builtIn
+    override val canSetVisibility: Boolean get() = BridgePlugin.full
     override suspend fun setPlaylistVisibility(ctx: Env, playlistId: String, public: Boolean) {
         withContext(Dispatchers.IO) { call(ctx, "visibility", playlistId, Bundle().apply { putBoolean("public", public) }) }
     }
@@ -204,7 +204,7 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
     }
 
     /** The built-in connector marks greyed-out entries; an older Bridge app does not. */
-    override val detectsUnplayable: Boolean get() = BridgePlugin.builtIn
+    override val detectsUnplayable: Boolean get() = BridgePlugin.full
 
     private suspend fun <T> io(ctx: Env, method: String, arg: String? = null, extras: Bundle? = null, map: (JsonElement?) -> T): T =
         withContext(Dispatchers.IO) { map(parseJson(call(ctx, method, arg, extras).getString("json") ?: "")) }

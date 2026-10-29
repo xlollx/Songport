@@ -107,7 +107,7 @@ What existing installs and setups depend on keeps the old name, on purpose: the 
 apps), the Deezer redirect page `xlollx.github.io/Songport/deezer-redirect.html` (served from the
 owner's user-site repository), the release asset names `Songport-vX.apk` / `Songport-vX-play.aab`
 (F-Droid's `Binaries:` pattern), the server's `SONGPORT_*` variables, and the image
-`ghcr.io/xlollx/songport`, still published next to the new one. The companion app Songport Bridge
-keeps its name for now.
+`ghcr.io/xlollx/songport`, still published next to the new one. The companion app is
+now Trackhop Bridge (1.4.0), with the same package id and repository address.
 
 Not planned: smart links with analytics, listening statistics dashboards, anything hosted.

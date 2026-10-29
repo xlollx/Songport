@@ -23,7 +23,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
- * Spotify through the web player's session, kept by the companion connectors ("Songport Bridge",
+ * Spotify through the web player's session, kept by the companion connectors ("Trackhop Bridge",
  * built into this app on GitHub and F-Droid): the user signs in on Spotify's own page, no developer
  * app and no Premium needed.
  *
@@ -199,7 +199,7 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
         )
     }
 
-    override val detectsUnplayable: Boolean get() = BridgePlugin.builtIn
+    override val detectsUnplayable: Boolean get() = BridgePlugin.full
 
     private suspend fun <T> io(ctx: Env, method: String, arg: String? = null, extras: Bundle? = null, map: (JsonElement?) -> T): T =
         withContext(Dispatchers.IO) { map(parseJson(call(ctx, method, arg, extras).getString("json") ?: "")) }
@@ -209,8 +209,8 @@ class SpotifyBridgeProvider(override val slot: String = "") : MusicProvider {
         val b = try {
             BridgePlugin.call(ctx, method, arg, extras)
         } catch (e: Exception) {
-            throw ProviderException("Songport Bridge: ${e.message ?: e.javaClass.simpleName}")
-        } ?: throw ProviderException("Songport Bridge: no answer")
+            throw ProviderException("Connector plugin: ${e.message ?: e.javaClass.simpleName}")
+        } ?: throw ProviderException("Connector plugin: no answer")
         b.getString("error")?.let { throw ProviderException("Spotify (web): $it") }
         return b
     }

@@ -544,7 +544,7 @@
     <string name="connector_rename">Renommer</string>
     <string name="connect_switch_account">Le navigateur est peut-être déjà connecté à un autre compte %1$s. Sur la page de connexion, choisissez « Ce n\'est pas vous ? » ou changez de compte, puis continuez avec le compte de ce connecteur.</string>
     <string name="provider_note_amazon">Amazon n\'a pas d\'API ouverte : Trackhop utilise l\'interface du lecteur web, qui peut cesser de fonctionner quand Amazon la modifie. Playlists, recherche, création, ajout et suppression sont pris en charge.</string>
-    <string name="amazon_not_installed_hint">Installez ou mettez à jour l\'application compagnon \"Songport Bridge\" (1.3.1 ou plus récente) depuis GitHub, puis revenez ici et touchez Connecter.</string>
+    <string name="amazon_not_installed_hint">Installez ou mettez à jour l\'application compagnon \"Trackhop Bridge\" (1.3.1 ou plus récente) depuis GitHub, puis revenez ici et touchez Connecter.</string>
     <string name="sync_pause">Pause</string>
     <string name="sync_resume">Reprendre</string>
     <string name="sync_stop">Arrêter</string>
@@ -562,7 +562,7 @@
     <string name="live_removed">Retiré de la destination</string>
     <string name="provider_note_spotify_bridge">Connectez-vous sur la page de Spotify, sans créer d\'application développeur. Utilise la session du lecteur web : ce n\'est pas une voie officielle, c\'est contraire aux conditions de Spotify et cela peut cesser de fonctionner. La voie officielle avec votre propre clé reste disponible sous le nom \"Spotify\".</string>
     <string name="provider_note_apple_bridge">Connectez-vous avec votre identifiant Apple, sans Apple Developer Program. Utilise les jetons du lecteur web : ce n\'est pas une voie officielle, c\'est contraire aux conditions d\'Apple et cela peut cesser de fonctionner. La voie officielle avec votre propre jeton développeur reste disponible sous le nom \"Apple Music\".</string>
-    <string name="bridge_needed_hint">Installez ou mettez à jour l\'application compagnon \"Songport Bridge\" (1.2 ou plus récente) depuis GitHub, puis revenez ici et touchez Connecter.</string>
+    <string name="bridge_needed_hint">Installez ou mettez à jour l\'application compagnon \"Trackhop Bridge\" (1.2 ou plus récente) depuis GitHub, puis revenez ici et touchez Connecter.</string>
     <string name="settings_source_code">Code source et documentation</string>
     <string name="plugins_more">D\'autres services peuvent être ajoutés par des plugins de connecteur : comment ça marche.</string>
     <string name="security_title">Comment vos connexions sont protégées</string>

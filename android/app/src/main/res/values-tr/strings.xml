@@ -544,7 +544,7 @@
     <string name="connector_rename">Yeniden adlandır</string>
     <string name="connect_switch_account">Tarayıcı başka bir %1$s hesabında zaten oturum açmış olabilir. Oturum açma sayfasında “Siz değil misiniz?” seçeneğini seçin veya hesap değiştirin, sonra bu bağlayıcının hesabıyla devam edin.</string>
     <string name="provider_note_amazon">Amazon\'un açık API\'si yok: Trackhop web oynatıcının arayüzünü kullanır, bu yüzden Amazon arayüzü değiştirdiğinde çalışmayı bırakabilir. Çalma listeleri, arama, oluşturma, ekleme ve kaldırma desteklenir.</string>
-    <string name="amazon_not_installed_hint">GitHub\'dan \"Songport Bridge\" yardımcı uygulamasını (1.3.1 veya üzeri) yükleyin ya da güncelleyin, sonra buraya dönüp Bağlan\'a dokunun.</string>
+    <string name="amazon_not_installed_hint">GitHub\'dan \"Trackhop Bridge\" yardımcı uygulamasını (1.3.1 veya üzeri) yükleyin ya da güncelleyin, sonra buraya dönüp Bağlan\'a dokunun.</string>
     <string name="sync_pause">Duraklat</string>
     <string name="sync_resume">Sürdür</string>
     <string name="sync_stop">Durdur</string>
@@ -562,7 +562,7 @@
     <string name="live_removed">Hedeften kaldırıldı</string>
     <string name="provider_note_spotify_bridge">Spotify\'ın kendi sayfasında oturum açın, geliştirici uygulaması oluşturmak gerekmez. Web oynatıcının oturumunu kullanır: resmi bir yol değildir, Spotify\'ın koşullarına aykırıdır, çalışmayı bırakabilir. Kendi anahtarınızla resmi yol \"Spotify\" olarak kullanılabilir durumda kalır.</string>
     <string name="provider_note_apple_bridge">Apple ID\'nizle oturum açın, Apple Developer Program gerekmez. Web oynatıcının jetonlarını kullanır: resmi bir yol değildir, Apple\'ın koşullarına aykırıdır, çalışmayı bırakabilir. Kendi geliştirici jetonunuzla resmi yol \"Apple Music\" olarak kullanılabilir durumda kalır.</string>
-    <string name="bridge_needed_hint">GitHub\'dan \"Songport Bridge\" yardımcı uygulamasını (1.2 veya üzeri) yükleyin ya da güncelleyin, sonra buraya dönüp Bağlan\'a dokunun.</string>
+    <string name="bridge_needed_hint">GitHub\'dan \"Trackhop Bridge\" yardımcı uygulamasını (1.2 veya üzeri) yükleyin ya da güncelleyin, sonra buraya dönüp Bağlan\'a dokunun.</string>
     <string name="settings_source_code">Kaynak kodu ve belgeler</string>
     <string name="plugins_more">Bağlayıcı eklentileriyle başka servisler eklenebilir: nasıl çalışır.</string>
     <string name="security_title">Oturumlarınız nasıl korunur</string>

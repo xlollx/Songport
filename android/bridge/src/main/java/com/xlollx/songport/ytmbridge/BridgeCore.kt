@@ -6,7 +6,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
 /**
- * The connectors' methods, the same the Songport Bridge app answers through its ContentProvider
+ * The connectors' methods, the same the Trackhop Bridge app answers through its ContentProvider
  * (`status`, `playlists`, `tracks`, `search`, `add`, `amazon.*`, `spotify.*`, `apple.*`...), called by
  * Trackhop in-process. No caller check is needed: nothing outside this app can reach it.
  * Callers block, so this is never called on the main thread.
