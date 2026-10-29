@@ -3,7 +3,7 @@
     <color name="ic_launcher_background">#5B3FD9</color>
     <!-- The splash window (a flat colour is all the system allows): a deep indigo-violet from the
          beam's palette, between its black base and its blue edge, so it reads as the brand and not
-         as a black screen; the Compose opening screen with the whole beam fades in over it. -->
+         as a black screen. It is the only opening screen. -->
     <color name="splash_background">#1E1452</color>
     <color name="window_background">#FBF8FF</color>
 </resources>

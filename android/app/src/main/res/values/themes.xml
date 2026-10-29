@@ -6,8 +6,8 @@
     </style>
 
     <!-- Schermata di avvio: finestra indaco scuro e l'icona (fascio, piastrella di vetro, marchio)
-         al centro, come sul launcher; poi sfuma nella schermata Compose con il fascio intero
-         (ui/Splash.kt) e quindi nel tema normale. -->
+         al centro, come sul launcher; poi passa direttamente al tema normale (una sola schermata
+         di avvio). -->
     <style name="Theme.Songport.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splash_background</item>
         <!-- The mark with its ring turning once (Android 12+ plays it; older phones show it still). -->

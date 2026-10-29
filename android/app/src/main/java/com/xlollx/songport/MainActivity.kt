@@ -90,7 +90,6 @@ import com.xlollx.songport.ui.LogScreen
 import com.xlollx.songport.ui.OnboardingScreen
 import com.xlollx.songport.ui.PreviewScreen
 import com.xlollx.songport.ui.SetupWizardScreen
-import com.xlollx.songport.ui.SplashOverlay
 import com.xlollx.songport.ui.SettingsScreen
 import com.xlollx.songport.ui.SyncEditorScreen
 import com.xlollx.songport.ui.TransferScreen
@@ -129,9 +128,10 @@ class MainActivity : ComponentActivity() {
     private fun requestUnlock() = lockLauncher.launch(Intent(this, LockActivity::class.java))
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // The system splash (a flat colour and the icon) gives way, with the system's own exit, to
-        // the Compose one ([SplashOverlay]), the beam across the whole screen. No exit listener:
-        // see Splash for why.
+        // The only opening screen: the system's (a themed colour and the icon), gone with the
+        // system's own exit as soon as the first frame is drawn. No exit-animation listener: on
+        // Android 12+ it hands the splash view over to the app's process, and on the API 34 test
+        // emulators that handover took the whole emulator down.
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -144,30 +144,23 @@ class MainActivity : ComponentActivity() {
             locked.value = true
             requestUnlock()
         }
-        val coldStart = savedInstanceState == null
         setContent {
             val settings by Store.get(this).state.collectAsState()
             val themeMode = ThemeMode.of(settings.settings.themeMode)
             // The status and navigation bar icons follow the app's theme, not only the system's:
             // Light chosen on a dark phone otherwise leaves white clock and icons on a light page.
-            // Under the opening screen the top is the beam's bright side and the bottom its dark
-            // one: dark icons above, light below, until it has gone.
             val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
             val appDark = when (themeMode) { ThemeMode.SYSTEM -> systemDark; ThemeMode.LIGHT -> false; ThemeMode.DARK -> true }
-            var splashShown by remember { mutableStateOf(coldStart) }
-            androidx.compose.runtime.DisposableEffect(appDark, splashShown) {
+            androidx.compose.runtime.DisposableEffect(appDark) {
                 enableEdgeToEdge(
-                    statusBarStyle = androidx.activity.SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT) { if (splashShown) false else appDark },
-                    navigationBarStyle = androidx.activity.SystemBarStyle.auto(LIGHT_SCRIM, DARK_SCRIM) { splashShown || appDark },
+                    statusBarStyle = androidx.activity.SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT) { appDark },
+                    navigationBarStyle = androidx.activity.SystemBarStyle.auto(LIGHT_SCRIM, DARK_SCRIM) { appDark },
                 )
                 onDispose {}
             }
             AppTheme(mode = themeMode, dynamicColor = settings.settings.dynamicColor) {
-                Box {
-                    val isLocked by locked.collectAsState()
-                    if (isLocked) LockScreen { requestUnlock() } else MainScreen(messages, tabRequests, sharedText, newSyncRequests, toolRequests)
-                    SplashOverlay(cold = coldStart) { splashShown = it }
-                }
+                val isLocked by locked.collectAsState()
+                if (isLocked) LockScreen { requestUnlock() } else MainScreen(messages, tabRequests, sharedText, newSyncRequests, toolRequests)
             }
         }
     }
