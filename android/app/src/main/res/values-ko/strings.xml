@@ -1116,7 +1116,7 @@
     <string name="howto_accounts_title">계정과 내 키</string>
     <string name="howto_accounts_summary">커넥터, 연결 경로, 키, 보안.</string>
     <string name="howto_accounts_body"># 커넥터\n커넥터는 한 서비스의 한 계정이에요. 서비스가 허용하면 여러 개를 추가할 수 있어요. 예를 들어 Spotify 계정 두 개를 각자 다른 이름으로 쓸 수 있어요.\n# 연결 경로\n어떤 서비스는 두 가지 방법으로 연결할 수 있어요. 빠른 경로: 서비스 페이지에서 로그인만 하면 되고 만들 것이 없지만, 사이트가 바뀌면 작동하지 않을 수 있어요. 공식 경로: 내 이름으로 만든 무료 키로 쓰는 서비스 API예요. 더 안정적이고 설정에 몇 분 걸려요.</string>
-    <string name="howto_accounts_full">이 버전에는 Spotify, YouTube Music, Amazon Music, Apple Music, Deezer의 빠른 경로와 내 계정으로 쓰는 SoundCloud가 기본으로 들어 있어요. Deezer (web)와 SoundCloud는 베타예요.</string>
+    <string name="howto_accounts_full">이 버전에는 Spotify, YouTube Music, Amazon Music, Apple Music, Deezer의 빠른 경로와 내 계정으로 쓰는 SoundCloud가 기본으로 들어 있어요. Deezer (web)와 SoundCloud는 알파예요.</string>
     <string name="howto_accounts_body2"># 내 키\nTrackhop에는 자체 키가 없어요. 설정 가이드가 서비스 개발자 페이지를 안내해요. 그곳에 리디렉션 URI를 정확히 복사한 뒤, 여기에 Client ID(요청하면 secret도)를 붙여 넣으세요.\n• Spotify는 Premium 계정만 키를 만들 수 있어요.\n• Apple 개발자 토큰은 길어야 6개월 뒤에 만료돼요. 새 토큰은 설정 › 고급 › 서비스 키에 붙여 넣으세요.\n• YouTube 공식 경로에서는 하루 할당량이 온전히 내 것이고, 단위로 계산돼요.\n내 서버(Jellyfin, Plex, Navidrome 등)는 주소, 사용자 이름, 비밀번호나 토큰이 필요해요.\n# 계정을 안전하게\n비밀번호는 서비스 자체 페이지에서 입력하고, Trackhop에는 절대 입력하지 않아요. 토큰은 휴대폰에 암호화되어 있고 Trackhop 서버는 없어요. 연결 테스트로 커넥터를 확인할 수 있어요. 연결 해제는 로그인 정보를 지우고, 이 계정 삭제는 카드까지 없애요. 설정 › 고급 › 개발자 도구 표시 › 연결 보기에서 앱이 접속한 모든 호스트를 볼 수 있어요.</string>
     <string name="howto_plugins_title">플러그인</string>
     <string name="howto_plugins_summary">다른 앱이 서비스를 추가하는 방법.</string>
@@ -1138,6 +1138,8 @@
     <string name="tour_save">저장하면 미리보기가 열려서, 무슨 일이 일어나기 전에 바뀔 내용을 보여 주고 불확실한 매칭을 물어봐요.</string>
     <string name="tour_results">실행이 끝나면 카드에 숫자가 나오고, 찾지 못함 같은 라벨을 누르면 확인할 곳으로 가요. 자세한 내용은 설정 › 사용 방법에 있어요.</string>
     <string name="plugins_where">플러그인은 이 앱이 아니라 각 제작자가 배포합니다. GitHub에서는 “trackhop-plugin” 주제가 붙어 있습니다.</string>
-    <string name="provider_note_deezer_bridge">Deezer 자체 페이지에서 로그인해요. 개발자 앱이 필요 없어요(Deezer는 더 이상 새 앱을 등록하지 않아요). 웹 플레이어의 세션을 사용해요. 공식 경로가 아니며 Deezer 약관에 어긋나고 작동이 멈출 수 있어요. 베타예요. 직접 만든 앱 ID를 쓰는 공식 경로는 \"Deezer\"로 계속 사용할 수 있어요.</string>
-    <string name="provider_note_soundcloud_account">SoundCloud 자체 페이지에서 로그인해요. 내 플레이리스트와 좋아요한 트랙이 원본과 대상이 돼요. 웹 앱의 세션을 사용해요. 공식 인터페이스가 아니며 SoundCloud 약관에 어긋나고 작동이 멈출 수 있어요. 베타예요. SoundCloud 트랙에는 ISRC가 거의 없어서 제목, 아티스트, 길이로 매칭해요.</string>
+    <string name="provider_note_deezer_bridge">Deezer 자체 페이지에서 로그인해요. 개발자 앱이 필요 없어요(Deezer는 더 이상 새 앱을 등록하지 않아요). 웹 플레이어의 세션을 사용해요. 공식 경로가 아니며 Deezer 약관에 어긋나고 작동이 멈출 수 있어요. 알파예요. 직접 만든 앱 ID를 쓰는 공식 경로는 \"Deezer\"로 계속 사용할 수 있어요.</string>
+    <string name="provider_note_soundcloud_account">SoundCloud 자체 페이지에서 로그인해요. 내 플레이리스트와 좋아요한 트랙이 원본과 대상이 돼요. 웹 앱의 세션을 사용해요. 공식 인터페이스가 아니며 SoundCloud 약관에 어긋나고 작동이 멈출 수 있어요. 알파예요. SoundCloud 트랙에는 ISRC가 거의 없어서 제목, 아티스트, 길이로 매칭해요.</string>
+    <string name="alpha">알파</string>
+    <string name="alpha_note">알파: 아직 실제 계정으로 테스트하지 않았어요. 먼저 테스트용 플레이리스트로 써 보고 문제를 알려 주세요.</string>
 </resources>

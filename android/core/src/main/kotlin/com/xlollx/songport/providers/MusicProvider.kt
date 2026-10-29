@@ -61,6 +61,13 @@ interface MusicProvider {
     val beta: Boolean get() = false
 
     /**
+     * Alpha connector: written and covered by offline tests, but not yet tried against real
+     * accounts. The UI shows "alpha" where it would show "beta", with a note asking to try it on a
+     * test playlist first and to report problems. Takes the place of [beta] where both are set.
+     */
+    val alpha: Boolean get() = false
+
+    /**
      * Quale strada verso il servizio e' questa, quando ce n'e' piu' d'una: la piu' semplice (accesso
      * sul sito, nessuna chiave, interfaccia non ufficiale) o quella ufficiale (API con chiave propria).
      * Null = c'e' una strada sola e non serve dirlo.

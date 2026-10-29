@@ -72,12 +72,37 @@ class FlavorFlowTest : FlowTest() {
             waitText(s(R.string.connector_pick_hint))
             assertTrue(exists(s(R.string.route_easy)))
             assertTrue(exists(s(R.string.route_official)))
+            // The web route is alpha, the official one stays beta.
+            assertTrue("the web route says alpha", exists(s(R.string.alpha)))
+            assertTrue("the official route says beta", exists(s(R.string.beta)))
         } else {
             // No plugin on the test device: SoundCloud stays greyed out and Deezer has one route.
             assertTrue(exists(s(R.string.services_group_unavailable)))
             assertTrue(exists("SoundCloud"))
             click("Deezer")
             waitText(s(R.string.connector_name_label))
+        }
+    }
+
+    @Test
+    fun deezerWebAndSoundCloudAccountAreAlpha() {
+        installConnectors()
+        // The flags themselves, in both builds: alpha, and not also beta.
+        listOf("deezer_bridge", "soundcloud").forEach { id ->
+            val p = Providers.byId(id)
+            assertNotNull(id, p)
+            assertTrue("$id is alpha", p!!.alpha)
+            assertFalse("$id is not also beta", p.beta)
+        }
+        assertFalse("the official Deezer route is not alpha", Providers.byId("deezer")!!.alpha)
+        // Each one's card in Accounts: "alpha" after the name, and the note asking to try a test playlist first.
+        listOf("deezer_bridge", "soundcloud").forEach { id ->
+            store.updateSettings { it.copy(connectors = listOf(id)) }
+            store.flush()
+            launch(tabIntent(MainActivity.TAB_ACCOUNTS))
+            waitText(s(R.string.alpha_note))
+            assertTrue("$id's card says alpha", exists(" · " + s(R.string.alpha), substring = true))
+            assertFalse("$id's card has no beta note", exists(s(R.string.beta_note)))
         }
     }
 

@@ -286,7 +286,7 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                                         StatusPill(stringResource(if (r == MusicProvider.Route.EASY) R.string.route_easy else R.string.route_official), if (r == MusicProvider.Route.EASY) Tone.Ok else Tone.Accent, Icons.Filled.Lock)
                                     } ?: Text(s.displayName, style = MaterialTheme.typography.bodyLarge)
                                     if (!s.canWrite) Text(stringResource(R.string.read_only), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                    if (s.beta) Text(stringResource(R.string.beta), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    if (s.alpha || s.beta) Text(stringResource(if (s.alpha) R.string.alpha else R.string.beta), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     if (taken) Text(stringResource(R.string.connected), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                                 s.routeNoteRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
@@ -364,7 +364,7 @@ private fun ProviderCard(
                 Column(Modifier.weight(1f)) {
                     Text(
                         label + (if (!p.canWrite) " · " + stringResource(R.string.read_only) else "") +
-                            (if (p.beta) " · " + stringResource(R.string.beta) else ""),
+                            (if (p.alpha) " · " + stringResource(R.string.alpha) else if (p.beta) " · " + stringResource(R.string.beta) else ""),
                         style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     )
                     Text(
@@ -383,9 +383,9 @@ private fun ProviderCard(
             }
             if (connected && quotaUsed != null) QuotaCard(used = quotaUsed, sharedCredentials = !p.usesOwnCredentials(ctx))
             // Detto una volta, dove si sceglie di usarlo: meglio qui che come sorpresa a sync finita.
-            if (p.beta) {
+            if (p.alpha || p.beta) {
                 Spacer(Modifier.height(6.dp))
-                Text(stringResource(R.string.beta_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary)
+                Text(stringResource(if (p.alpha) R.string.alpha_note else R.string.beta_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary)
             }
             if (p.usesOwnCredentials(ctx)) {
                 Spacer(Modifier.height(6.dp))
