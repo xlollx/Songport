@@ -23,6 +23,11 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
   <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Trackhop"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="64" alt="Get it on Obtainium"></a>
 </p>
 
+<p align="center">
+  <b>Installed Trackhop from Google Play?</b> Add the plugin for YouTube Music, Amazon Music, and Spotify and Apple Music without developer keys:<br><br>
+  <a href="https://github.com/xlollx/Trackhop-Bridge/releases/latest"><img src="https://img.shields.io/badge/Download-Trackhop%20Bridge%20(plugin%20for%20the%20Play%20version)-1f6feb?style=for-the-badge&logo=android&logoColor=white" alt="Download Trackhop Bridge, the plugin for the Google Play version"></a>
+</p>
+
 <p align="center"><img src="docs/store/demo.gif" width="200" alt="A tour of Trackhop: syncs, a new sync, accounts, tools, a shared track, the compatibility and poster cards, unplayable tracks, settings"></p>
 
 <p align="center"><img src="docs/store/screenshots.png" width="100%" alt="Syncs with their numbers, a new sync, a shared track going into a playlist, how compatible two playlists are, a playlist poster, unplayable tracks and their replacements"></p>
