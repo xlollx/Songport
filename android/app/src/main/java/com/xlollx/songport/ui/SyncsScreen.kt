@@ -113,6 +113,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.xlollx.songport.Notifications
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.PauseCircle
+import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.Delete
 import com.xlollx.songport.R
 import com.xlollx.songport.data.StoreData
 import androidx.compose.material.icons.filled.Favorite
@@ -521,16 +528,21 @@ private fun JobCard(
                 ) {
                     Icon(Icons.Filled.PlayArrow, stringResource(R.string.run_now))
                 }
+                // The menu wears the card's colour: a teal card opens a teal-tinted menu.
                 OverflowMenu(
                     listOfNotNull(
-                        if (job.aiPrompt != null) MenuAction(stringResource(R.string.ai_extend), { extendOpen = true }) else null,
-                        MenuAction(stringResource(R.string.preview), { onPreview(job) }),
-                        MenuAction(stringResource(R.string.edit), { onEdit(job) }),
-                        MenuAction(stringResource(if (job.enabled) R.string.sync_menu_disable else R.string.sync_menu_enable), { onToggleEnabled(job) }),
-                        MenuAction(stringResource(R.string.job_color), { colorOpen = true }),
-                        MenuAction(stringResource(R.string.delete), { confirmDelete = true }, destructive = true),
+                        if (job.aiPrompt != null) MenuAction(stringResource(R.string.ai_extend), { extendOpen = true }, icon = Icons.Outlined.AutoAwesome) else null,
+                        MenuAction(stringResource(R.string.preview), { onPreview(job) }, icon = Icons.Outlined.Visibility),
+                        MenuAction(stringResource(R.string.edit), { onEdit(job) }, icon = Icons.Outlined.Edit),
+                        if (job.enabled) MenuAction(stringResource(R.string.sync_menu_disable), { onToggleEnabled(job) }, icon = Icons.Outlined.PauseCircle)
+                        else MenuAction(stringResource(R.string.sync_menu_enable), { onToggleEnabled(job) }, icon = Icons.Outlined.PlayCircle),
+                        MenuAction(stringResource(R.string.job_color), { colorOpen = true }, icon = Icons.Outlined.Palette),
+                        MenuAction(stringResource(R.string.delete), { confirmDelete = true }, destructive = true, icon = Icons.Outlined.Delete),
                     ),
                     enabled = !isRunning,
+                    container = jobMenuContainer(job.color),
+                    iconTint = ink ?: MaterialTheme.colorScheme.onSurfaceVariant,
+                    title = job.name.ifBlank { job.source.playlistName },
                 )
             }
         }

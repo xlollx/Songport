@@ -1179,4 +1179,11 @@
     <string name="sync_menu_enable">Activar</string>
     <string name="sync_disabled_snack">Sincronización desactivada: no se ejecutará según su programación</string>
     <string name="sync_enabled_snack">Sincronización activada</string>
+    <string name="sync_pause_all">Pausar todas</string>
+    <string name="sync_resume_all">Reanudar todas</string>
+    <string name="sync_stop_all">Detener todas</string>
+    <plurals name="service_tiles_scroll">
+        <item quantity="one">%d servicio, desliza para ver más</item>
+        <item quantity="other">%d servicios, desliza para ver más</item>
+    </plurals>
 </resources>

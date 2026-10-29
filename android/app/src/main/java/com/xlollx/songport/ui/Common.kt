@@ -62,6 +62,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.ui.semantics.heading
 import com.xlollx.songport.R
 import com.xlollx.songport.model.Schedule
 import com.xlollx.songport.providers.MusicProvider
@@ -260,27 +264,70 @@ fun rememberConfirmHaptic(): () -> Unit {
     return { haptics.performHapticFeedback(HapticFeedbackType.Confirm) }
 }
 
-class MenuAction(val label: String, val onClick: () -> Unit, val destructive: Boolean = false, val enabled: Boolean = true)
+class MenuAction(
+    val label: String, val onClick: () -> Unit, val destructive: Boolean = false, val enabled: Boolean = true,
+    /** A leading icon; decorative, the label names the action. */
+    val icon: ImageVector? = null,
+)
 
-/** Le azioni secondarie stanno dietro un solo pulsante "Altro": la scheda resta pulita. */
+/**
+ * Le azioni secondarie stanno dietro un solo pulsante "Altro": la scheda resta pulita.
+ *
+ * The menu is a rounded sheet with an icon before each entry; the destructive ones (delete,
+ * remove) come last, in the error colour, below a divider. [container] tints it (a sync card
+ * passes its colour, see [jobMenuContainer]), [iconTint] colours the icons, and [title] puts a
+ * small header on top that says what the menu is about. Plain colours only: no blend mode.
+ */
 @Composable
-fun OverflowMenu(actions: List<MenuAction>, enabled: Boolean = true) {
+fun OverflowMenu(
+    actions: List<MenuAction>, enabled: Boolean = true,
+    container: Color = MaterialTheme.colorScheme.surfaceContainer,
+    iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    title: String? = null,
+) {
     if (actions.isEmpty()) return
     var open by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { open = true }, enabled = enabled) {
             Icon(Icons.Filled.MoreVert, stringResource(R.string.more_actions))
         }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            actions.forEach { a ->
-                DropdownMenuItem(
-                    text = { Text(a.label, color = if (a.destructive) MaterialTheme.colorScheme.error else Color.Unspecified) },
-                    enabled = a.enabled,
-                    onClick = { open = false; a.onClick() },
+        DropdownMenu(
+            expanded = open, onDismissRequest = { open = false },
+            shape = RoundedCornerShape(18.dp),
+            containerColor = container,
+            tonalElevation = 0.dp,
+            shadowElevation = 6.dp,
+            modifier = Modifier.widthIn(min = 200.dp),
+        ) {
+            if (title != null) {
+                Text(
+                    title, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.widthIn(max = 260.dp).padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 6.dp).semantics { heading() },
                 )
+            }
+            val (plain, destructive) = actions.partition { !it.destructive }
+            plain.forEach { a -> OverflowItem(a, iconTint) { open = false; a.onClick() } }
+            if (destructive.isNotEmpty()) {
+                if (plain.isNotEmpty() || title != null) HorizontalDivider(Modifier.padding(horizontal = 12.dp, vertical = 4.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                destructive.forEach { a -> OverflowItem(a, iconTint) { open = false; a.onClick() } }
             }
         }
     }
+}
+
+@Composable
+private fun OverflowItem(a: MenuAction, iconTint: Color, onClick: () -> Unit) {
+    val error = MaterialTheme.colorScheme.error
+    DropdownMenuItem(
+        text = { Text(a.label, style = MaterialTheme.typography.bodyLarge, color = if (a.destructive) error else Color.Unspecified) },
+        leadingIcon = a.icon?.let { icon -> { Icon(icon, contentDescription = null, tint = if (a.destructive) error else iconTint) } },
+        enabled = a.enabled,
+        onClick = onClick,
+        // Rounded highlight inside the rounded sheet; 48 dp tall at least, as every touch target.
+        modifier = Modifier.heightIn(min = 48.dp).padding(horizontal = 6.dp).clip(RoundedCornerShape(12.dp)),
+        contentPadding = PaddingValues(horizontal = 12.dp),
+    )
 }
 
 /** Il marchio Trackhop (nota nell'anello), tinto con il colore che serve. */

@@ -79,6 +79,12 @@ class AccessibilityFlowTest : FlowTest() {
         launch(tabIntent(MainActivity.TAB_SYNCS))
         waitText("Road Trip")
         audit("Syncs")
+        // The card's menu: every entry named and 48 dp tall.
+        clickDesc(s(R.string.more_actions))
+        waitText(s(R.string.job_color))
+        audit("Sync card menu")
+        androidx.test.espresso.Espresso.pressBack()
+        waitGone(s(R.string.job_color))
 
         click(s(R.string.new_sync))
         waitText(s(R.string.editor_source))

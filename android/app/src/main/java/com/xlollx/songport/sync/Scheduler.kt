@@ -1,10 +1,7 @@
 package com.xlollx.songport.sync
 
 import com.xlollx.songport.providers.*
-import android.app.NotificationManager
 import android.content.Context
-import android.content.pm.PackageManager
-import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -45,88 +42,57 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         var retryLater = false
         // Le sync manuali possono durare piu' dei 10 minuti concessi a un lavoro in background
         // (migliaia di brani verso YouTube): in primo piano, con una notifica di avanzamento.
-        if (!scheduled) runCatching { setForeground(foregroundInfo(ctx.getString(R.string.running))) }
-        for (job in jobs) {
-            if (job.id in SyncState.running.value) continue
-            SyncState.start(job.id)
-            Diagnostics.log(ctx, "sync", "start ${job.name} (${if (scheduled) "scheduled" else "manual"})")
-            try {
-                val report = try {
-                    engine.run(job, unattended = scheduled) { p ->
-                        SyncState.progress(job.id, p)
-                        if (!scheduled) updateProgress(job, p)
-                        // Pausa o stop chiesti dall'utente: qui, fra un passo e l'altro. L'attesa imposta
-                        // dal servizio e' tempo che deve passare comunque: in pausa il conto alla rovescia
-                        // continua, e' l'abbinamento che si ferma appena l'attesa finisce.
-                        if (SyncState.isPaused(job.id) && !scheduled) updateProgress(job, p, paused = true)
-                        if (p.step == Progress.Step.WAITING) SyncState.stopCheck(ctx, job.id) else SyncState.checkpoint(ctx, job.id)
+        // Every worker shares one notification (see SyncNotice): its content is all the syncs running.
+        val foreground = !scheduled && runCatching { setForeground(SyncNotice.foregroundInfo(ctx)) }.isSuccess
+        if (foreground) SyncNotice.enter(ctx)
+        try {
+            for (job in jobs) {
+                if (job.id in SyncState.running.value) continue
+                SyncState.start(job.id)
+                Diagnostics.log(ctx, "sync", "start ${job.name} (${if (scheduled) "scheduled" else "manual"})")
+                try {
+                    val report = try {
+                        engine.run(job, unattended = scheduled) { p ->
+                            // The shared notification follows SyncState: this update reaches it too.
+                            SyncState.progress(job.id, p)
+                            // Pausa o stop chiesti dall'utente: qui, fra un passo e l'altro. L'attesa imposta
+                            // dal servizio e' tempo che deve passare comunque: in pausa il conto alla rovescia
+                            // continua, e' l'abbinamento che si ferma appena l'attesa finisce.
+                            if (p.step == Progress.Step.WAITING) SyncState.stopCheck(ctx, job.id) else SyncState.checkpoint(ctx, job.id)
+                        }
+                    } catch (e: kotlinx.coroutines.CancellationException) {
+                        // Fermato dal sistema, non dall'utente: WorkManager riprende il lavoro da solo e la
+                        // cache degli abbinamenti evita di rifare le ricerche. Lo si annota, non e' un errore.
+                        val reason = if (Build.VERSION.SDK_INT >= 31) " (stop reason $stopReason)" else ""
+                        Diagnostics.log(ctx, "sync", "paused by the system$reason ${job.name}: will resume")
+                        throw e
                     }
-                } catch (e: kotlinx.coroutines.CancellationException) {
-                    // Fermato dal sistema, non dall'utente: WorkManager riprende il lavoro da solo e la
-                    // cache degli abbinamenti evita di rifare le ricerche. Lo si annota, non e' un errore.
-                    val reason = if (Build.VERSION.SDK_INT >= 31) " (stop reason $stopReason)" else ""
-                    Diagnostics.log(ctx, "sync", "paused by the system$reason ${job.name}: will resume")
-                    throw e
+                    Diagnostics.log(ctx, "sync", "end ${job.name}: +${report.added} -${report.removed} nf=${report.unmatched.size} src=${report.sourceCount} dst=${report.targetCount}" + (report.error?.let { " ERR $it" } ?: ""))
+                    // Una sync programmata morta per mancanza di rete non ha "fallito": WorkManager la
+                    // riprova col suo backoff, quindi niente notifica d'errore per una giornata persa.
+                    val networkGone = scheduled && !report.ok && isTransientNetwork(report.error)
+                    if (networkGone) {
+                        retryLater = true
+                        Diagnostics.log(ctx, "sync", "no network for ${job.name}: will retry")
+                    }
+                    SupportPrompt.offer(store, report)
+                    val notable = report.added > 0 || report.removed > 0 || !report.ok
+                    if (!networkGone && store.data.settings.notifyOnSync && (scheduled || !report.ok) && notable) {
+                        Notifications.syncResult(ctx, report)
+                    }
+                } finally {
+                    SyncState.finish(job.id)
                 }
-                Diagnostics.log(ctx, "sync", "end ${job.name}: +${report.added} -${report.removed} nf=${report.unmatched.size} src=${report.sourceCount} dst=${report.targetCount}" + (report.error?.let { " ERR $it" } ?: ""))
-                // Una sync programmata morta per mancanza di rete non ha "fallito": WorkManager la
-                // riprova col suo backoff, quindi niente notifica d'errore per una giornata persa.
-                val networkGone = scheduled && !report.ok && isTransientNetwork(report.error)
-                if (networkGone) {
-                    retryLater = true
-                    Diagnostics.log(ctx, "sync", "no network for ${job.name}: will retry")
-                }
-                SupportPrompt.offer(store, report)
-                val notable = report.added > 0 || report.removed > 0 || !report.ok
-                if (!networkGone && store.data.settings.notifyOnSync && (scheduled || !report.ok) && notable) {
-                    Notifications.syncResult(ctx, report)
-                }
-            } finally {
-                SyncState.finish(job.id)
             }
+        } finally {
+            if (foreground) SyncNotice.leave(ctx)
         }
         SyncWidget.refresh(ctx)
         store.flush()
         return if (retryLater) Result.retry() else Result.success()
     }
 
-    /** One notification per worker: syncs started separately run side by side, each with its own bar. */
-    private val notificationId: Int get() = Notifications.progressId(inputData.getString(KEY_JOB))
-
-    private fun foregroundInfo(title: String, text: String = ""): ForegroundInfo {
-        val n = Notifications.progress(applicationContext, title, text)
-        return if (Build.VERSION.SDK_INT >= 29) {
-            ForegroundInfo(notificationId, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
-        } else ForegroundInfo(notificationId, n)
-    }
-
-    /** Aggiorna la notifica di avanzamento (stesso id del servizio in primo piano): barra, percentuale, pausa e stop. */
-    private fun updateProgress(job: SyncJob, p: Progress, paused: Boolean = false) {
-        val ctx = applicationContext
-        if (Build.VERSION.SDK_INT >= 33 &&
-            ctx.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-        ) return
-        val text = (if (paused) ctx.getString(R.string.sync_paused) + " · " else "") + progressText(ctx, p) +
-            (p.percent?.let { " · $it%" } ?: "")
-        val others = (SyncState.running.value.keys - job.id).size
-        runCatching {
-            ctx.getSystemService(NotificationManager::class.java)
-                ?.notify(notificationId, Notifications.progress(ctx, job.name, text, p.done, p.total, job.id, paused, others))
-        }
-    }
-
-    override suspend fun getForegroundInfo(): ForegroundInfo = foregroundInfo(applicationContext.getString(R.string.running))
-
-    private fun progressText(ctx: Context, p: Progress): String = when (p.step) {
-        Progress.Step.FETCH_SOURCE -> ctx.getString(R.string.progress_fetch_source)
-        Progress.Step.CREATE_TARGET -> ctx.getString(R.string.progress_create_target)
-        Progress.Step.FETCH_TARGET -> ctx.getString(R.string.progress_fetch_target)
-        Progress.Step.MATCHING -> ctx.getString(R.string.progress_matching, p.done, p.total) + (p.label?.let { " · $it" } ?: "")
-        Progress.Step.WAITING -> ctx.getString(R.string.progress_waiting, (p.total - p.done).coerceAtLeast(0))
-        Progress.Step.ADDING -> ctx.getString(R.string.progress_adding, p.total) + (p.label?.let { " · $it" } ?: "")
-        Progress.Step.REMOVING -> ctx.getString(R.string.progress_removing, p.total) + (p.label?.let { " · $it" } ?: "")
-        else -> ""
-    }
+    override suspend fun getForegroundInfo(): ForegroundInfo = SyncNotice.foregroundInfo(applicationContext)
 
     companion object {
         const val KEY_JOB = "job"

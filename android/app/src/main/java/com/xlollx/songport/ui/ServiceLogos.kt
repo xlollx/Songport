@@ -5,6 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -15,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -124,52 +129,135 @@ class ServiceTile(val key: String, val label: String, val provider: MusicProvide
  * The service picker: a horizontal row of tiles, the mark large enough to recognise at a glance
  * and the name under it; the selected tile takes the tonal container and a check. Scrolls when
  * the services do not fit, instead of wrapping into uneven rows of chips.
+ *
+ * When they do not fit, it shows that the row goes on: the tiles are sized from the width so the
+ * last one in view is cut about a third of the way ([tileLayout]), a slim bar under the row tells
+ * where the view is and how much of the row it shows, and TalkBack hears "N services, scroll for
+ * more". The selected tile is brought into view, so a sync on the fifth account opens with it shown.
  */
 @Composable
 fun ServiceTiles(tiles: List<ServiceTile>, selected: String?, onSelect: (String) -> Unit, modifier: Modifier = Modifier) {
-    androidx.compose.foundation.lazy.LazyRow(
-        modifier,
-        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
-    ) {
-        items(tiles.size, key = { tiles[it].key }) { i ->
-            val t = tiles[i]
-            val on = t.key == selected
-            val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
-            val shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
-            androidx.compose.material3.Surface(
-                onClick = { if (!on) haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove); onSelect(t.key) },
-                shape = shape,
-                color = if (on) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh,
-                border = if (on) null else androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                modifier = Modifier.semantics { this.selected = on }.size(width = 96.dp, height = 104.dp),
+    androidx.compose.foundation.layout.BoxWithConstraints(modifier.fillMaxWidth()) {
+        val density = androidx.compose.ui.platform.LocalDensity.current
+        val layout = tileLayout(maxWidth, tiles.size)
+        val state = androidx.compose.foundation.lazy.rememberLazyListState()
+        val stepPx = with(density) { (layout.width + TILE_GAP).toPx() }
+        val tilePx = with(density) { layout.width.toPx() }
+        val viewPx = with(density) { maxWidth.toPx() }
+        val contentPx = tiles.size * stepPx - with(density) { TILE_GAP.toPx() }
+        val overflows = contentPx > viewPx + 1f
+        // The selected tile wholly in view: at once when the picker opens, smoothly after a tap on a cut one.
+        val index = tiles.indexOfFirst { it.key == selected }
+        var placed by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
+        androidx.compose.runtime.LaunchedEffect(index, layout.width, overflows) {
+            if (index < 0 || !overflows) { placed = true; return@LaunchedEffect }
+            val pos = state.firstVisibleItemIndex * stepPx + state.firstVisibleItemScrollOffset
+            val start = index * stepPx
+            val target = when {
+                start < pos -> start
+                start + tilePx > pos + viewPx -> start + tilePx - viewPx
+                else -> null
+            }
+            if (target != null) {
+                val first = (target / stepPx).toInt().coerceIn(0, tiles.size - 1)
+                val offset = (target - first * stepPx).toInt().coerceAtLeast(0)
+                if (placed) state.animateScrollToItem(first, offset) else state.scrollToItem(first, offset)
+            }
+            placed = true
+        }
+        val hint = androidx.compose.ui.res.pluralStringResource(com.xlollx.songport.R.plurals.service_tiles_scroll, tiles.size, tiles.size)
+        androidx.compose.foundation.layout.Column {
+            androidx.compose.foundation.lazy.LazyRow(
+                Modifier.fillMaxWidth().then(if (overflows) Modifier.semantics { contentDescription = hint } else Modifier),
+                state = state,
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(TILE_GAP),
             ) {
-                Box {
-                    androidx.compose.foundation.layout.Column(
-                        Modifier.align(Alignment.Center).padding(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        if (t.provider != null) ServiceLogo(t.provider, 40.dp)
-                        else Box(Modifier.size(40.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHighest), contentAlignment = Alignment.Center) {
-                            t.icon?.let { Icon(it, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp)) }
-                        }
-                        androidx.compose.foundation.layout.Spacer(Modifier.size(6.dp))
-                        Text(
-                            t.label, style = MaterialTheme.typography.labelMedium, maxLines = 2,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                            color = if (on) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface,
-                        )
-                        t.detail?.let {
-                            Text(it, style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                    }
-                    if (on) Icon(
-                        Icons.Filled.CheckCircle, null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.align(Alignment.TopEnd).padding(6.dp).size(18.dp),
-                    )
+                items(tiles.size, key = { tiles[it].key }) { i -> Tile(tiles[i], tiles[i].key == selected, layout.width, onSelect) }
+            }
+            if (overflows) {
+                // Where the view is along the row (the thumb's place) and how much of it shows (its length).
+                val track = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                val thumb = MaterialTheme.colorScheme.primary
+                androidx.compose.foundation.layout.Spacer(Modifier.size(8.dp))
+                Box(
+                    Modifier.align(Alignment.CenterHorizontally).fillMaxWidth(0.4f).height(4.dp).clip(CircleShape).background(track)
+                        .drawBehind {
+                            val maxScroll = (contentPx - viewPx).coerceAtLeast(1f)
+                            val pos = (state.firstVisibleItemIndex * stepPx + state.firstVisibleItemScrollOffset).coerceIn(0f, maxScroll)
+                            val len = (size.width * viewPx / contentPx).coerceIn(size.height * 3, size.width)
+                            val x = (size.width - len) * pos / maxScroll
+                            drawRoundRect(thumb, topLeft = androidx.compose.ui.geometry.Offset(x, 0f), size = androidx.compose.ui.geometry.Size(len, size.height),
+                                cornerRadius = androidx.compose.ui.geometry.CornerRadius(size.height / 2))
+                        },
+                )
+            }
+        }
+    }
+}
+
+private val TILE_GAP = 8.dp
+private val TILE_WIDTH = 96.dp
+private val TILE_MIN = 80.dp
+private val TILE_MAX = 124.dp
+/** The share of the last tile in view left showing when the row goes on. */
+private const val PEEK = 0.35f
+
+internal class TileLayout(val width: Dp, val inView: Float)
+
+/**
+ * The tiles' width for a row [available] wide: the usual width when all [count] fit; otherwise the
+ * width closest to it that leaves a whole number of tiles in view plus [PEEK] of the next, so the
+ * row never ends on a clean edge that hides the rest.
+ */
+internal fun tileLayout(available: Dp, count: Int): TileLayout {
+    val gap = TILE_GAP.value
+    val all = count * TILE_WIDTH.value + (count - 1).coerceAtLeast(0) * gap
+    if (count <= 1 || all <= available.value) return TileLayout(TILE_WIDTH, count.toFloat())
+    val best = (1 until count).map { whole ->
+        // whole tiles and their gaps, then a gap and the peek of the next.
+        whole to (available.value - whole * gap) / (whole + PEEK)
+    }.filter { (_, w) -> w > 0f }.minByOrNull { (_, w) -> kotlin.math.abs(w - TILE_WIDTH.value) }
+        ?: return TileLayout(TILE_WIDTH, available.value / (TILE_WIDTH.value + gap))
+    val w = best.second.coerceIn(TILE_MIN.value, TILE_MAX.value)
+    return TileLayout(w.dp, best.first + PEEK)
+}
+
+@Composable
+private fun Tile(t: ServiceTile, on: Boolean, width: Dp, onSelect: (String) -> Unit) {
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+    val shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
+    androidx.compose.material3.Surface(
+        onClick = { if (!on) haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove); onSelect(t.key) },
+        shape = shape,
+        color = if (on) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh,
+        border = if (on) null else androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = Modifier.semantics { this.selected = on }.size(width = width, height = 104.dp),
+    ) {
+        Box {
+            androidx.compose.foundation.layout.Column(
+                Modifier.align(Alignment.Center).padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (t.provider != null) ServiceLogo(t.provider, 40.dp)
+                else Box(Modifier.size(40.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHighest), contentAlignment = Alignment.Center) {
+                    t.icon?.let { Icon(it, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp)) }
+                }
+                androidx.compose.foundation.layout.Spacer(Modifier.size(6.dp))
+                Text(
+                    t.label, style = MaterialTheme.typography.labelMedium, maxLines = 2,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    color = if (on) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface,
+                )
+                t.detail?.let {
+                    Text(it, style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
+            if (on) Icon(
+                Icons.Filled.CheckCircle, null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.align(Alignment.TopEnd).padding(6.dp).size(18.dp),
+            )
         }
     }
 }

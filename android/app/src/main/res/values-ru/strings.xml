@@ -1212,4 +1212,13 @@
     <string name="sync_menu_enable">Включить</string>
     <string name="sync_disabled_snack">Синхронизация отключена: по расписанию она запускаться не будет</string>
     <string name="sync_enabled_snack">Синхронизация включена</string>
+    <string name="sync_pause_all">Приостановить все</string>
+    <string name="sync_resume_all">Возобновить все</string>
+    <string name="sync_stop_all">Остановить все</string>
+    <plurals name="service_tiles_scroll">
+        <item quantity="one">%d сервис, прокрутите, чтобы увидеть больше</item>
+        <item quantity="few">%d сервиса, прокрутите, чтобы увидеть больше</item>
+        <item quantity="many">%d сервисов, прокрутите, чтобы увидеть больше</item>
+        <item quantity="other">%d сервиса, прокрутите, чтобы увидеть больше</item>
+    </plurals>
 </resources>

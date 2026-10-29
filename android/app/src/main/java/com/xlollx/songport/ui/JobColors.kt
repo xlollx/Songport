@@ -61,6 +61,17 @@ fun jobContainer(key: String?): Color {
     return lerp(base, accent, if (LocalAppDark.current) 0.20f else 0.13f)
 }
 
+/**
+ * A card's menu in the card's colour: the menu surface, tinted a little more than the card so it
+ * stands out above it. The plain menu surface for a sync with no colour. A plain mix, no blend mode.
+ */
+@Composable
+fun jobMenuContainer(key: String?): Color {
+    val base = MaterialTheme.colorScheme.surfaceContainer
+    val accent = jobAccent(key) ?: return base
+    return lerp(base, accent, if (LocalAppDark.current) 0.24f else 0.16f)
+}
+
 /** The sync's colour for its controls (figures, run button): a gradient of it, or null for the default look. */
 @Composable
 fun jobControlBrush(key: String?): Brush? {

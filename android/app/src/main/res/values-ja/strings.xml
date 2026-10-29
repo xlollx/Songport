@@ -1152,4 +1152,10 @@
     <string name="sync_menu_enable">有効にする</string>
     <string name="sync_disabled_snack">同期を無効にしました：スケジュールでは実行されません</string>
     <string name="sync_enabled_snack">同期を有効にしました</string>
+    <string name="sync_pause_all">すべて一時停止</string>
+    <string name="sync_resume_all">すべて再開</string>
+    <string name="sync_stop_all">すべて停止</string>
+    <plurals name="service_tiles_scroll">
+        <item quantity="other">%d 件のサービス、スクロールして他を表示</item>
+    </plurals>
 </resources>
