@@ -1,0 +1,1 @@
+Nuevo en Ajustes: Plugins. Explica los plugins de conexión y muestra los instalados en el teléfono y los servicios que añaden.

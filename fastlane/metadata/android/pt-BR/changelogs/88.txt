@@ -1,0 +1,1 @@
+Novo nas Configurações: Plugins. Explica os plugins de conexão e lista os instalados no telefone e os serviços que eles adicionam.
