@@ -1,0 +1,1 @@
+Każdą synchronizację można teraz wyłączyć lub włączyć z jej menu. „Otwórz w Navidrome” i „Otwórz w Jellyfin” otwierają wyszukiwanie na Twoim serwerze. Przycisk Synchronizuj wszystko nie zasłania już pierwszej karty. Lustro do Polubionych mówi wprost w edytorze i podglądzie, że usuwa polubienia.

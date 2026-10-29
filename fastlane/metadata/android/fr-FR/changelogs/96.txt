@@ -1,0 +1,1 @@
+Chaque synchronisation peut maintenant être désactivée ou activée depuis son menu. « Ouvrir dans Navidrome » et « Ouvrir dans Jellyfin » ouvrent la recherche sur votre serveur. Le bouton Tout synchroniser ne cache plus la première carte. Le miroir vers les Titres likés indique clairement, dans l'éditeur et l'aperçu, qu'il retire des likes.

@@ -1,0 +1,1 @@
+Agora você pode desativar ou ativar cada sincronização pelo menu dela. "Abrir no Navidrome" e "Abrir no Jellyfin" abrem a busca no seu servidor. O botão Sincronizar tudo não cobre mais o primeiro cartão. O espelho para Músicas curtidas diz claramente, no editor e na prévia, que remove curtidas.

@@ -1,0 +1,1 @@
+Each sync's menu can now disable or enable it. "Open in Navidrome" and "Open in Jellyfin" open the search on your server. The Sync all button no longer covers the first card. Mirror into Liked songs says plainly that it unlikes, in the editor and in the preview.

@@ -1,0 +1,1 @@
+Jede Synchronisierung lässt sich jetzt über ihr Menü deaktivieren oder aktivieren. „In Navidrome öffnen“ und „In Jellyfin öffnen“ öffnen die Suche auf deinem Server. Die Schaltfläche „Alle synchronisieren“ verdeckt die erste Karte nicht mehr. Spiegeln in Lieblingssongs sagt im Editor und in der Vorschau klar, dass es Likes entfernt.

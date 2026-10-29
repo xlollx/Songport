@@ -1,0 +1,1 @@
+Ahora puedes desactivar o activar cada sincronización desde su menú. "Abrir en Navidrome" y "Abrir en Jellyfin" abren la búsqueda en tu servidor. El botón Sincronizar todo ya no tapa la primera tarjeta. El espejo hacia Me gusta dice claramente, en el editor y en la vista previa, que quita los me gusta.
