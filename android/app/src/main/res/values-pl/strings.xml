@@ -1044,4 +1044,6 @@
     <string name="plugins_desc">Trackhop ma otwarty interfejs łączników: osobne aplikacje, tworzone przez kogokolwiek, mogą dodawać usługi. Trackhop nie zawiera, nie pobiera ani nie poleca żadnych wtyczek. Zainstalowane pojawiają się tutaj, a ich usługi w Kontach.</string>
     <string name="plugins_none">Brak zainstalowanych wtyczek</string>
     <string name="plugins_services">Usługi: %1$s</string>
+    <string name="services_group_unavailable">Niedostępne w tej wersji</string>
+    <string name="plugins_where">Wtyczki publikują ich autorzy, nie ta aplikacja: na GitHubie mają temat „trackhop-plugin”.</string>
 </resources>

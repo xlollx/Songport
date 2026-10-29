@@ -312,7 +312,7 @@ fun SettingsScreen(
                     BridgePlugin.installedPlugins(ctx).map { it to if (it.packageName == active) services else emptyList() }
                 }
             }
-            PrefSection(stringResource(R.string.plugins_title), footer = stringResource(R.string.plugins_desc)) {
+            PrefSection(stringResource(R.string.plugins_title), footer = stringResource(R.string.plugins_desc) + "\n\n" + stringResource(R.string.plugins_where)) {
                 val list = plugins
                 if (list != null && list.isEmpty()) PrefRow(Icons.Filled.Extension, stringResource(R.string.plugins_none))
                 list?.forEach { (p, services) ->

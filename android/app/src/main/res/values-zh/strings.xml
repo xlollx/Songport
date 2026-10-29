@@ -982,4 +982,6 @@
     <string name="plugins_desc">Trackhop 提供开放的连接器接口：任何人制作的独立应用都可以为其添加服务。Trackhop 不包含、不下载也不推荐任何插件。已安装的插件显示在这里，其服务显示在“账户”中。</string>
     <string name="plugins_none">未安装插件</string>
     <string name="plugins_services">服务：%1$s</string>
+    <string name="services_group_unavailable">此版本不可用</string>
+    <string name="plugins_where">插件由各自的作者发布，而不是由本应用提供：在 GitHub 上它们带有主题“trackhop-plugin”。</string>
 </resources>

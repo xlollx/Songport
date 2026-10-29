@@ -248,6 +248,16 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                             }
                         }
                     }
+                    // Play build: the services this version cannot reach on its own, greyed out under
+                    // a plain fact. Nothing to tap, no name of anything else, no link.
+                    val offered = services.map { it.serviceId }.toSet()
+                    val unavailable = if (BridgePlugin.builtIn) emptyList() else UNAVAILABLE_ON_PLAY.filter { it.first !in offered }
+                    if (unavailable.isNotEmpty()) {
+                        Text(stringResource(R.string.services_group_unavailable), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 10.dp, bottom = 6.dp))
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                            unavailable.forEach { (id, color, name) -> UnavailableServiceTile(id, color, name) }
+                        }
+                    }
                 } else {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(onClick = { family = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) }
@@ -554,6 +564,28 @@ private fun serviceGroups(names: List<String>, families: Map<String, List<MusicP
         R.string.services_group_servers to names.filter { kind(it) == 1 },
         R.string.services_group_other to names.filter { kind(it) == 2 },
     )
+}
+
+/** Services with no official API this version can use: id, brand colour, name. */
+private val UNAVAILABLE_ON_PLAY = listOf(
+    Triple("amazon", 0xFF1AB0D6, "Amazon Music"),
+    Triple("soundcloud", 0xFFFF5500, "SoundCloud"),
+)
+
+/** A greyed-out tile for a service this version cannot reach: the mark and the name, nothing to tap. */
+@Composable
+private fun UnavailableServiceTile(serviceId: String, brandColor: Long, name: String) {
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        modifier = Modifier.width(84.dp).heightIn(min = 96.dp).alpha(0.45f),
+    ) {
+        Column(Modifier.padding(horizontal = 6.dp, vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
+            ServiceLogo(serviceId, brandColor, name, 40.dp)
+            Spacer(Modifier.height(6.dp))
+            Text(name, style = MaterialTheme.typography.labelMedium, minLines = 2, maxLines = 2, textAlign = TextAlign.Center, overflow = TextOverflow.Ellipsis)
+        }
+    }
 }
 
 /** A service in the "add a service" grid: its mark, large, and its name. */

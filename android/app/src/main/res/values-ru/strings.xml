@@ -1042,4 +1042,6 @@
     <string name="plugins_desc">У Trackhop открытый интерфейс коннекторов: отдельные приложения от любых разработчиков могут добавлять сервисы. Trackhop не включает, не загружает и не рекомендует плагины. Установленные отображаются здесь, а их сервисы — в разделе «Аккаунты».</string>
     <string name="plugins_none">Плагины не установлены</string>
     <string name="plugins_services">Сервисы: %1$s</string>
+    <string name="services_group_unavailable">Недоступно в этой версии</string>
+    <string name="plugins_where">Плагины публикуют их авторы, а не это приложение: на GitHub у них тема «trackhop-plugin».</string>
 </resources>

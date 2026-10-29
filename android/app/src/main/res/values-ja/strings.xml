@@ -982,4 +982,6 @@
     <string name="plugins_desc">Trackhop にはオープンなコネクタインターフェースがあり、誰でも作れる別アプリがサービスを追加できます。Trackhop はプラグインを同梱・ダウンロード・推奨しません。インストール済みのものはここに、そのサービスは「アカウント」に表示されます。</string>
     <string name="plugins_none">インストールされたプラグインはありません</string>
     <string name="plugins_services">サービス: %1$s</string>
+    <string name="services_group_unavailable">このバージョンでは利用できません</string>
+    <string name="plugins_where">プラグインはこのアプリではなく各作者が公開しています。GitHub ではトピック「trackhop-plugin」が付いています。</string>
 </resources>

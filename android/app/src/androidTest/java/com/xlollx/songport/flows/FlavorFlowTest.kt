@@ -18,7 +18,8 @@ import org.junit.runner.RunWith
  * What differs between the two builds, on the real connector list of this build (nothing signed
  * in, nothing fetched): the GitHub/F-Droid build ("full") carries the web connectors and
  * SoundCloud links; the Google Play build ("play") hides plugin-only services unless a plugin is
- * installed, explains plugins only in Settings (no name, no link anywhere), and says it shows a banner.
+ * installed (listing Amazon Music and SoundCloud greyed out as not available in this version),
+ * explains plugins only in Settings (no name, no link anywhere), and says it shows a banner.
  */
 @RunWith(AndroidJUnit4::class)
 class FlavorFlowTest : FlowTest() {
@@ -40,13 +41,17 @@ class FlavorFlowTest : FlowTest() {
         listOf("Spotify", "Deezer", "TIDAL", "Jellyfin", "Plex").forEach { waitText(it) }
         if (full) {
             assertTrue("Amazon Music (web connector) is offered", exists("Amazon Music"))
+            assertFalse("nothing is unavailable where everything is built in", exists(s(R.string.services_group_unavailable)))
             // Spotify can be reached two ways here: the family page lists both routes.
             click("Spotify")
             waitText(s(R.string.connector_pick_hint))
             assertTrue(exists(s(R.string.route_easy)))
             assertTrue(exists(s(R.string.route_official)))
         } else {
-            assertFalse("Amazon Music needs a plugin the Play build does not name", exists("Amazon Music"))
+            // Amazon Music and SoundCloud are only listed, greyed out, under a plain fact.
+            assertTrue("the services this version cannot reach", exists(s(R.string.services_group_unavailable)))
+            assertTrue(exists("Amazon Music"))
+            assertTrue(exists("SoundCloud"))
             // Only the official Spotify route: straight to the name.
             click("Spotify")
             waitText(s(R.string.connector_name_label))

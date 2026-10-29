@@ -1002,4 +1002,6 @@
     <string name="plugins_desc">Trackhop ha un\'interfaccia di connessione aperta: app separate, fatte da chiunque, possono aggiungere servizi. Trackhop non include, scarica né consiglia alcun plugin. Quelli installati compaiono qui, e i loro servizi in Account.</string>
     <string name="plugins_none">Nessun plugin installato</string>
     <string name="plugins_services">Servizi: %1$s</string>
+    <string name="services_group_unavailable">Non disponibili in questa versione</string>
+    <string name="plugins_where">I plugin sono pubblicati dai rispettivi autori, non da questa app: su GitHub hanno l\'argomento “trackhop-plugin”.</string>
 </resources>

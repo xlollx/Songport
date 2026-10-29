@@ -1000,4 +1000,6 @@
     <string name="plugins_desc">Trackhop\'un açık bir bağlayıcı arayüzü vardır: herkesin yapabileceği ayrı uygulamalar hizmet ekleyebilir. Trackhop hiçbir eklentiyi içermez, indirmez veya önermez. Yüklü olanlar burada, hizmetleri ise Hesaplar\'da görünür.</string>
     <string name="plugins_none">Yüklü eklenti yok</string>
     <string name="plugins_services">Hizmetler: %1$s</string>
+    <string name="services_group_unavailable">Bu sürümde kullanılamaz</string>
+    <string name="plugins_where">Eklentileri bu uygulama değil, kendi geliştiricileri yayınlar: GitHub\'da “trackhop-plugin” konusunu taşırlar.</string>
 </resources>
