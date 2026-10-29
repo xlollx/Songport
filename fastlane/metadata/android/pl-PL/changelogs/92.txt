@@ -1,0 +1,1 @@
+Amazon Music: utwory, które Amazon już ma, ale pomija na liście playlisty, nie są już dodawane przy każdej synchronizacji ani liczone jako dodane. Dziennik je wymienia, więc łatwo to zgłosić.

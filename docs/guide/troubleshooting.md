@@ -60,9 +60,11 @@ Trackhop from battery optimisation. A scheduled run the system interrupts resume
 
 ## A sync wants to remove many tracks
 
-With *mirror removals* on, a run that would remove a quarter of the target or more is held back
-("Removals held back"). Open the **preview**: if the source really lost those tracks, apply it; if
-not, the service listed the source incompletely and nothing should be removed. Duplicates in the
+With *mirror removals* on, a run that would remove more than 10 tracks and a quarter of the target
+or more is held back ("Removals held back"; the sync's status reads "Removals on hold"). Tap the
+status to open the **preview**: if the source really lost those tracks, tick *Remove these tracks*
+and run it from there; if not, the service listed the source incompletely and nothing should be
+removed. Scheduled runs never remove that many on their own. Duplicates in the
 target (the same song twice, in two versions) also show up here.
 
 ## A pasted link is not recognised

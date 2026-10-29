@@ -62,7 +62,10 @@ fun QuotaCard(used: Long, sharedCredentials: Boolean, estimate: Long? = null) {
         QuotaRing(used, limit)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
-            Text(stringResource(R.string.quota_used, nf.format(used), nf.format(limit)), style = MaterialTheme.typography.bodyMedium)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.quota_used, nf.format(used), nf.format(limit)), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                HelpButton(Helps.quota)
+            }
             Text(
                 stringResource(if (sharedCredentials) R.string.quota_note_shared else R.string.quota_note),
                 style = MaterialTheme.typography.bodySmall,

@@ -105,6 +105,7 @@ class SyncEngine(
                         reportId, job.id, job.name, started, System.currentTimeMillis() - started,
                         sourceCount = plan.sourceCount, unmatched = plan.unmatched.map { it.toString() }, unmatchedTracks = plan.unmatched,
                         ignored = plan.ignored, reviewTracks = plan.uncertain, notes = plan.notes, partial = true,
+                        heldBack = plan.heldBackRemovals, searchInterrupted = plan.searchInterrupted,
                         suggestions = suggestionsFor(plan.unmatched), absent = plan.unmatched.filter { it.id in absent }.map { it.id },
                     ),
                 )
@@ -156,7 +157,9 @@ class SyncEngine(
      * [interactive]: the plan is for the preview, where the user sees every removal before applying it.
      * Any other run (scheduled or started with a tap) holds back removals that would take a large
      * part of the target: a source the service listed only partly looks exactly like a source that
-     * lost most of its tracks, and only a person can tell the two apart.
+     * lost most of its tracks, and only a person can tell the two apart. The person says so in the
+     * preview ([FileStore.confirmRemovals]): the next run started by hand then removes them, provided
+     * it removes nothing the user did not see. A scheduled run ([unattended]) never does.
      */
     suspend fun plan(job: SyncJob, onProgress: (Progress) -> Unit = {}, createTarget: Boolean = true, unattended: Boolean = false, interactive: Boolean = false): SyncPlan {
         val (src, dst) = providers(job)
@@ -221,11 +224,25 @@ class SyncEngine(
         val matchedDstIds = HashSet<String>()
         val newCache = HashMap<String, String>()
         val toSearch = ArrayList<Track>()
+        // A match the preview is unsure about is not remembered: the run searches it again and puts
+        // it in its own review, unless the user settled it in the preview (which remembers it).
+        val unsure = HashSet<String>()
+
+        // A track the service said it holds although its listing leaves it out (Amazon Music's
+        // DUPLICATE_TRACK): present, so it is not added, and so not counted as added, on every run.
+        val listedId: String = targetId
+        fun unlistedPresent(trackId: String) = !targetCreated && store.isPresentUnlisted(dst.id, listedId, trackId)
 
         // 1) brani gia' presenti nella destinazione
         for (s in srcTracks) {
             val key = FileStore.cacheKey(src.id, s.id, dst.id)
-            val found = store.cachedMatch(src.id, s.id, dst.id)?.let { dstById[it] } ?: index.best(s, policy = job.policy)
+            val cachedId = store.cachedMatch(src.id, s.id, dst.id)
+            if (cachedId != null && cachedId !in dstById && unlistedPresent(cachedId)) {
+                matchedDstIds += cachedId
+                newCache[key] = cachedId
+                continue
+            }
+            val found = cachedId?.let { dstById[it] } ?: index.best(s, policy = job.policy)
             if (found != null) {
                 matchedDstIds += found.id
                 newCache[key] = found.id
@@ -254,14 +271,17 @@ class SyncEngine(
             if (found != null) {
                 // The target may hold the same recording under another id (a remaster, the single
                 // edition): by ISRC or by name it counts as present, and nothing is added twice.
-                val present = dstById[found.id] ?: if (found.id in matchedDstIds) found else index.best(found)
+                val present = dstById[found.id] ?: if (found.id in matchedDstIds || unlistedPresent(found.id)) found else index.best(found)
                 val target = present ?: found
                 if (present == null) toAdd[found.id] = found
                 matchedDstIds += target.id
                 newCache[FileStore.cacheKey(src.id, s.id, dst.id)] = target.id
-                if (score != null && score < job.policy.reviewThreshold) uncertain += MatchReview(s, found, score)
+                if (score != null && score < job.policy.reviewThreshold) {
+                    uncertain += MatchReview(s, found, score)
+                    if (interactive) unsure += FileStore.cacheKey(src.id, s.id, dst.id)
+                }
                 // Salvataggio progressivo: un errore a meta' strada non butta via le ricerche fatte.
-                if (newCache.size % 100 == 0) store.putMatches(newCache)
+                if (newCache.size % 100 == 0) store.putMatches(newCache - unsure)
             } else unmatched += s
         }
         // Il servizio ha smesso di rispondere (limiti, sessione): si applica quanto trovato finora e
@@ -270,28 +290,49 @@ class SyncEngine(
 
         // 3) rimozioni: solo cio' che nella destinazione non corrisponde a nulla dell'origine
         var toRemove: List<Track> = emptyList()
+        var needsConfirmation = false
+        var heldBack = 0
+        // Half of a two-way pair: the other half copies back what was added on this target, and a
+        // removal here could come first. Removals are never made in a pair.
+        val paired = job.linkedJobId?.let { store.job(it) } != null
         if (job.mirrorRemovals) {
-            val extra = dstTracks.filter { it.id !in matchedDstIds }
+            // An entry the service lists by id alone cannot be told apart from one of the source's
+            // under another id: it stays (see MusicProvider.listsUntitledEntries).
+            val untitled = if (dst.listsUntitledEntries) dstTracks.count { it.id !in matchedDstIds && it.title.isBlank() } else 0
+            if (untitled > 0) env.log("engine", "${job.name}: $untitled entries of the target listed without a title on ${dst.displayName}, matching no source track: not removed")
+            val extra = dstTracks.filter { it.id !in matchedDstIds && !(dst.listsUntitledEntries && it.title.isBlank()) }
+            // Un quarto o piu' della destinazione (playlist svuotata per sbaglio, account cambiato, o un
+            // elenco letto a meta' dal servizio): solo una persona puo' dire se va tolto davvero.
+            val large = extra.size > REMOVAL_CAP_MIN && extra.size * 4 > dstTracks.size
             when {
+                paired -> if (extra.isNotEmpty()) notes += str("note_two_way_no_removals", extra.size)
                 // Ricerca non completata: un brano della destinazione puo' corrispondere a uno
                 // dell'origine non ancora cercato. Nulla si toglie finche' non si sa.
                 interrupted != null -> if (extra.isNotEmpty()) notes += str("note_removals_deferred", extra.size)
                 !dst.canRemoveTracks -> if (extra.isNotEmpty()) notes += str("note_no_removals", dst.displayName, extra.size)
                 // Origine vuota: quasi certamente un errore, non svuotiamo la destinazione.
                 srcTracks.isEmpty() -> notes += str("error_source_empty")
-                // Toglierebbe un quarto o piu' della destinazione (playlist svuotata per sbaglio, account
-                // cambiato, o un elenco letto a meta' dal servizio): senza l'anteprima non si tocca nulla.
-                !interactive && extra.size > REMOVAL_CAP_MIN && extra.size * 4 > dstTracks.size -> {
-                    notes += str("note_removals_capped", extra.size, dstTracks.size)
-                    env.log("engine", "${job.name}: removals held back, ${extra.size} of ${dstTracks.size} in the target matched none of the ${srcTracks.size} source tracks")
+                interactive -> { toRemove = extra; needsConfirmation = large }
+                !large -> toRemove = extra
+                else -> {
+                    // A confirmation serves one run started by hand, used or not; a scheduled run leaves it.
+                    val confirmed = if (unattended) null else store.takeRemovalConfirmation(job.id)
+                    if (confirmed != null && extra.all { it.id in confirmed }) {
+                        toRemove = extra
+                        env.log("engine", "${job.name}: ${extra.size} removals confirmed in the preview")
+                    } else {
+                        heldBack = extra.size
+                        notes += str("note_removals_capped", extra.size, dstTracks.size)
+                        env.log("engine", "${job.name}: removals held back, ${extra.size} of ${dstTracks.size} in the target matched none of the ${srcTracks.size} source tracks" +
+                            if (confirmed != null) "; the confirmation did not cover them" else "")
+                    }
                 }
-                else -> toRemove = extra
             }
         }
 
         // Gli abbinamenti sono fatti, non intenzioni: salvarli ora evita di ripetere le ricerche
         // (e la quota YouTube) se l'utente esegue dopo l'anteprima.
-        store.putMatches(newCache)
+        store.putMatches(newCache - unsure)
         return SyncPlan(
             targetPlaylistId = targetId,
             sourceCount = srcTracks.size,
@@ -302,10 +343,13 @@ class SyncEngine(
             ignored = ignored,
             uncertain = uncertain,
             notes = notes,
-            newMatches = newCache,
+            newMatches = newCache - unsure,
             targetCreated = targetCreated,
             sourceOrder = srcTracks.map { it.id },
             targetCount = dstTracks.size,
+            removalsNeedConfirmation = needsConfirmation,
+            heldBackRemovals = heldBack,
+            searchInterrupted = interrupted != null,
         )
     }
 
@@ -321,8 +365,9 @@ class SyncEngine(
         searchMissing(src, dst, srcTracks, job.policy, onProgress) { s, found, score ->
             if (found != null) {
                 toAdd[found.id] = found
-                newCache[FileStore.cacheKey(src.id, s.id, dst.id)] = found.id
+                // Unsure matches stay out of the cache: the run reviews them unless the preview settles them.
                 if (score != null && score < job.policy.reviewThreshold) uncertain += MatchReview(s, found, score)
+                else newCache[FileStore.cacheKey(src.id, s.id, dst.id)] = found.id
             } else unmatched += s
         }
         store.putMatches(newCache)
@@ -590,6 +635,8 @@ class SyncEngine(
 
         var added = 0
         val addedList = ArrayList<Track>()
+        // Refused by the service as already in the playlist (its listing left them out): present, not added.
+        val alreadyThere = ArrayList<Track>()
         if (plan.toAdd.isNotEmpty()) {
             onProgress(Progress(Progress.Step.ADDING, 0, plan.toAdd.size))
             // Verso una playlist un blocco di 50 e' una chiamata sola. Verso i "brani preferiti" ogni
@@ -602,13 +649,16 @@ class SyncEngine(
             val additions = if (MusicProvider.isLibrary(targetId)) plan.toAdd.asReversed() else plan.toAdd
             for (chunk in additions.chunked(chunkSize)) {
                 // Cosa si sta aggiungendo adesso, in scheda e nella vista dal vivo, come per la ricerca.
-                onProgress(Progress(Progress.Step.ADDING, added, plan.toAdd.size, chunk.first().live()))
+                onProgress(Progress(Progress.Step.ADDING, added + alreadyThere.size, plan.toAdd.size, chunk.first().live()))
                 while (true) {
                     try {
-                        dst.addTracks(env, targetId, chunk)
-                        added += chunk.size
-                        addedList += chunk
-                        chunk.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.ADDED)) }
+                        val present = dst.addTracksReportingPresent(env, targetId, chunk)
+                        val (there, fresh) = chunk.partition { it.id in present }
+                        added += fresh.size
+                        addedList += fresh
+                        alreadyThere += there
+                        fresh.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.ADDED)) }
+                        there.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), it.live(), SyncState.Outcome.CACHED)) }
                         break
                     } catch (e: Exception) {
                         // Il servizio ha bloccato l'indirizzo e dice quanto aspettare: si aspetta, come
@@ -623,8 +673,13 @@ class SyncEngine(
                         // Un blocco fallito (id non piu' valido, ecc.): riprova brano per brano.
                         for (t in chunk) {
                             try {
-                                dst.addTracks(env, targetId, listOf(t)); added++; addedList += t
-                                SyncState.item(job.id, SyncState.LiveItem(t.live(), null, SyncState.Outcome.ADDED))
+                                if (t.id in dst.addTracksReportingPresent(env, targetId, listOf(t))) {
+                                    alreadyThere += t
+                                    SyncState.item(job.id, SyncState.LiveItem(t.live(), t.live(), SyncState.Outcome.CACHED))
+                                } else {
+                                    added++; addedList += t
+                                    SyncState.item(job.id, SyncState.LiveItem(t.live(), null, SyncState.Outcome.ADDED))
+                                }
                             } catch (e2: Exception) {
                                 failed += "$t (${e2.message})"
                                 SyncState.item(job.id, SyncState.LiveItem(t.live(), e2.message?.take(80), SyncState.Outcome.ADD_FAILED))
@@ -633,8 +688,13 @@ class SyncEngine(
                         break
                     }
                 }
-                onProgress(Progress(Progress.Step.ADDING, added, plan.toAdd.size))
+                onProgress(Progress(Progress.Step.ADDING, added + alreadyThere.size, plan.toAdd.size))
             }
+        }
+        if (alreadyThere.isNotEmpty()) {
+            store.putPresentUnlisted(dst.id, targetId, alreadyThere.map { it.id })
+            env.log("engine", "${job.name}: ${alreadyThere.size} tracks already on ${dst.displayName} but missing from its playlist listing: " +
+                alreadyThere.take(20).joinToString("; ") + if (alreadyThere.size > 20) "; …" else "")
         }
 
         var removed = 0
@@ -681,6 +741,8 @@ class SyncEngine(
             notes = notes,
             suggestions = suggestionsFor(unmatched),
             absent = unmatched.filter { it.id in absent }.map { it.id },
+            heldBack = plan.heldBackRemovals,
+            searchInterrupted = plan.searchInterrupted,
         )
     }
 

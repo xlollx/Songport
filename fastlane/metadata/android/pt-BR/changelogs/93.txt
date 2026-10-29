@@ -1,0 +1,1 @@
+Novidade, em beta: Deezer (web), com login pela própria página do Deezer e sem app de desenvolvedor, e SoundCloud com sua conta: suas playlists e faixas curtidas como origens e destinos. Nenhum é oficial: usam as interfaces web dos serviços, não uma API oficial, o que vai contra os termos deles e pode parar de funcionar. Um aviso diz isso antes do primeiro login.

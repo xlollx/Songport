@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BatteryAlert
@@ -96,7 +97,7 @@ private fun openUrl(ctx: android.content.Context, url: String) {
     runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }
 
-private const val SOURCE_URL = "https://github.com/xlollx/Trackhop"
+internal const val SOURCE_URL = "https://github.com/xlollx/Trackhop"
 
 /** The little arrow of a row that leaves the app (browser, system settings). */
 @Composable
@@ -118,6 +119,7 @@ fun SettingsScreen(
     snackbar: SnackbarHostState,
     onSetup: (MusicProvider) -> Unit,
     onOpenLog: () -> Unit = {},
+    onHowTo: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val privacyRequired by Ads.privacyOptionsRequired.collectAsState()
@@ -160,19 +162,19 @@ fun SettingsScreen(
                 langOpen = false
                 if (tag != currentTag) (ctx as? Activity)?.let { AppLocale.set(it, tag) }
             }
-            PrefSwitch(Icons.Filled.Dashboard, stringResource(R.string.settings_new_look), stringResource(R.string.settings_new_look_summary), settings.newLook) { v ->
+            PrefSwitch(Icons.Filled.Dashboard, stringResource(R.string.settings_new_look), stringResource(R.string.settings_new_look_summary), settings.newLook, help = { HelpButton(Helps.newLook) }) { v ->
                 store.updateSettings { it.copy(newLook = v) }
             }
         }
 
         // ---------------------------------------------------------------- Syncing
         PrefSection(stringResource(R.string.settings_section_syncing)) {
-            PrefSwitch(Icons.Filled.Verified, stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_summary), settings.isrcLookup) { v ->
+            PrefSwitch(Icons.Filled.Verified, stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_summary), settings.isrcLookup, help = { HelpButton(Helps.isrc) }) { v ->
                 store.updateSettings { it.copy(isrcLookup = v) }
             }
             // The link alias lives in the package manager, not in the store: read it from there.
             var musicLinks by remember { mutableStateOf(MusicLinks.enabled(ctx)) }
-            PrefSwitch(Icons.Filled.Link, stringResource(R.string.settings_music_links), stringResource(R.string.settings_music_links_summary), musicLinks) { v ->
+            PrefSwitch(Icons.Filled.Link, stringResource(R.string.settings_music_links), stringResource(R.string.settings_music_links_summary), musicLinks, help = { HelpButton(Helps.musicLinks) }) { v ->
                 MusicLinks.set(ctx, v); musicLinks = v
             }
             PrefRow(
@@ -186,7 +188,7 @@ fun SettingsScreen(
 
         // ---------------------------------------------------------------- Notifications
         PrefSection(stringResource(R.string.settings_section_notifications)) {
-            PrefSwitch(Icons.Filled.Notifications, stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_summary), settings.notifyOnSync) { v ->
+            PrefSwitch(Icons.Filled.Notifications, stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_summary), settings.notifyOnSync, help = { HelpButton(Helps.notifications) }) { v ->
                 store.updateSettings { it.copy(notifyOnSync = v) }
             }
             PrefSwitch(Icons.Filled.MusicOff, stringResource(R.string.settings_unplayable), stringResource(R.string.settings_unplayable_summary), settings.unplayableCheck) { v ->
@@ -205,7 +207,10 @@ fun SettingsScreen(
         // ---------------------------------------------------------------- Backups
         // Where the dated backups also go, outside the phone: SD card, Nextcloud, Drive, any folder app.
         val folder = settings.backupFolder
-        PrefSection(stringResource(R.string.settings_section_backups), footer = if (folder.isBlank()) stringResource(R.string.backup_folder_desc) else null) {
+        PrefSection(
+            stringResource(R.string.settings_section_backups), footer = if (folder.isBlank()) stringResource(R.string.backup_folder_desc) else null,
+            help = { HelpButton(Helps.backups) },
+        ) {
             val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
                 if (uri != null) {
                     runCatching { ctx.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION) }
@@ -312,7 +317,8 @@ fun SettingsScreen(
                     BridgePlugin.installedPlugins(ctx).map { it to if (it.packageName == active) services else emptyList() }
                 }
             }
-            PrefSection(stringResource(R.string.plugins_title), footer = stringResource(R.string.plugins_desc) + "\n\n" + stringResource(R.string.plugins_where)) {
+            // What a plugin is, above the list; nothing about where plugins come from.
+            PrefSection(stringResource(R.string.plugins_title), description = stringResource(R.string.plugins_desc), footer = stringResource(R.string.plugins_where), help = { HelpButton(Helps.plugins) }) {
                 val list = plugins
                 if (list != null && list.isEmpty()) PrefRow(Icons.Filled.Extension, stringResource(R.string.plugins_none))
                 list?.forEach { (p, services) ->
@@ -340,6 +346,7 @@ fun SettingsScreen(
             PrefRow(
                 Icons.Filled.AutoAwesome, stringResource(R.string.ai_setup_title),
                 if (ai != null) "${ai.vendor.label} · ${ai.model}" else stringResource(R.string.not_configured) + " · " + stringResource(R.string.settings_ai_desc),
+                trailing = { HelpButton(Helps.ai) },
             ) { aiOpen = true }
 
             var keysOpen by remember { mutableStateOf(false) }
@@ -384,6 +391,12 @@ fun SettingsScreen(
                     }
                 }
             }
+        }
+
+        // ---------------------------------------------------------------- Help
+        // The guides, written into the app: offline, and in the app's language.
+        PrefSection(stringResource(R.string.settings_section_help)) {
+            PrefRow(Icons.AutoMirrored.Filled.MenuBook, stringResource(R.string.howto_title), stringResource(R.string.howto_summary), onClick = onHowTo)
         }
 
         // ---------------------------------------------------------------- About

@@ -63,6 +63,8 @@ data class Settings(
     val dynamicColor: Boolean = false,
     /** The refreshed sync cards (big numbers, run history): on unless turned off in Appearance. */
     val newLook: Boolean = true,
+    /** The guided first sync was finished or skipped: it is no longer offered on the empty Syncs tab. */
+    val tourDone: Boolean = false,
 )
 
 /** Unita' di quota consumate in un giorno (chiave = data nel fuso del servizio). */
@@ -78,12 +80,24 @@ data class StoreData(
     val matchCache: Map<String, String> = emptyMap(),
     /** Ricerche senza esito, stessa chiave -> quando (epoch ms): non si ripetono per una settimana. */
     val missCache: Map<String, Long> = emptyMap(),
+    /**
+     * Tracks a service said a playlist holds although its listing leaves them out (Amazon Music
+     * answering DUPLICATE_TRACK), key [FileStore.presentKey] -> when (epoch ms): present, not to be
+     * added again on every run.
+     */
+    val presentUnlisted: Map<String, Long> = emptyMap(),
     /** Source tracks the user declared absent from a destination service (same keys as the caches). */
     val ignoredTracks: Set<String> = emptySet(),
     val settings: Settings = Settings(),
     /** Quota API stimata per servizio (oggi YouTube). */
     val quota: Map<String, QuotaDay> = emptyMap(),
+    /** Large removals the user confirmed in a preview, by job id: one use, by the next run started by hand. */
+    val removalConfirmations: Map<String, RemovalConfirmation> = emptyMap(),
 )
+
+/** The target track ids the user saw in the preview and agreed to remove, and when. */
+@Serializable
+data class RemovalConfirmation(val trackIds: Set<String>, val at: Long)
 
 /**
  * Stato persistente dell'app: un unico file JSON (piccolo), esposto come StateFlow alla UI.
@@ -150,7 +164,20 @@ open class FileStore(dir: File) {
         else d.copy(jobs = d.jobs + job)
     }
 
-    fun deleteJob(id: String) = update { d -> d.copy(jobs = d.jobs.filter { it.id != id }) }
+    fun deleteJob(id: String) = update { d -> d.copy(jobs = d.jobs.filter { it.id != id }, removalConfirmations = d.removalConfirmations - id) }
+
+    /** The user confirmed, in the preview, the removal of these target tracks by the next run of [jobId]. */
+    fun confirmRemovals(jobId: String, trackIds: Collection<String>) = update { d ->
+        d.copy(removalConfirmations = d.removalConfirmations + (jobId to RemovalConfirmation(trackIds.toSet(), System.currentTimeMillis())))
+    }
+
+    /** The confirmed track ids of [jobId], removed from the store: a confirmation serves one run. Null when none, or too old. */
+    fun takeRemovalConfirmation(jobId: String): Set<String>? {
+        if (jobId !in data.removalConfirmations) return null
+        var taken: RemovalConfirmation? = null
+        update { d -> taken = d.removalConfirmations[jobId]; d.copy(removalConfirmations = d.removalConfirmations - jobId) }
+        return taken?.takeIf { System.currentTimeMillis() - it.at < CONFIRMATION_TTL_MS }?.trackIds
+    }
 
     /** Aggiunge il report o, se un provvisorio con lo stesso id esiste gia', lo sostituisce al suo posto. */
     fun addReport(report: SyncReport) = update { d ->
@@ -208,14 +235,41 @@ open class FileStore(dir: File) {
         }
     }
 
+    /**
+     * The service said [playlistId] holds [trackId] although its listing does not show it. After a
+     * month the track is tried again: a service that still has it refuses it again, and the answer
+     * is remembered anew; one where the user removed it since gets it back.
+     */
+    fun isPresentUnlisted(dstProvider: String, playlistId: String, trackId: String): Boolean {
+        val at = data.presentUnlisted[presentKey(dstProvider, playlistId, trackId)] ?: return false
+        return System.currentTimeMillis() - at < PRESENT_TTL_MS
+    }
+
+    fun putPresentUnlisted(dstProvider: String, playlistId: String, trackIds: Collection<String>) {
+        if (trackIds.isEmpty()) return
+        val now = System.currentTimeMillis()
+        update { d ->
+            var m = d.presentUnlisted.filterValues { now - it < PRESENT_TTL_MS } + trackIds.associate { presentKey(dstProvider, playlistId, it) to now }
+            if (m.size > MAX_CACHE) m = m.entries.drop(m.size - MAX_CACHE).associate { it.key to it.value }
+            d.copy(presentUnlisted = m)
+        }
+    }
+
     companion object {
         const val MAX_REPORTS = 200
+        /** How long a track a service said it holds, though unlisted, counts as present without asking again. */
+        private const val PRESENT_TTL_MS = 30L * 24 * 3_600_000
         private const val WRITE_DELAY_MS = 500L
         private const val MAX_CACHE = 20_000
         /** Una ricerca fallita si ripete dopo una settimana: i cataloghi cambiano, ma non ogni giorno. */
         private const val MISS_TTL_MS = 7L * 24 * 3_600_000
+        /** A removal confirmation not used within this time is dropped: it was meant for the run started then. */
+        const val CONFIRMATION_TTL_MS = 12L * 3_600_000
 
         fun cacheKey(srcProvider: String, srcTrackId: String, dstProvider: String) = "${family(srcProvider)}:$srcTrackId>${family(dstProvider)}"
+
+        /** Key of [StoreData.presentUnlisted]: the service, the playlist and the track there. */
+        fun presentKey(dstProvider: String, playlistId: String, trackId: String) = "${family(dstProvider)}:$playlistId>$trackId"
 
         /**
          * Track ids are the service's, not the route's or the account's: a match found through the

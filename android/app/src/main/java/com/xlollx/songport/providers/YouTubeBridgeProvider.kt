@@ -214,8 +214,8 @@ class YouTubeBridgeProvider(override val slot: String = "") : MusicProvider {
         val b = try {
             BridgePlugin.call(ctx, method, arg, extras)
         } catch (e: Exception) {
-            throw ProviderException("YouTube Music Bridge: ${e.message ?: e.javaClass.simpleName}")
-        } ?: throw ProviderException("YouTube Music Bridge: no answer")
+            throw ProviderException("Connector plugin: ${e.message ?: e.javaClass.simpleName}")
+        } ?: throw ProviderException("Connector plugin: no answer")
         b.getString("error")?.let { throw ProviderException("YouTube Music: $it") }
         return b
     }

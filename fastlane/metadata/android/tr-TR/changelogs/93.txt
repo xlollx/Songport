@@ -1,0 +1,1 @@
+Yeni, beta: Geliştirici uygulaması olmadan Deezer'ın kendi sayfasında oturum açılan Deezer (web) ve hesabınızla SoundCloud: setleriniz ve beğendiğiniz parçalar kaynak ve hedef olarak. İkisi de resmi değildir: servislerin web arayüzlerini kullanır, resmi bir API'yi değil; bu, koşullarına aykırıdır ve her an çalışmayı bırakabilir. İlk oturum açmadan önce bir uyarı bunu söyler.

@@ -41,6 +41,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.clickable
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.ui.semantics.Role
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -146,6 +148,8 @@ fun SyncsScreen(
     onReview: (String) -> Unit = {},
     onOpenTarget: (SyncJob) -> Unit = {},
     onStats: () -> Unit = {},
+    onOpenLog: () -> Unit = {},
+    onTour: (() -> Unit)? = null,
 ) {
     val ctx = LocalContext.current
     val running by SyncState.running.collectAsState()
@@ -154,11 +158,15 @@ fun SyncsScreen(
     if (data.jobs.isEmpty()) {
         val anyConnected = remember { Providers.connectors().any { it.requiresAuth && it.isConnected(ctx) } }
         if (anyConnected) {
-            EmptyState(Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body_connected))
+            EmptyState(
+                Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body_connected),
+                secondaryLabel = stringResource(R.string.tour_offer), onSecondary = onTour,
+            )
         } else {
             EmptyState(
                 Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body),
                 stringResource(R.string.empty_syncs_cta_accounts), onGoToAccounts,
+                secondaryLabel = stringResource(R.string.tour_offer), onSecondary = onTour,
             )
         }
         return
@@ -242,7 +250,7 @@ fun SyncsScreen(
             if (shown.isEmpty()) item(key = "nomatch") { SyncFinderEmpty { filter = SyncFilter() } }
             items(shown, key = { it.id }) { job ->
                 Box(Modifier.animateItem()) {
-                    JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget)
+                    JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget, onOpenLog)
                 }
             }
         }
@@ -271,22 +279,27 @@ private fun RunAllPill(runningCount: Int, onClick: () -> Unit) {
             .padding(top = 4.dp, bottom = 12.dp),
         contentAlignment = Alignment.Center,
     ) {
-        androidx.compose.material3.Surface(
-            onClick = { if (!busy) haptic(); onClick() },
-            shape = RoundedCornerShape(50),
-            color = if (busy) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary,
-            contentColor = if (busy) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimary,
-            shadowElevation = 6.dp,
-        ) {
-            Row(Modifier.heightIn(min = 48.dp).padding(horizontal = 22.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onSecondaryContainer)
-                else Icon(Icons.Filled.PlayArrow, null, Modifier.size(20.dp))
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    if (busy) pluralStringResource(R.plurals.syncs_running, runningCount, runningCount) else stringResource(R.string.sync_all),
-                    style = MaterialTheme.typography.labelLarge,
-                )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // Balances the "?" on the other side, so the pill stays centred.
+            Spacer(Modifier.width(48.dp))
+            androidx.compose.material3.Surface(
+                onClick = { if (!busy) haptic(); onClick() },
+                shape = RoundedCornerShape(50),
+                color = if (busy) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary,
+                contentColor = if (busy) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimary,
+                shadowElevation = 6.dp,
+            ) {
+                Row(Modifier.heightIn(min = 48.dp).padding(horizontal = 22.dp), verticalAlignment = Alignment.CenterVertically) {
+                    if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                    else Icon(Icons.Filled.PlayArrow, null, Modifier.size(20.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        if (busy) pluralStringResource(R.plurals.syncs_running, runningCount, runningCount) else stringResource(R.string.sync_all),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
             }
+            HelpButton(Helps.syncAll)
         }
     }
 }
@@ -295,7 +308,7 @@ private fun RunAllPill(runningCount: Int, onClick: () -> Unit) {
 private fun JobCard(
     job: SyncJob, data: StoreData, progress: Progress?, isRunning: Boolean,
     onEdit: (SyncJob) -> Unit, onPreview: (SyncJob) -> Unit, onRun: (SyncJob) -> Unit, onDelete: (SyncJob) -> Unit,
-    onReview: (String) -> Unit = {}, onOpenTarget: (SyncJob) -> Unit = {},
+    onReview: (String) -> Unit = {}, onOpenTarget: (SyncJob) -> Unit = {}, onOpenLog: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
     var colorOpen by remember { mutableStateOf(false) }
@@ -366,8 +379,13 @@ private fun JobCard(
                     isRunning -> StatusPill(stringResource(R.string.pill_running), Tone.Accent, Icons.Filled.Sync)
                     !job.enabled -> StatusPill(stringResource(R.string.disabled), Tone.Neutral)
                     report == null -> StatusPill(stringResource(R.string.pill_never), Tone.Neutral)
-                    report.ok -> StatusPill(stringResource(R.string.pill_ok), Tone.Ok, Icons.Filled.CheckCircle)
-                    else -> StatusPill(stringResource(R.string.pill_error), Tone.Error, Icons.Filled.Warning)
+                    !report.ok -> StatusPill(stringResource(R.string.pill_error), Tone.Error, Icons.Filled.Warning)
+                    // A run without errors can still leave something for the user: the pill says what,
+                    // and a tap leads where it is handled.
+                    report.heldBack > 0 -> ActionPill(stringResource(R.string.pill_held_back), Tone.Warning) { onPreview(job) }
+                    report.searchInterrupted -> ActionPill(stringResource(R.string.pill_incomplete), Tone.Warning, onOpenLog)
+                    report.unmatchedTracks.isNotEmpty() -> ActionPill(stringResource(R.string.pill_not_found, report.unmatchedTracks.size), Tone.Warning) { onReview(report.id) }
+                    else -> StatusPill(stringResource(R.string.pill_ok), Tone.Ok, Icons.Filled.CheckCircle)
                 }
             }
             if (isRunning) {
@@ -439,7 +457,8 @@ private fun JobCard(
                 Spacer(Modifier.width(6.dp))
                 val last = if (job.lastRunEpoch > 0) formatDate(job.lastRunEpoch) else stringResource(R.string.last_run_never)
                 Text(
-                    scheduleLabel(job.schedule) + (if (job.mirrorRemovals) " · " + stringResource(R.string.editor_mirror) else "") + " · " + last,
+                    // A two-way pair never removes, whatever an older version saved.
+                    scheduleLabel(job.schedule) + (if (job.mirrorRemovals && job.linkedJobId == null) " · " + stringResource(R.string.editor_mirror) else "") + " · " + last,
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
                 )
@@ -477,6 +496,25 @@ private fun JobCard(
     }
 }
 
+/** A status pill that leads somewhere: the warning icon, and a tap target as tall as a button. */
+@Composable
+private fun ActionPill(text: String, tone: Tone, onClick: () -> Unit) {
+    StatusPill(
+        text, tone, Icons.Filled.Warning,
+        Modifier.minimumInteractiveComponentSize().clip(RoundedCornerShape(50)).clickable(role = Role.Button, onClick = onClick),
+    )
+}
+
+/**
+ * The original sync of [job]'s two-way pair when [job] is the "↔" half the editor made, else null.
+ * Pairs saved before the [SyncJob.twin] flag are told apart by the name the editor gave the twin.
+ */
+fun twinOriginal(job: SyncJob, jobs: List<SyncJob>): SyncJob? {
+    val other = job.linkedJobId?.let { id -> jobs.firstOrNull { it.id == id } } ?: return null
+    if (other.twin) return null
+    return other.takeIf { job.twin || job.name == other.name + " ↔" }
+}
+
 /** Live view of a running sync: what was searched, found, taken from the cache or not found. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -487,7 +525,10 @@ private fun LiveSheet(job: SyncJob, onDismiss: () -> Unit) {
     val progress = running[job.id]
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(horizontal = 16.dp).padding(bottom = 24.dp)) {
-            Text(stringResource(R.string.live_title), style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.live_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
+                HelpButton(Helps.cached)
+            }
             Text(progressText(progress), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(12.dp))
             if (items.isEmpty()) Text(stringResource(R.string.live_empty), style = MaterialTheme.typography.bodyMedium)
@@ -565,7 +606,7 @@ private val PolicySaver = androidx.compose.runtime.saveable.Saver<com.xlollx.son
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () -> Unit = {}, onSave: (SyncJob, SyncJob?) -> Unit) {
+fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () -> Unit = {}, twinName: String? = null, onSave: (SyncJob, SyncJob?) -> Unit) {
     val ctx = LocalContext.current
     ScreenBackHandler(onCancel)
     val saveHaptic = rememberConfirmHaptic()
@@ -657,14 +698,32 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
             schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
             keepOrder = keepOrder, color = color,
         )
-        val reverse = if (bidirectional && !createNew && dp != null) SyncJob(
-            id = job.linkedJobId ?: UUID.randomUUID().toString(),
-            name = "${main.name} ↔",
-            source = target,
-            target = source,
-            schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
-            linkedJobId = job.id, color = color,
-        ) else null
+        // The other half of the pair takes only what the two share (schedule, rules, the two playlists
+        // swapped); its name, ignore list, reports and order setting stay its own. A pair never removes.
+        val partner = job.linkedJobId?.let { Store.get(ctx).job(it) }
+        val reverse = if (bidirectional && !createNew && dp != null) {
+            if (partner != null) {
+                val moved = partner.source != target || partner.target != source
+                partner.copy(
+                    // Renamed with this sync only when it carries the name the editor gave it.
+                    name = if (partner.name == "${job.name} ↔") "${main.name} ↔" else partner.name,
+                    // Pairs saved before the flag existed get it here.
+                    twin = partner.twin || partner.name == "${job.name} ↔",
+                    source = target, target = source,
+                    schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
+                    linkedJobId = job.id, color = color,
+                    sourceVersion = if (moved) null else partner.sourceVersion,
+                    targetVersion = if (moved) null else partner.targetVersion,
+                )
+            } else SyncJob(
+                id = UUID.randomUUID().toString(),
+                name = "${main.name} ↔",
+                source = target,
+                target = source,
+                schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
+                linkedJobId = job.id, color = color, twin = true,
+            )
+        } else null
         saveHaptic()
         onSave(main.copy(linkedJobId = reverse?.id), reverse)
     }
@@ -683,20 +742,29 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                     error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium) }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                         OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f).height(52.dp)) { Text(stringResource(R.string.cancel)) }
-                        Button(onClick = { save() }, modifier = Modifier.weight(1f).height(52.dp)) { Text(stringResource(R.string.save)) }
+                        Button(onClick = { save() }, modifier = Modifier.weight(1f).height(52.dp).tourTarget(TourTarget.EDITOR_SAVE)) { Text(stringResource(R.string.save)) }
                     }
                 }
             }
         },
     ) { padding ->
         Column(Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            // Opened from the "↔" card: its settings follow this sync, so this is where they change.
+            if (twinName != null) {
+                Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+                    Text(
+                        stringResource(R.string.editor_twin_note, twinName), style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.padding(16.dp),
+                    )
+                }
+            }
             // Nothing to sync from yet, or only one service to sync between: say so, with the way to connect one.
             if (loginServices == 0) {
                 ConnectServiceCard(stringResource(R.string.no_connected_providers), onConnectService)
             } else if (loginServices == 1) {
-                ConnectServiceCard(stringResource(R.string.editor_one_service_hint), onConnectService)
+                ConnectServiceCard(stringResource(R.string.editor_one_service_hint), onConnectService, help = Helps.oneService)
             }
-            EditorStep(1, stringResource(R.string.editor_source)) {
+            EditorStep(1, stringResource(R.string.editor_source), Modifier.tourTarget(TourTarget.EDITOR_SOURCE), help = { HelpButton(Helps.library, Helps.link, label = stringResource(R.string.editor_source)) }) {
                 if (aiSource) {
                     Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
                         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.Top) {
@@ -738,12 +806,12 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                 }
             }
 
-            EditorStep(2, stringResource(R.string.editor_target)) {
+            EditorStep(2, stringResource(R.string.editor_target), Modifier.tourTarget(TourTarget.EDITOR_TARGET), help = { HelpButton(Helps.target, Helps.liked, label = stringResource(R.string.editor_target)) }) {
                 ProviderPicker(writable, dstProvider) { dstProvider = it; dstPlaylist = null }
                 val dstObj = Providers.byId(dstProvider)
                 val canCreate = dstObj?.canCreatePlaylists != false
                 if (!canCreate && createNew) createNew = false
-                SwitchRow(stringResource(R.string.editor_new_playlist), null, createNew, enabled = canCreate) { createNew = it }
+                SwitchRow(stringResource(R.string.editor_new_playlist), null, createNew, enabled = canCreate, help = { HelpButton(Helps.newPlaylist) }) { createNew = it }
                 if (!canCreate && dstObj != null) {
                     Text(stringResource(R.string.error_create_unsupported, dstObj.displayName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
@@ -763,14 +831,29 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                     placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
                 Text(stringResource(R.string.job_color), style = MaterialTheme.typography.labelLarge)
                 JobColorPicker(color) { color = it }
-                Text(stringResource(R.string.editor_schedule), style = MaterialTheme.typography.labelLarge)
-                // I chip vanno a capo da soli, quante righe servono per lo schermo.
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
-                    Schedule.entries.forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
+                Column(Modifier.tourTarget(TourTarget.EDITOR_SCHEDULE), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    HelpLabel(stringResource(R.string.editor_schedule)) { HelpButton(Helps.schedule) }
+                    // I chip vanno a capo da soli, quante righe servono per lo schermo.
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+                        Schedule.entries.forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
+                    }
+                    if (schedule != Schedule.MANUAL) {
+                        Text(stringResource(R.string.editor_schedule_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
-                SwitchRow(stringResource(R.string.editor_mirror), stringResource(R.string.editor_mirror_desc), mirror) { mirror = it }
+                // Two-way and Mirror removals don't go together: a track added on the target could be
+                // removed by this sync before the reverse one copies it back.
+                if (bidirectional && mirror) mirror = false
+                SwitchRow(
+                    stringResource(R.string.editor_mirror),
+                    stringResource(if (bidirectional) R.string.editor_mirror_two_way else R.string.editor_mirror_desc),
+                    mirror, enabled = !bidirectional,
+                    modifier = Modifier.tourTarget(TourTarget.EDITOR_MIRROR),
+                    // Towards Liked songs, mirroring means unliking: said where the switch is.
+                    help = { if (MusicProvider.isLibrary(dstPlaylist?.id) && !createNew) HelpButton(Helps.mirror, Helps.liked, label = stringResource(R.string.editor_mirror)) else HelpButton(Helps.mirror) },
+                ) { mirror = it }
                 if (Providers.byId(dstProvider)?.canReorder == true) {
-                    SwitchRow(stringResource(R.string.editor_keep_order), stringResource(R.string.editor_keep_order_desc), keepOrder) { keepOrder = it }
+                    SwitchRow(stringResource(R.string.editor_keep_order), stringResource(R.string.editor_keep_order_desc), keepOrder, help = { HelpButton(Helps.keepOrder) }) { keepOrder = it }
                 }
                 val dstProviderObj = Providers.byId(dstProvider)
                 if (mirror && dstProviderObj != null && !dstProviderObj.canRemoveTracks) {
@@ -802,10 +885,11 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
+                    HelpButton(Helps.twoWay)
                     Switch(checked = bidirectional, enabled = biAllowed, onCheckedChange = { bidirectional = it })
                 }
-                SwitchRow(stringResource(R.string.editor_wifi_only), null, wifiOnly) { wifiOnly = it }
-                SwitchRow(stringResource(R.string.editor_enabled), null, enabled) { enabled = it }
+                SwitchRow(stringResource(R.string.editor_wifi_only), stringResource(R.string.editor_wifi_only_desc), wifiOnly) { wifiOnly = it }
+                SwitchRow(stringResource(R.string.editor_enabled), null, enabled, help = { HelpButton(Helps.enabled) }) { enabled = it }
 
                 // How candidates are chosen: folded, because the defaults suit most syncs.
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { matchingOpen = !matchingOpen }) {
@@ -816,7 +900,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                     Icon(if (matchingOpen) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 if (matchingOpen) {
-                    Text(stringResource(R.string.policy_strictness), style = MaterialTheme.typography.labelLarge)
+                    HelpLabel(stringResource(R.string.policy_strictness)) { HelpButton(Helps.strictness) }
                     // I chip vanno a capo: in alcune lingue tre etichette non stanno su una riga.
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         listOf(-1 to R.string.policy_loose, 0 to R.string.policy_normal, 1 to R.string.policy_strict).forEach { (v, res) ->
@@ -824,14 +908,14 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                         }
                     }
                     Text(stringResource(R.string.policy_strictness_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(stringResource(R.string.policy_explicit), style = MaterialTheme.typography.labelLarge)
+                    HelpLabel(stringResource(R.string.policy_explicit)) { HelpButton(Helps.explicit) }
                     // I chip vanno a capo: in alcune lingue tre etichette non stanno su una riga.
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         listOf(0 to R.string.policy_explicit_any, 1 to R.string.policy_explicit_yes, -1 to R.string.policy_explicit_clean).forEach { (v, res) ->
                             FilterChip(selected = policy.explicit == v, onClick = { policy = policy.copy(explicit = v) }, label = { Text(stringResource(res)) })
                         }
                     }
-                    SwitchRow(stringResource(R.string.policy_same_album), stringResource(R.string.policy_same_album_desc), policy.sameAlbum) { policy = policy.copy(sameAlbum = it) }
+                    SwitchRow(stringResource(R.string.policy_same_album), stringResource(R.string.policy_same_album_desc), policy.sameAlbum, help = { HelpButton(Helps.sameAlbum) }) { policy = policy.copy(sameAlbum = it) }
                     SwitchRow(stringResource(R.string.policy_studio), stringResource(R.string.policy_studio_desc), policy.studioOnly) { policy = policy.copy(studioOnly = it) }
                 }
             }
@@ -842,20 +926,26 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
 
 /** A note at the top of the editor with the way to connect a service. */
 @Composable
-private fun ConnectServiceCard(text: String, onConnect: () -> Unit) {
+private fun ConnectServiceCard(text: String, onConnect: () -> Unit, help: HelpTopic? = null) {
     Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
-            FilledTonalButton(onClick = onConnect, modifier = Modifier.align(Alignment.End)) { Text(stringResource(R.string.empty_syncs_cta_accounts)) }
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.align(Alignment.End)) {
+                if (help != null) HelpButton(help, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                FilledTonalButton(onClick = onConnect) { Text(stringResource(R.string.empty_syncs_cta_accounts)) }
+            }
         }
     }
 }
 
 /** One of the editor's three steps: a numbered card (source, target, options). */
 @Composable
-private fun EditorStep(number: Int, title: String, content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit) {
+private fun EditorStep(
+    number: Int, title: String, modifier: Modifier = Modifier, help: (@Composable () -> Unit)? = null,
+    content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit,
+) {
     androidx.compose.material3.Card(
-        Modifier.fillMaxWidth(),
+        modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
@@ -865,10 +955,20 @@ private fun EditorStep(number: Int, title: String, content: @Composable androidx
                     Text(number.toString(), color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge)
                 }
                 Spacer(Modifier.width(12.dp))
-                Text(title, style = MaterialTheme.typography.titleMedium)
+                Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                if (help != null) help()
             }
             content()
         }
+    }
+}
+
+/** An editor label with its "?" at the end of the line. */
+@Composable
+private fun HelpLabel(text: String, help: @Composable () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+        Text(text, style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
+        help()
     }
 }
 

@@ -107,7 +107,16 @@ fun ProviderBadge(p: MusicProvider?, size: Dp = 36.dp) = ServiceLogo(p, size)
 // Blocchi di interfaccia condivisi
 // ---------------------------------------------------------------------------------------------
 
-enum class Tone { Ok, Error, Neutral, Accent }
+/**
+ * Runs [block] on the main thread. Compose state and snackbars are touched only there: after an IO
+ * hop a coroutine can resume on the worker thread (the UI tests' effect dispatcher does), and a
+ * state write from there may never reach the screen.
+ */
+suspend fun <T> onMain(block: suspend kotlinx.coroutines.CoroutineScope.() -> T): T =
+    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main.immediate, block)
+
+/** Warning: nothing failed, but something waits for the user (held-back removals, tracks not found). */
+enum class Tone { Ok, Error, Neutral, Accent, Warning }
 
 /** Etichetta di stato: colore + icona + testo, mai solo il colore. */
 @Composable
@@ -117,12 +126,14 @@ fun StatusPill(text: String, tone: Tone, icon: ImageVector? = null, modifier: Mo
         Tone.Error -> MaterialTheme.colorScheme.errorContainer
         Tone.Accent -> MaterialTheme.colorScheme.primaryContainer
         Tone.Neutral -> MaterialTheme.colorScheme.surfaceContainerHighest
+        Tone.Warning -> MaterialTheme.colorScheme.tertiaryContainer
     }
     val fg = when (tone) {
         Tone.Ok -> Tones.onSuccessContainer()
         Tone.Error -> MaterialTheme.colorScheme.onErrorContainer
         Tone.Accent -> MaterialTheme.colorScheme.onPrimaryContainer
         Tone.Neutral -> MaterialTheme.colorScheme.onSurfaceVariant
+        Tone.Warning -> MaterialTheme.colorScheme.onTertiaryContainer
     }
     Row(
         modifier.clip(RoundedCornerShape(50)).background(bg).padding(horizontal = 10.dp, vertical = 4.dp),
@@ -144,6 +155,8 @@ fun EmptyState(
     body: String,
     ctaLabel: String? = null,
     onCta: (() -> Unit)? = null,
+    secondaryLabel: String? = null,
+    onSecondary: (() -> Unit)? = null,
 ) {
     Column(
         Modifier.fillMaxSize().padding(32.dp),
@@ -163,6 +176,10 @@ fun EmptyState(
         if (ctaLabel != null && onCta != null) {
             Spacer(Modifier.height(20.dp))
             Button(onClick = onCta) { Text(ctaLabel) }
+        }
+        if (secondaryLabel != null && onSecondary != null) {
+            Spacer(Modifier.height(if (ctaLabel != null) 4.dp else 20.dp))
+            androidx.compose.material3.TextButton(onClick = onSecondary, modifier = Modifier.heightIn(min = 48.dp)) { Text(secondaryLabel) }
         }
     }
 }
@@ -192,7 +209,7 @@ fun SectionCard(title: String? = null, modifier: Modifier = Modifier, content: @
 @Composable
 fun SwitchRow(
     title: String, subtitle: String?, checked: Boolean, enabled: Boolean = true,
-    modifier: Modifier = Modifier, onChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier, help: (@Composable () -> Unit)? = null, onChange: (Boolean) -> Unit,
 ) {
     val haptics = LocalHapticFeedback.current
     Row(
@@ -208,7 +225,8 @@ fun SwitchRow(
             Text(title, style = MaterialTheme.typography.bodyLarge)
             if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Spacer(Modifier.width(16.dp))
+        // A "?" sits between the words and the switch: its own target, outside the toggle.
+        if (help != null) help() else Spacer(Modifier.width(16.dp))
         // The row owns the toggle; the switch only shows the state.
         Switch(checked = checked, onCheckedChange = null, enabled = enabled)
     }

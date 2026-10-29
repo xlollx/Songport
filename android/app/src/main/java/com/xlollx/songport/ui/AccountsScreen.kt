@@ -253,7 +253,10 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                     val offered = services.map { it.serviceId }.toSet()
                     val unavailable = if (BridgePlugin.builtIn) emptyList() else UNAVAILABLE_ON_PLAY.filter { it.first !in offered }
                     if (unavailable.isNotEmpty()) {
-                        Text(stringResource(R.string.services_group_unavailable), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 10.dp, bottom = 6.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
+                            Text(stringResource(R.string.services_group_unavailable), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+                            HelpButton(Helps.unavailable)
+                        }
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                             unavailable.forEach { (id, color, name) -> UnavailableServiceTile(id, color, name) }
                         }
@@ -265,7 +268,10 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                         Spacer(Modifier.width(12.dp))
                         Text(family!!, style = MaterialTheme.typography.titleMedium)
                     }
-                    Text(stringResource(R.string.connector_pick_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 6.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(R.string.connector_pick_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f).padding(vertical = 6.dp))
+                        HelpButton(Helps.routes)
+                    }
                     // The easiest route first, so a first-timer's eye lands on it.
                     chosen.sortedBy { if (it.route == MusicProvider.Route.EASY) 0 else 1 }.forEach { s ->
                         val taken = !s.supportsMultipleAccounts && connectors.any { Providers.byId(it)?.serviceId == s.serviceId }
@@ -307,6 +313,7 @@ private fun NameDialog(title: String, initial: String, onDismiss: () -> Unit, on
             OutlinedTextField(
                 value = name, onValueChange = { name = it }, singleLine = true,
                 label = { Text(stringResource(R.string.connector_name_label)) }, modifier = Modifier.fillMaxWidth(),
+                supportingText = { Text(stringResource(R.string.help_connector_name)) },
             )
         },
         confirmButton = { TextButton(enabled = name.isNotBlank(), onClick = { onConfirm(name.trim()) }) { Text(stringResource(R.string.ok)) } },
@@ -452,8 +459,10 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
                     LocalFilesProvider.importFile(ctx, displayName(ctx, uri), text)
                 }
             }
-            result.onSuccess { n -> version++; snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n)) }
-                .onFailure { snackbar.showSnackbar(it.message ?: ctx.getString(R.string.error_generic)) }
+            onMain {
+                result.onSuccess { n -> version++; snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n)) }
+                    .onFailure { snackbar.showSnackbar(it.message ?: ctx.getString(R.string.error_generic)) }
+            }
         }
     }
 
@@ -470,10 +479,12 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
                         withContext(Dispatchers.IO) { LocalFilesProvider.importTracks(ctx, if (name.isBlank()) s.name else name, s.tracks) }
                         s.tracks.size
                     } else withContext(Dispatchers.IO) { LocalFilesProvider.importFile(ctx, "$name.txt", text) }
-                    snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n))
-                    version++
+                    onMain {
+                        version++
+                        snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n))
+                    }
                 } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
-                    snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+                    onMain { snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic)) }
                 }
             }
         },

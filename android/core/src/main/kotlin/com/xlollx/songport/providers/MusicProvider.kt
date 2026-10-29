@@ -172,6 +172,24 @@ interface MusicProvider {
     suspend fun search(ctx: Env, track: Track): List<Track>
     suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist
     suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>)
+
+    /**
+     * [addTracks], answering which of [tracks] the service did not add because, it says, the
+     * playlist already holds them. Amazon Music refuses such a track (DUPLICATE_TRACK) even when its
+     * playlist listing leaves the entry out: the sync then counts it as present, not added, and
+     * remembers it, instead of adding it again on every run. Default: every track added, none reported.
+     */
+    suspend fun addTracksReportingPresent(ctx: Env, playlistId: String, tracks: List<Track>): Set<String> {
+        addTracks(ctx, playlistId, tracks)
+        return emptySet()
+    }
+
+    /**
+     * True where [tracks] can list an entry by its id alone, with an empty title (Amazon Music, for
+     * a track it describes only in part). A Mirror sync matches such an entry by id and never
+     * removes it on a guess: what it is cannot be told.
+     */
+    val listsUntitledEntries: Boolean get() = false
     suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>)
     suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         throw com.xlollx.songport.model.ProviderException(ctx.text("error_manage_unsupported", displayName))

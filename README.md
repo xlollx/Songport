@@ -23,6 +23,11 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
   <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Trackhop"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="64" alt="Get it on Obtainium"></a>
 </p>
 
+<p align="center">
+  <b>Installed Trackhop from Google Play?</b> Add the plugin for YouTube Music, Amazon Music, and Spotify and Apple Music without developer keys:<br><br>
+  <a href="https://github.com/xlollx/Trackhop-Bridge/releases/latest"><img src="https://img.shields.io/badge/Download-Trackhop%20Bridge%20(plugin%20for%20the%20Play%20version)-1f6feb?style=for-the-badge&logo=android&logoColor=white" alt="Download Trackhop Bridge, the plugin for the Google Play version"></a>
+</p>
+
 <p align="center"><img src="docs/store/demo.gif" width="200" alt="A tour of Trackhop: syncs, a new sync, accounts, tools, a shared track, the compatibility and poster cards, unplayable tracks, settings"></p>
 
 <p align="center"><img src="docs/store/screenshots.png" width="100%" alt="Syncs with their numbers, a new sync, a shared track going into a playlist, how compatible two playlists are, a playlist poster, unplayable tracks and their replacements"></p>
@@ -52,6 +57,11 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
 - **[Obtainium](https://github.com/ImranR98/Obtainium)**: add `https://github.com/xlollx/Trackhop` and
   each release reaches the phone by itself.
 - **[Releases](https://github.com/xlollx/Trackhop/releases/latest)**: the signed APK of every version.
+- **Google Play version**: the same app limited to official APIs (store rules), with a small ad.
+  Using it and want YouTube Music, Amazon Music, or Spotify and Apple Music without developer keys?
+  Install the companion plugin **[Trackhop Bridge](https://github.com/xlollx/Trackhop-Bridge)**
+  (GitHub only, read its notes first), or switch to the F-Droid/GitHub build above, which has them
+  built in. [Which Trackhop?](https://xlollx.github.io/Trackhop/guide/versions) compares the two.
 - **Server (Docker, ⚠️ alpha)**: an early test version, expect rough edges. The same engine on a home server or a NAS, with a web page and
   scheduled syncs: `docker run -p 8080:8080 -v trackhop-data:/data ghcr.io/xlollx/trackhop`. Official
   APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the

@@ -110,6 +110,7 @@ fun FilesScreen(onClose: () -> Unit) {
                     }
                 },
                 navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
+                actions = { HelpButton(Helps.files) },
             )
         },
     ) { padding ->

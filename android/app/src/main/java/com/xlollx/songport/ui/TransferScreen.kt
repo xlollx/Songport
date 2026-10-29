@@ -107,6 +107,7 @@ fun TransferScreen(onClose: () -> Unit, onDone: () -> Unit) {
             TopAppBar(
                 title = { Text(stringResource(R.string.transfer_title)) },
                 navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
+                actions = { HelpButton(Helps.transfer) },
             )
         },
         snackbarHost = { SnackbarHost(snackbar) },

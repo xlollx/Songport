@@ -1,0 +1,1 @@
+Large removals held back for safety can now be confirmed in the preview. A sync card shows when tracks were not found or removals are waiting. Editing a two-way sync no longer changes its other half, and two-way syncs never remove tracks. Clearer texts for schedules, Wi‑Fi only and folder backups; a welcome page on the documentation.
