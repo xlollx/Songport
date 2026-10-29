@@ -92,8 +92,9 @@ class NewFeaturesFlowTest : FlowTest() {
         assertTrue(exists("Road Trip"))
         assertTrue(exists("Chill Evening"))
         assertFalse(exists("Workout Mix"))
+        // Off again: every sync listed (the cards further down are not composed until scrolled to).
         click(s(R.string.filter_disabled))
-        waitText("Workout Mix")
+        waitGone(plural(R.plurals.filter_shown, 5, 2, 5))
 
         // On from the first card's menu: both halves on and scheduled, a snackbar says so.
         clickDesc(s(R.string.more_actions))
