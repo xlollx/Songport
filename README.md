@@ -52,6 +52,11 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
 - **[Obtainium](https://github.com/ImranR98/Obtainium)**: add `https://github.com/xlollx/Trackhop` and
   each release reaches the phone by itself.
 - **[Releases](https://github.com/xlollx/Trackhop/releases/latest)**: the signed APK of every version.
+- **Google Play version**: the same app limited to official APIs (store rules), with a small ad.
+  Using it and want YouTube Music, Amazon Music, or Spotify and Apple Music without developer keys?
+  Install the companion plugin **[Trackhop Bridge](https://github.com/xlollx/Trackhop-Bridge)**
+  (GitHub only, read its notes first), or switch to the F-Droid/GitHub build above, which has them
+  built in. [Which Trackhop?](https://xlollx.github.io/Trackhop/guide/versions) compares the two.
 - **Server (Docker, ⚠️ alpha)**: an early test version, expect rough edges. The same engine on a home server or a NAS, with a web page and
   scheduled syncs: `docker run -p 8080:8080 -v trackhop-data:/data ghcr.io/xlollx/trackhop`. Official
   APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
