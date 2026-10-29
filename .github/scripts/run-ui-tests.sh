@@ -21,8 +21,10 @@ adb logcat -c || true
 gradle "$TASK" -Pandroid.testInstrumentationRunnerArguments.package=com.xlollx.songport.flows \
   --no-daemon --stacktrace --continue 2>&1 | tee ui-out/gradle.log
 status=${PIPESTATUS[0]}
-adb pull /sdcard/ui-test-failures ui-out/failures || true
-adb logcat -d > ui-out/logcat.txt || true
+# Bounded: if the emulator has gone (it happens), adb would wait for the device until the job's
+# timeout; better the reports now and a red job in minutes.
+timeout 120 adb pull /sdcard/ui-test-failures ui-out/failures || true
+timeout 120 adb logcat -d > ui-out/logcat.txt || true
 grep -E "UiFlow|AndroidRuntime|FATAL" ui-out/logcat.txt | tail -n 300 > ui-out/logcat-short.txt || true
 echo "$status" > ui-out/status
 exit 0

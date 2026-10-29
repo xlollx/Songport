@@ -33,12 +33,16 @@ import kotlinx.coroutines.delay
  * the app's name under it. It holds for [HOLD_MS] and fades out in [FADE_MS]; the content
  * composes underneath meanwhile, so nothing waits for it. With the system's animations off
  * (animator duration scale 0, as on the test emulators) it is not shown at all.
+ *
+ * The system splash before it goes with the system's own exit (a short fade on Android 12+), over
+ * this screen already drawn: no exit-animation listener. Setting one makes Android 12+ hand the
+ * splash view over to the app's process, and on the API 34 test emulators that handover took the
+ * whole emulator down (the UI tests lost the device right after "SplashScreenView: Building from
+ * parcel").
  */
 object Splash {
     const val HOLD_MS = 800L
     const val FADE_MS = 300
-    /** The system splash view fades this long before it is removed, so the two screens blend. */
-    const val SYSTEM_FADE_MS = 200L
 
     fun animationsOff(ctx: Context): Boolean = android.provider.Settings.Global.getFloat(
         ctx.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f,

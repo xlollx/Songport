@@ -90,7 +90,6 @@ import com.xlollx.songport.ui.LogScreen
 import com.xlollx.songport.ui.OnboardingScreen
 import com.xlollx.songport.ui.PreviewScreen
 import com.xlollx.songport.ui.SetupWizardScreen
-import com.xlollx.songport.ui.Splash
 import com.xlollx.songport.ui.SplashOverlay
 import com.xlollx.songport.ui.SettingsScreen
 import com.xlollx.songport.ui.SyncEditorScreen
@@ -130,12 +129,10 @@ class MainActivity : ComponentActivity() {
     private fun requestUnlock() = lockLauncher.launch(Intent(this, LockActivity::class.java))
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // The system splash (a flat colour and the icon) fades into the Compose one ([SplashOverlay]),
-        // the beam across the whole screen; with animations off it just goes.
-        installSplashScreen().setOnExitAnimationListener { splash ->
-            if (Splash.animationsOff(this)) splash.remove()
-            else splash.view.animate().alpha(0f).setDuration(Splash.SYSTEM_FADE_MS).withEndAction { splash.remove() }.start()
-        }
+        // The system splash (a flat colour and the icon) gives way, with the system's own exit, to
+        // the Compose one ([SplashOverlay]), the beam across the whole screen. No exit listener:
+        // see Splash for why.
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         Ads.start(this)
