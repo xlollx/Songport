@@ -78,6 +78,12 @@ data class StoreData(
     val matchCache: Map<String, String> = emptyMap(),
     /** Ricerche senza esito, stessa chiave -> quando (epoch ms): non si ripetono per una settimana. */
     val missCache: Map<String, Long> = emptyMap(),
+    /**
+     * Tracks a service said a playlist holds although its listing leaves them out (Amazon Music
+     * answering DUPLICATE_TRACK), key [FileStore.presentKey] -> when (epoch ms): present, not to be
+     * added again on every run.
+     */
+    val presentUnlisted: Map<String, Long> = emptyMap(),
     /** Source tracks the user declared absent from a destination service (same keys as the caches). */
     val ignoredTracks: Set<String> = emptySet(),
     val settings: Settings = Settings(),
@@ -227,8 +233,30 @@ open class FileStore(dir: File) {
         }
     }
 
+    /**
+     * The service said [playlistId] holds [trackId] although its listing does not show it. After a
+     * month the track is tried again: a service that still has it refuses it again, and the answer
+     * is remembered anew; one where the user removed it since gets it back.
+     */
+    fun isPresentUnlisted(dstProvider: String, playlistId: String, trackId: String): Boolean {
+        val at = data.presentUnlisted[presentKey(dstProvider, playlistId, trackId)] ?: return false
+        return System.currentTimeMillis() - at < PRESENT_TTL_MS
+    }
+
+    fun putPresentUnlisted(dstProvider: String, playlistId: String, trackIds: Collection<String>) {
+        if (trackIds.isEmpty()) return
+        val now = System.currentTimeMillis()
+        update { d ->
+            var m = d.presentUnlisted.filterValues { now - it < PRESENT_TTL_MS } + trackIds.associate { presentKey(dstProvider, playlistId, it) to now }
+            if (m.size > MAX_CACHE) m = m.entries.drop(m.size - MAX_CACHE).associate { it.key to it.value }
+            d.copy(presentUnlisted = m)
+        }
+    }
+
     companion object {
         const val MAX_REPORTS = 200
+        /** How long a track a service said it holds, though unlisted, counts as present without asking again. */
+        private const val PRESENT_TTL_MS = 30L * 24 * 3_600_000
         private const val WRITE_DELAY_MS = 500L
         private const val MAX_CACHE = 20_000
         /** Una ricerca fallita si ripete dopo una settimana: i cataloghi cambiano, ma non ogni giorno. */
@@ -237,6 +265,9 @@ open class FileStore(dir: File) {
         const val CONFIRMATION_TTL_MS = 12L * 3_600_000
 
         fun cacheKey(srcProvider: String, srcTrackId: String, dstProvider: String) = "${family(srcProvider)}:$srcTrackId>${family(dstProvider)}"
+
+        /** Key of [StoreData.presentUnlisted]: the service, the playlist and the track there. */
+        fun presentKey(dstProvider: String, playlistId: String, trackId: String) = "${family(dstProvider)}:$playlistId>$trackId"
 
         /**
          * Track ids are the service's, not the route's or the account's: a match found through the

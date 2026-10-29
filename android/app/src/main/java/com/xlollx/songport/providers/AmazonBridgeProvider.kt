@@ -112,17 +112,31 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
         }
 
     override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
-        if (tracks.isEmpty()) return
-        withContext(Dispatchers.IO) {
+        addTracksReportingPresent(ctx, playlistId, tracks)
+    }
+
+    /**
+     * The tracks Amazon refused as already in the playlist (DUPLICATE_TRACK), from the Bridge's
+     * "duplicates": present, not added. A Bridge app older than this answer reports none.
+     */
+    override suspend fun addTracksReportingPresent(ctx: Env, playlistId: String, tracks: List<Track>): Set<String> {
+        if (tracks.isEmpty()) return emptySet()
+        return withContext(Dispatchers.IO) {
+            val present = HashSet<String>()
             // One web call per track: keep the batches small so a failure is reported precisely.
             tracks.chunked(25).forEach { chunk ->
-                call(ctx, "amazon.add", playlistId, Bundle().apply {
+                val b = call(ctx, "amazon.add", playlistId, Bundle().apply {
                     putStringArray("ids", chunk.map { it.id }.toTypedArray())
                     putStringArray("titles", chunk.map { it.title }.toTypedArray())
                 })
+                b.getStringArray("duplicates")?.let { present += it }
             }
+            present
         }
     }
+
+    /** Entries Amazon describes only in part come by id, without a title (see AmazonClient.playlistTracks). */
+    override val listsUntitledEntries: Boolean get() = true
 
     override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         if (tracks.isEmpty()) return

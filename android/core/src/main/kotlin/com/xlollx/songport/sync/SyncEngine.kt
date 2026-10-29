@@ -228,10 +228,21 @@ class SyncEngine(
         // it in its own review, unless the user settled it in the preview (which remembers it).
         val unsure = HashSet<String>()
 
+        // A track the service said it holds although its listing leaves it out (Amazon Music's
+        // DUPLICATE_TRACK): present, so it is not added, and so not counted as added, on every run.
+        val listedId: String = targetId
+        fun unlistedPresent(trackId: String) = !targetCreated && store.isPresentUnlisted(dst.id, listedId, trackId)
+
         // 1) brani gia' presenti nella destinazione
         for (s in srcTracks) {
             val key = FileStore.cacheKey(src.id, s.id, dst.id)
-            val found = store.cachedMatch(src.id, s.id, dst.id)?.let { dstById[it] } ?: index.best(s, policy = job.policy)
+            val cachedId = store.cachedMatch(src.id, s.id, dst.id)
+            if (cachedId != null && cachedId !in dstById && unlistedPresent(cachedId)) {
+                matchedDstIds += cachedId
+                newCache[key] = cachedId
+                continue
+            }
+            val found = cachedId?.let { dstById[it] } ?: index.best(s, policy = job.policy)
             if (found != null) {
                 matchedDstIds += found.id
                 newCache[key] = found.id
@@ -260,7 +271,7 @@ class SyncEngine(
             if (found != null) {
                 // The target may hold the same recording under another id (a remaster, the single
                 // edition): by ISRC or by name it counts as present, and nothing is added twice.
-                val present = dstById[found.id] ?: if (found.id in matchedDstIds) found else index.best(found)
+                val present = dstById[found.id] ?: if (found.id in matchedDstIds || unlistedPresent(found.id)) found else index.best(found)
                 val target = present ?: found
                 if (present == null) toAdd[found.id] = found
                 matchedDstIds += target.id
@@ -285,7 +296,11 @@ class SyncEngine(
         // removal here could come first. Removals are never made in a pair.
         val paired = job.linkedJobId?.let { store.job(it) } != null
         if (job.mirrorRemovals) {
-            val extra = dstTracks.filter { it.id !in matchedDstIds }
+            // An entry the service lists by id alone cannot be told apart from one of the source's
+            // under another id: it stays (see MusicProvider.listsUntitledEntries).
+            val untitled = if (dst.listsUntitledEntries) dstTracks.count { it.id !in matchedDstIds && it.title.isBlank() } else 0
+            if (untitled > 0) env.log("engine", "${job.name}: $untitled entries of the target listed without a title on ${dst.displayName}, matching no source track: not removed")
+            val extra = dstTracks.filter { it.id !in matchedDstIds && !(dst.listsUntitledEntries && it.title.isBlank()) }
             // Un quarto o piu' della destinazione (playlist svuotata per sbaglio, account cambiato, o un
             // elenco letto a meta' dal servizio): solo una persona puo' dire se va tolto davvero.
             val large = extra.size > REMOVAL_CAP_MIN && extra.size * 4 > dstTracks.size
@@ -620,6 +635,8 @@ class SyncEngine(
 
         var added = 0
         val addedList = ArrayList<Track>()
+        // Refused by the service as already in the playlist (its listing left them out): present, not added.
+        val alreadyThere = ArrayList<Track>()
         if (plan.toAdd.isNotEmpty()) {
             onProgress(Progress(Progress.Step.ADDING, 0, plan.toAdd.size))
             // Verso una playlist un blocco di 50 e' una chiamata sola. Verso i "brani preferiti" ogni
@@ -632,13 +649,16 @@ class SyncEngine(
             val additions = if (MusicProvider.isLibrary(targetId)) plan.toAdd.asReversed() else plan.toAdd
             for (chunk in additions.chunked(chunkSize)) {
                 // Cosa si sta aggiungendo adesso, in scheda e nella vista dal vivo, come per la ricerca.
-                onProgress(Progress(Progress.Step.ADDING, added, plan.toAdd.size, chunk.first().live()))
+                onProgress(Progress(Progress.Step.ADDING, added + alreadyThere.size, plan.toAdd.size, chunk.first().live()))
                 while (true) {
                     try {
-                        dst.addTracks(env, targetId, chunk)
-                        added += chunk.size
-                        addedList += chunk
-                        chunk.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.ADDED)) }
+                        val present = dst.addTracksReportingPresent(env, targetId, chunk)
+                        val (there, fresh) = chunk.partition { it.id in present }
+                        added += fresh.size
+                        addedList += fresh
+                        alreadyThere += there
+                        fresh.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), null, SyncState.Outcome.ADDED)) }
+                        there.forEach { SyncState.item(job.id, SyncState.LiveItem(it.live(), it.live(), SyncState.Outcome.CACHED)) }
                         break
                     } catch (e: Exception) {
                         // Il servizio ha bloccato l'indirizzo e dice quanto aspettare: si aspetta, come
@@ -653,8 +673,13 @@ class SyncEngine(
                         // Un blocco fallito (id non piu' valido, ecc.): riprova brano per brano.
                         for (t in chunk) {
                             try {
-                                dst.addTracks(env, targetId, listOf(t)); added++; addedList += t
-                                SyncState.item(job.id, SyncState.LiveItem(t.live(), null, SyncState.Outcome.ADDED))
+                                if (t.id in dst.addTracksReportingPresent(env, targetId, listOf(t))) {
+                                    alreadyThere += t
+                                    SyncState.item(job.id, SyncState.LiveItem(t.live(), t.live(), SyncState.Outcome.CACHED))
+                                } else {
+                                    added++; addedList += t
+                                    SyncState.item(job.id, SyncState.LiveItem(t.live(), null, SyncState.Outcome.ADDED))
+                                }
                             } catch (e2: Exception) {
                                 failed += "$t (${e2.message})"
                                 SyncState.item(job.id, SyncState.LiveItem(t.live(), e2.message?.take(80), SyncState.Outcome.ADD_FAILED))
@@ -663,8 +688,13 @@ class SyncEngine(
                         break
                     }
                 }
-                onProgress(Progress(Progress.Step.ADDING, added, plan.toAdd.size))
+                onProgress(Progress(Progress.Step.ADDING, added + alreadyThere.size, plan.toAdd.size))
             }
+        }
+        if (alreadyThere.isNotEmpty()) {
+            store.putPresentUnlisted(dst.id, targetId, alreadyThere.map { it.id })
+            env.log("engine", "${job.name}: ${alreadyThere.size} tracks already on ${dst.displayName} but missing from its playlist listing: " +
+                alreadyThere.take(20).joinToString("; ") + if (alreadyThere.size > 20) "; …" else "")
         }
 
         var removed = 0
