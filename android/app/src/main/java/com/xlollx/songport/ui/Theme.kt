@@ -16,12 +16,12 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +47,7 @@ object Brand {
      * surface's height from its edge, the colour runs through [BeamStops]: black, a deep red glow,
      * a thin violet-blue line on the edge, cyan, then white; along it a red sweep (Screen blend,
      * black on the left to [BeamSweep] on the right) turns the cyan to white towards the right.
+     * Painted by [paintBeam], on the CPU.
      * The same numbers are in scripts/store_graphics.sh, res/drawable/ic_launcher_background.xml
      * and docs/assets/site.css. White text belongs on the dark side (below the edge), where the
      * glow stays under 0.7 red and the contrast above 7:1.
@@ -64,20 +65,47 @@ object Brand {
  * (a fraction of the height): low enough to cross the top-right corner of a tile in the header,
  * high enough that the text below stays on the dark side.
  */
-fun Modifier.brandBeam(edgeY: Float = 0.35f): Modifier = drawBehind {
-    val h = size.height
+fun Modifier.brandBeam(edgeY: Float = 0.35f): Modifier = drawWithCache {
+    // Painted once per size on the CPU, then drawn as a plain image: the Screen blend of the sweep
+    // (and a rounded clip around it) through the GPU took the API 34 test emulators down.
+    val scale = BEAM_SCALE
+    val w = (size.width * scale).toInt().coerceAtLeast(1)
+    val h = (size.height * scale).toInt().coerceAtLeast(1)
+    val bitmap = android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888)
+    paintBeam(android.graphics.Canvas(bitmap), w, h, edgeY)
+    val image = bitmap.asImageBitmap()
+    val dst = IntSize(size.width.toInt().coerceAtLeast(1), size.height.toInt().coerceAtLeast(1))
+    onDrawBehind { drawImage(image, dstSize = dst, filterQuality = FilterQuality.Low) }
+}
+
+/** The beam is all soft gradients: half resolution is indistinguishable, and a quarter of the memory. */
+private const val BEAM_SCALE = 0.5f
+
+/**
+ * The beam on an [android.graphics.Canvas] of [w]×[h] (a bitmap's, so a software one): the band's
+ * edge through the right border at [edgeY] of the height, the stops across it, the red sweep
+ * screened along it. One painter for the Compose surfaces and the shareable cards (ui/Cards.kt).
+ */
+fun paintBeam(c: android.graphics.Canvas, w: Int, h: Int, edgeY: Float) {
     val rad = Math.toRadians(Brand.BeamAngle.toDouble())
-    val n = Offset(Math.sin(rad).toFloat(), -Math.cos(rad).toFloat())
-    val anchor = Offset(size.width, h * edgeY)
+    val nx = Math.sin(rad).toFloat(); val ny = -Math.cos(rad).toFloat()
+    val ax = w.toFloat(); val ay = h * edgeY
     val first = Brand.BeamStops.first().first
     val span = Brand.BeamStops.last().first - first
-    drawRect(
-        Brush.linearGradient(
-            *Brand.BeamStops.map { (s, c) -> (s - first) / span to c }.toTypedArray(),
-            start = anchor + n * (first * h), end = anchor + n * ((first + span) * h), tileMode = TileMode.Clamp,
-        ),
-    )
-    drawRect(Brush.horizontalGradient(listOf(Color.Black, Brand.BeamSweep)), blendMode = BlendMode.Screen)
+    val colors = Brand.BeamStops.map { it.second.toArgb() }.toIntArray()
+    val positions = Brand.BeamStops.map { (it.first - first) / span }.toFloatArray()
+    val base = android.graphics.Paint().apply {
+        shader = android.graphics.LinearGradient(
+            ax + nx * first * h, ay + ny * first * h, ax + nx * (first + span) * h, ay + ny * (first + span) * h,
+            colors, positions, android.graphics.Shader.TileMode.CLAMP,
+        )
+    }
+    c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), base)
+    val sweep = android.graphics.Paint().apply {
+        shader = android.graphics.LinearGradient(0f, 0f, w.toFloat(), 0f, android.graphics.Color.BLACK, Brand.BeamSweep.toArgb(), android.graphics.Shader.TileMode.CLAMP)
+        xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SCREEN)
+    }
+    c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), sweep)
 }
 
 private val LightScheme = lightColorScheme(

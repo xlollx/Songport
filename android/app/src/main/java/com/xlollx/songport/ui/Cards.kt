@@ -10,8 +10,6 @@ import android.graphics.LinearGradient
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
@@ -21,7 +19,6 @@ import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
 import androidx.compose.ui.graphics.asAndroidPath
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -149,24 +146,7 @@ object Cards {
      * through the right border at [edgeY] of the height, so it crosses the top of the mark's tile
      * and all the text stays on the dark side.
      */
-    private fun beam(c: Canvas, w: Int, h: Int, edgeY: Float) {
-        val rad = Math.toRadians(Brand.BeamAngle.toDouble())
-        val nx = Math.sin(rad).toFloat(); val ny = -Math.cos(rad).toFloat()
-        val ax = w.toFloat(); val ay = h * edgeY
-        val first = Brand.BeamStops.first().first
-        val span = Brand.BeamStops.last().first - first
-        val colors = Brand.BeamStops.map { it.second.toArgb() }.toIntArray()
-        val positions = Brand.BeamStops.map { (it.first - first) / span }.toFloatArray()
-        val base = Paint().apply {
-            shader = LinearGradient(ax + nx * first * h, ay + ny * first * h, ax + nx * (first + span) * h, ay + ny * (first + span) * h, colors, positions, Shader.TileMode.CLAMP)
-        }
-        c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), base)
-        val sweep = Paint().apply {
-            shader = LinearGradient(0f, 0f, w.toFloat(), 0f, Color.BLACK, Brand.BeamSweep.toArgb(), Shader.TileMode.CLAMP)
-            xfermode = PorterDuffXfermode(PorterDuff.Mode.SCREEN)
-        }
-        c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), sweep)
-    }
+    private fun beam(c: Canvas, w: Int, h: Int, edgeY: Float) = paintBeam(c, w, h, edgeY)
 
     private fun panel(c: Canvas, r: RectF, radius: Float = 36f) {
         c.drawRoundRect(r, radius, radius, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = PANEL })
