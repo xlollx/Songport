@@ -59,7 +59,7 @@ jobs:
       - name: Installa platform e build-tools
         run: |
           yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.0.12077973" > /dev/null
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" > /dev/null
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
