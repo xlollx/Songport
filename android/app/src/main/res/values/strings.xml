@@ -564,8 +564,6 @@
     <string name="provider_note_apple_bridge">Sign in with your Apple ID, no Apple Developer Program needed. Uses the web player\'s tokens: not an official route, against Apple\'s terms, may stop working. The official route with your own developer token stays available as \"Apple Music\".</string>
     <string name="bridge_needed_hint">Install or update the companion app \"Trackhop Bridge\" (1.2 or newer) from GitHub, then come back here and tap Connect.</string>
     <string name="settings_source_code">Source code and documentation</string>
-    <string name="plugins_more">Other services can be added by connector plugins: how it works.</string>
-    <string name="plugins_more_url" translatable="false">https://xlollx.github.io/Trackhop/plugins</string>
     <string name="security_title">How your logins are protected</string>
     <string name="security_fact_1">Passwords are typed on the services\' own pages, never in Trackhop.</string>
     <string name="security_fact_2">Trackhop keeps only revocable access tokens, encrypted with the Android Keystore.</string>
@@ -1000,4 +998,8 @@
     <string name="first_sync_ready_body">%1$s is connected. Pick one of its playlists and where it should go.</string>
     <string name="first_sync_create">Create sync</string>
     <string name="editor_one_service_hint">Add a second service to sync between two services. Until then, a sync can go to a file on this phone.</string>
+    <string name="plugins_title">Plugins</string>
+    <string name="plugins_desc">Trackhop has an open connector interface: separate apps, made by anyone, can add services to it. Trackhop does not include, download or recommend any plugin. Installed ones appear here, and their services in Accounts.</string>
+    <string name="plugins_none">No plugin installed</string>
+    <string name="plugins_services">Services: %1$s</string>
 </resources>

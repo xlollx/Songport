@@ -559,7 +559,6 @@
     <string name="provider_note_apple_bridge">使用 Apple ID 登录，无需加入 Apple Developer Program。使用网页播放器的令牌：并非官方途径，违反 Apple 的条款，可能随时失效。使用你自己开发者令牌的官方途径仍以“Apple Music”的形式提供。</string>
     <string name="bridge_needed_hint">请从 GitHub 安装或更新配套应用“Trackhop Bridge”（1.2 或更高版本），然后回到这里点按“连接”。</string>
     <string name="settings_source_code">源代码和文档</string>
-    <string name="plugins_more">可以通过连接器插件添加其他服务：了解工作原理。</string>
     <string name="security_title">你的登录信息如何受到保护</string>
     <string name="security_fact_1">密码在各服务自己的页面上输入，绝不会在 Trackhop 中输入。</string>
     <string name="security_fact_2">Trackhop 只保存可撤销的访问令牌，并使用 Android Keystore 加密。</string>
@@ -979,4 +978,8 @@
     <string name="first_sync_ready_body">%1$s 已连接。选择它的一个歌单以及要同步到哪里。</string>
     <string name="first_sync_create">创建同步</string>
     <string name="editor_one_service_hint">再添加一个服务，即可在两个服务之间同步。在此之前，同步可以保存到这部手机上的文件。</string>
+    <string name="plugins_title">插件</string>
+    <string name="plugins_desc">Trackhop 提供开放的连接器接口：任何人制作的独立应用都可以为其添加服务。Trackhop 不包含、不下载也不推荐任何插件。已安装的插件显示在这里，其服务显示在“账户”中。</string>
+    <string name="plugins_none">未安装插件</string>
+    <string name="plugins_services">服务：%1$s</string>
 </resources>

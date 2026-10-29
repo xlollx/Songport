@@ -558,7 +558,6 @@
     <string name="provider_note_apple_bridge">Apple ID로 로그인하며 Apple Developer Program이 필요 없어요. 웹 플레이어 토큰을 쓰므로 공식 경로가 아니고 Apple 약관에 어긋나며 작동을 멈출 수 있어요. 내 개발자 토큰을 쓰는 공식 경로는 “Apple Music”으로 계속 쓸 수 있어요.</string>
     <string name="bridge_needed_hint">GitHub에서 보조 앱 “Trackhop Bridge”(1.2 이상)를 설치하거나 업데이트한 다음, 여기로 돌아와 연결을 누르세요.</string>
     <string name="settings_source_code">소스 코드와 문서</string>
-    <string name="plugins_more">커넥터 플러그인으로 다른 서비스를 추가할 수 있어요: 작동 방식.</string>
     <string name="security_title">로그인 정보는 이렇게 보호돼요</string>
     <string name="security_fact_1">비밀번호는 서비스의 자체 페이지에만 입력하고 Trackhop에는 절대 입력하지 않아요.</string>
     <string name="security_fact_2">Trackhop은 철회할 수 있는 액세스 토큰만 Android Keystore로 암호화해 보관해요.</string>
@@ -978,4 +977,8 @@
     <string name="first_sync_ready_body">%1$s이(가) 연결되었습니다. 플레이리스트 하나와 보낼 곳을 고르세요.</string>
     <string name="first_sync_create">동기화 만들기</string>
     <string name="editor_one_service_hint">두 서비스 사이에서 동기화하려면 두 번째 서비스를 추가하세요. 그 전까지는 이 휴대폰의 파일로 동기화할 수 있습니다.</string>
+    <string name="plugins_title">플러그인</string>
+    <string name="plugins_desc">Trackhop에는 개방형 커넥터 인터페이스가 있어 누구나 만든 별도 앱이 서비스를 추가할 수 있습니다. Trackhop은 어떤 플러그인도 포함하거나 다운로드하거나 추천하지 않습니다. 설치된 플러그인은 여기에, 그 서비스는 계정에 표시됩니다.</string>
+    <string name="plugins_none">설치된 플러그인 없음</string>
+    <string name="plugins_services">서비스: %1$s</string>
 </resources>

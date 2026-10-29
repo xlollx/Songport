@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.EditNotifications
 import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Folder
@@ -57,6 +58,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -294,6 +296,35 @@ fun SettingsScreen(
             if (privacyRequired) {
                 PrefRow(Icons.Filled.PrivacyTip, stringResource(R.string.settings_privacy_options), null, trailing = { ExternalMark() }) {
                     (ctx as? Activity)?.let { Ads.showPrivacyOptions(it) }
+                }
+            }
+        }
+
+        // ---------------------------------------------------------------- Plugins
+        // Play build only: the GitHub/F-Droid build carries the connectors inside. Neutral on
+        // purpose: what a plugin is and which ones are installed, never a name, a link or a hint.
+        if (!BridgePlugin.builtIn) {
+            // Asking a plugin which services it serves is an IPC call: off the main thread.
+            val plugins by produceState<List<Pair<BridgePlugin.Installed, List<String>>>?>(null) {
+                value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    val active = BridgePlugin.packageName(ctx)
+                    val services = Providers.services().filter { it.pluginBased && runCatching { it.isConfigured(ctx) }.getOrDefault(false) }.map { it.displayName }
+                    BridgePlugin.installedPlugins(ctx).map { it to if (it.packageName == active) services else emptyList() }
+                }
+            }
+            PrefSection(stringResource(R.string.plugins_title), footer = stringResource(R.string.plugins_desc)) {
+                val list = plugins
+                if (list != null && list.isEmpty()) PrefRow(Icons.Filled.Extension, stringResource(R.string.plugins_none))
+                list?.forEach { (p, services) ->
+                    val launch = ctx.packageManager.getLaunchIntentForPackage(p.packageName)
+                    PrefRow(
+                        Icons.Filled.Extension, p.label,
+                        listOfNotNull(
+                            p.version?.let { stringResource(R.string.settings_version, it) },
+                            services.takeIf { it.isNotEmpty() }?.let { stringResource(R.string.plugins_services, it.joinToString(", ")) },
+                        ).joinToString(" · "),
+                        onClick = launch?.let { i -> { runCatching { ctx.startActivity(i) } } },
+                    )
                 }
             }
         }

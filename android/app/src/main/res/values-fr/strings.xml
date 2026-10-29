@@ -564,7 +564,6 @@
     <string name="provider_note_apple_bridge">Connectez-vous avec votre identifiant Apple, sans Apple Developer Program. Utilise les jetons du lecteur web : ce n\'est pas une voie officielle, c\'est contraire aux conditions d\'Apple et cela peut cesser de fonctionner. La voie officielle avec votre propre jeton développeur reste disponible sous le nom \"Apple Music\".</string>
     <string name="bridge_needed_hint">Installez ou mettez à jour l\'application compagnon \"Trackhop Bridge\" (1.2 ou plus récente) depuis GitHub, puis revenez ici et touchez Connecter.</string>
     <string name="settings_source_code">Code source et documentation</string>
-    <string name="plugins_more">D\'autres services peuvent être ajoutés par des plugins de connecteur : comment ça marche.</string>
     <string name="security_title">Comment vos connexions sont protégées</string>
     <string name="security_fact_1">Les mots de passe sont saisis sur les pages des services eux-mêmes, jamais dans Trackhop.</string>
     <string name="security_fact_2">Trackhop ne conserve que des jetons d\'accès révocables, chiffrés avec l\'Android Keystore.</string>
@@ -1006,4 +1005,8 @@
     <string name="first_sync_ready_body">%1$s est connecté. Choisissez une de ses playlists et sa destination.</string>
     <string name="first_sync_create">Créer la sync</string>
     <string name="editor_one_service_hint">Ajoutez un second service pour synchroniser entre deux services. En attendant, une sync peut aller dans un fichier sur ce téléphone.</string>
+    <string name="plugins_title">Plugins</string>
+    <string name="plugins_desc">Trackhop dispose d\'une interface de connecteurs ouverte : des apps séparées, faites par n\'importe qui, peuvent ajouter des services. Trackhop n\'inclut, ne télécharge ni ne recommande aucun plugin. Ceux qui sont installés apparaissent ici, et leurs services dans Comptes.</string>
+    <string name="plugins_none">Aucun plugin installé</string>
+    <string name="plugins_services">Services : %1$s</string>
 </resources>

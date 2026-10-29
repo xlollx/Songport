@@ -564,7 +564,6 @@
     <string name="provider_note_apple_bridge">Accedi con il tuo ID Apple, senza Apple Developer Program. Usa i token del player web: non è una via ufficiale, è contraria ai termini di Apple e può smettere di funzionare. La via ufficiale con il tuo developer token resta disponibile come \"Apple Music\".</string>
     <string name="bridge_needed_hint">Installa o aggiorna l\'app compagna \"Trackhop Bridge\" (1.2 o successiva) da GitHub, poi torna qui e tocca Collega.</string>
     <string name="settings_source_code">Codice sorgente e documentazione</string>
-    <string name="plugins_more">Altri servizi si possono aggiungere con i plugin dei connettori: come funziona.</string>
     <string name="security_title">Come sono protetti i tuoi accessi</string>
     <string name="security_fact_1">Le password si digitano sulle pagine dei servizi, mai dentro Trackhop.</string>
     <string name="security_fact_2">Trackhop conserva solo token di accesso revocabili, cifrati con l\'Android Keystore.</string>
@@ -999,4 +998,8 @@
     <string name="first_sync_ready_body">%1$s è collegato. Scegli una delle sue playlist e dove deve andare.</string>
     <string name="first_sync_create">Crea sync</string>
     <string name="editor_one_service_hint">Aggiungi un secondo servizio per sincronizzare tra due servizi. Nel frattempo, una sync può andare in un file su questo telefono.</string>
+    <string name="plugins_title">Plugin</string>
+    <string name="plugins_desc">Trackhop ha un\'interfaccia di connessione aperta: app separate, fatte da chiunque, possono aggiungere servizi. Trackhop non include, scarica né consiglia alcun plugin. Quelli installati compaiono qui, e i loro servizi in Account.</string>
+    <string name="plugins_none">Nessun plugin installato</string>
+    <string name="plugins_services">Servizi: %1$s</string>
 </resources>

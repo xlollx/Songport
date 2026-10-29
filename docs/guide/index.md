@@ -6,6 +6,7 @@ description (architecture, matching, services and their limits) stays in the
 
 **Using the app**
 - [Getting started](getting-started): install, connect a service, the first sync.
+- [Which Trackhop?](versions): the GitHub/F-Droid and Play builds, connector plugins, the community.
 - [Shared links](shared-links): a friend's Spotify link into your YouTube Music, Navidrome or Jellyfin playlist.
 - [SoundCloud](soundcloud): a public SoundCloud set or likes page as the source of a sync, no account needed.
 - [Troubleshooting](troubleshooting): the errors people actually meet, and what to do about each.

@@ -564,7 +564,6 @@
     <string name="provider_note_apple_bridge">Apple ID\'nizle oturum açın, Apple Developer Program gerekmez. Web oynatıcının jetonlarını kullanır: resmi bir yol değildir, Apple\'ın koşullarına aykırıdır, çalışmayı bırakabilir. Kendi geliştirici jetonunuzla resmi yol \"Apple Music\" olarak kullanılabilir durumda kalır.</string>
     <string name="bridge_needed_hint">GitHub\'dan \"Trackhop Bridge\" yardımcı uygulamasını (1.2 veya üzeri) yükleyin ya da güncelleyin, sonra buraya dönüp Bağlan\'a dokunun.</string>
     <string name="settings_source_code">Kaynak kodu ve belgeler</string>
-    <string name="plugins_more">Bağlayıcı eklentileriyle başka servisler eklenebilir: nasıl çalışır.</string>
     <string name="security_title">Oturumlarınız nasıl korunur</string>
     <string name="security_fact_1">Şifreler servislerin kendi sayfalarında yazılır, asla Trackhop\'ta değil.</string>
     <string name="security_fact_2">Trackhop yalnızca Android Keystore ile şifrelenmiş, iptal edilebilir erişim jetonları tutar.</string>
@@ -997,4 +996,8 @@
     <string name="first_sync_ready_body">%1$s bağlandı. Çalma listelerinden birini ve nereye gideceğini seç.</string>
     <string name="first_sync_create">Senkronizasyon oluştur</string>
     <string name="editor_one_service_hint">İki servis arasında senkronize etmek için ikinci bir servis ekle. O zamana kadar senkronizasyon bu telefondaki bir dosyaya gidebilir.</string>
+    <string name="plugins_title">Eklentiler</string>
+    <string name="plugins_desc">Trackhop\'un açık bir bağlayıcı arayüzü vardır: herkesin yapabileceği ayrı uygulamalar hizmet ekleyebilir. Trackhop hiçbir eklentiyi içermez, indirmez veya önermez. Yüklü olanlar burada, hizmetleri ise Hesaplar\'da görünür.</string>
+    <string name="plugins_none">Yüklü eklenti yok</string>
+    <string name="plugins_services">Hizmetler: %1$s</string>
 </resources>

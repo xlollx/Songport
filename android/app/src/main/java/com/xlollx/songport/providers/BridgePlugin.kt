@@ -67,6 +67,23 @@ object BridgePlugin {
     }
 
     fun installed(ctx: Context): Boolean = builtIn || find(ctx) != null
+
+    /** An installed plugin as the plugins section shows it: its own name and version, nothing else. */
+    class Installed(val packageName: String, val label: String, val version: String?)
+
+    /** Every installed app that declares itself a plugin through [ACTION]; none in the GitHub/F-Droid build's view. */
+    fun installedPlugins(ctx: Context): List<Installed> {
+        val pm = ctx.packageManager
+        return runCatching { pm.queryIntentActivities(Intent(ACTION), 0) }.getOrDefault(emptyList())
+            .map { it.activityInfo.packageName }.distinct()
+            .map { p ->
+                Installed(
+                    p,
+                    runCatching { pm.getApplicationLabel(pm.getApplicationInfo(p, 0)).toString() }.getOrDefault(p),
+                    runCatching { pm.getPackageInfo(p, 0).versionName }.getOrNull(),
+                )
+            }
+    }
     fun packageName(ctx: Context): String? = if (builtIn) ctx.packageName else find(ctx)?.packageName
     fun authority(ctx: Context): Uri = find(ctx)?.authority ?: Uri.parse("content://$LEGACY_AUTHORITY")
 

@@ -559,7 +559,6 @@
     <string name="provider_note_apple_bridge">Apple ID でサインインするだけで、Apple Developer Program は不要です。ウェブプレーヤーのトークンを使用します。公式の方法ではなく、Apple の利用規約に反しており、動作しなくなる可能性があります。自分のデベロッパートークンを使う公式の方法は「Apple Music」として引き続き利用できます。</string>
     <string name="bridge_needed_hint">GitHub からコンパニオンアプリ「Trackhop Bridge」（1.2 以降）をインストールまたは更新し、ここに戻って「接続」をタップしてください。</string>
     <string name="settings_source_code">ソースコードとドキュメント</string>
-    <string name="plugins_more">ほかのサービスはコネクタプラグインで追加できます。仕組みはこちら。</string>
     <string name="security_title">ログイン情報の保護について</string>
     <string name="security_fact_1">パスワードは各サービス自身のページで入力します。Trackhop に入力することはありません。</string>
     <string name="security_fact_2">Trackhop が保存するのは取り消し可能なアクセストークンのみで、Android Keystore で暗号化されます。</string>
@@ -979,4 +978,8 @@
     <string name="first_sync_ready_body">%1$s が接続されました。プレイリストと同期先を選んでください。</string>
     <string name="first_sync_create">同期を作成</string>
     <string name="editor_one_service_hint">2つのサービス間で同期するには、2つ目のサービスを追加してください。それまでは、このスマートフォン上のファイルに同期できます。</string>
+    <string name="plugins_title">プラグイン</string>
+    <string name="plugins_desc">Trackhop にはオープンなコネクタインターフェースがあり、誰でも作れる別アプリがサービスを追加できます。Trackhop はプラグインを同梱・ダウンロード・推奨しません。インストール済みのものはここに、そのサービスは「アカウント」に表示されます。</string>
+    <string name="plugins_none">インストールされたプラグインはありません</string>
+    <string name="plugins_services">サービス: %1$s</string>
 </resources>

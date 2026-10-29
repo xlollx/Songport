@@ -18,7 +18,7 @@ import org.junit.runner.RunWith
  * What differs between the two builds, on the real connector list of this build (nothing signed
  * in, nothing fetched): the GitHub/F-Droid build ("full") carries the web connectors and
  * SoundCloud links; the Google Play build ("play") hides plugin-only services unless a plugin is
- * installed, points to the plugin documentation, and says it shows a banner.
+ * installed, explains plugins only in Settings (no name, no link anywhere), and says it shows a banner.
  */
 @RunWith(AndroidJUnit4::class)
 class FlavorFlowTest : FlowTest() {
@@ -40,7 +40,6 @@ class FlavorFlowTest : FlowTest() {
         listOf("Spotify", "Deezer", "TIDAL", "Jellyfin", "Plex").forEach { waitText(it) }
         if (full) {
             assertTrue("Amazon Music (web connector) is offered", exists("Amazon Music"))
-            assertFalse("no plugin talk where the connectors are built in", exists(s(R.string.plugins_more)))
             // Spotify can be reached two ways here: the family page lists both routes.
             click("Spotify")
             waitText(s(R.string.connector_pick_hint))
@@ -48,11 +47,20 @@ class FlavorFlowTest : FlowTest() {
             assertTrue(exists(s(R.string.route_official)))
         } else {
             assertFalse("Amazon Music needs a plugin the Play build does not name", exists("Amazon Music"))
-            assertTrue("the Play build points to the plugin documentation", exists(s(R.string.plugins_more)))
             // Only the official Spotify route: straight to the name.
             click("Spotify")
             waitText(s(R.string.connector_name_label))
         }
+    }
+
+    @Test
+    fun pluginsSectionOnlyInThePlayBuild() {
+        installConnectors()
+        launch(tabIntent(MainActivity.TAB_SETTINGS))
+        waitText(s(if (full) R.string.settings_free_note else R.string.settings_ads_note))
+        assertEquals("the neutral plugins section", !full, exists(s(R.string.plugins_desc)))
+        // No plugin on the test device: the Play build says so, and names nothing.
+        if (!full) waitText(s(R.string.plugins_none))
     }
 
     @Test

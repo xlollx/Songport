@@ -576,7 +576,6 @@
     <string name="provider_note_apple_bridge">Вход с Apple ID, без Apple Developer Program. Использует токены веб-плеера: неофициальный путь, противоречит условиям Apple, может перестать работать. Официальный путь с вашим токеном разработчика остаётся доступен как «Apple Music».</string>
     <string name="bridge_needed_hint">Установите или обновите приложение-компаньон «Trackhop Bridge» (1.2 или новее) с GitHub, затем вернитесь сюда и нажмите «Подключить».</string>
     <string name="settings_source_code">Исходный код и документация</string>
-    <string name="plugins_more">Другие сервисы можно добавить плагинами-коннекторами: как это работает.</string>
     <string name="security_title">Как защищены ваши входы</string>
     <string name="security_fact_1">Пароли вводятся на собственных страницах сервисов, никогда в Trackhop.</string>
     <string name="security_fact_2">Trackhop хранит только отзываемые токены доступа, зашифрованные с помощью Android Keystore.</string>
@@ -1039,4 +1038,8 @@
     <string name="first_sync_ready_body">%1$s подключён. Выберите один из его плейлистов и куда его отправить.</string>
     <string name="first_sync_create">Создать синхронизацию</string>
     <string name="editor_one_service_hint">Добавьте второй сервис, чтобы синхронизировать между двумя сервисами. А пока синхронизация может сохранять в файл на этом телефоне.</string>
+    <string name="plugins_title">Плагины</string>
+    <string name="plugins_desc">У Trackhop открытый интерфейс коннекторов: отдельные приложения от любых разработчиков могут добавлять сервисы. Trackhop не включает, не загружает и не рекомендует плагины. Установленные отображаются здесь, а их сервисы — в разделе «Аккаунты».</string>
+    <string name="plugins_none">Плагины не установлены</string>
+    <string name="plugins_services">Сервисы: %1$s</string>
 </resources>
