@@ -1177,4 +1177,12 @@
         <item quantity="one">%d hizmet, daha fazlası için kaydırın</item>
         <item quantity="other">%d hizmet, daha fazlası için kaydırın</item>
     </plurals>
+    <string name="pill_pausing">Duraklatılıyor</string>
+    <string name="sync_pausing">Bu adımdan sonra duraklatılıyor…</string>
+    <string name="sync_pausing_short">Duraklatılıyor…</string>
+    <plurals name="syncs_paused">
+        <item quantity="one">%d eşitleme duraklatıldı</item>
+        <item quantity="other">%d eşitleme duraklatıldı</item>
+    </plurals>
+    <string name="syncs_running_paused">%1$d sürüyor · %2$d duraklatıldı</string>
 </resources>

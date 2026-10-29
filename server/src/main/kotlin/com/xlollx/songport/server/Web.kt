@@ -175,7 +175,11 @@ class Web(
         val p = SyncState.running.value[jobId] ?: return """<span class="muted">Starting…</span>"""
         val step = p.step.name.lowercase().replace('_', ' ').replaceFirstChar { it.uppercase() }
         val count = if (p.total > 0) " ${p.done}/${p.total}" else ""
-        val paused = if (SyncState.isPaused(jobId)) " (paused)" else ""
+        val paused = when (SyncState.run(jobId)) {
+            SyncState.Run.PAUSING -> " (pausing after this step…)"
+            SyncState.Run.PAUSED -> " (paused)"
+            else -> ""
+        }
         val bar = p.percent?.let { """<progress max="100" value="$it"></progress>""" } ?: ""
         return """<span>${h(step)}$count$paused${p.label?.let { " · " + h(it) } ?: ""}</span>$bar"""
     }

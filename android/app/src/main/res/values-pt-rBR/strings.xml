@@ -1186,4 +1186,13 @@
         <item quantity="one">%d serviço, role para ver mais</item>
         <item quantity="other">%d serviços, role para ver mais</item>
     </plurals>
+    <string name="pill_pausing">Pausando</string>
+    <string name="sync_pausing">Pausando após esta etapa…</string>
+    <string name="sync_pausing_short">Pausando…</string>
+    <plurals name="syncs_paused">
+        <item quantity="one">%d sincronização pausada</item>
+        <item quantity="many">%d sincronizações pausadas</item>
+        <item quantity="other">%d sincronizações pausadas</item>
+    </plurals>
+    <string name="syncs_running_paused">%1$d em andamento · %2$d pausadas</string>
 </resources>

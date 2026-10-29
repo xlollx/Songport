@@ -1158,4 +1158,11 @@
     <plurals name="service_tiles_scroll">
         <item quantity="other">%d 件のサービス、スクロールして他を表示</item>
     </plurals>
+    <string name="pill_pausing">一時停止待ち</string>
+    <string name="sync_pausing">この手順の後に一時停止します…</string>
+    <string name="sync_pausing_short">一時停止待ち…</string>
+    <plurals name="syncs_paused">
+        <item quantity="other">%d 件の同期を一時停止中</item>
+    </plurals>
+    <string name="syncs_running_paused">実行中 %1$d 件 · 一時停止中 %2$d 件</string>
 </resources>

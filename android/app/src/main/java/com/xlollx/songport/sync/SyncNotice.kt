@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * worker to another, a bare bar beside the real ones.
  *
  * While at least one worker holds the foreground ([enter] … [leave]) a collector follows the
- * running syncs, their pauses and stops, and refreshes the notification at most every [MIN_GAP] ms.
+ * running syncs, their pauses (asked for and reached) and stops, and refreshes the notification at most every [MIN_GAP] ms.
  */
 object SyncNotice {
     private const val MIN_GAP = 400L
@@ -57,7 +57,7 @@ object SyncNotice {
         synchronized(lock) {
             holders++
             if (watcher == null) watcher = scope.launch {
-                combine(SyncState.running, SyncState.paused, SyncState.stopping) { _, _, _ -> }.collect { refresh(app) }
+                combine(SyncState.running, SyncState.paused, SyncState.parked, SyncState.stopping) { _, _, _, _ -> }.collect { refresh(app) }
             }
         }
         settle(app)
@@ -104,12 +104,13 @@ object SyncNotice {
     fun syncs(ctx: Context): List<Notifications.RunningSync> {
         val store = Store.get(ctx)
         val paused = SyncState.paused.value
+        val parked = SyncState.parked.value
         val stopping = SyncState.stopping.value
         return SyncState.running.value.map { (id, p) ->
             val job = store.job(id)
             val name = job?.let { it.name.ifBlank { it.source.playlistName } } ?: ctx.getString(R.string.running)
             val step = if (id in stopping) ctx.getString(R.string.sync_stopping) else stepText(ctx, p)
-            Notifications.RunningSync(id, name, step, p?.done ?: 0, p?.total ?: 0, id in paused && id !in stopping)
+            Notifications.RunningSync(id, name, step, p?.done ?: 0, p?.total ?: 0, SyncState.runOf(id, paused, parked, stopping))
         }
     }
 

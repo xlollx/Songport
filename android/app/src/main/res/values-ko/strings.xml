@@ -1157,4 +1157,11 @@
     <plurals name="service_tiles_scroll">
         <item quantity="other">서비스 %d개, 스크롤하여 더 보기</item>
     </plurals>
+    <string name="pill_pausing">일시정지 중</string>
+    <string name="sync_pausing">이 단계 후 일시정지하는 중…</string>
+    <string name="sync_pausing_short">일시정지 중…</string>
+    <plurals name="syncs_paused">
+        <item quantity="other">동기화 %d개 일시정지됨</item>
+    </plurals>
+    <string name="syncs_running_paused">%1$d개 실행 중 · %2$d개 일시정지됨</string>
 </resources>

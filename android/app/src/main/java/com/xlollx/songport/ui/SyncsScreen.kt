@@ -53,6 +53,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.foundation.rememberScrollState
@@ -165,6 +166,10 @@ fun SyncsScreen(
 ) {
     val ctx = LocalContext.current
     val running by SyncState.running.collectAsState()
+    // Pause asked for, pause reached (the engine waiting), stop asked for: what each running card shows.
+    val pausedSet by SyncState.paused.collectAsState()
+    val parkedSet by SyncState.parked.collectAsState()
+    val stoppingSet by SyncState.stopping.collectAsState()
     // Find and filter: kept across rotation; only in use from FIND_MIN_SYNCS syncs on.
     var filter by rememberSaveable(stateSaver = SyncFilterSaver) { mutableStateOf(SyncFilter()) }
     if (data.jobs.isEmpty()) {
@@ -247,7 +252,13 @@ fun SyncsScreen(
                 // Index of the first card: hero, finder, pill, then the support card when there is one.
                 val firstCard = runAllIndex + 1 + (if (support != null || nudge) 1 else 0)
                 // A card brought into view lands just under the pinned pill, not beneath it.
-                RunAllPill(running.size, pinned = pillPinned, modifier = Modifier.onSizeChanged { pillHeight = it.height }) {
+                val tally = SyncState.tally(running.keys, pausedSet, parkedSet, stoppingSet)
+                RunAllPill(tally, pinned = pillPinned, modifier = Modifier.onSizeChanged { pillHeight = it.height }) {
+                    // Every running sync paused: the pill is the way to resume them all.
+                    if (tally.allPaused) {
+                        running.keys.forEach { SyncState.resume(it) }
+                        return@RunAllPill
+                    }
                     val firstShown = shown.indexOfFirst { running.containsKey(it.id) }
                     val firstAll = data.jobs.indexOfFirst { running.containsKey(it.id) }
                     when {
@@ -270,7 +281,8 @@ fun SyncsScreen(
             if (shown.isEmpty()) item(key = "nomatch") { SyncFinderEmpty { filter = SyncFilter() } }
             items(shown, key = { it.id }) { job ->
                 Box(Modifier.animateItem()) {
-                    JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget, onOpenLog, onToggleEnabled)
+                    val run = if (running.containsKey(job.id)) SyncState.runOf(job.id, pausedSet, parkedSet, stoppingSet) else null
+                    JobCard(job, data, running[job.id], run, onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget, onOpenLog, onToggleEnabled)
                 }
             }
         }
@@ -278,13 +290,17 @@ fun SyncsScreen(
 }
 
 /** What a sync card's pill says. */
-internal enum class CardStatus { RUNNING, DISABLED, NEVER, ERROR, HELD_BACK, INCOMPLETE, NOT_FOUND, OK }
+internal enum class CardStatus { RUNNING, PAUSING, PAUSED, DISABLED, NEVER, ERROR, HELD_BACK, INCOMPLETE, NOT_FOUND, OK }
 
 /**
  * The pill for a card, the most important first. Removals on hold come before "Not found: N": a few
  * songs to look up by hand matter less than a target the sync would empty, which waits for the user.
+ * A running sync says where it stands ([run]): "Pausing" while its step finishes, "Paused" once the
+ * engine waits; a stop in progress still reads as running, the card's text says it is stopping.
  */
-internal fun cardStatus(isRunning: Boolean, enabled: Boolean, report: SyncReport?): CardStatus = when {
+internal fun cardStatus(isRunning: Boolean, enabled: Boolean, report: SyncReport?, run: SyncState.Run? = null): CardStatus = when {
+    isRunning && run == SyncState.Run.PAUSED -> CardStatus.PAUSED
+    isRunning && run == SyncState.Run.PAUSING -> CardStatus.PAUSING
     isRunning -> CardStatus.RUNNING
     !enabled -> CardStatus.DISABLED
     report == null -> CardStatus.NEVER
@@ -315,8 +331,9 @@ private class PullGuard : NestedScrollConnection {
  * marks its edge, as under a scrolled top bar.
  */
 @Composable
-private fun RunAllPill(runningCount: Int, pinned: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
+private fun RunAllPill(tally: SyncState.Tally, pinned: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val haptic = rememberConfirmHaptic()
+    val runningCount = tally.total
     val busy = runningCount > 0
     val bg = MaterialTheme.colorScheme.background
     val line = MaterialTheme.colorScheme.outlineVariant
@@ -338,18 +355,27 @@ private fun RunAllPill(runningCount: Int, pinned: Boolean, modifier: Modifier = 
             // Balances the "?" on the other side, so the pill stays centred.
             Spacer(Modifier.width(48.dp))
             androidx.compose.material3.Surface(
-                onClick = { if (!busy) haptic(); onClick() },
+                onClick = { if (!busy || tally.allPaused) haptic(); onClick() },
                 shape = RoundedCornerShape(50),
                 color = if (busy) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary,
                 contentColor = if (busy) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimary,
                 shadowElevation = 6.dp,
             ) {
                 Row(Modifier.heightIn(min = 48.dp).padding(horizontal = 22.dp), verticalAlignment = Alignment.CenterVertically) {
-                    if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onSecondaryContainer)
-                    else Icon(Icons.Filled.PlayArrow, null, Modifier.size(20.dp))
+                    // All of them paused: nothing moves, so no spinner; a still pause sign, and a tap resumes them.
+                    when {
+                        tally.allPaused -> Icon(Icons.Filled.Pause, null, Modifier.size(20.dp))
+                        busy -> CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                        else -> Icon(Icons.Filled.PlayArrow, null, Modifier.size(20.dp))
+                    }
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        if (busy) pluralStringResource(R.plurals.syncs_running, runningCount, runningCount) else stringResource(R.string.sync_all),
+                        when {
+                            tally.allPaused -> pluralStringResource(R.plurals.syncs_paused, runningCount, runningCount)
+                            tally.somePaused -> stringResource(R.string.syncs_running_paused, tally.running, tally.paused)
+                            busy -> pluralStringResource(R.plurals.syncs_running, runningCount, runningCount)
+                            else -> stringResource(R.string.sync_all)
+                        },
                         style = MaterialTheme.typography.labelLarge,
                     )
                 }
@@ -361,12 +387,13 @@ private fun RunAllPill(runningCount: Int, pinned: Boolean, modifier: Modifier = 
 
 @Composable
 private fun JobCard(
-    job: SyncJob, data: StoreData, progress: Progress?, isRunning: Boolean,
+    job: SyncJob, data: StoreData, progress: Progress?, run: SyncState.Run?,
     onEdit: (SyncJob) -> Unit, onPreview: (SyncJob) -> Unit, onRun: (SyncJob) -> Unit, onDelete: (SyncJob) -> Unit,
     onReview: (String) -> Unit = {}, onOpenTarget: (SyncJob) -> Unit = {}, onOpenLog: () -> Unit = {},
     onToggleEnabled: (SyncJob) -> Unit = {},
 ) {
     val ctx = LocalContext.current
+    val isRunning = run != null
     var colorOpen by remember { mutableStateOf(false) }
     if (colorOpen) JobColorDialog(job.color, onDismiss = { colorOpen = false }) { c ->
         // A two-way sync is one sync to the user: both halves take the colour.
@@ -433,8 +460,10 @@ private fun JobCard(
                 Spacer(Modifier.width(8.dp))
                 // A run without errors can still leave something for the user: the pill says what,
                 // and a tap leads where it is handled.
-                when (cardStatus(isRunning, job.enabled, report)) {
+                when (cardStatus(isRunning, job.enabled, report, run)) {
                     CardStatus.RUNNING -> StatusPill(stringResource(R.string.pill_running), Tone.Accent, Icons.Filled.Sync)
+                    CardStatus.PAUSING -> StatusPill(stringResource(R.string.pill_pausing), Tone.Accent, Icons.Filled.Pause)
+                    CardStatus.PAUSED -> StatusPill(stringResource(R.string.sync_paused), Tone.Warning, Icons.Filled.Pause)
                     CardStatus.DISABLED -> StatusPill(stringResource(R.string.disabled), Tone.Neutral)
                     CardStatus.NEVER -> StatusPill(stringResource(R.string.pill_never), Tone.Neutral)
                     CardStatus.ERROR -> StatusPill(stringResource(R.string.pill_error), Tone.Error, Icons.Filled.Warning)
@@ -444,26 +473,30 @@ private fun JobCard(
                     CardStatus.OK -> StatusPill(stringResource(R.string.pill_ok), Tone.Ok, Icons.Filled.CheckCircle)
                 }
             }
-            if (isRunning) {
-                val pausedSet by SyncState.paused.collectAsState()
-                val paused = job.id in pausedSet
-                val stoppingSet by SyncState.stopping.collectAsState()
-                val stopping = job.id in stoppingSet
-                // Pause and stop act between steps: while one long step runs (reading a playlist,
-                // starting a web player) the card says the request is taken, instead of seeming idle.
-                val betweenSteps = progress?.step in setOf(Progress.Step.MATCHING, Progress.Step.ADDING, Progress.Step.REMOVING, Progress.Step.WAITING)
+            if (run != null) {
+                // Pause and stop act between steps (see SyncState.checkpoint): while a step finishes
+                // the card says the request is taken ("Pausing after this step…"), and only once the
+                // engine waits does it read "Paused", with a bar that stands still.
+                val paused = run == SyncState.Run.PAUSED || run == SyncState.Run.PAUSING
+                val stopping = run == SyncState.Run.STOPPING
                 Spacer(Modifier.height(12.dp))
                 val pct = progress?.percent
-                if (pct != null) LinearProgressIndicator(progress = { pct / 100f }, modifier = Modifier.fillMaxWidth())
+                if (run == SyncState.Run.PAUSED) LinearProgressIndicator(
+                    // Frozen where the sync stopped, greyed: determinate, never the moving bar.
+                    progress = { (pct ?: 0) / 100f }, modifier = Modifier.fillMaxWidth().testTag(PAUSED_BAR_TAG),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f),
+                    trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                )
+                else if (pct != null) LinearProgressIndicator(progress = { pct / 100f }, modifier = Modifier.fillMaxWidth())
                 else LinearProgressIndicator(Modifier.fillMaxWidth())
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        when {
-                            stopping -> stringResource(R.string.sync_stopping) + " · "
-                            paused && !betweenSteps -> stringResource(R.string.sync_pause_pending) + " · "
-                            paused -> stringResource(R.string.sync_paused) + " · "
-                            else -> ""
+                        when (run) {
+                            SyncState.Run.STOPPING -> stringResource(R.string.sync_stopping) + " · "
+                            SyncState.Run.PAUSING -> stringResource(R.string.sync_pausing) + " · "
+                            SyncState.Run.PAUSED -> stringResource(R.string.sync_paused) + " · "
+                            SyncState.Run.RUNNING -> ""
                         } + progressText(progress) + (pct?.let { " · $it%" } ?: ""),
                         style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f),
                     )
@@ -557,6 +590,9 @@ private fun JobCard(
         )
     }
 }
+
+/** The still, greyed bar of a paused card (for the UI tests). */
+internal const val PAUSED_BAR_TAG = "paused-bar"
 
 /** A status pill that leads somewhere: the warning icon, and a tap target as tall as a button. */
 @Composable

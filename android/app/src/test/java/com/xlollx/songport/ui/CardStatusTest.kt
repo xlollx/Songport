@@ -2,6 +2,7 @@ package com.xlollx.songport.ui
 
 import com.xlollx.songport.model.SyncReport
 import com.xlollx.songport.model.Track
+import com.xlollx.songport.sync.SyncState
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -32,5 +33,24 @@ class CardStatusTest {
         assertEquals(CardStatus.DISABLED, cardStatus(false, false, report(heldBack = 5)))
         assertEquals(CardStatus.NEVER, cardStatus(false, true, null))
         assertEquals(CardStatus.ERROR, cardStatus(false, true, report(heldBack = 5, error = "HTTP 500")))
+    }
+
+    /** A paused sync never wears "Syncing": "Pausing" while its step ends, "Paused" once it waits. */
+    @Test fun pausedSyncsSaySo() {
+        assertEquals(CardStatus.RUNNING, cardStatus(true, true, report(), SyncState.Run.RUNNING))
+        assertEquals(CardStatus.PAUSING, cardStatus(true, true, report(), SyncState.Run.PAUSING))
+        assertEquals(CardStatus.PAUSED, cardStatus(true, true, report(heldBack = 5), SyncState.Run.PAUSED))
+        // Being stopped: still running until it ends (the card's text says it is stopping).
+        assertEquals(CardStatus.RUNNING, cardStatus(true, true, null, SyncState.Run.STOPPING))
+        // Not running: the run state of a finished sync does not matter.
+        assertEquals(CardStatus.OK, cardStatus(false, true, report(), SyncState.Run.PAUSED))
+    }
+
+    /** The whole chain: the state SyncState reports maps to the pill the card shows. */
+    @Test fun engineStateToCardPill() {
+        fun pill(asked: Boolean, parked: Boolean) = cardStatus(true, true, null, SyncState.runOf(asked, parked, stopping = false))
+        assertEquals(CardStatus.RUNNING, pill(asked = false, parked = false))
+        assertEquals(CardStatus.PAUSING, pill(asked = true, parked = false))
+        assertEquals(CardStatus.PAUSED, pill(asked = true, parked = true))
     }
 }

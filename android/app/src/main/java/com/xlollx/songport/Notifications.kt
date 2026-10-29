@@ -12,6 +12,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.xlollx.songport.model.SyncReport
+import com.xlollx.songport.sync.SyncState
 
 /**
  * Notifications are asked for when they are first needed, a sync run or scheduled, not on first
@@ -55,13 +56,28 @@ object Notifications {
         )
     }
 
-    /** One running sync as the ongoing notification shows it: its name and the step it is at. */
-    class RunningSync(val jobId: String, val name: String, val step: String, val done: Int = 0, val total: Int = 0, val paused: Boolean = false)
+    /**
+     * One running sync as the ongoing notification shows it: its name, the step it is at, and where
+     * it stands ([SyncState.Run]: "Pausing…" while its step finishes, "Paused" once it waits).
+     */
+    class RunningSync(
+        val jobId: String, val name: String, val step: String, val done: Int = 0, val total: Int = 0,
+        val run: SyncState.Run = SyncState.Run.RUNNING,
+    ) {
+        /** Waiting for real: its bar stands still. */
+        val paused: Boolean get() = run == SyncState.Run.PAUSED
+        /** Pause asked for, reached or not: its button is Resume. */
+        val pauseAsked: Boolean get() = run == SyncState.Run.PAUSED || run == SyncState.Run.PAUSING
+    }
 
     /**
      * The ongoing notification while syncs run, built from all of them at once. One sync: its name,
      * its step, its bar, Pause/Resume and Stop. Several: "N syncs running", one line per sync with
      * its step, the overall bar, and Pause all/Resume all and Stop all.
+     *
+     * Paused syncs say so: the title becomes "N syncs paused" (all of them) or "N running · M paused",
+     * each line "Paused" once its sync really waits ("Pausing…" while its step finishes), and the bar
+     * stands still, never indeterminate, when nothing is moving.
      */
     fun running(context: Context, syncs: List<RunningSync>): android.app.Notification {
         val open = Intent(context, MainActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP }
@@ -86,29 +102,35 @@ object Notifications {
             val text = one?.let { lineText(context, it) }.orEmpty()
             b.setContentTitle(one?.name ?: context.getString(R.string.running))
                 .setContentText(text)
-                .setProgress(one?.total?.coerceAtLeast(0) ?: 0, one?.done ?: 0, (one?.total ?: 0) <= 0)
+            if (one != null && one.paused) b.setProgress(100, percent(one), false)
+            else b.setProgress(one?.total?.coerceAtLeast(0) ?: 0, one?.done ?: 0, (one?.total ?: 0) <= 0)
             if (one != null) {
-                if (one.paused) b.addAction(0, context.getString(R.string.sync_resume), action(one.jobId, com.xlollx.songport.sync.SyncControlReceiver.ACTION_RESUME, 1))
+                if (one.pauseAsked) b.addAction(0, context.getString(R.string.sync_resume), action(one.jobId, com.xlollx.songport.sync.SyncControlReceiver.ACTION_RESUME, 1))
                 else b.addAction(0, context.getString(R.string.sync_pause), action(one.jobId, com.xlollx.songport.sync.SyncControlReceiver.ACTION_PAUSE, 2))
                 b.addAction(0, context.getString(R.string.sync_stop), action(one.jobId, com.xlollx.songport.sync.SyncControlReceiver.ACTION_STOP, 3))
             }
             return b.build()
         }
-        val title = context.resources.getQuantityString(R.plurals.syncs_running, syncs.size, syncs.size)
+        val tally = SyncState.Tally(syncs.size, syncs.count { it.paused })
+        val title = when {
+            tally.allPaused -> context.resources.getQuantityString(R.plurals.syncs_paused, syncs.size, syncs.size)
+            tally.somePaused -> context.getString(R.string.syncs_running_paused, tally.running, tally.paused)
+            else -> context.resources.getQuantityString(R.plurals.syncs_running, syncs.size, syncs.size)
+        }
         val lines = syncs.map { "${it.name} — ${lineText(context, it)}" }
         val inbox = NotificationCompat.InboxStyle().setBigContentTitle(title)
         lines.take(MAX_LINES).forEach { inbox.addLine(it) }
         if (lines.size > MAX_LINES) inbox.setSummaryText(context.resources.getQuantityString(R.plurals.notif_more_running, lines.size - MAX_LINES, lines.size - MAX_LINES))
         // The overall bar: each sync weighs the same, one with no count yet as not started.
         val known = syncs.filter { it.total > 0 }
-        val overall = syncs.sumOf { s -> if (s.total > 0) (s.done.coerceIn(0, s.total) * 100.0 / s.total) else 0.0 } / syncs.size
+        val overall = syncs.sumOf { s -> percent(s).toDouble() } / syncs.size
         b.setContentTitle(title)
             .setContentText(lines.joinToString(" · "))
             .setStyle(inbox)
             .setNumber(syncs.size)
-            .setProgress(100, overall.toInt(), known.isEmpty())
-        val allPaused = syncs.all { it.paused }
-        if (allPaused) b.addAction(0, context.getString(R.string.sync_resume_all), action(ALL_JOBS, com.xlollx.songport.sync.SyncControlReceiver.ACTION_RESUME, 1))
+            // Everything paused: a still bar at where they stopped, not a moving one.
+            .setProgress(100, overall.toInt(), known.isEmpty() && !tally.allPaused)
+        if (syncs.all { it.pauseAsked }) b.addAction(0, context.getString(R.string.sync_resume_all), action(ALL_JOBS, com.xlollx.songport.sync.SyncControlReceiver.ACTION_RESUME, 1))
         else b.addAction(0, context.getString(R.string.sync_pause_all), action(ALL_JOBS, com.xlollx.songport.sync.SyncControlReceiver.ACTION_PAUSE, 2))
         b.addAction(0, context.getString(R.string.sync_stop_all), action(ALL_JOBS, com.xlollx.songport.sync.SyncControlReceiver.ACTION_STOP, 3))
         return b.build()
@@ -117,9 +139,16 @@ object Notifications {
     /** Lines past this many are counted ("+N more syncs running"), not listed. */
     private const val MAX_LINES = 6
 
-    /** What one sync is doing, with "Paused" before it and its percentage after. */
+    /** One sync's share of the bar: none until its step has a count. */
+    private fun percent(s: RunningSync): Int = if (s.total > 0) (s.done.coerceIn(0, s.total) * 100L / s.total).toInt() else 0
+
+    /** What one sync is doing, with "Paused" (or "Pausing…") before it and its percentage after. */
     private fun lineText(context: Context, s: RunningSync): String =
-        (if (s.paused) context.getString(R.string.sync_paused) + " · " else "") + s.step +
+        when (s.run) {
+            SyncState.Run.PAUSED -> context.getString(R.string.sync_paused) + " · "
+            SyncState.Run.PAUSING -> context.getString(R.string.sync_pausing_short) + " · "
+            else -> ""
+        } + s.step +
             (if (s.total > 0) " · ${(s.done.coerceIn(0, s.total) * 100L / s.total)}%" else "")
 
     fun canPost(context: Context): Boolean =

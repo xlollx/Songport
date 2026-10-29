@@ -1221,4 +1221,14 @@
         <item quantity="many">%d сервисов, прокрутите, чтобы увидеть больше</item>
         <item quantity="other">%d сервиса, прокрутите, чтобы увидеть больше</item>
     </plurals>
+    <string name="pill_pausing">Приостановка</string>
+    <string name="sync_pausing">Пауза после этого шага…</string>
+    <string name="sync_pausing_short">Приостановка…</string>
+    <plurals name="syncs_paused">
+        <item quantity="one">%d синхронизация на паузе</item>
+        <item quantity="few">%d синхронизации на паузе</item>
+        <item quantity="many">%d синхронизаций на паузе</item>
+        <item quantity="other">%d синхронизации на паузе</item>
+    </plurals>
+    <string name="syncs_running_paused">%1$d выполняется · %2$d на паузе</string>
 </resources>

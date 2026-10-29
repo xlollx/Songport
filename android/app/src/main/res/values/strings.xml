@@ -1179,4 +1179,12 @@
         <item quantity="one">%d service, scroll for more</item>
         <item quantity="other">%d services, scroll for more</item>
     </plurals>
+    <string name="pill_pausing">Pausing</string>
+    <string name="sync_pausing">Pausing after this step…</string>
+    <string name="sync_pausing_short">Pausing…</string>
+    <plurals name="syncs_paused">
+        <item quantity="one">%d sync paused</item>
+        <item quantity="other">%d syncs paused</item>
+    </plurals>
+    <string name="syncs_running_paused">%1$d running · %2$d paused</string>
 </resources>

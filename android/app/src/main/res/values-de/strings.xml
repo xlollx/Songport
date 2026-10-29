@@ -1179,4 +1179,12 @@
         <item quantity="one">%d Dienst, wischen für mehr</item>
         <item quantity="other">%d Dienste, wischen für mehr</item>
     </plurals>
+    <string name="pill_pausing">Wird pausiert</string>
+    <string name="sync_pausing">Pausiert nach diesem Schritt…</string>
+    <string name="sync_pausing_short">Wird pausiert…</string>
+    <plurals name="syncs_paused">
+        <item quantity="one">%d Synchronisierung pausiert</item>
+        <item quantity="other">%d Synchronisierungen pausiert</item>
+    </plurals>
+    <string name="syncs_running_paused">%1$d laufen · %2$d pausiert</string>
 </resources>
