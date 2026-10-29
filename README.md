@@ -12,6 +12,12 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
   <img src="https://img.shields.io/badge/Android-8.0%2B-3ddc84" alt="Android 8.0+">
 </p>
 
+> **Songport is now Trackhop.** Same app, same code, same updates. The name changed because an
+> unrelated service called "SongPort", a music link converter, works in the same space, and two apps
+> with one name confuse people. Your installed app updates normally and keeps all its data; only the
+> name and the web addresses changed (github.com/xlollx/Trackhop, xlollx.github.io/Trackhop), and old
+> links keep working.
+
 <p align="center">
   <a href="https://f-droid.org/packages/com.xlollx.songport/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="64" alt="Get it on F-Droid"></a>
   <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Trackhop"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="64" alt="Get it on Obtainium"></a>

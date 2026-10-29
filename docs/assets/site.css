@@ -85,6 +85,7 @@ a { color: var(--link); text-underline-offset: 2px; }
 .hero h1 { font-size: clamp(36px, 7vw, 60px); line-height: 1.05; margin: 0 0 14px; letter-spacing: -.02em; }
 .hero p.lead { font-size: clamp(17px, 2.4vw, 21px); margin: 0 0 8px; opacity: .95; }
 .hero p.sub { margin: 0 0 26px; opacity: .85; }
+.hero .renamed { display: block; width: fit-content; max-width: 52ch; margin: 0 0 22px; padding: 10px 14px; font-size: 14px; line-height: 1.45; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.32); border-radius: 12px; }
 .hero .appicon { width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 6px 20px rgba(0,0,0,.25); margin-bottom: 18px; }
 .get { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .get img { height: 58px; width: auto; display: block; }
