@@ -1,0 +1,1 @@
+Eine einzige Benachrichtigung während Synchronisierungen laufen, mit einer Zeile pro Synchronisierung und Alle pausieren / Alle stoppen; beendete werden gruppiert. Das Kartenmenü hat Symbole und die Farbe der Synchronisierung. Dienstreihen zeigen, wenn es weitere zum Scrollen gibt.

@@ -1,0 +1,1 @@
+Uma só notificação enquanto as sincronizações rodam, com uma linha para cada e Pausar todas / Parar todas; as concluídas ficam agrupadas. O menu do cartão tem ícones e a cor da sincronização. As fileiras de serviços mostram quando há mais para rolar.
