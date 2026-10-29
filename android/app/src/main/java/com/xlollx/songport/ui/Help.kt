@@ -1,7 +1,15 @@
 package com.xlollx.songport.ui
 
 import androidx.annotation.StringRes
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,6 +56,8 @@ class HelpTopic(
     @StringRes val body: Int,
     @StringRes val extra: Int? = null,
     @StringRes val example: Int? = null,
+    /** The guide that says more, opened in place from the sheet. */
+    val more: HowTo? = null,
 )
 
 /**
@@ -74,7 +84,21 @@ fun HelpButton(
 @Composable
 fun HelpSheet(title: String?, topics: List<HelpTopic>, onDismiss: () -> Unit) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    // "More in How to ›" turns the sheet into the guide; back from there returns to the short text.
+    var article by rememberSaveable { mutableStateOf<String?>(null) }
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = state) {
+        val open = article?.let { name -> HowTo.entries.firstOrNull { it.name == name } }
+        if (open != null) {
+            BackHandler { article = null }
+            Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 12.dp, end = 24.dp, bottom = 32.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { article = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) }
+                    Text(stringResource(open.title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f).semantics { heading() })
+                }
+                Column(Modifier.padding(start = 12.dp, top = 4.dp)) { HowToArticle(open) }
+            }
+            return@ModalBottomSheet
+        }
         Column(
             Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 24.dp, end = 24.dp, bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -91,6 +115,14 @@ fun HelpSheet(title: String?, topics: List<HelpTopic>, onDismiss: () -> Unit) {
                 Text(stringResource(t.body), style = MaterialTheme.typography.bodyMedium)
                 t.extra?.let { Text(stringResource(it), style = MaterialTheme.typography.bodyMedium) }
                 t.example?.let { HelpExample(stringResource(it)) }
+            }
+            // The longer guides these topics belong to, once each.
+            topics.mapNotNull { it.more }.distinct().forEach { h ->
+                TextButton(onClick = { article = h.name }, modifier = Modifier.heightIn(min = 48.dp)) {
+                    Icon(Icons.AutoMirrored.Filled.MenuBook, null, Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.help_more, stringResource(h.title)))
+                }
             }
         }
     }
@@ -110,77 +142,77 @@ private fun HelpExample(text: String) {
 /** Every help text in the app, by screen, so the same topic reads the same wherever it opens. */
 object Helps {
     // Syncs
-    val status = HelpTopic(R.string.help_status_title, R.string.help_status_body, example = R.string.help_status_example)
-    val route = HelpTopic(R.string.help_route_title, R.string.help_route_body)
+    val status = HelpTopic(R.string.help_status_title, R.string.help_status_body, example = R.string.help_status_example, more = HowTo.REVIEW)
+    val route = HelpTopic(R.string.help_route_title, R.string.help_route_body, more = HowTo.MODES)
     val figures = HelpTopic(R.string.help_figures_title, R.string.help_figures_body)
-    val toFix = HelpTopic(R.string.help_to_fix_title, R.string.help_to_fix_body)
-    val runNow = HelpTopic(R.string.run_now, R.string.help_run_now_body)
-    val syncAll = HelpTopic(R.string.sync_all, R.string.help_sync_all_body, example = R.string.help_sync_all_example)
-    val cached = HelpTopic(R.string.help_cached_title, R.string.help_cached_body)
+    val toFix = HelpTopic(R.string.help_to_fix_title, R.string.help_to_fix_body, more = HowTo.REVIEW)
+    val runNow = HelpTopic(R.string.run_now, R.string.help_run_now_body, more = HowTo.PREVIEW)
+    val syncAll = HelpTopic(R.string.sync_all, R.string.help_sync_all_body, example = R.string.help_sync_all_example, more = HowTo.SCHEDULES)
+    val cached = HelpTopic(R.string.help_cached_title, R.string.help_cached_body, more = HowTo.REVIEW)
 
     // Editor
-    val oneService = HelpTopic(R.string.help_one_service_title, R.string.help_one_service_body, example = R.string.help_one_service_example)
-    val library = HelpTopic(R.string.help_library_title, R.string.help_library_body)
-    val link = HelpTopic(R.string.editor_source_link, R.string.help_link_body)
-    val target = HelpTopic(R.string.editor_target, R.string.help_target_body)
-    val liked = HelpTopic(R.string.liked_songs, R.string.help_liked_body, example = R.string.help_liked_example)
-    val newPlaylist = HelpTopic(R.string.editor_new_playlist, R.string.help_new_playlist_body)
-    val schedule = HelpTopic(R.string.editor_schedule, R.string.help_schedule_body, example = R.string.help_schedule_example)
-    val mirror = HelpTopic(R.string.editor_mirror, R.string.help_mirror_body, example = R.string.help_mirror_example)
+    val oneService = HelpTopic(R.string.help_one_service_title, R.string.help_one_service_body, example = R.string.help_one_service_example, more = HowTo.FIRST_SYNC)
+    val library = HelpTopic(R.string.help_library_title, R.string.help_library_body, more = HowTo.FIRST_SYNC)
+    val link = HelpTopic(R.string.editor_source_link, R.string.help_link_body, more = HowTo.FIRST_SYNC)
+    val target = HelpTopic(R.string.editor_target, R.string.help_target_body, more = HowTo.FIRST_SYNC)
+    val liked = HelpTopic(R.string.liked_songs, R.string.help_liked_body, example = R.string.help_liked_example, more = HowTo.MODES)
+    val newPlaylist = HelpTopic(R.string.editor_new_playlist, R.string.help_new_playlist_body, more = HowTo.FIRST_SYNC)
+    val schedule = HelpTopic(R.string.editor_schedule, R.string.help_schedule_body, example = R.string.help_schedule_example, more = HowTo.SCHEDULES)
+    val mirror = HelpTopic(R.string.editor_mirror, R.string.help_mirror_body, example = R.string.help_mirror_example, more = HowTo.MODES)
     val keepOrder = HelpTopic(R.string.editor_keep_order, R.string.help_keep_order_body)
-    val twoWay = HelpTopic(R.string.editor_bidirectional, R.string.help_two_way_body)
-    val enabled = HelpTopic(R.string.editor_enabled, R.string.help_enabled_body)
-    val strictness = HelpTopic(R.string.policy_strictness, R.string.help_strictness_body, example = R.string.help_strictness_example)
-    val explicit = HelpTopic(R.string.policy_explicit, R.string.help_explicit_body)
-    val sameAlbum = HelpTopic(R.string.policy_same_album, R.string.help_same_album_body, example = R.string.help_same_album_example)
+    val twoWay = HelpTopic(R.string.editor_bidirectional, R.string.help_two_way_body, more = HowTo.MODES)
+    val enabled = HelpTopic(R.string.editor_enabled, R.string.help_enabled_body, more = HowTo.SCHEDULES)
+    val strictness = HelpTopic(R.string.policy_strictness, R.string.help_strictness_body, example = R.string.help_strictness_example, more = HowTo.REVIEW)
+    val explicit = HelpTopic(R.string.policy_explicit, R.string.help_explicit_body, more = HowTo.REVIEW)
+    val sameAlbum = HelpTopic(R.string.policy_same_album, R.string.help_same_album_body, example = R.string.help_same_album_example, more = HowTo.REVIEW)
 
     // Preview
-    val preview = HelpTopic(R.string.preview, R.string.help_preview_body)
-    val previewRun = HelpTopic(R.string.run_now, R.string.help_preview_run_body)
-    val removals = HelpTopic(R.string.help_removals_title, R.string.help_removals_body)
-    val uncertain = HelpTopic(R.string.help_uncertain_title, R.string.help_uncertain_body)
-    val quota = HelpTopic(R.string.help_quota_title, R.string.help_quota_body)
+    val preview = HelpTopic(R.string.preview, R.string.help_preview_body, more = HowTo.PREVIEW)
+    val previewRun = HelpTopic(R.string.run_now, R.string.help_preview_run_body, more = HowTo.PREVIEW)
+    val removals = HelpTopic(R.string.help_removals_title, R.string.help_removals_body, more = HowTo.PREVIEW)
+    val uncertain = HelpTopic(R.string.help_uncertain_title, R.string.help_uncertain_body, more = HowTo.PREVIEW)
+    val quota = HelpTopic(R.string.help_quota_title, R.string.help_quota_body, more = HowTo.ACCOUNTS)
 
     // Review
-    val change = HelpTopic(R.string.review_change, R.string.help_change_body)
-    val proposal = HelpTopic(R.string.search_suggested, R.string.help_proposal_body, example = R.string.help_proposal_example)
-    val ignore = HelpTopic(R.string.unmatched_ignore, R.string.help_ignore_body)
-    val results = HelpTopic(R.string.help_results_title, R.string.help_results_body)
-    val askAi = HelpTopic(R.string.search_ask_ai, R.string.help_ask_ai_body)
+    val change = HelpTopic(R.string.review_change, R.string.help_change_body, more = HowTo.REVIEW)
+    val proposal = HelpTopic(R.string.search_suggested, R.string.help_proposal_body, example = R.string.help_proposal_example, more = HowTo.REVIEW)
+    val ignore = HelpTopic(R.string.unmatched_ignore, R.string.help_ignore_body, more = HowTo.REVIEW)
+    val results = HelpTopic(R.string.help_results_title, R.string.help_results_body, more = HowTo.REVIEW)
+    val askAi = HelpTopic(R.string.search_ask_ai, R.string.help_ask_ai_body, more = HowTo.REVIEW)
 
     // Sync log
-    val notes = HelpTopic(R.string.log_notes_title, R.string.help_notes_body)
-    val restore = HelpTopic(R.string.help_restore_title, R.string.help_restore_body)
+    val notes = HelpTopic(R.string.log_notes_title, R.string.help_notes_body, more = HowTo.PREVIEW)
+    val restore = HelpTopic(R.string.help_restore_title, R.string.help_restore_body, more = HowTo.BACKUPS)
 
     // Accounts
-    val connectors = HelpTopic(R.string.help_connectors_title, R.string.help_connectors_body)
-    val tags = HelpTopic(R.string.help_tags_title, R.string.help_tags_body)
-    val disconnect = HelpTopic(R.string.disconnect, R.string.help_disconnect_body)
-    val removeAccount = HelpTopic(R.string.account_remove, R.string.help_remove_account_body)
-    val test = HelpTopic(R.string.account_test, R.string.help_test_body)
+    val connectors = HelpTopic(R.string.help_connectors_title, R.string.help_connectors_body, more = HowTo.ACCOUNTS)
+    val tags = HelpTopic(R.string.help_tags_title, R.string.help_tags_body, more = HowTo.ACCOUNTS)
+    val disconnect = HelpTopic(R.string.disconnect, R.string.help_disconnect_body, more = HowTo.ACCOUNTS)
+    val removeAccount = HelpTopic(R.string.account_remove, R.string.help_remove_account_body, more = HowTo.ACCOUNTS)
+    val test = HelpTopic(R.string.account_test, R.string.help_test_body, more = HowTo.ACCOUNTS)
     val extraActions = HelpTopic(R.string.help_extra_actions_title, R.string.help_extra_actions_body)
-    val routes = HelpTopic(R.string.help_routes_title, R.string.help_routes_body)
-    val unavailable = HelpTopic(R.string.services_group_unavailable, R.string.help_unavailable_body)
+    val routes = HelpTopic(R.string.help_routes_title, R.string.help_routes_body, more = HowTo.ACCOUNTS)
+    val unavailable = HelpTopic(R.string.services_group_unavailable, R.string.help_unavailable_body, more = HowTo.PLUGINS)
 
     // Setup wizard
-    val redirect = HelpTopic(R.string.help_redirect_title, R.string.help_redirect_body)
-    val fields = HelpTopic(R.string.help_fields_title, R.string.help_fields_body)
-    val clearKey = HelpTopic(R.string.setup_clear, R.string.help_clear_key_body)
+    val redirect = HelpTopic(R.string.help_redirect_title, R.string.help_redirect_body, more = HowTo.ACCOUNTS)
+    val fields = HelpTopic(R.string.help_fields_title, R.string.help_fields_body, more = HowTo.ACCOUNTS)
+    val clearKey = HelpTopic(R.string.setup_clear, R.string.help_clear_key_body, more = HowTo.ACCOUNTS)
 
     // Tools
-    val files = HelpTopic(R.string.files_title, R.string.help_files_body)
-    val export = HelpTopic(R.string.help_export_title, R.string.help_export_body)
-    val make = HelpTopic(R.string.tools_make_title, R.string.help_make_body, example = R.string.help_make_example)
-    val transfer = HelpTopic(R.string.tools_transfer_title, R.string.tools_transfer_desc, extra = R.string.help_transfer_body, example = R.string.help_transfer_example)
-    val dedupe = HelpTopic(R.string.tools_dedupe_title, R.string.help_dedupe_body)
-    val unplayable = HelpTopic(R.string.tools_unplayable_title, R.string.help_unplayable_body)
+    val files = HelpTopic(R.string.files_title, R.string.help_files_body, more = HowTo.BACKUPS)
+    val export = HelpTopic(R.string.help_export_title, R.string.help_export_body, more = HowTo.BACKUPS)
+    val make = HelpTopic(R.string.tools_make_title, R.string.help_make_body, example = R.string.help_make_example, more = HowTo.TOOLS)
+    val transfer = HelpTopic(R.string.tools_transfer_title, R.string.tools_transfer_desc, extra = R.string.help_transfer_body, example = R.string.help_transfer_example, more = HowTo.TOOLS)
+    val dedupe = HelpTopic(R.string.tools_dedupe_title, R.string.help_dedupe_body, more = HowTo.TOOLS)
+    val unplayable = HelpTopic(R.string.tools_unplayable_title, R.string.help_unplayable_body, more = HowTo.TOOLS)
 
     // Settings
     val newLook = HelpTopic(R.string.settings_new_look, R.string.settings_new_look_desc)
-    val isrc = HelpTopic(R.string.settings_isrc, R.string.settings_isrc_desc)
+    val isrc = HelpTopic(R.string.settings_isrc, R.string.settings_isrc_desc, more = HowTo.REVIEW)
     val musicLinks = HelpTopic(R.string.settings_music_links, R.string.settings_music_links_desc)
-    val notifications = HelpTopic(R.string.settings_notifications, R.string.settings_notifications_desc)
-    val backups = HelpTopic(R.string.backup_folder_title, R.string.help_backup_body, example = R.string.help_backup_example)
-    val plugins = HelpTopic(R.string.plugins_title, R.string.help_plugins_body)
+    val notifications = HelpTopic(R.string.settings_notifications, R.string.settings_notifications_desc, more = HowTo.SCHEDULES)
+    val backups = HelpTopic(R.string.backup_folder_title, R.string.help_backup_body, example = R.string.help_backup_example, more = HowTo.BACKUPS)
+    val plugins = HelpTopic(R.string.plugins_title, R.string.help_plugins_body, more = HowTo.PLUGINS)
     val ai = HelpTopic(R.string.ai_setup_title, R.string.help_ai_body)
 }

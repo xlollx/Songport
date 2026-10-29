@@ -249,6 +249,8 @@ private fun MainScreen(
     var unmatchedReport by rememberSaveable { mutableStateOf<String?>(null) }
     var filesOpen by rememberSaveable { mutableStateOf(false) }
     var logOpen by rememberSaveable { mutableStateOf(false) }
+    // Settings › How to: the offline guides.
+    var howToOpen by rememberSaveable { mutableStateOf(false) }
     var transferOpen by rememberSaveable { mutableStateOf(false) }
     // "Trackhop in numbers", from the Tools list or the Syncs header.
     var statsOpen by rememberSaveable { mutableStateOf(false) }
@@ -443,6 +445,7 @@ private fun MainScreen(
         unmatched != null -> "unmatched:$unmatched"
         filesOpen -> "files"
         logOpen -> "log"
+        howToOpen -> "howto"
         manage != null -> "manage:" + manage.id
         scan != null -> "scan:" + scan.id
         unplayable != null -> "unplayable:" + unplayable.id
@@ -466,6 +469,7 @@ private fun MainScreen(
                 unmatched != null -> UnmatchedScreen(unmatched) { unmatchedReport = null }
                 filesOpen -> FilesScreen { filesOpen = false }
                 logOpen -> LogScreen(data, onClose = { logOpen = false }) { unmatchedReport = it }
+                howToOpen -> com.xlollx.songport.ui.HowToScreen(onClose = { howToOpen = false })
                 manage != null -> PlaylistsScreen(manage) { manageProvider = null }
                 scan != null -> LibraryScanScreen(scan) { scanProvider = null }
                 unplayable != null -> UnplayableScreen(unplayable) { unplayableProvider = null }
@@ -604,7 +608,7 @@ private fun MainScreen(
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
                 MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks, onSubpage = { toolSubpage = it }, onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS }, onStats = { statsOpen = true }, onCompareClosed = { compareLinks = null })
-                else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true })
+                else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true }, onHowTo = { howToOpen = true })
             } }
             }
         }

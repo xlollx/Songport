@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BatteryAlert
@@ -118,6 +119,7 @@ fun SettingsScreen(
     snackbar: SnackbarHostState,
     onSetup: (MusicProvider) -> Unit,
     onOpenLog: () -> Unit = {},
+    onHowTo: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val privacyRequired by Ads.privacyOptionsRequired.collectAsState()
@@ -389,6 +391,12 @@ fun SettingsScreen(
                     }
                 }
             }
+        }
+
+        // ---------------------------------------------------------------- Help
+        // The guides, written into the app: offline, and in the app's language.
+        PrefSection(stringResource(R.string.settings_section_help)) {
+            PrefRow(Icons.AutoMirrored.Filled.MenuBook, stringResource(R.string.howto_title), stringResource(R.string.howto_summary), onClick = onHowTo)
         }
 
         // ---------------------------------------------------------------- About

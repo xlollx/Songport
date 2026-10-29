@@ -11,8 +11,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * In-app help: a "?" opens the sheet of the setting it sits next to (and only that one), and the
- * "?" of a list explains its parts.
+ * In-app help: a "?" opens the sheet of the setting it sits next to (and only that one), the "?"
+ * of a list explains its parts, and Settings › How to lists the guides and opens them.
  */
 @RunWith(AndroidJUnit4::class)
 class HelpFlowTest : FlowTest() {
@@ -35,11 +35,37 @@ class HelpFlowTest : FlowTest() {
         androidx.test.espresso.Espresso.pressBack()
         waitGone(s(R.string.help_mirror_body))
 
-        // Two-way: another "?", another sheet.
+        // Two-way: another "?", another sheet, and from it the longer guide, in place.
         clickDesc(help(s(R.string.editor_bidirectional)))
         waitText(s(R.string.help_two_way_body))
         assertFalse(exists(s(R.string.help_mirror_body)))
+        click(s(R.string.help_more, s(R.string.howto_modes_title)))
+        waitText(heading(R.string.howto_modes_body, 1))
+        // Back from the guide is the short text again; the editor under it is untouched.
+        androidx.test.espresso.Espresso.pressBack()
+        waitText(s(R.string.help_two_way_body))
     }
+
+    @Test
+    fun howToListsTheGuidesAndOpensOne() {
+        launch(tabIntent(MainActivity.TAB_SETTINGS))
+        waitText(s(R.string.settings_theme))
+        click(s(R.string.howto_title))
+        waitText(s(R.string.howto_intro))
+        com.xlollx.songport.ui.HowTo.entries.forEach { waitText(s(it.title)) }
+
+        click(s(R.string.howto_preview_title))
+        waitText(heading(R.string.howto_preview_body, 1))
+        assertFalse("the list is gone", exists(s(R.string.howto_intro)))
+        // Back goes to the list, then out to Settings.
+        back()
+        waitText(s(R.string.howto_intro))
+        back()
+        waitText(s(R.string.settings_theme))
+    }
+
+    /** The [n]th heading ("# …" line) of a guide's text, as shown. */
+    private fun heading(res: Int, n: Int): String = s(res).lines().filter { it.startsWith("# ") }[n - 1].removePrefix("# ")
 
     @Test
     fun theSyncListQuestionMarkExplainsTheCard() {
