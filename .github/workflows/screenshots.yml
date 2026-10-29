@@ -6,6 +6,9 @@ name: Screenshots
 # Runs by hand (workflow_dispatch) on the branch it is started from. With "review" on it takes
 # only the Settings and Tools pictures used to check a layout (English, dark and light, large
 # font) and uploads them as the "review" artifact, committing nothing.
+# With flavor "play" it takes the Google Play listing's pictures from the Play build instead (only
+# the services that build reaches on its own, no ad) and commits them to docs/store/play/<locale>/,
+# leaving the fastlane pictures (the full build's, used by F-Droid) alone.
 on:
   workflow_dispatch:
     inputs:
@@ -13,6 +16,11 @@ on:
         description: Only the Settings/Tools review pictures, uploaded as an artifact (no commit)
         type: boolean
         default: false
+      flavor:
+        description: Build to take the pictures from (full = fastlane/F-Droid, play = docs/store/play)
+        type: choice
+        options: [full, play]
+        default: full
 
 permissions:
   contents: write
@@ -29,6 +37,7 @@ jobs:
       # Languages to take (app tags); all of the store listing's.
       LOCALES: en,it,fr,de,es,pt-BR,pl,ru,tr,zh,ja,ko
       REVIEW: ${{ inputs.review && 'true' || 'false' }}
+      FLAVOR: ${{ inputs.flavor == 'play' && 'play' || 'full' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -56,7 +65,9 @@ jobs:
 
       - name: Build the app and the screenshot test
         working-directory: android
-        run: gradle assembleFullDebug assembleFullDebugAndroidTest --no-daemon --stacktrace
+        run: |
+          if [ "$FLAVOR" = play ]; then V=Play; else V=Full; fi
+          gradle assemble${V}Debug assemble${V}DebugAndroidTest --no-daemon --stacktrace
 
       - name: Enable KVM
         run: |
@@ -96,7 +107,7 @@ jobs:
         if: always() && !inputs.review
         uses: actions/upload-artifact@v7
         with:
-          name: shots
+          name: ${{ env.FLAVOR == 'play' && 'shots-play' || 'shots' }}
           path: android/shots
           if-no-files-found: ignore
 
@@ -108,7 +119,8 @@ jobs:
           [ -d shots ] || { echo "no shots"; exit 1; }
           for dir in shots/*/; do
             loc=$(basename "$dir")
-            out=../fastlane/metadata/android/$loc/images/phoneScreenshots
+            if [ "$FLAVOR" = play ]; then out=../docs/store/play/$loc
+            else out=../fastlane/metadata/android/$loc/images/phoneScreenshots; fi
             mkdir -p "$out"
             rm -f "$out"/*.png "$out"/*.jpg
             for f in "$dir"*.png; do
@@ -118,6 +130,12 @@ jobs:
           cd ..
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add fastlane/metadata/android/*/images/phoneScreenshots
-          git commit -m "Screenshots regenerated (CI emulator)" || { echo "nothing new"; exit 0; }
+          if [ "$FLAVOR" = play ]; then
+            git add docs/store/play
+            msg="Play listing screenshots regenerated (CI emulator, play build)"
+          else
+            git add fastlane/metadata/android/*/images/phoneScreenshots
+            msg="Screenshots regenerated (CI emulator)"
+          fi
+          git commit -m "$msg" || { echo "nothing new"; exit 0; }
           git push origin HEAD:${{ github.ref_name }}
