@@ -107,6 +107,14 @@ fun ProviderBadge(p: MusicProvider?, size: Dp = 36.dp) = ServiceLogo(p, size)
 // Blocchi di interfaccia condivisi
 // ---------------------------------------------------------------------------------------------
 
+/**
+ * Runs [block] on the main thread. Compose state and snackbars are touched only there: after an IO
+ * hop a coroutine can resume on the worker thread (the UI tests' effect dispatcher does), and a
+ * state write from there may never reach the screen.
+ */
+suspend fun <T> onMain(block: suspend kotlinx.coroutines.CoroutineScope.() -> T): T =
+    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main.immediate, block)
+
 /** Warning: nothing failed, but something waits for the user (held-back removals, tracks not found). */
 enum class Tone { Ok, Error, Neutral, Accent, Warning }
 

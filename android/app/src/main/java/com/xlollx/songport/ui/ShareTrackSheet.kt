@@ -128,13 +128,17 @@ fun ShareTrackSheet(
             }.also { if (it == null) trace("timed out") }
         } catch (e: CancellationException) { throw e } catch (e: Exception) {
             trace("failed: $e")
-            onMessage(e.message ?: ctx.getString(R.string.error_generic)); null
+            onMain { onMessage(e.message ?: ctx.getString(R.string.error_generic)) }; null
         }
-        exact = found?.exact
-        best = found?.best
-        changing = exact == null && best == null
-        searching = false
-        trace("shown: exact=${exact != null} best=${best != null}")
+        // Shown from the main thread: a write from the worker the lookup ended on could leave the
+        // sheet on "Finding it…" (see onMain).
+        onMain {
+            exact = found?.exact
+            best = found?.best
+            changing = exact == null && best == null
+            searching = false
+            trace("shown: exact=${exact != null} best=${best != null}")
+        }
     }
 
     fun open(p: MusicProvider, t: Track) {

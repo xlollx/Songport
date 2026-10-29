@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -131,7 +132,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                         // Unticked, the run adds as usual and holds the removals back again.
                         if (p.removalsNeedConfirmation) {
                             Row(
-                                Modifier.fillMaxWidth().toggleable(value = confirmRemovals, role = Role.Checkbox, onValueChange = { confirmRemovals = it }),
+                                Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(value = confirmRemovals, role = Role.Checkbox, onValueChange = { confirmRemovals = it }),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Checkbox(checked = confirmRemovals, onCheckedChange = null)

@@ -452,8 +452,10 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
                     LocalFilesProvider.importFile(ctx, displayName(ctx, uri), text)
                 }
             }
-            result.onSuccess { n -> version++; snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n)) }
-                .onFailure { snackbar.showSnackbar(it.message ?: ctx.getString(R.string.error_generic)) }
+            onMain {
+                result.onSuccess { n -> version++; snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n)) }
+                    .onFailure { snackbar.showSnackbar(it.message ?: ctx.getString(R.string.error_generic)) }
+            }
         }
     }
 
@@ -470,10 +472,12 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
                         withContext(Dispatchers.IO) { LocalFilesProvider.importTracks(ctx, if (name.isBlank()) s.name else name, s.tracks) }
                         s.tracks.size
                     } else withContext(Dispatchers.IO) { LocalFilesProvider.importFile(ctx, "$name.txt", text) }
-                    snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n))
-                    version++
+                    onMain {
+                        version++
+                        snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n))
+                    }
                 } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
-                    snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+                    onMain { snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic)) }
                 }
             }
         },

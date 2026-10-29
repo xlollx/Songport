@@ -144,7 +144,10 @@ private fun Hero(content: @Composable ColumnScope.() -> Unit) {
 @Composable
 private fun WelcomePage() {
     val logos = remember {
+        // Amazon Music only where the build carries its connector: the Play build reaches it through
+        // a separately installed plugin, so it does not show it as a service of its own.
         listOf("spotify", "apple", "ytm", "amazon", "tidal", "deezer", "subsonic", "jellyfin", "plex")
+            .filter { it != "amazon" || com.xlollx.songport.providers.BridgePlugin.builtIn }
             .mapNotNull { id -> Providers.services().firstOrNull { it.serviceId == id } }
     }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {

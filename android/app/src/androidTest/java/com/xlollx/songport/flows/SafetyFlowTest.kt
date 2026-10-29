@@ -89,12 +89,13 @@ class SafetyFlowTest : FlowTest() {
             linkedJobId = "job-a", ignoredSourceIds = listOf("ignored-on-b"), lastRunEpoch = now - 60_000, lastReportId = "rb",
         )
         val report = SyncReport(id = "rb", jobId = "job-b", jobName = twin.name, startedEpoch = now - 60_000, durationMs = 5_000, sourceCount = 3, targetCount = 8)
-        store.update { it.copy(jobs = listOf(original, twin), reports = listOf(report)) }
+        // The twin listed first: its card, and the menu it opens, at the top of the screen.
+        store.update { it.copy(jobs = listOf(twin, original), reports = listOf(report)) }
         launch(tabIntent(MainActivity.TAB_SYNCS))
         waitText("Road Trip ↔")
 
         // Edit on the "↔" card opens the original, with a note that says so.
-        clickDesc(s(R.string.more_actions), index = 1)
+        clickDesc(s(R.string.more_actions), index = 0)
         click(s(R.string.edit))
         waitText(s(R.string.editor_twin_note, "Road Trip ↔"))
         // With Two-way on, Mirror removals is off and cannot be turned on.
