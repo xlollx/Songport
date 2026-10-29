@@ -41,8 +41,8 @@ class HelpFlowTest : FlowTest() {
         assertFalse(exists(s(R.string.help_mirror_body)))
         click(s(R.string.help_more, s(R.string.howto_modes_title)))
         waitText(heading(R.string.howto_modes_body, 1))
-        // Back from the guide is the short text again; the editor under it is untouched.
-        androidx.test.espresso.Espresso.pressBack()
+        // The arrow back from the guide is the short text again; the editor under it is untouched.
+        clickDesc(s(R.string.nav_back))
         waitText(s(R.string.help_two_way_body))
     }
 

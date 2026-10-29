@@ -89,6 +89,8 @@ fun HelpSheet(title: String?, topics: List<HelpTopic>, onDismiss: () -> Unit) {
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = state) {
         val open = article?.let { name -> HowTo.entries.firstOrNull { it.name == name } }
         if (open != null) {
+            // Back returns to the short text where the sheet lets it (on Android 14 and newer the
+            // sheet's own predictive back closes it); the arrow always does.
             BackHandler { article = null }
             Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 12.dp, end = 24.dp, bottom = 32.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
