@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#5B3FD9</color>
+    <!-- The splash window: black, the base of the icon's beam, so the icon seems to float on it. -->
+    <color name="splash_background">#000000</color>
     <color name="window_background">#FBF8FF</color>
 </resources>

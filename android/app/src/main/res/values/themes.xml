@@ -5,9 +5,10 @@
         <item name="android:windowBackground">@color/window_background</item>
     </style>
 
-    <!-- Schermata di avvio: sfondo del brand e marchio al centro, poi passa al tema normale. -->
+    <!-- Schermata di avvio: finestra nera e l'icona (fascio, piastrella di vetro, marchio) al
+         centro, come sul launcher; poi passa al tema normale. -->
     <style name="Theme.Songport.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
         <!-- The mark with its ring turning once (Android 12+ plays it; older phones show it still). -->
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_animated</item>
         <item name="windowSplashScreenAnimationDuration">700</item>
