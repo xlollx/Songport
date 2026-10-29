@@ -1004,4 +1004,6 @@
     <string name="plugins_services">Services: %1$s</string>
     <string name="services_group_unavailable">Not available in this version</string>
     <string name="plugins_where">Plugins are published by their own authors, not through this app: on GitHub they carry the topic “trackhop-plugin”.</string>
+    <string name="provider_note_deezer_bridge">Sign in on Deezer\'s own page: no developer app needed (Deezer no longer registers new ones). Uses the web player\'s session: not an official route, against Deezer\'s terms, may stop working. Beta. The official route with your own app ID stays available as \"Deezer\".</string>
+    <string name="provider_note_soundcloud_account">Sign in on SoundCloud\'s own page: your sets and liked tracks become sources and destinations. Uses the web app\'s session: not an official interface, against SoundCloud\'s terms, may stop working. Beta. Few SoundCloud tracks carry an ISRC, so matching relies on title, artist and duration.</string>
 </resources>

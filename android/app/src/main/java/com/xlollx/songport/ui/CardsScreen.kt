@@ -95,7 +95,7 @@ private fun PlaylistSource(label: String, initialLink: String?, snackbar: Snackb
     suspend fun resolve(text: String) {
         busy = true
         val ref = LinkResolver.resolve(ctx, text)
-        val named = ref?.let { Providers.byId(it.providerId) }
+        val named = ref?.let { com.xlollx.songport.providers.linkProvider(ctx, it.providerId) }
         val provider = ref?.let { r ->
             named?.takeIf { it.canRead(ctx, r.playlistId) }
                 ?: Providers.connectors().firstOrNull { it.familyName == named?.familyName && it.canRead(ctx, r.playlistId) }
@@ -105,7 +105,7 @@ private fun PlaylistSource(label: String, initialLink: String?, snackbar: Snackb
             provider == null -> snackbar.showSnackbar(ctx.getString(R.string.link_not_connected, named?.displayName ?: ref.providerId))
             else -> {
                 val got = runCatching { provider.playlistInfo(ctx, ref.playlistId) }
-                val failed = got.exceptionOrNull()?.takeIf { provider.linkOnly && it !is kotlinx.coroutines.CancellationException }
+                val failed = got.exceptionOrNull()?.takeIf { provider.reportsLinkErrors(ref.playlistId) && it !is kotlinx.coroutines.CancellationException }
                 if (failed != null) snackbar.showSnackbar(failed.message ?: ctx.getString(R.string.error_generic))
                 else choose(CardPick(provider, got.getOrElse { Playlist(ref.playlistId, ctx.getString(R.string.card_unnamed_playlist), ownedByMe = false) }, text.trim()))
             }

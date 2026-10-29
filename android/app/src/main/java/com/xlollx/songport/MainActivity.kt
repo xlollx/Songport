@@ -306,12 +306,12 @@ private fun MainScreen(
         shareScope.launch {
             val links = Regex("""https?://\S+|spotify:playlist:\S+""").findAll(text).map { it.value }.filter { PlaylistLinks.parse(it) != null }.distinct().toList()
             if (links.size >= 2) { compareLinks = links[0] to links[1]; tab = MainActivity.TAB_TOOLS; return@launch }
-            // A service this build does not carry (SoundCloud on Google Play) is no link it can use; a
-            // SoundCloud short link is followed to its set first.
+            // A service this build cannot read (SoundCloud on Google Play, unless a plugin serves it) is
+            // no link it can use; a SoundCloud short link is followed to its set first.
             val soundCloud = com.xlollx.songport.sync.SoundCloudPublic
             val ref = (PlaylistLinks.parse(text)
-                ?: (if (Providers.byId(soundCloud.SERVICE) != null) soundCloud.pathFromLink(text)?.let { PlaylistLinks.Ref(soundCloud.SERVICE, it) } else null))
-                ?.takeIf { Providers.byId(it.providerId) != null }
+                ?: (if (com.xlollx.songport.providers.linkProvider(ctx, soundCloud.SERVICE) != null) soundCloud.pathFromLink(text)?.let { PlaylistLinks.Ref(soundCloud.SERVICE, it) } else null))
+                ?.takeIf { com.xlollx.songport.providers.linkProvider(ctx, it.providerId) != null }
             val setlist = com.xlollx.songport.sync.SetlistImport.linkIn(text)
             val trackRef = if (ref == null && setlist == null) com.xlollx.songport.sync.TrackLinks.parse(text) else null
             // Several "Artist - Title" lines shared as text become a file playlist, like a setlist.

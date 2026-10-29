@@ -33,6 +33,17 @@ class SoundCloudPublicTest {
         assertEquals("https://soundcloud.com/label/midnight-drive", t.uri)
     }
 
+    /** What the account connector hands over: the same object, trimmed, read by the same parser. */
+    @Test fun theAccountConnectorsTrimmedShapeReadsTheSame() {
+        val trimmed = """{"id":101,"kind":"track","title":"Midnight Drive","duration":30000,"full_duration":215000,
+            "permalink_url":"https://soundcloud.com/label/midnight-drive","policy":"ALLOW","release_date":"2021-06-04T00:00:00Z",
+            "user":{"username":"Some Label"},"publisher_metadata":{"artist":"Nova","album_title":"Night Roads","isrc":"GBABC2100001","explicit":false},
+            "liked_at":"2026-05-01T10:00:00Z"}"""
+        val t = SoundCloudPublic.parseTrack(parseJson(trimmed), Durations.parseInstant(parseJson(trimmed)["liked_at"].let { (it as? kotlinx.serialization.json.JsonPrimitive)?.content }))!!
+        assertEquals(SoundCloudPublic.parseTrack(parseJson(full))!!.copy(addedAt = t.addedAt), t)
+        assertEquals(java.time.Instant.parse("2026-05-01T10:00:00Z").toEpochMilli(), t.addedAt)
+    }
+
     @Test fun trackWithoutMetadataSplitsTheTitle() {
         val t = SoundCloudPublic.parseTrack(parseJson("""{"kind":"track","id":7,"title":"Artist A & Artist B - Song Name (Free Download)",
             "duration":180000,"user":{"username":"repost channel"},"publisher_metadata":null,"policy":"BLOCK"}"""))!!

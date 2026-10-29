@@ -224,6 +224,7 @@ open class FileStore(dir: File) {
         fun family(providerId: String): String = when (val base = providerId.substringBefore('@')) {
             "spotify_bridge" -> "spotify"
             "apple_bridge" -> "apple"
+            "deezer_bridge" -> "deezer"
             "ytm" -> "youtube"
             else -> base
         }

@@ -984,4 +984,6 @@
     <string name="plugins_services">服务：%1$s</string>
     <string name="services_group_unavailable">此版本不可用</string>
     <string name="plugins_where">插件由各自的作者发布，而不是由本应用提供：在 GitHub 上它们带有主题“trackhop-plugin”。</string>
+    <string name="provider_note_deezer_bridge">在 Deezer 自己的页面上登录：无需创建开发者应用（Deezer 已不再注册新应用）。使用网页播放器的会话：这不是官方途径，违反 Deezer 的条款，可能随时失效。测试版。使用你自己应用 ID 的官方途径仍以“Deezer”提供。</string>
+    <string name="provider_note_soundcloud_account">在 SoundCloud 自己的页面上登录：你的歌单和喜欢的曲目可作为来源和目标。使用网页应用的会话：这不是官方接口，违反 SoundCloud 的条款，可能随时失效。测试版。SoundCloud 上很少有曲目带 ISRC，因此匹配依据标题、艺人和时长。</string>
 </resources>

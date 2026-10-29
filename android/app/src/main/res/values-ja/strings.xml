@@ -984,4 +984,6 @@
     <string name="plugins_services">サービス: %1$s</string>
     <string name="services_group_unavailable">このバージョンでは利用できません</string>
     <string name="plugins_where">プラグインはこのアプリではなく各作者が公開しています。GitHub ではトピック「trackhop-plugin」が付いています。</string>
+    <string name="provider_note_deezer_bridge">Deezer 自身のページでサインインします。開発者アプリは不要です（Deezer は新しいアプリの登録を停止しています）。ウェブプレーヤーのセッションを使います。公式のルートではなく、Deezer の規約に反し、動かなくなることがあります。ベータ版です。自分のアプリ ID を使う公式ルートは「Deezer」として引き続き利用できます。</string>
+    <string name="provider_note_soundcloud_account">SoundCloud 自身のページでサインインします。あなたのプレイリストと「いいね」した曲が、同期元・同期先になります。ウェブアプリのセッションを使います。公式のインターフェースではなく、SoundCloud の規約に反し、動かなくなることがあります。ベータ版です。SoundCloud の曲には ISRC がほとんどないため、照合はタイトル・アーティスト・長さで行います。</string>
 </resources>

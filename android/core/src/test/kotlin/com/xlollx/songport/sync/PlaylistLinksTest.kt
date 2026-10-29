@@ -53,6 +53,7 @@ class PlaylistLinksTest {
 
     @Test fun webUrls() {
         assertEquals("https://open.spotify.com/playlist/abc", PlaylistLinks.webUrl("spotify_bridge", "abc"))
+        assertEquals("https://www.deezer.com/playlist/111", PlaylistLinks.webUrl("deezer_bridge", "111"))
         assertEquals("https://music.apple.com/it/playlist/pl.u-1", PlaylistLinks.webUrl("apple", "pl.u-1", region = "it"))
         assertEquals("https://music.youtube.com/playlist?list=PL1", PlaylistLinks.webUrl("ytm", "PL1"))
         assertEquals("https://music.amazon.it/user-playlists/u1", PlaylistLinks.webUrl("amazon", "u1", region = "it"))

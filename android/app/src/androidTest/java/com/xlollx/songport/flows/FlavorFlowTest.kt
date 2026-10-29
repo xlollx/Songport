@@ -6,6 +6,7 @@ import com.xlollx.songport.MainActivity
 import com.xlollx.songport.R
 import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.providers.installConnectors
+import com.xlollx.songport.platform.env
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -16,9 +17,10 @@ import org.junit.runner.RunWith
 
 /**
  * What differs between the two builds, on the real connector list of this build (nothing signed
- * in, nothing fetched): the GitHub/F-Droid build ("full") carries the web connectors and
- * SoundCloud links; the Google Play build ("play") hides plugin-only services unless a plugin is
- * installed (listing Amazon Music and SoundCloud greyed out as not available in this version),
+ * in, nothing fetched): the GitHub/F-Droid build ("full") carries the web connectors (Deezer's web
+ * route next to its official one, SoundCloud's account) and SoundCloud links; the Google Play build
+ * ("play") hides plugin-only services unless a plugin is installed (listing Amazon Music and
+ * SoundCloud greyed out as not available in this version, Deezer with its official route only),
  * explains plugins only in Settings (no name, no link anywhere), and says it shows a banner.
  */
 @RunWith(AndroidJUnit4::class)
@@ -59,6 +61,27 @@ class FlavorFlowTest : FlowTest() {
     }
 
     @Test
+    fun deezerAndSoundCloudMatchTheBuild() {
+        openServicePicker()
+        waitText("Deezer")
+        if (full) {
+            assertTrue("SoundCloud's account connector is offered", exists("SoundCloud"))
+            assertFalse(exists(s(R.string.services_group_unavailable)))
+            // Deezer can be reached two ways here: its web player (easy) and its official API.
+            click("Deezer")
+            waitText(s(R.string.connector_pick_hint))
+            assertTrue(exists(s(R.string.route_easy)))
+            assertTrue(exists(s(R.string.route_official)))
+        } else {
+            // No plugin on the test device: SoundCloud stays greyed out and Deezer has one route.
+            assertTrue(exists(s(R.string.services_group_unavailable)))
+            assertTrue(exists("SoundCloud"))
+            click("Deezer")
+            waitText(s(R.string.connector_name_label))
+        }
+    }
+
+    @Test
     fun pluginsSectionOnlyInThePlayBuild() {
         installConnectors()
         launch(tabIntent(MainActivity.TAB_SETTINGS))
@@ -76,7 +99,13 @@ class FlavorFlowTest : FlowTest() {
     @Test
     fun soundCloudLinksOnlyInTheFullBuild() {
         installConnectors()
-        if (full) assertNotNull(Providers.byId("soundcloud")) else assertNull(Providers.byId("soundcloud"))
+        // One SoundCloud service in both builds: the account connector, which also reads public links.
+        assertNotNull(Providers.byId("soundcloud"))
+        assertEquals(1, Providers.all().count { it.id == "soundcloud" })
+        // A pasted link has somewhere to go only where SoundCloud is read without a plugin.
+        val reader = com.xlollx.songport.providers.linkProvider(app, "soundcloud")
+        if (full) assertNotNull(reader) else assertNull(reader)
+        if (full) assertTrue(reader!!.canRead(app.env, "label/sets/night-drive"))
         assertEquals(full, com.xlollx.songport.providers.BuiltIn.available)
         assertEquals(full, com.xlollx.songport.providers.BridgePlugin.builtIn)
     }

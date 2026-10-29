@@ -1,11 +1,13 @@
 package com.xlollx.songport.providers
 
+import android.content.Context
 import com.xlollx.songport.providers.Providers.Factory
 
 /**
  * The connectors of the Android app, in the order the service picker shows them: the engine's,
  * with the web connectors (built in, or through a plugin app) next to their official route.
- * SoundCloud's public links read an unofficial interface: only in the builds that carry those.
+ * SoundCloud is one service: the account (web connector) and the public links it has always read,
+ * which the builds without built-in connectors reach only through a plugin (see [linkProvider]).
  */
 fun installConnectors() = Providers.install(
     listOf(
@@ -18,11 +20,25 @@ fun installConnectors() = Providers.install(
         Factory(AmazonBridgeProvider.SERVICE) { AmazonBridgeProvider(it) },
         Factory(TidalProvider.SERVICE) { TidalProvider(it) },
         Factory(DeezerProvider.SERVICE) { DeezerProvider(it) },
+        Factory(DeezerBridgeProvider.SERVICE) { DeezerBridgeProvider(it) },
+        Factory(com.xlollx.songport.sync.SoundCloudPublic.SERVICE) { SoundCloudBridgeProvider(it) },
         Factory(SubsonicProvider.SERVICE) { SubsonicProvider(it) },
         Factory(JellyfinProvider.SERVICE) { JellyfinProvider(it) },
         Factory(PlexProvider.SERVICE) { PlexProvider(it) },
         Factory(LastFmProvider.SERVICE) { LastFmProvider(it) },
         Factory(ListenBrainzProvider.SERVICE) { ListenBrainzProvider(it) },
     ),
-    singletons = listOfNotNull(LocalFilesProvider, SoundCloudProvider.takeIf { BuiltIn.available }),
+    singletons = listOf(LocalFilesProvider),
 )
+
+/**
+ * The connector a pasted playlist link of [providerId] opens with in this build, or null: a service
+ * that only a plugin serves (SoundCloud in the Google Play build) is no link this build can use
+ * until a plugin serves it.
+ */
+fun linkProvider(ctx: Context, providerId: String): MusicProvider? =
+    Providers.byId(providerId)?.takeIf { !it.pluginBased || BridgePlugin.builtIn || it.isConfigured(ctx) }
+
+/** A source whose own error (a private set) is all there is to say about a pasted link: shown at once. */
+fun MusicProvider.reportsLinkErrors(playlistId: String): Boolean =
+    linkOnly || (serviceId == com.xlollx.songport.sync.SoundCloudPublic.SERVICE && SoundCloudBridgeProvider.isPage(playlistId))

@@ -10,4 +10,6 @@
     <string name="provider_note_spotify_bridge">Spotify through a connector plugin that holds the Spotify sign-in; an alternative to the official route with your own developer key, which stays available as \"Spotify\".</string>
     <string name="provider_note_apple_bridge">Apple Music through a connector plugin that holds the Apple ID sign-in; an alternative to the official route with your own developer token, which stays available as \"Apple Music\".</string>
     <string name="bridge_needed_hint">This service needs a connector plugin app that is not installed. Trackhop does not include or download plugins.</string>
+    <string name="provider_note_deezer_bridge">Deezer 로그인을 보관하는 커넥터 플러그인을 통한 Deezer예요. 직접 만든 앱 ID를 쓰는 공식 경로의 대안이며, 공식 경로는 \"Deezer\"로 계속 사용할 수 있어요.</string>
+    <string name="provider_note_soundcloud_account">SoundCloud 로그인을 보관하는 커넥터 플러그인을 통한 SoundCloud예요. 내 플레이리스트와 좋아요한 트랙을 원본과 대상으로 쓸 수 있어요.</string>
 </resources>

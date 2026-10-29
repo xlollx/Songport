@@ -1002,4 +1002,6 @@
     <string name="plugins_services">Hizmetler: %1$s</string>
     <string name="services_group_unavailable">Bu sürümde kullanılamaz</string>
     <string name="plugins_where">Eklentileri bu uygulama değil, kendi geliştiricileri yayınlar: GitHub\'da “trackhop-plugin” konusunu taşırlar.</string>
+    <string name="provider_note_deezer_bridge">Deezer\'ın kendi sayfasında oturum açın: geliştirici uygulaması gerekmez (Deezer artık yenilerini kaydetmiyor). Web oynatıcının oturumunu kullanır: resmi bir yol değildir, Deezer\'ın koşullarına aykırıdır ve çalışmayı bırakabilir. Beta. Kendi uygulama kimliğinizle resmi yol \"Deezer\" olarak kullanılabilir kalır.</string>
+    <string name="provider_note_soundcloud_account">SoundCloud\'un kendi sayfasında oturum açın: setleriniz ve beğendiğiniz parçalar kaynak ve hedef olur. Web uygulamasının oturumunu kullanır: resmi bir arayüz değildir, SoundCloud\'un koşullarına aykırıdır ve çalışmayı bırakabilir. Beta. SoundCloud\'daki az sayıda parçada ISRC vardır; eşleştirme başlık, sanatçı ve süreye dayanır.</string>
 </resources>

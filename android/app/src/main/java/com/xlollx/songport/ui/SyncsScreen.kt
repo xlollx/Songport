@@ -986,7 +986,7 @@ private fun LinkImportField(initial: String = "", keep: Boolean = false, onResol
                         val ref = com.xlollx.songport.sync.LinkResolver.resolve(ctx, text)
                         // A Spotify link opens with whichever Spotify route is connected, web or official.
                         val provider = ref?.let { r ->
-                            val named = Providers.byId(r.providerId)
+                            val named = com.xlollx.songport.providers.linkProvider(ctx, r.providerId)
                             named?.takeIf { it.canRead(ctx, r.playlistId) }
                                 ?: Providers.connectors().firstOrNull { it.familyName == named?.familyName && it.canRead(ctx, r.playlistId) }
                                 ?: named
@@ -999,7 +999,7 @@ private fun LinkImportField(initial: String = "", keep: Boolean = false, onResol
                             // No name when the service will not say yet: the run fills it in. A
                             // link-only source has nothing else to go on: its error (a private set) shows here.
                             val got = runCatching { provider.playlistInfo(ctx, ref.playlistId) }
-                            val failed = got.exceptionOrNull()?.takeIf { provider.linkOnly && it !is kotlinx.coroutines.CancellationException }
+                            val failed = got.exceptionOrNull()?.takeIf { provider.reportsLinkErrors(ref.playlistId) && it !is kotlinx.coroutines.CancellationException }
                             if (failed != null) {
                                 error = failed.message ?: ctx.getString(R.string.error_generic)
                             } else {

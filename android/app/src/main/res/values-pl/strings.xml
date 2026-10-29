@@ -1046,4 +1046,6 @@
     <string name="plugins_services">Usługi: %1$s</string>
     <string name="services_group_unavailable">Niedostępne w tej wersji</string>
     <string name="plugins_where">Wtyczki publikują ich autorzy, nie ta aplikacja: na GitHubie mają temat „trackhop-plugin”.</string>
+    <string name="provider_note_deezer_bridge">Zaloguj się na stronie Deezera: nie trzeba tworzyć aplikacji deweloperskiej (Deezer nie rejestruje już nowych). Korzysta z sesji odtwarzacza internetowego: to nie jest oficjalna droga, narusza warunki Deezera i może przestać działać. Beta. Oficjalna droga z własnym ID aplikacji pozostaje dostępna jako \"Deezer\".</string>
+    <string name="provider_note_soundcloud_account">Zaloguj się na stronie SoundCloud: Twoje playlisty i polubione utwory stają się źródłami i celami. Korzysta z sesji aplikacji internetowej: to nie jest oficjalny interfejs, narusza warunki SoundCloud i może przestać działać. Beta. Niewiele utworów na SoundCloud ma kod ISRC, więc dopasowanie opiera się na tytule, wykonawcy i długości.</string>
 </resources>
