@@ -1,0 +1,1 @@
+Quand une session web YouTube Music, Amazon Music ou Spotify doit être renouvelée, le message dit maintenant simplement quoi faire : se déconnecter puis se reconnecter. Les plugins de connexion compatibles obtiennent albums, artistes, historique, renommage, suppression et réordonnancement.

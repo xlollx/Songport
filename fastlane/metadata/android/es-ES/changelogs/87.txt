@@ -1,0 +1,1 @@
+Cuando una sesión web de YouTube Music, Amazon Music o Spotify necesita renovarse, el mensaje ahora dice simplemente qué hacer: cerrar sesión y volver a entrar. Los plugins de conexión compatibles obtienen álbumes, artistas, historial, renombrar, eliminar y reordenar.

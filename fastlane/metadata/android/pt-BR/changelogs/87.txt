@@ -1,0 +1,1 @@
+Quando uma sessão web do YouTube Music, Amazon Music ou Spotify precisa ser renovada, a mensagem agora diz simplesmente o que fazer: sair e entrar de novo. Plugins de conexão compatíveis ganham álbuns, artistas, histórico, renomear, excluir e reordenar.

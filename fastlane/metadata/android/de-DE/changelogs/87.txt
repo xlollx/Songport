@@ -1,0 +1,1 @@
+Wenn eine Web-Sitzung von YouTube Music, Amazon Music oder Spotify erneuert werden muss, sagt die Meldung jetzt einfach, was zu tun ist: abmelden und erneut anmelden. Connector-Plugins, die es unterstützen, erhalten Alben, Künstler, Verlauf, Umbenennen, Löschen und Sortieren.

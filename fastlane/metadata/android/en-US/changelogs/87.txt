@@ -1,0 +1,1 @@
+When a YouTube Music, Amazon Music or Spotify web session needs renewing, the message now says simply what to do: sign out and sign in again. Connector plugins that support it get albums, artists, history, rename, delete and reorder.
