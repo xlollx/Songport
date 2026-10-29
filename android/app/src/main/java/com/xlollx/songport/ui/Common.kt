@@ -2,6 +2,7 @@ package com.xlollx.songport.ui
 
 import com.xlollx.songport.providers.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.selection.toggleable
@@ -50,7 +51,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -271,6 +271,22 @@ fun BrandMark(size: Dp = 28.dp, tint: Color = MaterialTheme.colorScheme.primary)
     Icon(painterResource(R.drawable.ic_brand_mark), contentDescription = null, tint = tint, modifier = Modifier.size(size))
 }
 
+/**
+ * The mark in white on the glass tile of the icon and the store graphics: white at 18 % with a
+ * faint lighter edge, corners at 0.24 of the side, the mark filling two thirds of it. For the
+ * brand surfaces ([HeroHeader], onboarding, the stats card), on the beam.
+ */
+@Composable
+fun BrandTile(size: Dp = 40.dp) {
+    val shape = RoundedCornerShape(size * 0.24f)
+    Box(
+        Modifier.size(size).clip(shape).background(Color.White.copy(alpha = 0.18f)).border(1.dp, Color.White.copy(alpha = 0.35f), shape),
+        contentAlignment = Alignment.Center,
+    ) {
+        BrandMark(size * 0.8f, tint = Color.White)
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(title: String, showBrand: Boolean = true, actions: @Composable RowScope.() -> Unit = {}) {
@@ -290,22 +306,23 @@ fun AppTopBar(title: String, showBrand: Boolean = true, actions: @Composable Row
 }
 
 /**
- * Intestazione con la sfumatura del brand: titolo, sottotitolo e una riga di azioni. The gradient
- * is the brand's whatever the colour scheme (Material You too): it is the one place the identity
- * lives. White text at full alpha, and the gradient ends on a deep magenta, so it reads at AA.
+ * Intestazione sul fascio del brand: titolo, sottotitolo e una riga di azioni. The beam
+ * ([brandBeam]) is the brand's whatever the colour scheme (Material You too): it is the one place
+ * the identity lives. The band crosses the top-right corner; the text, white at full alpha, sits
+ * on the dark side, where it reads above 7:1.
  */
 @Composable
 fun HeroHeader(title: String, subtitle: String, link: String? = null, onLink: (() -> Unit)? = null, content: (@Composable RowScope.() -> Unit)? = null) {
     Box(
         Modifier.fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
-            .background(Brush.linearGradient(listOf(Brand.Indigo, Brand.Violet, Brand.MagentaDeep)))
+            .brandBeam()
             .padding(20.dp),
     ) {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                BrandMark(30.dp, tint = Color.White)
-                Spacer(Modifier.width(10.dp))
+                BrandTile(40.dp)
+                Spacer(Modifier.width(12.dp))
                 Text(title, color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.height(4.dp))

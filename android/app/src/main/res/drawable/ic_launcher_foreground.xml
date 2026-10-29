@@ -4,20 +4,27 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Il marchio Trackhop: una nota dentro un anello di sincronizzazione. Tutto nella zona sicura (r=33). -->
-    <!-- Anello: due archi -->
-    <path android:pathData="M30.6,40.5 A27,27 0 0 1 77.4,40.5"
-        android:strokeColor="#FFFFFFFF" android:strokeWidth="5.5" android:strokeLineCap="round" />
-    <path android:pathData="M77.4,67.5 A27,27 0 0 1 30.6,67.5"
-        android:strokeColor="#FFFFFFFF" android:strokeWidth="5.5" android:strokeLineCap="round" />
-    <!-- Punte delle frecce -->
-    <path android:fillColor="#FFFFFFFF" android:pathData="M81.85,36.2 L71.45,42.2 L81.4,47.4 Z" />
-    <path android:fillColor="#FFFFFFFF" android:pathData="M26.15,71.8 L36.55,65.8 L26.6,60.6 Z" />
-    <!-- Nota: testa, gambo, bandierina. Il rettangolo che la contiene e' centrato sul centro dell'anello (54,54). -->
-    <group android:translateX="2.1" android:translateY="1.5">
-        <path android:fillColor="#FFFFFFFF" android:pathData="M54.08,61.11 A7,5.6 -20 1 1 40.92,65.89 A7,5.6 -20 1 1 54.08,61.11 Z" />
-        <path android:pathData="M52.6,62.5 L52.6,37.5"
-            android:strokeColor="#FFFFFFFF" android:strokeWidth="3.6" android:strokeLineCap="round" />
-        <path android:fillColor="#FFFFFFFF" android:pathData="M52.6,37.2 C58.5,38.6 63.4,42.4 63.2,49.6 C61.6,45.2 58,42.9 52.6,42.6 Z" />
+    <!--
+        Primo piano: il marchio Trackhop (nota nell'anello, lo stesso disegno di ic_brand_mark)
+        su una piastrella di vetro: bianco al 18 % con un bordo interno appena più chiaro,
+        54 unità con angoli di 13, tutta dentro il cerchio sicuro (r = 33). Il marchio e' ridotto a
+        0.65 attorno al centro (54,54). Stessa geometria in scripts/store_graphics.sh.
+    -->
+    <path android:fillColor="#2EFFFFFF" android:pathData="M40,27 h28 a13,13 0 0 1 13,13 v28 a13,13 0 0 1 -13,13 h-28 a13,13 0 0 1 -13,-13 v-28 a13,13 0 0 1 13,-13 z" />
+    <path android:strokeColor="#59FFFFFF" android:strokeWidth="0.4" android:pathData="M40,27.2 h28 a12.8,12.8 0 0 1 12.8,12.8 v28 a12.8,12.8 0 0 1 -12.8,12.8 h-28 a12.8,12.8 0 0 1 -12.8,-12.8 v-28 a12.8,12.8 0 0 1 12.8,-12.8 z" />
+    <group android:scaleX="0.65" android:scaleY="0.65" android:pivotX="54" android:pivotY="54">
+        <path android:pathData="M30.6,40.5 A27,27 0 0 1 77.4,40.5"
+            android:strokeColor="#FFFFFFFF" android:strokeWidth="5.5" android:strokeLineCap="round" />
+        <path android:pathData="M77.4,67.5 A27,27 0 0 1 30.6,67.5"
+            android:strokeColor="#FFFFFFFF" android:strokeWidth="5.5" android:strokeLineCap="round" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M81.85,36.2 L71.45,42.2 L81.4,47.4 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M26.15,71.8 L36.55,65.8 L26.6,60.6 Z" />
+        <!-- Nota: testa, gambo, bandierina. Il rettangolo che la contiene e' centrato sul centro dell'anello (54,54). -->
+        <group android:translateX="2.1" android:translateY="1.5">
+            <path android:fillColor="#FFFFFFFF" android:pathData="M54.08,61.11 A7,5.6 -20 1 1 40.92,65.89 A7,5.6 -20 1 1 54.08,61.11 Z" />
+            <path android:pathData="M52.6,62.5 L52.6,37.5"
+                android:strokeColor="#FFFFFFFF" android:strokeWidth="3.6" android:strokeLineCap="round" />
+            <path android:fillColor="#FFFFFFFF" android:pathData="M52.6,37.2 C58.5,38.6 63.4,42.4 63.2,49.6 C61.6,45.2 58,42.9 52.6,42.6 Z" />
+        </group>
     </group>
 </vector>

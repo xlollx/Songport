@@ -46,7 +46,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -120,12 +119,12 @@ private fun Dots(current: Int) {
     }
 }
 
-/** The page's art on the brand gradient, under the status bar. */
+/** The page's art on the brand beam, under the status bar. */
 @Composable
 private fun Hero(content: @Composable ColumnScope.() -> Unit) {
     Column(
         Modifier.fillMaxWidth()
-            .background(Brush.linearGradient(listOf(Brand.Indigo, Brand.Violet, Brand.MagentaDeep)))
+            .brandBeam(edgeY = 0.3f)
             .statusBarsPadding()
             .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -144,7 +143,7 @@ private fun WelcomePage() {
     }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         Hero {
-            BrandMark(72.dp, tint = Color.White)
+            BrandTile(88.dp)
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.spacedBy(10.dp),

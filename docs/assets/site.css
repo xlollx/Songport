@@ -10,6 +10,13 @@
   --accent-ink: #ffffff;
   --link: #4c32c4;
   --grad: linear-gradient(120deg, #4338ca 0%, #7c3aed 50%, #db2777 100%);
+  /* The brand beam (the icon's background, scripts/store_graphics.sh): a near-black base, a band
+     tilted 12° whose edge sits 80% up the gradient line, a deep red glow under the edge, a thin
+     violet-blue line on it, cyan then white above; a red sweep screened along it, left to right. */
+  --beam-angle: 12deg;
+  --beam-edge: 80%;
+  --beam: linear-gradient(var(--beam-angle), #000 calc(var(--beam-edge) - 230px), #400000 calc(var(--beam-edge) - 4px), #421aff calc(var(--beam-edge) + 4px), #59ffff calc(var(--beam-edge) + 40px), #fff calc(var(--beam-edge) + 305px));
+  --beam-sweep: linear-gradient(90deg, #000, #990000);
   --radius: 18px;
   --shadow: 0 1px 2px rgba(28, 27, 34, .06), 0 8px 24px rgba(28, 27, 34, .06);
   color-scheme: light;
@@ -80,13 +87,16 @@ a { color: var(--link); text-underline-offset: 2px; }
 /* Landing page */
 .home { padding: 0; }
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
-.hero { background: var(--grad); color: #fff; }
+.hero { background: var(--beam-sweep), var(--beam) #000; background-blend-mode: screen, normal; color: #fff; }
 .hero .wrap { display: grid; grid-template-columns: 1.2fr .8fr; gap: 40px; align-items: center; padding-top: 56px; padding-bottom: 56px; }
 .hero h1 { font-size: clamp(36px, 7vw, 60px); line-height: 1.05; margin: 0 0 14px; letter-spacing: -.02em; }
-.hero p.lead { font-size: clamp(17px, 2.4vw, 21px); margin: 0 0 8px; opacity: .95; }
-.hero p.sub { margin: 0 0 26px; opacity: .85; }
-.hero .renamed { display: block; width: fit-content; max-width: 52ch; margin: 0 0 22px; padding: 10px 14px; font-size: 14px; line-height: 1.45; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.32); border-radius: 12px; }
-.hero .appicon { width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 6px 20px rgba(0,0,0,.25); margin-bottom: 18px; }
+.hero p.lead { font-size: clamp(17px, 2.4vw, 21px); margin: 0 0 8px; }
+.hero p.sub { margin: 0 0 26px; }
+/* The rename notice may land on the bright part of the beam on a phone: a dark panel keeps it readable anywhere. */
+.hero .renamed { display: block; width: fit-content; max-width: 52ch; margin: 0 0 22px; padding: 10px 14px; font-size: 14px; line-height: 1.45; background: rgba(0,0,0,.62); border: 1px solid rgba(255,255,255,.28); border-radius: 12px; }
+/* The icon's glass tile: white at 18 % with a faint lighter inner edge, corners at 0.24 of the side, the mark at 0.8. */
+.hero .tile { width: 72px; height: 72px; border-radius: 17px; background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 6px 20px rgba(0,0,0,.25); display: grid; place-items: center; margin-bottom: 18px; }
+.hero .tile img { width: 58px; height: 58px; display: block; }
 .get { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .get img { height: 58px; width: auto; display: block; }
 .get .apk {
@@ -96,7 +106,7 @@ a { color: var(--link); text-underline-offset: 2px; }
 .get .apk:hover { background: rgba(255,255,255,.12); }
 .phone {
   justify-self: center; width: 250px; padding: 10px; border-radius: 34px;
-  background: #0d0c12; box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  background: #0d0c12; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 20px 60px rgba(0,0,0,.45);
 }
 .phone img { display: block; width: 100%; border-radius: 24px; }
 
@@ -132,6 +142,8 @@ a { color: var(--link); text-underline-offset: 2px; }
 .data p:last-child { margin: 0; }
 
 @media (max-width: 860px) {
+  /* One column: the band's edge 285 px down, crossing the tile as it crosses the icon's; the notice above it sits on its dark panel. */
+  :root { --beam-edge: calc(100% - 285px); }
   .hero .wrap { grid-template-columns: 1fr; padding-top: 40px; padding-bottom: 40px; }
   .phone { width: 220px; }
   .cards { grid-template-columns: 1fr 1fr; }

@@ -26,6 +26,12 @@ The `play` flavour is published as **Trackhop**, like every other build: same pa
 web connectors, AdMob banner. Listing texts, Data safety answers and the closed-test kit are in `docs/play-store-listing.md`
 and `docs/play-testers.md`.
 
+## Store graphics
+
+`scripts/store_graphics.sh` (ImageMagick) redraws the icon PNGs and the EN/IT feature graphics
+from the same geometry as the icon's vector drawables, and prints the contrast of every line of
+text; `scripts/store_graphics.sh preview DIR` also writes icon previews for review.
+
 ## Checks before pushing
 
 - Strings: the same names, in the same order, in all seven `values*/strings.xml`; apostrophes escaped
