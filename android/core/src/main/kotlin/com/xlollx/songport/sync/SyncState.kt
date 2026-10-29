@@ -82,7 +82,8 @@ object SyncState {
 
     /**
      * Chiamato dal motore a ogni passo: attende finche' la sync e' in pausa e interrompe se l'utente
-     * l'ha fermata. Bloccante di proposito: il motore lavora su un thread di WorkManager.
+     * l'ha fermata. Bloccante di proposito: il motore gira su Dispatchers.IO (app e server), dove
+     * un thread fermo non toglie posto alle altre sync ne' alla UI.
      */
     fun checkpoint(env: Env, jobId: String) {
         if (jobId in _paused.value && jobId !in _stopping.value) {

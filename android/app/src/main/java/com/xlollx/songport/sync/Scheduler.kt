@@ -52,14 +52,18 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                 Diagnostics.log(ctx, "sync", "start ${job.name} (${if (scheduled) "scheduled" else "manual"})")
                 try {
                     val report = try {
-                        engine.run(job, unattended = scheduled) { p ->
+                        // On IO, not on the worker's Default dispatcher: a paused sync waits by blocking
+                        // its thread (SyncState.checkpoint), and a few paused syncs would take every
+                        // Default thread, so the others could never reach their own pause, and the
+                        // notification, which follows them on Default, would stop updating.
+                        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { engine.run(job, unattended = scheduled) { p ->
                             // The shared notification follows SyncState: this update reaches it too.
                             SyncState.progress(job.id, p)
                             // Pausa o stop chiesti dall'utente: qui, fra un passo e l'altro. L'attesa imposta
                             // dal servizio e' tempo che deve passare comunque: in pausa il conto alla rovescia
                             // continua, e' l'abbinamento che si ferma appena l'attesa finisce.
                             if (p.step == Progress.Step.WAITING) SyncState.stopCheck(ctx, job.id) else SyncState.checkpoint(ctx, job.id)
-                        }
+                        } }
                     } catch (e: kotlinx.coroutines.CancellationException) {
                         // Fermato dal sistema, non dall'utente: WorkManager riprende il lavoro da solo e la
                         // cache degli abbinamenti evita di rifare le ricerche. Lo si annota, non e' un errore.
