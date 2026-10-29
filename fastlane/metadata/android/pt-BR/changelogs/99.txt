@@ -1,0 +1,1 @@
+A pausa fica visível: "Pausando após esta etapa" enquanto a etapa atual termina, depois "Pausada" com a barra parada e cinza no cartão, no botão de cima e na notificação; um toque retoma. Várias sincronizações pausadas não se bloqueiam mais.

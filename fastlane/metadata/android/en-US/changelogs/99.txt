@@ -1,0 +1,1 @@
+Pausing looks like pausing: "Pausing after this step" while the current step ends, then "Paused" with a still, grey bar on the card, on the top button and in the notification; a tap resumes. Several paused syncs no longer block one another.

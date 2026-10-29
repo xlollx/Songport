@@ -1,0 +1,1 @@
+La pausa se nota: "En pausa tras este paso" mientras termina el paso actual, y luego "En pausa" con la barra quieta y gris en la tarjeta, el botón superior y la notificación; un toque reanuda. Varias sincronizaciones en pausa ya no se bloquean entre sí.
