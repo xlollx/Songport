@@ -1,0 +1,1 @@
+L'accesso a SoundCloud si presenta come un normale browser del telefono, così la sua protezione anti-bot non lo blocca più; se succede comunque, un messaggio chiaro dice cosa fare. Le schermate di accesso non finiscono più sotto la barra di stato o la tastiera.

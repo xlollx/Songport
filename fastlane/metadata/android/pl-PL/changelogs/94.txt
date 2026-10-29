@@ -1,0 +1,1 @@
+Logowanie do SoundCloud wygląda jak zwykła przeglądarka w telefonie, więc ochrona przed botami już go nie blokuje; jeśli jednak tak, jasny komunikat mówi, co zrobić. Ekrany logowania nie chowają się już pod paskiem stanu ani klawiaturą.

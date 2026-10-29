@@ -1,0 +1,1 @@
+La connexion à SoundCloud se présente comme un navigateur mobile ordinaire, sa protection anti-robots ne la bloque plus ; si cela arrive encore, un message clair indique quoi faire. Les écrans de connexion ne passent plus sous la barre d'état ou le clavier.
