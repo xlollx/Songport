@@ -246,6 +246,13 @@ private fun MainScreen(
     val data by store.state.collectAsState()
     var tab by rememberSaveable { mutableIntStateOf(0) }
     val snackbar = remember { SnackbarHostState() }
+    val snackScope = rememberCoroutineScope()
+    // What saving a sync does, from the editor or from a card's menu: stored, and its scheduled work
+    // brought in line with it (cancelled when it is off or manual).
+    fun saveJob(job: SyncJob) {
+        store.upsertJob(job)
+        Scheduler.apply(ctx, job)
+    }
     // The screen on top survives a rotation and a fold: jobs travel as JSON, providers by id.
     var editing by rememberSaveable(stateSaver = JobSaver) { mutableStateOf<SyncJob?>(null) }
     // The "↔" card whose Edit opened its original sync instead: the editor names it in a note.
@@ -503,11 +510,9 @@ private fun MainScreen(
                     twinName = editingTwinId?.let { store.job(it) }?.takeIf { it.linkedJobId == current.id }?.name,
                     onSave = { job, reverse ->
                         val previous = store.job(job.id)
-                        store.upsertJob(job)
-                        Scheduler.apply(ctx, job)
+                        saveJob(job)
                         if (reverse != null) {
-                            store.upsertJob(reverse)
-                            Scheduler.apply(ctx, reverse)
+                            saveJob(reverse)
                         } else previous?.linkedJobId?.let { old ->
                             // Bidirezionale disattivato: la gemella non ha piu' senso.
                             store.deleteJob(old); Scheduler.cancel(ctx, old)
@@ -616,6 +621,15 @@ private fun MainScreen(
                         editing = original ?: j
                     },
                     onPreview = { previewJob = it },
+                    // On or off from the card's menu: the same flag as the editor's "Enabled", saved the same
+                    // way. A two-way pair shares it (as since 1.2.7), so both halves follow.
+                    onToggleEnabled = { j ->
+                        val on = !j.enabled
+                        store.data.jobs.filter { it.id == j.id || it.id == j.linkedJobId || it.linkedJobId == j.id }
+                            .forEach { saveJob(it.copy(enabled = on)) }
+                        val msg = ctx.getString(if (on) R.string.sync_enabled_snack else R.string.sync_disabled_snack)
+                        snackScope.launch { snackbar.currentSnackbarData?.dismiss(); snackbar.showSnackbar(msg) }
+                    },
                     onRun = { Scheduler.runNow(ctx, it.id) },
                     onRunAll = { Scheduler.runNow(ctx, SyncWorker.ALL) },
                     onDelete = { j ->

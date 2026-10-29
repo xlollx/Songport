@@ -1210,4 +1210,8 @@
     <string name="preview_unlike_warning">To cofnęłoby polubienie %1$d z %2$d utworów w Polubionych utworach. Sprawdź, czy źródło naprawdę ma ich tak mało: niepełna lista z serwisu wygląda dokładnie tak. Jeśli nie zaznaczysz pola poniżej, synchronizacja doda utwory, a te pozostaną polubione.</string>
     <string name="preview_unlike_confirm">Cofnij polubienie tych utworów (%1$d)</string>
     <string name="note_unlikes_capped">Wstrzymano cofanie polubień: ta synchronizacja cofnęłaby polubienie %1$d z %2$d utworów w Polubionych utworach. Dotknij stanu synchronizacji, aby otworzyć podgląd i je zobaczyć; jeśli naprawdę mają zniknąć, zaznacz tam pole i uruchom ją. Jeśli źródło ich naprawdę nie straciło, serwis podał niepełną listę i nic nie powinno zniknąć.</string>
+    <string name="sync_menu_disable">Wyłącz</string>
+    <string name="sync_menu_enable">Włącz</string>
+    <string name="sync_disabled_snack">Synchronizacja wyłączona: nie uruchomi się według harmonogramu</string>
+    <string name="sync_enabled_snack">Synchronizacja włączona</string>
 </resources>

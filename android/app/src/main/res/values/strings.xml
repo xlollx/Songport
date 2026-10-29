@@ -1168,4 +1168,8 @@
     <string name="preview_unlike_warning">This would unlike %1$d of the %2$d songs in Liked songs. Check that the source really lists that few: an incomplete listing by the service looks exactly like this. Unless you tick the box below, the run adds songs and keeps these liked.</string>
     <string name="preview_unlike_confirm">Unlike these %1$d songs</string>
     <string name="note_unlikes_capped">Unlikes held back: this run would unlike %1$d of the %2$d songs in Liked songs. Tap the sync\'s status to open the preview and see them; if they really should go, tick “Unlike these songs” there and run it. If the source has not really lost them, the service listed it incompletely and nothing should go.</string>
+    <string name="sync_menu_disable">Disable</string>
+    <string name="sync_menu_enable">Enable</string>
+    <string name="sync_disabled_snack">Sync disabled: it won\'t run on its schedule</string>
+    <string name="sync_enabled_snack">Sync enabled</string>
 </resources>

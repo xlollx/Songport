@@ -179,7 +179,8 @@ class UnplayableWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker
 }
 
 object Scheduler {
-    private fun name(jobId: String) = "sync-$jobId"
+    /** The unique periodic work of a sync (the UI tests read its state). */
+    internal fun name(jobId: String) = "sync-$jobId"
     private const val BACKUP_WORK = "backup-export"
     private const val UNPLAYABLE_WORK = "unplayable-check"
 

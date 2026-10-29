@@ -154,6 +154,7 @@ fun SyncsScreen(
     onStats: () -> Unit = {},
     onOpenLog: () -> Unit = {},
     onTour: (() -> Unit)? = null,
+    onToggleEnabled: (SyncJob) -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val running by SyncState.running.collectAsState()
@@ -262,7 +263,7 @@ fun SyncsScreen(
             if (shown.isEmpty()) item(key = "nomatch") { SyncFinderEmpty { filter = SyncFilter() } }
             items(shown, key = { it.id }) { job ->
                 Box(Modifier.animateItem()) {
-                    JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget, onOpenLog)
+                    JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget, onOpenLog, onToggleEnabled)
                 }
             }
         }
@@ -356,6 +357,7 @@ private fun JobCard(
     job: SyncJob, data: StoreData, progress: Progress?, isRunning: Boolean,
     onEdit: (SyncJob) -> Unit, onPreview: (SyncJob) -> Unit, onRun: (SyncJob) -> Unit, onDelete: (SyncJob) -> Unit,
     onReview: (String) -> Unit = {}, onOpenTarget: (SyncJob) -> Unit = {}, onOpenLog: () -> Unit = {},
+    onToggleEnabled: (SyncJob) -> Unit = {},
 ) {
     val ctx = LocalContext.current
     var colorOpen by remember { mutableStateOf(false) }
@@ -524,6 +526,7 @@ private fun JobCard(
                         if (job.aiPrompt != null) MenuAction(stringResource(R.string.ai_extend), { extendOpen = true }) else null,
                         MenuAction(stringResource(R.string.preview), { onPreview(job) }),
                         MenuAction(stringResource(R.string.edit), { onEdit(job) }),
+                        MenuAction(stringResource(if (job.enabled) R.string.sync_menu_disable else R.string.sync_menu_enable), { onToggleEnabled(job) }),
                         MenuAction(stringResource(R.string.job_color), { colorOpen = true }),
                         MenuAction(stringResource(R.string.delete), { confirmDelete = true }, destructive = true),
                     ),

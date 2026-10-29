@@ -11,7 +11,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.xlollx.songport.Demo
 import com.xlollx.songport.MainActivity
 import com.xlollx.songport.R
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import kotlinx.coroutines.flow.first
+import com.xlollx.songport.sync.Scheduler
 import com.xlollx.songport.model.PlaylistRef
+import com.xlollx.songport.model.Schedule
 import com.xlollx.songport.model.SyncJob
 import com.xlollx.songport.model.SyncReport
 import org.junit.Assert.assertEquals
@@ -57,6 +62,60 @@ class NewFeaturesFlowTest : FlowTest() {
         click(s(R.string.job_color))
         compose.onAllNodes(hasContentDescription(s(R.string.color_teal)) and hasClickAction()).onFirst().assertIsSelected()
         click(s(R.string.cancel))
+    }
+
+    /** States of a sync's scheduled work, as WorkManager holds them. */
+    private fun work(jobId: String): List<WorkInfo.State> =
+        kotlinx.coroutines.runBlocking { WorkManager.getInstance(app).getWorkInfosForUniqueWorkFlow(Scheduler.name(jobId)).first() }.map { it.state }
+
+    @Test
+    fun menuEnablesAndDisablesASyncAndItsTwoWayTwin() {
+        seedJobs(5)
+        // Road Trip runs daily, two-way with Chill Evening's card as its "↔" half; both start disabled,
+        // so nothing is scheduled yet.
+        store.update { d ->
+            d.copy(jobs = d.jobs.map {
+                when (it.id) {
+                    "job-0" -> it.copy(schedule = Schedule.DAILY, linkedJobId = "job-1", enabled = false)
+                    "job-1" -> it.copy(schedule = Schedule.DAILY, linkedJobId = "job-0", twin = true, enabled = false)
+                    else -> it
+                }
+            })
+        }
+        store.data.jobs.forEach { Scheduler.apply(app, it) }
+        launch(tabIntent(MainActivity.TAB_SYNCS))
+        waitText("Road Trip")
+
+        // The Disabled filter shows exactly those two.
+        click(s(R.string.filter_disabled))
+        waitText(plural(R.plurals.filter_shown, 5, 2, 5))
+        assertTrue(exists("Road Trip"))
+        assertTrue(exists("Chill Evening"))
+        assertFalse(exists("Workout Mix"))
+        click(s(R.string.filter_disabled))
+        waitText("Workout Mix")
+
+        // On from the first card's menu: both halves on and scheduled, a snackbar says so.
+        clickDesc(s(R.string.more_actions))
+        click(s(R.string.sync_menu_enable))
+        waitText(s(R.string.sync_enabled_snack))
+        waitFor("both halves enabled") { store.data.jobs.all { it.enabled } }
+        for (id in listOf("job-0", "job-1")) waitFor("$id scheduled") { work(id).any { it == WorkInfo.State.ENQUEUED || it == WorkInfo.State.RUNNING } }
+        // A periodic sync runs once at once: let those first runs end, the menu is off while a card runs.
+        runCatching { waitFor("the first scheduled runs", 30_000) { store.data.jobs.filter { it.id == "job-0" || it.id == "job-1" }.none { it.lastReportId == "r" + it.id.removePrefix("job-") } } }
+        waitFor("nothing running", 60_000) { com.xlollx.songport.sync.SyncState.running.value.isEmpty() && listOf("job-0", "job-1").none { WorkInfo.State.RUNNING in work(it) } }
+
+        // Off again from the same menu, which now says Disable: both halves off, their work cancelled.
+        clickDesc(s(R.string.more_actions))
+        click(s(R.string.sync_menu_disable))
+        waitText(s(R.string.sync_disabled_snack))
+        waitFor("both halves disabled") { store.data.jobs.filter { it.id == "job-0" || it.id == "job-1" }.none { it.enabled } }
+        assertTrue(store.data.jobs.filter { it.id != "job-0" && it.id != "job-1" }.all { it.enabled })
+        for (id in listOf("job-0", "job-1")) waitFor("$id work cancelled") { work(id).none { it == WorkInfo.State.ENQUEUED || it == WorkInfo.State.RUNNING } }
+        click(s(R.string.filter_disabled))
+        waitText(plural(R.plurals.filter_shown, 5, 2, 5))
+        assertTrue(exists("Road Trip"))
+        assertFalse(exists("Workout Mix"))
     }
 
     @Test

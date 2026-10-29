@@ -1148,4 +1148,8 @@
     <string name="preview_unlike_warning">这将取消“喜欢的歌曲”%2$d 首中 %1$d 首的喜欢。请确认来源确实只有这么少：服务返回的列表不完整时看起来完全一样。除非勾选下面的方框，否则本次运行只添加歌曲，并保留这些歌曲的喜欢。</string>
     <string name="preview_unlike_confirm">取消喜欢这 %1$d 首歌</string>
     <string name="note_unlikes_capped">已暂缓取消喜欢：本次运行将取消“喜欢的歌曲”%2$d 首中 %1$d 首的喜欢。点按同步的状态打开预览查看；如果确实要取消，请在那里勾选方框后运行。如果来源并未真正失去这些歌曲，说明服务返回的列表不完整，不应取消任何内容。</string>
+    <string name="sync_menu_disable">停用</string>
+    <string name="sync_menu_enable">启用</string>
+    <string name="sync_disabled_snack">已停用同步：不会再按计划运行</string>
+    <string name="sync_enabled_snack">已启用同步</string>
 </resources>

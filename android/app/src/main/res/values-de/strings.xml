@@ -1168,4 +1168,8 @@
     <string name="preview_unlike_warning">Damit würde bei %1$d der %2$d Lieblingssongs das „Gefällt mir“ entfernt. Prüfe, ob die Quelle wirklich so wenige auflistet: Eine unvollständige Liste des Dienstes sieht genau so aus. Wenn du das Kästchen unten nicht anhakst, fügt der Lauf Songs hinzu und lässt diese markiert.</string>
     <string name="preview_unlike_confirm">Bei diesen %1$d Songs „Gefällt mir“ entfernen</string>
     <string name="note_unlikes_capped">„Gefällt mir“-Entfernungen zurückgehalten: Dieser Lauf würde bei %1$d der %2$d Lieblingssongs das „Gefällt mir“ entfernen. Tippe auf den Status der Synchronisierung, um die Vorschau zu öffnen und sie zu sehen; wenn sie wirklich weg sollen, hake dort das Kästchen an und starte sie. Hat die Quelle sie nicht wirklich verloren, hat der Dienst sie unvollständig aufgelistet, und nichts sollte entfernt werden.</string>
+    <string name="sync_menu_disable">Deaktivieren</string>
+    <string name="sync_menu_enable">Aktivieren</string>
+    <string name="sync_disabled_snack">Synchronisierung deaktiviert: Sie läuft nicht mehr nach Zeitplan</string>
+    <string name="sync_enabled_snack">Synchronisierung aktiviert</string>
 </resources>

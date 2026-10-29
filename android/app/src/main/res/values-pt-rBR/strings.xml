@@ -1175,4 +1175,8 @@
     <string name="preview_unlike_warning">Isso descurtiria %1$d das %2$d músicas em Músicas curtidas. Confira se a origem lista mesmo tão poucas: uma lista incompleta do serviço fica exatamente assim. Se você não marcar a caixa abaixo, a execução adiciona músicas e mantém estas curtidas.</string>
     <string name="preview_unlike_confirm">Descurtir estas %1$d músicas</string>
     <string name="note_unlikes_capped">Descurtidas suspensas: esta execução descurtiria %1$d das %2$d músicas em Músicas curtidas. Toque no status da sincronização para abrir a prévia e vê-las; se devem mesmo sair, marque a caixa lá e execute. Se a origem não as perdeu de verdade, o serviço a listou de forma incompleta e nada deve sair.</string>
+    <string name="sync_menu_disable">Desativar</string>
+    <string name="sync_menu_enable">Ativar</string>
+    <string name="sync_disabled_snack">Sincronização desativada: não vai rodar no horário programado</string>
+    <string name="sync_enabled_snack">Sincronização ativada</string>
 </resources>

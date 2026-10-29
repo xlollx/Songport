@@ -1166,4 +1166,8 @@
     <string name="preview_unlike_warning">Bu, Beğenilen şarkılardaki %2$d şarkının %1$d tanesinin beğenisini kaldırır. Kaynağın gerçekten bu kadar az şarkı listelediğini kontrol edin: hizmetin eksik bir listesi tam olarak böyle görünür. Aşağıdaki kutuyu işaretlemezseniz çalıştırma şarkı ekler ve bunları beğenilmiş bırakır.</string>
     <string name="preview_unlike_confirm">Bu %1$d şarkının beğenisini kaldır</string>
     <string name="note_unlikes_capped">Beğeni kaldırmalar bekletildi: bu çalıştırma Beğenilen şarkılardaki %2$d şarkının %1$d tanesinin beğenisini kaldırırdı. Önizlemeyi açıp görmek için senkronizasyonun durumuna dokunun; gerçekten gitmeleri gerekiyorsa orada kutuyu işaretleyip çalıştırın. Kaynak bunları gerçekten kaybetmediyse hizmet listeyi eksik vermiştir ve hiçbir şey gitmemelidir.</string>
+    <string name="sync_menu_disable">Devre dışı bırak</string>
+    <string name="sync_menu_enable">Etkinleştir</string>
+    <string name="sync_disabled_snack">Senkronizasyon devre dışı: zamanlamasına göre çalışmayacak</string>
+    <string name="sync_enabled_snack">Senkronizasyon etkin</string>
 </resources>
