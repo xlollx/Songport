@@ -104,6 +104,9 @@ a { color: var(--link); text-underline-offset: 2px; }
   border: 1.5px solid rgba(255,255,255,.75); border-radius: 999px; color: #fff; text-decoration: none; font-weight: 600;
 }
 .get .apk:hover { background: rgba(255,255,255,.12); }
+.get .apk.plugin { border-style: dashed; }
+.playnote { margin-top: 14px; font-size: .95rem; opacity: .9; }
+.playnote a { color: inherit; text-decoration: underline; }
 .phone {
   justify-self: center; width: 250px; padding: 10px; border-radius: 34px;
   background: #0d0c12; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 20px 60px rgba(0,0,0,.45);
