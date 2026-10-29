@@ -1125,4 +1125,17 @@
     <string name="howto_plugins_play">Trackhop 不包含、不下载，也不推荐任何插件。\n• 已安装的插件会显示在“设置 › 插件”中，并列出它提供的服务。\n• 这些服务随后会像其他服务一样出现在“账号 › 添加连接器”中。\n• 此版本无法独自连接的服务列在“此版本不可用”下。\n• 移除插件后，它的服务会断开连接，使用这些服务的同步将会失败。</string>
     <string name="howto_plugins_full">此版本内置了网页连接器，所以不需要插件：每次调用和每次登录都在 Trackhop 内完成，已安装的插件不会被使用。</string>
     <string name="howto_guides">指南</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">带我看看</string>
+    <string name="tour_offer_summary">在真实界面上分 8 步引导你完成第一个同步。</string>
+    <string name="tour_progress">第 %1$d 步，共 %2$d 步</string>
+    <string name="tour_done">完成</string>
+    <string name="tour_new_sync">同步会把歌单复制到另一个服务并保持更新，一切都从“新建同步”开始。</string>
+    <string name="tour_accounts">在“账号”中连接你的服务：你在每个服务自己的页面登录，这部手机上只保存加密的令牌。</string>
+    <string name="tour_source">选择要复制的内容：一个歌单、喜欢的歌曲，或者媒体库中的专辑和艺人。</string>
+    <string name="tour_target">选择要复制到哪里，并确认预选的服务：File 是保存在这部手机上的列表。</string>
+    <string name="tour_schedule">第一个同步请保持“仅手动”；之后添加的计划会在保存后几分钟内开始。</string>
+    <string name="tour_mirror">关闭“同步删除”时，Trackhop 只会添加歌曲，这是第一个同步最稳妥的选择。</string>
+    <string name="tour_save">点按“保存”会打开预览：在任何改动发生之前，它会显示将要变化的内容，并询问不确定的匹配。</string>
+    <string name="tour_results">运行后，卡片会显示数字，“未找到”之类的标签会带你去需要查看的地方。更多内容见“设置 › 使用说明”。</string>
 </resources>

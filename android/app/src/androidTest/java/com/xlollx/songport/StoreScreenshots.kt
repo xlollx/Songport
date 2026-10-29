@@ -150,7 +150,7 @@ class StoreScreenshots {
         store.updateSettings {
             it.copy(
                 connectors = listOf("spotify", "ytm", "amazon", "deezer", "jellyfin"), connectorsInit = true,
-                onboardingDone = true, themeMode = "DARK", dynamicColor = false, newLook = true,
+                onboardingDone = true, tourDone = true, themeMode = "DARK", dynamicColor = false, newLook = true,
                 supportPromptDone = true, appOpens = 1, supportNudgeSeen = 0, shareTarget = "ytm",
             )
         }

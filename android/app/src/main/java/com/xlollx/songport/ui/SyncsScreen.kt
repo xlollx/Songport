@@ -149,6 +149,7 @@ fun SyncsScreen(
     onOpenTarget: (SyncJob) -> Unit = {},
     onStats: () -> Unit = {},
     onOpenLog: () -> Unit = {},
+    onTour: (() -> Unit)? = null,
 ) {
     val ctx = LocalContext.current
     val running by SyncState.running.collectAsState()
@@ -157,11 +158,15 @@ fun SyncsScreen(
     if (data.jobs.isEmpty()) {
         val anyConnected = remember { Providers.connectors().any { it.requiresAuth && it.isConnected(ctx) } }
         if (anyConnected) {
-            EmptyState(Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body_connected))
+            EmptyState(
+                Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body_connected),
+                secondaryLabel = stringResource(R.string.tour_offer), onSecondary = onTour,
+            )
         } else {
             EmptyState(
                 Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body),
                 stringResource(R.string.empty_syncs_cta_accounts), onGoToAccounts,
+                secondaryLabel = stringResource(R.string.tour_offer), onSecondary = onTour,
             )
         }
         return
@@ -737,7 +742,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                     error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium) }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                         OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f).height(52.dp)) { Text(stringResource(R.string.cancel)) }
-                        Button(onClick = { save() }, modifier = Modifier.weight(1f).height(52.dp)) { Text(stringResource(R.string.save)) }
+                        Button(onClick = { save() }, modifier = Modifier.weight(1f).height(52.dp).tourTarget(TourTarget.EDITOR_SAVE)) { Text(stringResource(R.string.save)) }
                     }
                 }
             }
@@ -759,7 +764,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
             } else if (loginServices == 1) {
                 ConnectServiceCard(stringResource(R.string.editor_one_service_hint), onConnectService, help = Helps.oneService)
             }
-            EditorStep(1, stringResource(R.string.editor_source), help = { HelpButton(Helps.library, Helps.link, label = stringResource(R.string.editor_source)) }) {
+            EditorStep(1, stringResource(R.string.editor_source), Modifier.tourTarget(TourTarget.EDITOR_SOURCE), help = { HelpButton(Helps.library, Helps.link, label = stringResource(R.string.editor_source)) }) {
                 if (aiSource) {
                     Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
                         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.Top) {
@@ -801,7 +806,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                 }
             }
 
-            EditorStep(2, stringResource(R.string.editor_target), help = { HelpButton(Helps.target, Helps.liked, label = stringResource(R.string.editor_target)) }) {
+            EditorStep(2, stringResource(R.string.editor_target), Modifier.tourTarget(TourTarget.EDITOR_TARGET), help = { HelpButton(Helps.target, Helps.liked, label = stringResource(R.string.editor_target)) }) {
                 ProviderPicker(writable, dstProvider) { dstProvider = it; dstPlaylist = null }
                 val dstObj = Providers.byId(dstProvider)
                 val canCreate = dstObj?.canCreatePlaylists != false
@@ -826,13 +831,15 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                     placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
                 Text(stringResource(R.string.job_color), style = MaterialTheme.typography.labelLarge)
                 JobColorPicker(color) { color = it }
-                HelpLabel(stringResource(R.string.editor_schedule)) { HelpButton(Helps.schedule) }
-                // I chip vanno a capo da soli, quante righe servono per lo schermo.
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
-                    Schedule.entries.forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
-                }
-                if (schedule != Schedule.MANUAL) {
-                    Text(stringResource(R.string.editor_schedule_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Column(Modifier.tourTarget(TourTarget.EDITOR_SCHEDULE), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    HelpLabel(stringResource(R.string.editor_schedule)) { HelpButton(Helps.schedule) }
+                    // I chip vanno a capo da soli, quante righe servono per lo schermo.
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+                        Schedule.entries.forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
+                    }
+                    if (schedule != Schedule.MANUAL) {
+                        Text(stringResource(R.string.editor_schedule_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
                 // Two-way and Mirror removals don't go together: a track added on the target could be
                 // removed by this sync before the reverse one copies it back.
@@ -841,6 +848,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                     stringResource(R.string.editor_mirror),
                     stringResource(if (bidirectional) R.string.editor_mirror_two_way else R.string.editor_mirror_desc),
                     mirror, enabled = !bidirectional,
+                    modifier = Modifier.tourTarget(TourTarget.EDITOR_MIRROR),
                     // Towards Liked songs, mirroring means unliking: said where the switch is.
                     help = { if (MusicProvider.isLibrary(dstPlaylist?.id) && !createNew) HelpButton(Helps.mirror, Helps.liked, label = stringResource(R.string.editor_mirror)) else HelpButton(Helps.mirror) },
                 ) { mirror = it }

@@ -1152,4 +1152,17 @@
     <string name="howto_plugins_play">Trackhop n\'inclut, ne télécharge et ne recommande aucun plugin.\n• Un plugin installé apparaît dans Réglages › Plugins, avec les services qu\'il fournit.\n• Ces services apparaissent ensuite dans Comptes › Ajouter un connecteur, comme les autres.\n• Les services que cette version ne peut pas atteindre seule figurent sous Indisponibles dans cette version.\n• Si vous retirez le plugin, ses services sont déconnectés et les syncs qui les utilisent échoueront.</string>
     <string name="howto_plugins_full">Dans cette version, les connecteurs web sont intégrés : aucun plugin n\'est nécessaire. Chaque appel et chaque connexion restent dans Trackhop, et un plugin installé n\'est pas utilisé.</string>
     <string name="howto_guides">Guides</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">Faites-moi visiter</string>
+    <string name="tour_offer_summary">Une première sync guidée sur les vrais écrans, en 8 étapes.</string>
+    <string name="tour_progress">%1$d sur %2$d</string>
+    <string name="tour_done">Terminé</string>
+    <string name="tour_new_sync">Une sync copie une playlist vers un autre service et la garde à jour : tout commence par Nouvelle sync.</string>
+    <string name="tour_accounts">Connectez vos services dans Comptes : vous vous connectez sur la page de chaque service, et seul un jeton chiffré reste sur ce téléphone.</string>
+    <string name="tour_source">Choisissez quoi copier : une playlist, les Titres likés, ou des albums et artistes dans Bibliothèque.</string>
+    <string name="tour_target">Choisissez où ça va, et vérifiez le service présélectionné : File est une liste conservée sur ce téléphone.</string>
+    <string name="tour_schedule">Gardez Manuel uniquement pour votre première sync ; une planification ajoutée plus tard démarre quelques minutes après l\'enregistrement.</string>
+    <string name="tour_mirror">Refléter les retraits désactivé, Trackhop ne fait qu\'ajouter : le choix prudent pour une première sync.</string>
+    <string name="tour_save">Enregistrer ouvre l\'aperçu, qui montre ce qui changerait et pose la question des correspondances incertaines avant que rien ne se passe.</string>
+    <string name="tour_results">Après l\'exécution, la carte affiche les chiffres, et une étiquette comme Introuvables vous mène à ce qu\'il faut regarder. Plus dans Réglages › Mode d\'emploi.</string>
 </resources>

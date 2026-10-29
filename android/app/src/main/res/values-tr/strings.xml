@@ -1143,4 +1143,17 @@
     <string name="howto_plugins_play">Trackhop hiçbir eklenti içermez, indirmez veya önermez.\n• Yüklü bir eklenti, sağladığı servislerle birlikte Ayarlar › Eklentiler\'de görünür.\n• Bu servisler ardından diğerleri gibi Hesaplar › Bağlayıcı ekle\'de yer alır.\n• Bu sürümün kendi başına erişemediği servisler Bu sürümde kullanılamaz altında listelenir.\n• Eklentiyi kaldırırsanız servislerinin bağlantısı kesilir ve onları kullanan senkronizasyonlar başarısız olur.</string>
     <string name="howto_plugins_full">Bu sürümde web bağlayıcıları yerleşiktir, bu yüzden eklentiye gerek yoktur: her çağrı ve her oturum açma Trackhop içinde kalır, yüklü bir eklenti kullanılmaz.</string>
     <string name="howto_guides">Rehberler</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">Kısa bir tur</string>
+    <string name="tour_offer_summary">Gerçek ekranlar üzerinde, 8 adımda rehberli ilk senkronizasyon.</string>
+    <string name="tour_progress">%1$d / %2$d</string>
+    <string name="tour_done">Bitti</string>
+    <string name="tour_new_sync">Senkronizasyon bir çalma listesini başka bir servise kopyalar ve güncel tutar: her şey Yeni senkronizasyon ile başlar.</string>
+    <string name="tour_accounts">Servislerinizi Hesaplar\'da bağlayın: her servisin kendi sayfasında oturum açarsınız ve bu telefonda yalnızca şifreli bir belirteç kalır.</string>
+    <string name="tour_source">Neyin kopyalanacağını seçin: bir çalma listesi, Beğenilen şarkılar ya da Kitaplık\'taki albümler ve sanatçılar.</string>
+    <string name="tour_target">Nereye gideceğini seçin ve önceden seçilen servisi kontrol edin: File, bu telefonda tutulan bir listedir.</string>
+    <string name="tour_schedule">İlk senkronizasyonda Yalnızca manuel\'i bırakın; sonradan eklediğiniz bir zamanlama kaydettikten birkaç dakika sonra başlar.</string>
+    <string name="tour_mirror">Kaldırmaları yansıt kapalıyken Trackhop yalnızca ekler: ilk senkronizasyon için güvenli seçim budur.</string>
+    <string name="tour_save">Kaydet önizlemeyi açar; önizleme neyin değişeceğini gösterir ve bir şey olmadan önce belirsiz eşleşmeleri sorar.</string>
+    <string name="tour_results">Çalıştırmadan sonra kart sayıları gösterir; Bulunamadı gibi bir etiket sizi bakılması gerekene götürür. Daha fazlası Ayarlar › Nasıl yapılır\'da.</string>
 </resources>

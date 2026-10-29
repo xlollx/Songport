@@ -1152,4 +1152,17 @@
     <string name="howto_plugins_play">Trackhop no incluye, no descarga ni recomienda ningún plugin.\n• Un plugin instalado aparece en Ajustes › Plugins, con los servicios que ofrece.\n• Esos servicios aparecen después en Cuentas › Añadir conector, como los demás.\n• Los servicios a los que esta versión no llega por sí sola aparecen en No disponibles en esta versión.\n• Si quitas el plugin, sus servicios se desconectan y las sincronizaciones que los usan fallarán.</string>
     <string name="howto_plugins_full">En esta versión los conectores web vienen integrados, así que no hace falta ningún plugin: cada llamada y cada inicio de sesión se quedan dentro de Trackhop, y un plugin instalado no se usa.</string>
     <string name="howto_guides">Guías</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">Hacer un recorrido</string>
+    <string name="tour_offer_summary">Una primera sincronización guiada sobre las pantallas reales, en 8 pasos.</string>
+    <string name="tour_progress">%1$d de %2$d</string>
+    <string name="tour_done">Listo</string>
+    <string name="tour_new_sync">Una sincronización copia una playlist en otro servicio y la mantiene al día: todo empieza en Nueva sincronización.</string>
+    <string name="tour_accounts">Conecta tus servicios en Cuentas: inicias sesión en la página de cada servicio y en este teléfono solo queda un token cifrado.</string>
+    <string name="tour_source">Elige qué copiar: una playlist, Canciones que te gustan, o álbumes y artistas en Biblioteca.</string>
+    <string name="tour_target">Elige adónde va y revisa el servicio preseleccionado: File es una lista guardada en este teléfono.</string>
+    <string name="tour_schedule">Deja Solo manual en tu primera sincronización; una programación que añadas después empieza pocos minutos tras guardar.</string>
+    <string name="tour_mirror">Con Replicar eliminaciones desactivado, Trackhop solo añade: la opción segura para una primera sincronización.</string>
+    <string name="tour_save">Guardar abre la vista previa, que muestra qué cambiaría y pregunta por las coincidencias dudosas antes de que pase nada.</string>
+    <string name="tour_results">Después de la ejecución, la tarjeta muestra los números, y una etiqueta como No encontradas te lleva a lo que hay que revisar. Más en Ajustes › Cómo se hace.</string>
 </resources>

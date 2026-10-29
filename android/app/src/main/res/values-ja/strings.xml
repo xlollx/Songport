@@ -1125,4 +1125,17 @@
     <string name="howto_plugins_play">Trackhop はプラグインを同梱せず、ダウンロードも推奨もしません。\n• インストールしたプラグインは、提供するサービスと一緒に「設定 › プラグイン」に表示されます。\n• それらのサービスは、ほかのサービスと同じように「アカウント › コネクタを追加」に表示されます。\n• このバージョンだけでは接続できないサービスは「このバージョンでは利用できません」に表示されます。\n• プラグインを削除するとそのサービスの接続が解除され、それを使う同期は失敗するようになります。</string>
     <string name="howto_plugins_full">このバージョンにはウェブ用のコネクタが組み込まれているので、プラグインは不要です。すべての通信とログインは Trackhop の中で完結し、インストール済みのプラグインは使われません。</string>
     <string name="howto_guides">ガイド</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">使い方を案内して</string>
+    <string name="tour_offer_summary">実際の画面で、はじめての同期を8ステップで案内します。</string>
+    <string name="tour_progress">%1$d / %2$d</string>
+    <string name="tour_done">完了</string>
+    <string name="tour_new_sync">同期はプレイリストを別のサービスにコピーして最新に保つ機能で、すべては「新しい同期」から始まります。</string>
+    <string name="tour_accounts">「アカウント」でサービスを接続します。ログインは各サービスのページで行い、この端末には暗号化されたトークンだけが残ります。</string>
+    <string name="tour_source">コピーするものを選びます。プレイリスト、お気に入りの曲、またはライブラリのアルバムやアーティストです。</string>
+    <string name="tour_target">追加先を選び、自動で選ばれたサービスを確認します。File はこの端末に保存されるリストです。</string>
+    <string name="tour_schedule">はじめての同期では「手動のみ」のままにしましょう。あとで追加したスケジュールは保存の数分後に始まります。</string>
+    <string name="tour_mirror">「削除も反映」がオフなら Trackhop は追加だけを行うので、はじめての同期には安全な設定です。</string>
+    <string name="tour_save">保存するとプレビューが開き、何かが起きる前に、変わる内容の表示と不確かな一致の確認が行われます。</string>
+    <string name="tour_results">実行後、カードに数字が表示され、「見つからず」などのラベルから確認が必要な画面に移動できます。詳しくは「設定 › 使い方」へ。</string>
 </resources>

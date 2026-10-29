@@ -1145,4 +1145,17 @@
     <string name="howto_plugins_play">Trackhop does not include, download or recommend any plugin.\n• An installed plugin appears in Settings › Plugins, with the services it provides.\n• Those services then appear in Accounts › Add connector, like any other.\n• Services this version cannot reach on its own are listed as Not available in this version.\n• Removing the plugin disconnects its services, and syncs that use them will fail.</string>
     <string name="howto_plugins_full">In this version the web connectors are built in, so no plugin is needed: every call and every sign-in stays inside Trackhop, and an installed plugin is not used.</string>
     <string name="howto_guides">Guides</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">Show me around</string>
+    <string name="tour_offer_summary">A guided first sync over the real screens, in 8 steps.</string>
+    <string name="tour_progress">%1$d of %2$d</string>
+    <string name="tour_done">Done</string>
+    <string name="tour_new_sync">A sync copies a playlist to another service and keeps it up to date: it all starts from New sync.</string>
+    <string name="tour_accounts">Connect your services in Accounts: you sign in on each service’s own page, and only an encrypted token stays on this phone.</string>
+    <string name="tour_source">Pick what to copy: a playlist, Liked songs, or albums and artists under Library.</string>
+    <string name="tour_target">Choose where it goes, and check the preselected service: File means a list kept on this phone.</string>
+    <string name="tour_schedule">Keep Manual only for your first sync; a schedule you add later starts within minutes of saving.</string>
+    <string name="tour_mirror">With Mirror removals off, Trackhop only adds, which is the safe choice for a first sync.</string>
+    <string name="tour_save">Save opens the preview, which shows what would change and asks about uncertain matches before anything happens.</string>
+    <string name="tour_results">After the run the card shows the numbers, and a pill such as Not found leads you to whatever needs a look. More in Settings › How to.</string>
 </resources>

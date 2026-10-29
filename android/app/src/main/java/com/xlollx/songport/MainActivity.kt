@@ -78,6 +78,7 @@ import com.xlollx.songport.sync.Scheduler
 import com.xlollx.songport.sync.SyncWorker
 import com.xlollx.songport.ui.AccountsScreen
 import com.xlollx.songport.ui.Helps
+import com.xlollx.songport.ui.tourTarget
 import com.xlollx.songport.ui.AddTrackDialog
 import com.xlollx.songport.ui.AppTopBar
 import com.xlollx.songport.ui.AppTheme
@@ -162,7 +163,11 @@ class MainActivity : ComponentActivity() {
             }
             AppTheme(mode = themeMode, dynamicColor = settings.settings.dynamicColor) {
                 val isLocked by locked.collectAsState()
-                if (isLocked) LockScreen { requestUnlock() } else MainScreen(messages, tabRequests, sharedText, newSyncRequests, toolRequests)
+                if (isLocked) LockScreen { requestUnlock() } else Box(Modifier.fillMaxSize()) {
+                    MainScreen(messages, tabRequests, sharedText, newSyncRequests, toolRequests)
+                    // The guided first sync, over every screen of the app; nothing unless started.
+                    com.xlollx.songport.ui.TourOverlay()
+                }
             }
         }
     }
@@ -370,8 +375,21 @@ private fun MainScreen(
         }
     }
 
+    // The guided first sync: each step brings its screen (the Syncs tab, then a new sync's editor).
+    val tourStep by com.xlollx.songport.ui.Tour.step.collectAsState()
+    LaunchedEffect(tourStep) {
+        when (tourStep?.let { com.xlollx.songport.ui.Tour.steps[it].target }) {
+            com.xlollx.songport.ui.TourTarget.NEW_SYNC -> { howToOpen = false; tab = MainActivity.TAB_SYNCS }
+            com.xlollx.songport.ui.TourTarget.EDITOR_SOURCE -> if (editing == null) editing = newJob()
+            else -> {}
+        }
+    }
+
     if (!data.settings.onboardingDone) {
-        OnboardingScreen { store.updateSettings { it.copy(onboardingDone = true) } }
+        OnboardingScreen(
+            onDone = { store.updateSettings { it.copy(onboardingDone = true) } },
+            onTour = { store.updateSettings { it.copy(onboardingDone = true) }; com.xlollx.songport.ui.Tour.start() },
+        )
         return
     }
     sharedTrack?.let { (p, t) ->
@@ -469,7 +487,9 @@ private fun MainScreen(
                 unmatched != null -> UnmatchedScreen(unmatched) { unmatchedReport = null }
                 filesOpen -> FilesScreen { filesOpen = false }
                 logOpen -> LogScreen(data, onClose = { logOpen = false }) { unmatchedReport = it }
-                howToOpen -> com.xlollx.songport.ui.HowToScreen(onClose = { howToOpen = false })
+                howToOpen -> com.xlollx.songport.ui.HowToScreen(onClose = { howToOpen = false }) {
+                    com.xlollx.songport.ui.TourOffer { com.xlollx.songport.ui.Tour.start() }
+                }
                 manage != null -> PlaylistsScreen(manage) { manageProvider = null }
                 scan != null -> LibraryScanScreen(scan) { scanProvider = null }
                 unplayable != null -> UnplayableScreen(unplayable) { unplayableProvider = null }
@@ -554,6 +574,7 @@ private fun MainScreen(
                     tabs.forEach { (label, icon, index) ->
                         val name = stringResource(label)
                         NavigationBarItem(
+                            modifier = if (index == MainActivity.TAB_ACCOUNTS) Modifier.tourTarget(com.xlollx.songport.ui.TourTarget.ACCOUNTS_TAB) else Modifier,
                             selected = tab == index,
                             onClick = { tab = index },
                             icon = { Icon(icon, contentDescription = if (bigText) name else null) },
@@ -567,6 +588,7 @@ private fun MainScreen(
         floatingActionButton = {
             when (tab) {
                 MainActivity.TAB_SYNCS -> ExtendedFloatingActionButton(
+                    modifier = Modifier.tourTarget(com.xlollx.songport.ui.TourTarget.NEW_SYNC),
                     onClick = { startNewSync() },
                     // The extended button clears its text from the semantics: the icon names it for TalkBack.
                     icon = { Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.new_sync)) },
@@ -605,6 +627,8 @@ private fun MainScreen(
                     onOpenTarget = { targetJob = it },
                     onStats = { statsOpen = true },
                     onOpenLog = { logOpen = true },
+                    // Offered on the empty tab until the tour has been taken or skipped once.
+                    onTour = if (!data.settings.tourDone) ({ com.xlollx.songport.ui.Tour.start() }) else null,
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
                 MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks, onSubpage = { toolSubpage = it }, onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS }, onStats = { statsOpen = true }, onCompareClosed = { compareLinks = null })

@@ -1145,4 +1145,17 @@
     <string name="howto_plugins_play">Trackhop non include, non scarica e non consiglia alcun plugin.\n• Un plugin installato compare in Opzioni › Plugin, con i servizi che offre.\n• Quei servizi compaiono poi in Account › Aggiungi connettore, come tutti gli altri.\n• I servizi che questa versione non raggiunge da sola sono elencati in Non disponibili in questa versione.\n• Se togli il plugin, i suoi servizi vengono scollegati e le sync che li usano non riusciranno.</string>
     <string name="howto_plugins_full">In questa versione i connettori web sono integrati, quindi non serve alcun plugin: ogni chiamata e ogni accesso restano dentro Trackhop, e un plugin installato non viene usato.</string>
     <string name="howto_guides">Guide</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">Visita guidata</string>
+    <string name="tour_offer_summary">Una prima sync guidata sulle schermate vere, in 8 passi.</string>
+    <string name="tour_progress">%1$d di %2$d</string>
+    <string name="tour_done">Fatto</string>
+    <string name="tour_new_sync">Una sync copia una playlist su un altro servizio e la tiene aggiornata: tutto parte da Nuova sync.</string>
+    <string name="tour_accounts">Collega i tuoi servizi in Account: accedi sulla pagina di ciascun servizio, e su questo telefono resta solo un token cifrato.</string>
+    <string name="tour_source">Scegli cosa copiare: una playlist, i Brani preferiti, oppure album e artisti in Libreria.</string>
+    <string name="tour_target">Scegli dove va, e controlla il servizio proposto: File è un elenco tenuto su questo telefono.</string>
+    <string name="tour_schedule">Per la prima sync tieni Solo manuale; una pianificazione aggiunta dopo parte pochi minuti dopo il salvataggio.</string>
+    <string name="tour_mirror">Con Rispecchia le rimozioni spento Trackhop aggiunge soltanto: la scelta sicura per una prima sync.</string>
+    <string name="tour_save">Salva apre l\'anteprima, che mostra cosa cambierebbe e chiede degli abbinamenti incerti prima che succeda qualcosa.</string>
+    <string name="tour_results">Dopo l\'esecuzione la scheda mostra i numeri, e un\'etichetta come Non trovati ti porta a ciò che va guardato. Altro in Opzioni › Come fare.</string>
 </resources>

@@ -1187,4 +1187,17 @@
     <string name="howto_plugins_play">Trackhop nie zawiera, nie pobiera i nie poleca żadnych wtyczek.\n• Zainstalowana wtyczka pojawia się w Ustawienia › Wtyczki, razem z serwisami, które udostępnia.\n• Te serwisy pojawiają się potem w Konta › Dodaj konektor, jak wszystkie inne.\n• Serwisy, do których ta wersja nie dociera sama, są wymienione w sekcji Niedostępne w tej wersji.\n• Po usunięciu wtyczki jej serwisy zostają rozłączone, a synchronizacje, które ich używają, przestaną działać.</string>
     <string name="howto_plugins_full">W tej wersji konektory webowe są wbudowane, więc żadna wtyczka nie jest potrzebna: każde wywołanie i każde logowanie zostaje w Trackhop, a zainstalowana wtyczka nie jest używana.</string>
     <string name="howto_guides">Poradniki</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">Oprowadź mnie</string>
+    <string name="tour_offer_summary">Pierwsza synchronizacja z przewodnikiem, na prawdziwych ekranach, w 8 krokach.</string>
+    <string name="tour_progress">%1$d z %2$d</string>
+    <string name="tour_done">Gotowe</string>
+    <string name="tour_new_sync">Synchronizacja kopiuje playlistę do innego serwisu i utrzymuje ją aktualną: wszystko zaczyna się od Nowa synchronizacja.</string>
+    <string name="tour_accounts">Połącz swoje serwisy w Kontach: logujesz się na stronie każdego serwisu, a na tym telefonie zostaje tylko zaszyfrowany token.</string>
+    <string name="tour_source">Wybierz, co skopiować: playlistę, Polubione utwory albo albumy i wykonawców w Bibliotece.</string>
+    <string name="tour_target">Wybierz, dokąd ma trafić, i sprawdź wybrany serwis: File to lista przechowywana na tym telefonie.</string>
+    <string name="tour_schedule">Przy pierwszej synchronizacji zostaw Tylko ręcznie; harmonogram dodany później startuje kilka minut po zapisaniu.</string>
+    <string name="tour_mirror">Gdy Odzwierciedlaj usunięcia jest wyłączone, Trackhop tylko dodaje: to bezpieczny wybór na pierwszą synchronizację.</string>
+    <string name="tour_save">Zapisz otwiera podgląd, który pokazuje, co by się zmieniło, i pyta o niepewne dopasowania, zanim cokolwiek się stanie.</string>
+    <string name="tour_results">Po uruchomieniu karta pokazuje liczby, a etykieta taka jak Nieznalezione prowadzi do tego, co wymaga uwagi. Więcej w Ustawienia › Jak to zrobić.</string>
 </resources>

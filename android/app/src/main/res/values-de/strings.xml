@@ -1145,4 +1145,17 @@
     <string name="howto_plugins_play">Trackhop enthält, lädt und empfiehlt keine Plugins.\n• Ein installiertes Plugin erscheint unter Einstellungen › Plugins, mit den Diensten, die es bereitstellt.\n• Diese Dienste erscheinen dann unter Konten › Connector hinzufügen, wie alle anderen.\n• Dienste, die diese Version nicht aus eigener Kraft erreicht, stehen unter „In dieser Version nicht verfügbar“.\n• Entfernst du das Plugin, werden seine Dienste getrennt, und Syncs, die sie nutzen, schlagen fehl.</string>
     <string name="howto_plugins_full">In dieser Version sind die Web-Connectors eingebaut, ein Plugin ist also nicht nötig: Jeder Aufruf und jede Anmeldung bleibt in Trackhop, und ein installiertes Plugin wird nicht verwendet.</string>
     <string name="howto_guides">Anleitungen</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">Kurzer Rundgang</string>
+    <string name="tour_offer_summary">Ein geführter erster Sync auf den echten Bildschirmen, in 8 Schritten.</string>
+    <string name="tour_progress">%1$d von %2$d</string>
+    <string name="tour_done">Fertig</string>
+    <string name="tour_new_sync">Ein Sync kopiert eine Playlist zu einem anderen Dienst und hält sie aktuell – alles beginnt mit „Neuer Sync“.</string>
+    <string name="tour_accounts">Verbinde deine Dienste unter Konten: Du meldest dich auf der Seite jedes Dienstes an, und auf diesem Handy bleibt nur ein verschlüsseltes Token.</string>
+    <string name="tour_source">Wähle, was kopiert wird: eine Playlist, die Lieblingssongs oder Alben und Künstler unter Mediathek.</string>
+    <string name="tour_target">Wähle, wohin es geht, und prüfe den vorausgewählten Dienst: „File“ ist eine Liste auf diesem Handy.</string>
+    <string name="tour_schedule">Lass beim ersten Sync „Nur manuell“ stehen; ein später hinzugefügter Zeitplan startet wenige Minuten nach dem Speichern.</string>
+    <string name="tour_mirror">Mit ausgeschaltetem „Entfernungen spiegeln“ fügt Trackhop nur hinzu – die sichere Wahl für den ersten Sync.</string>
+    <string name="tour_save">Speichern öffnet die Vorschau, die zeigt, was sich ändern würde, und nach unsicheren Zuordnungen fragt, bevor etwas passiert.</string>
+    <string name="tour_results">Nach dem Lauf zeigt die Karte die Zahlen, und eine Markierung wie „Nicht gefunden“ führt dich zu dem, was du ansehen solltest. Mehr unter Einstellungen › So geht\'s.</string>
 </resources>
