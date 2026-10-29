@@ -1,0 +1,1 @@
+SoundCloud: ora l'accesso fatto sul sito per cellulari di SoundCloud viene riconosciuto, e la schermata si chiude da sola appena sei dentro. Il pulsante "Listen in app" non ti porta più fuori dall'accesso.
