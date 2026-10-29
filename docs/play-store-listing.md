@@ -177,8 +177,10 @@ has run.
    (`fastlane/metadata/android/*/changelogs/<versionCode>.txt` is a good start), countries (all),
    roll out. First review takes from a few hours to a week.
 9. **AdMob**: AdMob account, app *Trackhop* (Android), one banner ad unit; the ids go to the repository
-   variables `ADMOB_APP_ID` and `ADMOB_BANNER_ID` before the production build (without them the build
-   uses Google's test ids, which is fine for the closed test). Publish the GDPR message under
+   variables `ADMOB_APP_ID` and `ADMOB_BANNER_ID` if they differ from the defaults in
+   `android/app/build.gradle`. Release builds show Google's **test** ads until the repository
+   variable `ADMOB_LIVE` is set to `true`: keep it off for the closed test (testers, paid ones above
+   all, tapping real ads would count as invalid traffic) and turn it on for the first production AAB. Publish the GDPR message under
    Privacy & messaging (the app shows it through UMP). After the listing is live, link the AdMob app
    to the Play listing.
 10. **Later**: keep `docs/privacy-policy.md` online at the same URL; every release goes through CI the
