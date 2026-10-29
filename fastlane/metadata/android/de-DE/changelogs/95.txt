@@ -1,0 +1,1 @@
+SoundCloud: Eine Anmeldung auf der mobilen SoundCloud-Seite wird jetzt erkannt, und der Bildschirm schließt sich von selbst. Die Schaltfläche „Listen in app“ führt nicht mehr aus der Anmeldung heraus.

@@ -1,0 +1,1 @@
+SoundCloud : la connexion sur le site mobile de SoundCloud est désormais reconnue, et l'écran se ferme tout seul une fois connecté. Le bouton « Listen in app » ne fait plus sortir de la connexion.

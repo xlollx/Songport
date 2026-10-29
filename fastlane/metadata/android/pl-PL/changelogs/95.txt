@@ -1,0 +1,1 @@
+SoundCloud: logowanie na mobilnej stronie SoundCloud jest teraz rozpoznawane, a ekran zamyka się sam po zalogowaniu. Przycisk „Listen in app” nie wyprowadza już z logowania.

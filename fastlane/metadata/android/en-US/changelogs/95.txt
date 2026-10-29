@@ -1,0 +1,1 @@
+SoundCloud: signing in on SoundCloud's mobile site is now recognised, and the screen closes by itself once you are in. The "Listen in app" button no longer takes you out of the sign-in.

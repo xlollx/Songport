@@ -1,0 +1,1 @@
+SoundCloud: ahora se reconoce el inicio de sesión en el sitio móvil de SoundCloud y la pantalla se cierra sola al entrar. El botón "Listen in app" ya no te saca del inicio de sesión.
