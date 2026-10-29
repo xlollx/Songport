@@ -1116,7 +1116,7 @@
     <string name="howto_accounts_title">계정과 내 키</string>
     <string name="howto_accounts_summary">커넥터, 연결 경로, 키, 보안.</string>
     <string name="howto_accounts_body"># 커넥터\n커넥터는 한 서비스의 한 계정이에요. 서비스가 허용하면 여러 개를 추가할 수 있어요. 예를 들어 Spotify 계정 두 개를 각자 다른 이름으로 쓸 수 있어요.\n# 연결 경로\n어떤 서비스는 두 가지 방법으로 연결할 수 있어요. 빠른 경로: 서비스 페이지에서 로그인만 하면 되고 만들 것이 없지만, 사이트가 바뀌면 작동하지 않을 수 있어요. 공식 경로: 내 이름으로 만든 무료 키로 쓰는 서비스 API예요. 더 안정적이고 설정에 몇 분 걸려요.</string>
-    <string name="howto_accounts_full">이 버전에는 Spotify, YouTube Music, Amazon Music, Apple Music의 빠른 경로가 기본으로 들어 있어요.</string>
+    <string name="howto_accounts_full">이 버전에는 Spotify, YouTube Music, Amazon Music, Apple Music, Deezer의 빠른 경로와 내 계정으로 쓰는 SoundCloud가 기본으로 들어 있어요. Deezer (web)와 SoundCloud는 베타예요.</string>
     <string name="howto_accounts_body2"># 내 키\nTrackhop에는 자체 키가 없어요. 설정 가이드가 서비스 개발자 페이지를 안내해요. 그곳에 리디렉션 URI를 정확히 복사한 뒤, 여기에 Client ID(요청하면 secret도)를 붙여 넣으세요.\n• Spotify는 Premium 계정만 키를 만들 수 있어요.\n• Apple 개발자 토큰은 길어야 6개월 뒤에 만료돼요. 새 토큰은 설정 › 고급 › 서비스 키에 붙여 넣으세요.\n• YouTube 공식 경로에서는 하루 할당량이 온전히 내 것이고, 단위로 계산돼요.\n내 서버(Jellyfin, Plex, Navidrome 등)는 주소, 사용자 이름, 비밀번호나 토큰이 필요해요.\n# 계정을 안전하게\n비밀번호는 서비스 자체 페이지에서 입력하고, Trackhop에는 절대 입력하지 않아요. 토큰은 휴대폰에 암호화되어 있고 Trackhop 서버는 없어요. 연결 테스트로 커넥터를 확인할 수 있어요. 연결 해제는 로그인 정보를 지우고, 이 계정 삭제는 카드까지 없애요. 설정 › 고급 › 개발자 도구 표시 › 연결 보기에서 앱이 접속한 모든 호스트를 볼 수 있어요.</string>
     <string name="howto_plugins_title">플러그인</string>
     <string name="howto_plugins_summary">다른 앱이 서비스를 추가하는 방법.</string>

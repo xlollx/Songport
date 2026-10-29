@@ -1117,7 +1117,7 @@
     <string name="howto_accounts_title">アカウントと自分のキー</string>
     <string name="howto_accounts_summary">コネクタ、接続ルート、キー、セキュリティ。</string>
     <string name="howto_accounts_body"># コネクタ\nコネクタは1つのサービスの1つのアカウントです。サービスが対応していれば複数追加でき、たとえば2つの Spotify アカウントをそれぞれ別の名前で使えます。\n# 接続ルート\n2通りの方法で接続できるサービスがあります。かんたんルート：サービス自身のページでログインするだけで作成するものはありませんが、サイトが変わると使えなくなることがあります。公式ルート：あなた名義の無料キーを使うサービスの API です。より安定していて、設定は数分です。</string>
-    <string name="howto_accounts_full">このバージョンには、Spotify、YouTube Music、Amazon Music、Apple Music のかんたんルートが組み込まれています。</string>
+    <string name="howto_accounts_full">このバージョンには、Spotify、YouTube Music、Amazon Music、Apple Music、Deezer のかんたんルートと、あなたのアカウントで使う SoundCloud が組み込まれています。Deezer (web) と SoundCloud はベータ版です。</string>
     <string name="howto_accounts_body2"># 自分のキー\nTrackhop 自体はキーを持っていません。設定ガイドがサービスの開発者ページを案内するので、そこにリダイレクト URI を正確にコピーし、ここに Client ID（求められた場合は secret も）を貼り付けます。\n• Spotify では、キーを作成できるのは Premium アカウントだけです。\n• Apple の開発者トークンは最長6か月で期限が切れます。新しいトークンは「設定 › 詳細設定 › サービスのキー」に貼り付けます。\n• YouTube の公式ルートでは、1日の割り当てはあなた専用で、ユニット単位で数えます。\n自分のサーバー（Jellyfin、Plex、Navidrome など）には、アドレス、ユーザー名、パスワードまたはトークンが必要です。\n# アカウントを安全に\nパスワードはサービス自身のページで入力し、Trackhop に入力することはありません。トークンは端末内で暗号化され、Trackhop のサーバーはありません。「接続をテスト」でコネクタを確認できます。「接続解除」はログイン情報を削除し、「このアカウントを削除」はカードも削除します。「設定 › 詳細設定 › 開発者向けツールを表示 › 接続を表示」で、アプリが接続したすべてのホストを確認できます。</string>
     <string name="howto_plugins_title">プラグイン</string>
     <string name="howto_plugins_summary">別のアプリがサービスを追加するしくみ。</string>

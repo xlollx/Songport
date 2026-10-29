@@ -35,14 +35,17 @@ import com.xlollx.songport.model.SyncJob
 import com.xlollx.songport.model.SyncReport
 import com.xlollx.songport.providers.AppleBridgeProvider
 import com.xlollx.songport.providers.AppleMusicProvider
+import com.xlollx.songport.providers.DeezerBridgeProvider
 import com.xlollx.songport.providers.LastFmProvider
 import com.xlollx.songport.providers.ListenBrainzProvider
 import com.xlollx.songport.providers.PlexProvider
 import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.providers.Providers.Factory
+import com.xlollx.songport.providers.SoundCloudBridgeProvider
 import com.xlollx.songport.providers.SpotifyBridgeProvider
 import com.xlollx.songport.providers.SubsonicProvider
 import com.xlollx.songport.providers.TidalProvider
+import com.xlollx.songport.sync.SoundCloudPublic
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -134,6 +137,9 @@ class StoreScreenshots {
                 Factory("amazon") { amazon },
                 Factory(TidalProvider.SERVICE) { TidalProvider(it) },
                 Factory("deezer") { deezer },
+                // The web connectors of 1.3.0, for the service picker: nothing signed in, nothing fetched.
+                Factory(DeezerBridgeProvider.SERVICE) { DeezerBridgeProvider(it) },
+                Factory(SoundCloudPublic.SERVICE) { SoundCloudBridgeProvider(it) },
                 Factory(SubsonicProvider.SERVICE) { SubsonicProvider(it) },
                 Factory("jellyfin") { jellyfin },
                 Factory(PlexProvider.SERVICE) { PlexProvider(it) },
