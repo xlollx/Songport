@@ -86,11 +86,15 @@ Listings to ask for once the F-Droid page is live (each is a pull request or a f
 - [ ] **Navidrome**: the apps page of the documentation (navidrome/website repository), as a tool that syncs streaming playlists into Navidrome.
 - [ ] **Jellyfin**: the third-party clients list on jellyfin.org (jellyfin/jellyfin.org repository), and awesome-jellyfin.
 - [ ] **Awesome lists on GitHub**: offa/android-foss, pcqpcq/open-source-android-apps (Multimedia), and any awesome-subsonic or self-hosted music list; read each one's contributing rules first.
-- [ ] **AlternativeTo**: listed as an alternative to Soundiiz, TuneMyMusic and FreeYourMusic.
+- [x] **AlternativeTo**: listed as an alternative to Soundiiz, TuneMyMusic, FreeYourMusic, SongShift, Spotlistr and Playlist Converter (renamed to Trackhop on 30/10/2026).
 - [ ] **IzzyOnDroid** repository (request on its GitLab issue tracker).
 - [ ] Posts: r/fossdroid, r/androidapps, r/navidrome, r/jellyfin, r/selfhosted (its weekly thread), Lemmy c/android and c/fdroid, Mastodon #FDroid; Show HN once.
 - [x] A short demo GIF at the top of the README (`docs/store/demo.gif`; `scripts/readme_demo.sh recording.mp4` makes a new one).
-- [ ] Repository topics and social preview image (Settings: About, and Social preview with `docs/store/feature_en.png`).
+- [x] Repository social preview image (`docs/store/social_preview.png`).
+- [x] **Google Search Console**: the project site verified (file and HTML tag), sitemap sent (30/10/2026).
+- [x] Step-by-step guides for the searches people make (Spotify to YouTube Music, Apple Music to Spotify, Spotify to TIDAL, to Navidrome/Jellyfin/Plex, export to CSV/M3U).
+- [ ] Repository topics (Settings: About).
+- [ ] A domain of its own (trackhop.org chosen, not bought yet), pointed at the same GitHub Pages site.
 
 ## Name
 
