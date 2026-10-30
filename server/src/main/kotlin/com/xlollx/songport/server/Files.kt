@@ -98,6 +98,7 @@ internal fun Web.tools(r: Web.Req, rest: List<String>) {
         "export" -> exportTool(r)
         "task" -> taskPage(r, rest.getOrNull(1).orEmpty())
         "backup", "dedupe", "unplayable" -> toolPage(r, rest[0])
+        "ai" -> aiTool(r)
         else -> send(r.ex, 404, page("Not found", """<p><a href="/tools">Back</a></p>"""))
     }
 }
@@ -109,6 +110,8 @@ private fun Web.toolsIndex(r: Web.Req) {
     body.append("<h2>Move</h2>")
     tool("/tools/export", "Export a playlist", "Any playlist of a connected service as CSV, M3U, XSPF, JSPF or plain text, or saved into File.")
     tool("/connectors/csv", "File playlists", "Upload a playlist file to sync it anywhere; download the ones Trackhop saved.")
+    body.append("<h2>Make</h2>")
+    tool("/tools/ai", "AI playlist", "Describe a playlist; your own AI writes it (free tiers and local models work) and Trackhop creates it on a service.")
     body.append("<h2>Clean up</h2>")
     tool("/tools/dedupe", "Duplicates", "The tracks a playlist has more than once, and the extra copies removed.")
     tool("/tools/unplayable", "Unplayable tracks", "The tracks a service still lists but no longer plays, replaced by a playable version.")

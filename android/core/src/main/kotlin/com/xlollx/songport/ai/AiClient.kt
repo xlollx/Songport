@@ -1,8 +1,7 @@
 package com.xlollx.songport.ai
 
 import com.xlollx.songport.providers.*
-import android.content.Context
-import com.xlollx.songport.data.TokenStore
+import com.xlollx.songport.platform.Env
 import com.xlollx.songport.data.Tokens
 import com.xlollx.songport.model.ProviderException
 import com.xlollx.songport.model.Track
@@ -70,7 +69,7 @@ object AiClient {
 
     private const val STORE_ID = "__ai__"
 
-    fun config(ctx: Context): Config? = TokenStore(ctx).get(STORE_ID)?.let { t ->
+    fun config(env: Env): Config? = env.tokens.get(STORE_ID)?.let { t ->
         Config(
             vendor = runCatching { Vendor.valueOf(t.extra["vendor"] ?: "") }.getOrDefault(Vendor.OPENAI),
             apiKey = t.accessToken,
@@ -80,11 +79,11 @@ object AiClient {
         )
     }
 
-    fun save(ctx: Context, c: Config) {
-        TokenStore(ctx).set(STORE_ID, Tokens(accessToken = c.apiKey, extra = mapOf("vendor" to c.vendor.name, "model" to c.model, "baseUrl" to c.baseUrl, "imageModel" to c.imageModel)))
+    fun save(env: Env, c: Config) {
+        env.tokens.set(STORE_ID, Tokens(accessToken = c.apiKey, extra = mapOf("vendor" to c.vendor.name, "model" to c.model, "baseUrl" to c.baseUrl, "imageModel" to c.imageModel)))
     }
 
-    fun clear(ctx: Context) = TokenStore(ctx).clear(STORE_ID)
+    fun clear(env: Env) = env.tokens.clear(STORE_ID)
 
     // Generare 50 brani puo' prendere piu' dei 40 s del client condiviso.
     private val client = Http.client.newBuilder().readTimeout(180, TimeUnit.SECONDS).build()

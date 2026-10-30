@@ -1,7 +1,7 @@
 package com.xlollx.songport.ai
 
 import com.xlollx.songport.providers.*
-import android.content.Context
+import com.xlollx.songport.platform.Env
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.sync.Matcher
@@ -30,7 +30,7 @@ object AiMatch {
      * are the service's own, ready to add; [Result.missing] is what the service never had.
      */
     suspend fun available(
-        ctx: Context, c: AiClient.Config, provider: MusicProvider, prompt: AiClient.Prompt, existing: List<Track>,
+        ctx: Env, c: AiClient.Config, provider: MusicProvider, prompt: AiClient.Prompt, existing: List<Track>,
         onProgress: (found: Int, wanted: Int) -> Unit = { _, _ -> },
     ): Result {
         val want = prompt.count
@@ -58,7 +58,7 @@ object AiMatch {
         return Result(found, missing, alreadyThere)
     }
 
-    suspend fun match(ctx: Context, provider: MusicProvider, proposals: List<Track>, existing: List<Track> = emptyList(), onProgress: (Int, Int) -> Unit = { _, _ -> }): Result {
+    suspend fun match(ctx: Env, provider: MusicProvider, proposals: List<Track>, existing: List<Track> = emptyList(), onProgress: (Int, Int) -> Unit = { _, _ -> }): Result {
         val found = ArrayList<Track>()
         val missing = ArrayList<Track>()
         var alreadyThere = 0

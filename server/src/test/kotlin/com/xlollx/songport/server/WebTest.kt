@@ -210,4 +210,30 @@ class WebTest {
         assertEquals(200, get("/tools/unplayable").statusCode())
         assertEquals(200, get("/tools").statusCode())
     }
+
+    @Test fun aiPlaylistWithALocalOpenAiCompatibleModel() {
+        // A stand-in for Ollama: whatever it is asked, three tracks.
+        val ai = HttpServer.create(java.net.InetSocketAddress("127.0.0.1", 0), 0)
+        ai.createContext("/v1/chat/completions") { ex ->
+            val content = "[{\\\"artist\\\":\\\"Band\\\",\\\"title\\\":\\\"One\\\"},{\\\"artist\\\":\\\"Band\\\",\\\"title\\\":\\\"Two\\\"},{\\\"artist\\\":\\\"Other\\\",\\\"title\\\":\\\"Three\\\"}]"
+            val body = """{"choices":[{"message":{"content":"$content"}}]}""".toByteArray()
+            ex.sendResponseHeaders(200, body.size.toLong()); ex.responseBody.use { it.write(body) }
+        }
+        ai.start()
+        try {
+            assertEquals(303, post("/connectors/add", "service=csv", *origin).statusCode())
+            val base = java.net.URLEncoder.encode("http://127.0.0.1:${ai.address.port}/v1", "UTF-8")
+            val saved = post("/tools/ai", "action=settings&vendor=CUSTOM&key=&model=local&base=$base", *origin)
+            assertTrue(saved.headers().firstValue("Location").get(), saved.headers().firstValue("Location").get().contains("ok="))
+            assertTrue(get("/tools/ai").body().contains("Write the playlist"))
+            val started = post("/tools/ai", "action=generate&description=test&count=5&name=From+AI&target=csv", *origin)
+            val task = started.headers().firstValue("Location").get()
+            var page = ""
+            repeat(80) { if (!page.contains("tracks.")) { Thread.sleep(100); page = get(task).body() } }
+            assertTrue(page, page.contains("From AI") && page.contains("3 tracks"))
+            assertTrue(File(data, "csv/From AI.csv").readText().contains("Three"))
+        } finally {
+            ai.stop(0)
+        }
+    }
 }

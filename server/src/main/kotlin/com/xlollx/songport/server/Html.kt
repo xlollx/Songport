@@ -66,7 +66,8 @@ ${refreshSeconds?.let { """<meta http-equiv="refresh" content="$it">""" } ?: ""}
 <h1>${h(title)}</h1>
 $body
 </main>
-<footer>${h(edition.product)} ${h(version)} · alpha · <a href="${edition.guide}">Guide</a> · <a href="https://github.com/xlollx/Trackhop">GitHub</a>${if (edition == Edition.DESKTOP) " · " + postButton("/quit", "Quit Trackhop", "link", confirm = "Stop Trackhop? Scheduled syncs run only while it is running.") else ""}</footer>
+<footer><a class="coffee" href="https://ko-fi.com/xlollx" target="_blank" rel="noopener">☕ Buy me a coffee</a> <span class="muted">Optional: nothing is unlocked, everything stays free.</span><br>
+${h(edition.product)} ${h(version)} · alpha · <a href="${edition.guide}">Guide</a> · <a href="https://github.com/xlollx/Trackhop">GitHub</a> · <a href="https://github.com/sponsors/xlollx" target="_blank" rel="noopener">Sponsor</a>${if (edition == Edition.DESKTOP) " · " + postButton("/quit", "Quit Trackhop", "link", confirm = "Stop Trackhop? Scheduled syncs run only while it is running.") else ""}</footer>
 </body></html>"""
 
     /**
@@ -131,7 +132,9 @@ pre{white-space:pre-wrap;word-break:break-word;font-size:12.5px;background:var(-
 code{background:var(--surface-2);padding:1px 6px;border-radius:6px;word-break:break-all}
 ol li,ul li{margin:4px 0}
 details summary{cursor:pointer}
-footer{max-width:920px;margin:24px auto;padding:0 16px 24px;color:var(--ink-3);font-size:13px}
+footer{max-width:920px;margin:24px auto;padding:0 16px 24px;color:var(--ink-3);font-size:13px;line-height:2}
+.coffee{display:inline-block;padding:4px 12px;border-radius:999px;background:var(--surface-2);color:var(--ink);text-decoration:none;font-weight:600;line-height:1.5}
+.coffee:hover{background:var(--accent-2);color:var(--accent-2-ink)}
 .actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .swatches{display:flex;gap:8px;flex-wrap:wrap}
 .swatches label{margin:0;display:inline-flex;cursor:pointer}
