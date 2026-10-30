@@ -101,6 +101,7 @@ internal fun Web.tools(r: Web.Req, rest: List<String>) {
         "ai" -> aiTool(r)
         "stats" -> statsPage(r)
         "api" -> apiPage(r)
+        "config" -> configPage(r)
         else -> send(r.ex, 404, page("Not found", """<p><a href="/tools">Back</a></p>"""))
     }
 }
@@ -122,7 +123,7 @@ private fun Web.toolsIndex(r: Web.Req) {
     body.append("<h2>Connect</h2>")
     tool("/tools/api", "API and webhook", "Let Home Assistant, n8n or a script start syncs and read how they went; be told when a run ends.")
     body.append("<h2>Safety</h2>")
-    tool("/tools/backup", "Full backup", "Every playlist of a service saved as dated files, by hand or on a schedule, and copied to a folder.")
+    tool("/tools/backup", "Backup &amp; restore", "Your set-up (syncs, settings, chosen matches) in one file to keep or move between the app, Docker and Desktop; your playlists as dated files, now or on a schedule, copied to a folder.")
     send(r.ex, 200, page("Tools", body.toString()))
 }
 

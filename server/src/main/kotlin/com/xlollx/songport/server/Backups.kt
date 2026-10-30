@@ -15,7 +15,7 @@ import java.io.File
  * NAS share): only the files the folder does not have yet, by name, so it keeps every version.
  */
 object Backups {
-    const val TITLE = "Full backup"
+    const val TITLE = "Backup"
 
     /** The services a backup reads: connected, and not File itself. */
     fun services(env: ServerEnv): List<MusicProvider> =
@@ -56,6 +56,9 @@ object Backups {
             val out = File(dir, f.name)
             if (!out.exists()) { f.copyTo(out); n++ }
         }
+        // The set-up of the day: restoring the folder gives the syncs back, not only the playlists.
+        val config = File(dir, com.xlollx.songport.data.ConfigBackup.fileName())
+        if (!config.exists()) { config.writeText(com.xlollx.songport.data.ConfigBackup.export(env, "Trackhop (scheduled backup)")); n++ }
         return n
     }
 

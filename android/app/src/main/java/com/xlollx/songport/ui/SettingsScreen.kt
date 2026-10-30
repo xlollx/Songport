@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Code
@@ -121,6 +122,7 @@ fun SettingsScreen(
     onSetup: (MusicProvider) -> Unit,
     onOpenLog: () -> Unit = {},
     onHowTo: () -> Unit = {},
+    onBackup: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val privacyRequired by Ads.privacyOptionsRequired.collectAsState()
@@ -205,67 +207,14 @@ fun SettingsScreen(
             }
         }
 
-        // ---------------------------------------------------------------- Backups
-        // Where the dated backups also go, outside the phone: SD card, Nextcloud, Drive, any folder app.
-        val folder = settings.backupFolder
-        PrefSection(
-            stringResource(R.string.settings_section_backups), footer = if (folder.isBlank()) stringResource(R.string.backup_folder_desc) else null,
-            help = { HelpButton(Helps.backups) },
-        ) {
-            val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
-                if (uri != null) {
-                    runCatching { ctx.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION) }
-                    store.updateSettings { it.copy(backupFolder = uri.toString()) }
-                    Scheduler.applyBackup(ctx)
-                }
-            }
+        // ---------------------------------------------------------------- Backup & restore
+        // One place for both kinds (BackupScreen): the set-up as a file, and the playlists' backups.
+        PrefSection(stringResource(R.string.backup_title)) {
+            val folder = settings.backupFolder
             PrefRow(
-                Icons.Filled.Folder, stringResource(R.string.backup_folder_title),
-                if (folder.isBlank()) stringResource(R.string.backup_folder_none) else BackupExport.folderLabel(folder),
-                trailing = if (folder.isBlank()) { { TextButton(onClick = { pickFolder.launch(null) }) { Text(stringResource(R.string.backup_folder_pick)) } } } else null,
-            ) { pickFolder.launch(null) }
-            if (folder.isNotBlank()) {
-                // What the last copy did: a date, or the reason it could not (the folder gone, for one).
-                var stateVersion by remember { mutableIntStateOf(0) }
-                val state = remember(stateVersion, folder) { BackupExport.state(ctx) }
-                val lastError = state.lastError
-                when {
-                    lastError != null -> PrefBlock { Text(lastError, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
-                    state.lastOk > 0 -> PrefBlock { Text(stringResource(R.string.backup_last_ok, formatDate(state.lastOk)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                }
-                var scheduleOpen by remember { mutableStateOf(false) }
-                PrefRow(Icons.Filled.Schedule, stringResource(R.string.editor_schedule), scheduleLabel(settings.backupSchedule)) { scheduleOpen = true }
-                if (scheduleOpen) ChoiceDialog(
-                    stringResource(R.string.editor_schedule),
-                    listOf(Schedule.MANUAL, Schedule.DAILY, Schedule.WEEKLY).map { it to scheduleLabel(it) },
-                    settings.backupSchedule,
-                    onDismiss = { scheduleOpen = false },
-                ) { s ->
-                    scheduleOpen = false
-                    store.updateSettings { it.copy(backupSchedule = s) }; Scheduler.applyBackup(ctx)
-                }
-                val exporting by BackupExport.running.collectAsState()
-                val exportStep by BackupExport.step.collectAsState()
-                // The copy runs in the app's scope (see BackupExport.start): its outcome arrives here
-                // whenever the screen is showing, once.
-                val done by BackupExport.finished.collectAsState()
-                LaunchedEffect(done) {
-                    val r = done ?: return@LaunchedEffect
-                    BackupExport.finished.value = null
-                    stateVersion++
-                    snackbar.showSnackbar(if (r.folderMissing) r.failed.first() else ctx.getString(R.string.backup_folder_done, r.services, r.copied) + (if (r.failed.isNotEmpty()) " · " + r.failed.first() else ""))
-                }
-                PrefRow(
-                    Icons.Filled.CloudUpload, stringResource(R.string.backup_folder_now),
-                    if (exporting && exportStep.isNotBlank()) exportStep else stringResource(R.string.backup_folder_hint),
-                    enabled = !exporting,
-                    chevron = false,
-                    trailing = if (exporting) { { CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) } } else null,
-                ) { BackupExport.start(ctx) }
-                PrefRow(Icons.Filled.LinkOff, stringResource(R.string.backup_folder_stop), null, enabled = !exporting, danger = true, chevron = false) {
-                    store.updateSettings { it.copy(backupFolder = "", backupSchedule = Schedule.MANUAL) }; Scheduler.applyBackup(ctx)
-                }
-            }
+                Icons.Filled.Backup, stringResource(R.string.backup_title),
+                if (folder.isNotBlank()) stringResource(R.string.backup_row_folder, BackupExport.folderLabel(folder)) else stringResource(R.string.backup_row_desc),
+            ) { onBackup() }
         }
 
         // ---------------------------------------------------------------- Privacy and security

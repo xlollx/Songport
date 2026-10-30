@@ -1195,4 +1195,24 @@
         <item quantity="other">%d synchros en pause</item>
     </plurals>
     <string name="syncs_running_paused">%1$d en cours · %2$d en pause</string>
+    <string name="backup_title">Sauvegarde et restauration</string>
+    <string name="backup_row_desc">Ta configuration et tes playlists : les sauvegarder, les retrouver</string>
+    <string name="backup_row_folder">Copiées aussi dans %1$s</string>
+    <string name="backup_config_section">Ta configuration</string>
+    <string name="backup_config_desc">Les synchros, les services ajoutés, les correspondances choisies, les titres ignorés, les réglages et les playlists Fichier, dans un seul fichier .trackhop. Pas tes connexions ni tes mots de passe. Trackhop sur un autre téléphone, Docker et Trackhop Desktop le lisent.</string>
+    <string name="backup_config_save">Sauvegarder la configuration dans un fichier</string>
+    <string name="backup_config_restore">Restaurer une configuration depuis un fichier</string>
+    <string name="backup_config_saved">Configuration sauvegardée.</string>
+    <string name="backup_config_confirm_title">Restaurer cette configuration ?</string>
+    <string name="backup_config_confirm_body">%1$d synchros, %2$d correspondances choisies à la main et %3$d playlists Fichier, depuis %4$s. Les synchros déjà là avec le même id sont remplacées, les autres restent ; les playlists Fichier déjà là sont gardées. Tes connexions n\'y sont pas : reconnecte les services ensuite.</string>
+    <string name="backup_config_restore_action">Restaurer</string>
+    <string name="backup_config_restored">Configuration restaurée : %1$d synchros. Reconnecte les services dans Comptes et elles reprennent.</string>
+    <string name="backup_config_invalid">Ce n\'est pas un fichier de configuration Trackhop.</string>
+    <string name="backup_playlists_section">Tes playlists</string>
+    <string name="backup_now">Sauvegarder toutes les playlists maintenant</string>
+    <string name="backup_now_desc">Chaque service connecté, enregistré en fichiers datés dans Fichiers ; avec un dossier choisi ci-dessous, copié aussi là-bas.</string>
+    <string name="backup_now_done">%1$d services sauvegardés</string>
+    <string name="backup_auto_section">Automatiquement</string>
+    <string name="backup_auto_desc">Selon la programmation, chaque service connecté est sauvegardé. Choisis un dossier hors du téléphone (carte SD, Nextcloud, Drive…) et les nouveaux fichiers et la configuration du jour y sont aussi copiés, pour survivre au téléphone.</string>
+    <string name="backup_last_run">Dernière sauvegarde : %1$s</string>
 </resources>

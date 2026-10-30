@@ -97,11 +97,13 @@ object BackupExport {
         }
     }
 
-    /** Aggiorna i backup locali di ogni servizio collegato, poi copia nella cartella i file nuovi. */
+    /**
+     * Aggiorna i backup locali di ogni servizio collegato; con una cartella scelta, ci copia i file
+     * nuovi e la configurazione del giorno (Backup & restore).
+     */
     suspend fun run(ctx: Context, onProgress: (String) -> Unit = {}): Result {
         val folder = Store.get(ctx).data.settings.backupFolder.takeIf { it.isNotBlank() }
-            ?: return Result(0, 0, emptyList())
-        if (!folderReachable(ctx, Uri.parse(folder))) {
+        if (folder != null && !folderReachable(ctx, Uri.parse(folder))) {
             val msg = ctx.getString(com.xlollx.songport.R.string.backup_folder_missing)
             Diagnostics.log(ctx, "backup", "folder not reachable: $folder")
             remember(ctx, msg)
@@ -124,7 +126,7 @@ object BackupExport {
             }
         }
         var copyError: String? = null
-        val copied = try { copyNew(ctx, Uri.parse(folder)) } catch (e: CancellationException) { throw e } catch (e: Exception) {
+        val copied = if (folder == null) 0 else try { copyNew(ctx, Uri.parse(folder)) } catch (e: CancellationException) { throw e } catch (e: Exception) {
             Diagnostics.log(ctx, "backup", "folder copy failed: ${e.message}")
             copyError = e.message ?: e.javaClass.simpleName
             failed += copyError
@@ -152,6 +154,15 @@ object BackupExport {
             val doc = DocumentsContract.createDocument(resolver, dirUri, "text/csv", f.name) ?: continue
             resolver.openOutputStream(doc)?.use { out -> f.inputStream().use { it.copyTo(out) } }
             copied++
+        }
+        // The set-up of the day, once a day: restoring the folder gives the syncs back, not only the playlists.
+        val config = com.xlollx.songport.data.ConfigBackup.fileName()
+        if (config !in existing) {
+            DocumentsContract.createDocument(resolver, dirUri, "application/octet-stream", config)?.let { doc ->
+                val text = com.xlollx.songport.data.ConfigBackup.export(com.xlollx.songport.platform.AndroidEnv.of(ctx), "Trackhop ${com.xlollx.songport.BuildConfig.VERSION_NAME} (Android)")
+                resolver.openOutputStream(doc)?.use { it.write(text.toByteArray()) }
+                copied++
+            }
         }
         copied
     }

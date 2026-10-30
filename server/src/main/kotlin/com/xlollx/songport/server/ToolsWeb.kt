@@ -71,26 +71,28 @@ private fun Web.backupTool(r: Web.Req) {
         }
     }
     val body = StringBuilder(notice(r))
+    body.append(configCards())
     val services = Backups.services(env)
-    body.append("""<div class="card"><p>Saves every playlist and the library (liked songs, albums, artists) of a service as File playlists, one dated version per run; the last ${LocalFilesProvider.KEEP_VERSIONS} versions of each are kept, and an unchanged playlist is not written again. Nothing changes on the service.</p>""")
+    body.append("""<h2>Your playlists</h2><div class="card"><p class="muted">Saves every playlist and the library (liked songs, albums, artists) of a service as File playlists, one dated version per run; the last ${LocalFilesProvider.KEEP_VERSIONS} versions of each are kept, and an unchanged playlist is not written again. Nothing changes on the service.</p>""")
     val last = Backups.lastRun(env)
     body.append("""<p class="muted">Last backup: ${Html.date(last)}</p>""")
     if (services.isEmpty()) body.append("""<p>Connect a service first: <a href="/connectors">Services</a>.</p>""")
     else {
-        body.append("""<div class="actions">${Html.postButton("/tools/backup", "Back up all (${services.size})")}""")
+        body.append("""<div class="actions">${Html.postButton("/tools/backup", "Back up all playlists now (${services.size} services)")}""")
         services.forEach { body.append(Html.postButton("/tools/backup", it.label(env), "secondary", fields = mapOf("service" to it.id))) }
         body.append("</div>")
     }
     body.append("</div>")
     val schedules = BACKUP_SCHEDULES.joinToString("") { s -> """<option value="${s.name}"${if (s == settings.backupSchedule) " selected" else ""}>${scheduleLabel(s)}</option>""" }
     body.append(
-        """<form method="post" action="/tools/backup" class="card"><input type="hidden" name="action" value="settings">
+        """<h2>Automatically</h2><form method="post" action="/tools/backup" class="card"><input type="hidden" name="action" value="settings">
+<p class="muted">On the schedule, every connected service is backed up. With a folder, the new files and the set-up of the day are copied there too.</p>
 <label>Back up every connected service</label><select name="schedule">$schedules</select>
-<label>Also copy the backups to this folder (optional)</label><input type="text" name="folder" value="${h(settings.backupFolder)}" placeholder="/backups">
+<label>Also copy the backups and the set-up to this folder (optional)</label><input type="text" name="folder" value="${h(settings.backupFolder)}" placeholder="/backups">
 <p class="muted">A folder this ${if (env.dataDir.path == "/data") "container" else "computer"} can write to: with Docker, mount one (for example <code>-v /mnt/nas/trackhop:/backups</code>). Only files the folder does not have yet are copied, so it keeps every version.</p>
 <p><button class="secondary">Save</button></p></form>""",
     )
-    send(r.ex, 200, page("Full backup", body.toString()))
+    send(r.ex, 200, page("Backup & restore", body.toString()))
 }
 
 private val BACKUP_SCHEDULES = listOf(Schedule.MANUAL, Schedule.DAILY, Schedule.WEEKLY)

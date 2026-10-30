@@ -1233,4 +1233,24 @@
         <item quantity="other">%d synchronizacji wstrzymanych</item>
     </plurals>
     <string name="syncs_running_paused">%1$d w toku · %2$d wstrzymane</string>
+    <string name="backup_title">Kopia zapasowa i przywracanie</string>
+    <string name="backup_row_desc">Twoja konfiguracja i playlisty: zapisz je i przywróć</string>
+    <string name="backup_row_folder">Kopiowane też do %1$s</string>
+    <string name="backup_config_section">Twoja konfiguracja</string>
+    <string name="backup_config_desc">Synchronizacje, dodane usługi, wybrane dopasowania, pominięte utwory, ustawienia i playlisty Plik w jednym pliku .trackhop. Bez logowań i haseł. Odczyta go Trackhop na innym telefonie, Docker i Trackhop Desktop.</string>
+    <string name="backup_config_save">Zapisz konfigurację do pliku</string>
+    <string name="backup_config_restore">Przywróć konfigurację z pliku</string>
+    <string name="backup_config_saved">Konfiguracja zapisana.</string>
+    <string name="backup_config_confirm_title">Przywrócić tę konfigurację?</string>
+    <string name="backup_config_confirm_body">%1$d synchronizacji, %2$d dopasowań wybranych ręcznie i %3$d playlist Plik, z %4$s. Synchronizacje o tym samym id zostaną zastąpione, pozostałe zostają; istniejące playlisty Plik zostają. Logowań w nim nie ma: połącz potem usługi ponownie.</string>
+    <string name="backup_config_restore_action">Przywróć</string>
+    <string name="backup_config_restored">Konfiguracja przywrócona: %1$d synchronizacji. Połącz ponownie usługi w Kontach i wszystko działa dalej.</string>
+    <string name="backup_config_invalid">To nie jest plik konfiguracji Trackhop.</string>
+    <string name="backup_playlists_section">Twoje playlisty</string>
+    <string name="backup_now">Zrób teraz kopię wszystkich playlist</string>
+    <string name="backup_now_desc">Każda połączona usługa, zapisana jako pliki z datą w Plikach; z wybranym niżej folderem kopiowana także tam.</string>
+    <string name="backup_now_done">Kopia %1$d usług zrobiona</string>
+    <string name="backup_auto_section">Automatycznie</string>
+    <string name="backup_auto_desc">Zgodnie z harmonogramem robiona jest kopia każdej połączonej usługi. Wybierz folder poza telefonem (karta SD, Nextcloud, Drive…), a nowe pliki i dzienna konfiguracja też tam trafią i przetrwają telefon.</string>
+    <string name="backup_last_run">Ostatnia kopia: %1$s</string>
 </resources>

@@ -1231,4 +1231,24 @@
         <item quantity="other">%d синхронизации на паузе</item>
     </plurals>
     <string name="syncs_running_paused">%1$d выполняется · %2$d на паузе</string>
+    <string name="backup_title">Резервная копия и восстановление</string>
+    <string name="backup_row_desc">Ваши настройки и плейлисты: сохранить и вернуть</string>
+    <string name="backup_row_folder">Также копируются в %1$s</string>
+    <string name="backup_config_section">Ваши настройки</string>
+    <string name="backup_config_desc">Синхронизации, добавленные сервисы, выбранные соответствия, пропущенные треки, настройки и плейлисты «Файл» — в одном файле .trackhop. Без входов в аккаунты и паролей. Его читают Trackhop на другом телефоне, Docker и Trackhop Desktop.</string>
+    <string name="backup_config_save">Сохранить настройки в файл</string>
+    <string name="backup_config_restore">Восстановить настройки из файла</string>
+    <string name="backup_config_saved">Настройки сохранены.</string>
+    <string name="backup_config_confirm_title">Восстановить эти настройки?</string>
+    <string name="backup_config_confirm_body">Синхронизаций: %1$d, соответствий, выбранных вручную: %2$d, плейлистов «Файл»: %3$d, из %4$s. Синхронизации с тем же id заменяются, остальные остаются; уже имеющиеся плейлисты «Файл» сохраняются. Входов в аккаунты в файле нет: после этого снова подключите сервисы.</string>
+    <string name="backup_config_restore_action">Восстановить</string>
+    <string name="backup_config_restored">Настройки восстановлены: синхронизаций — %1$d. Снова подключите сервисы в «Аккаунтах», и всё продолжится.</string>
+    <string name="backup_config_invalid">Это не файл настроек Trackhop.</string>
+    <string name="backup_playlists_section">Ваши плейлисты</string>
+    <string name="backup_now">Сделать копию всех плейлистов сейчас</string>
+    <string name="backup_now_desc">Каждый подключённый сервис сохраняется датированными файлами в «Файлах»; если ниже выбрана папка — копируется и туда.</string>
+    <string name="backup_now_done">Копия сделана: сервисов — %1$d</string>
+    <string name="backup_auto_section">Автоматически</string>
+    <string name="backup_auto_desc">По расписанию делается копия каждого подключённого сервиса. Выберите папку вне телефона (SD-карта, Nextcloud, Drive…), и туда будут копироваться новые файлы и настройки за день, чтобы пережить телефон.</string>
+    <string name="backup_last_run">Последняя копия: %1$s</string>
 </resources>

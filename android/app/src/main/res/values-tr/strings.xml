@@ -1185,4 +1185,24 @@
         <item quantity="other">%d eşitleme duraklatıldı</item>
     </plurals>
     <string name="syncs_running_paused">%1$d sürüyor · %2$d duraklatıldı</string>
+    <string name="backup_title">Yedekleme ve geri yükleme</string>
+    <string name="backup_row_desc">Kurulumun ve çalma listelerin: kaydet, geri getir</string>
+    <string name="backup_row_folder">Ayrıca %1$s klasörüne kopyalanır</string>
+    <string name="backup_config_section">Kurulumun</string>
+    <string name="backup_config_desc">Eşitlemeler, eklenen hizmetler, seçtiğin eşleşmeler, yok saydığın parçalar, ayarlar ve Dosya çalma listeleri tek bir .trackhop dosyasında. Oturum açma bilgilerin ve parolaların yok. Başka bir telefondaki Trackhop, Docker ve Trackhop Desktop bu dosyayı okur.</string>
+    <string name="backup_config_save">Kurulumu bir dosyaya kaydet</string>
+    <string name="backup_config_restore">Kurulumu bir dosyadan geri yükle</string>
+    <string name="backup_config_saved">Kurulum kaydedildi.</string>
+    <string name="backup_config_confirm_title">Bu kurulum geri yüklensin mi?</string>
+    <string name="backup_config_confirm_body">%4$s kaynağından %1$d eşitleme, elle seçilmiş %2$d eşleşme ve %3$d Dosya çalma listesi. Aynı kimlikteki eşitlemeler değiştirilir, diğerleri kalır; mevcut Dosya çalma listeleri korunur. Oturumların içinde yok: ardından hizmetleri yeniden bağla.</string>
+    <string name="backup_config_restore_action">Geri yükle</string>
+    <string name="backup_config_restored">Kurulum geri yüklendi: %1$d eşitleme. Hesaplar\'da hizmetleri yeniden bağla, kaldıkları yerden devam ederler.</string>
+    <string name="backup_config_invalid">Bu bir Trackhop kurulum dosyası değil.</string>
+    <string name="backup_playlists_section">Çalma listelerin</string>
+    <string name="backup_now">Tüm çalma listelerini şimdi yedekle</string>
+    <string name="backup_now_desc">Bağlı her hizmet, Dosyalar\'a tarihli dosyalar olarak kaydedilir; aşağıda bir klasör seçiliyse oraya da kopyalanır.</string>
+    <string name="backup_now_done">%1$d hizmet yedeklendi</string>
+    <string name="backup_auto_section">Otomatik</string>
+    <string name="backup_auto_desc">Programa göre bağlı her hizmet yedeklenir. Telefonun dışında bir klasör seç (SD kart, Nextcloud, Drive…); yeni dosyalar ve günün kurulumu da oraya kopyalanır, böylece telefon gitse de kalırlar.</string>
+    <string name="backup_last_run">Son yedek: %1$s</string>
 </resources>

@@ -1187,4 +1187,24 @@
         <item quantity="other">%d syncs paused</item>
     </plurals>
     <string name="syncs_running_paused">%1$d running · %2$d paused</string>
+    <string name="backup_title">Backup &amp; restore</string>
+    <string name="backup_row_desc">Your set-up and your playlists: save them, bring them back</string>
+    <string name="backup_row_folder">Also copied to %1$s</string>
+    <string name="backup_config_section">Your set-up</string>
+    <string name="backup_config_desc">The syncs, the services you added, the matches you chose, the tracks you ignored, the settings and the File playlists, in one .trackhop file. Not your sign-ins or passwords. Trackhop on another phone, Docker and Trackhop Desktop all read it.</string>
+    <string name="backup_config_save">Save the set-up to a file</string>
+    <string name="backup_config_restore">Restore a set-up from a file</string>
+    <string name="backup_config_saved">Set-up saved.</string>
+    <string name="backup_config_confirm_title">Restore this set-up?</string>
+    <string name="backup_config_confirm_body">%1$d syncs, %2$d matches chosen by hand and %3$d File playlists, from %4$s. Syncs already here with the same id are replaced, the others stay; File playlists already here are kept. Your sign-ins are not in it: connect the services again afterwards.</string>
+    <string name="backup_config_restore_action">Restore</string>
+    <string name="backup_config_restored">Set-up restored: %1$d syncs. Connect the services again in Accounts, and they carry on.</string>
+    <string name="backup_config_invalid">This is not a Trackhop set-up file.</string>
+    <string name="backup_playlists_section">Your playlists</string>
+    <string name="backup_now">Back up all playlists now</string>
+    <string name="backup_now_desc">Every connected service, saved as dated files in Files; with a folder chosen below, copied there too.</string>
+    <string name="backup_now_done">%1$d services backed up</string>
+    <string name="backup_auto_section">Automatically</string>
+    <string name="backup_auto_desc">On the schedule, every connected service is backed up. Choose a folder outside the phone (SD card, Nextcloud, Drive…) and the new files and the set-up of the day are copied there too, so they survive the phone.</string>
+    <string name="backup_last_run">Last backup: %1$s</string>
 </resources>

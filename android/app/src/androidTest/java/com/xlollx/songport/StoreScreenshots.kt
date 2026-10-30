@@ -346,7 +346,7 @@ class StoreScreenshots {
         // 10 Settings, the look.
         open(main().putExtra(MainActivity.EXTRA_TAB, MainActivity.TAB_SETTINGS)) {
             // The section after it, so the bottom bar sits on that one and the look shows whole.
-            step("settings") { compose.onNodeWithText(s(R.string.backup_folder_title)).performScrollTo() }
+            step("settings") { compose.onAllNodesWithText(s(R.string.backup_title)).onFirst().performScrollTo() }
             snap()
         }
         // 11 The welcome, first page.
@@ -411,7 +411,7 @@ class StoreScreenshots {
         // A large font: nothing cut, nothing under the bottom bar.
         store.updateSettings { it.copy(themeMode = "DARK") }; store.flush()
         step("font") { instr.uiAutomation.executeShellCommand("settings put system font_scale 1.5").close(); Thread.sleep(1500) }
-        tab(MainActivity.TAB_SETTINGS) { snap("settings_bigfont_1"); scrollTo(s(R.string.settings_section_backups)); snap("settings_bigfont_2") }
+        tab(MainActivity.TAB_SETTINGS) { snap("settings_bigfont_1"); scrollTo(s(R.string.backup_title)); snap("settings_bigfont_2") }
         tab(MainActivity.TAB_TOOLS) { snap("tools_bigfont_1"); scrollTo(s(R.string.tools_section_share)); snap("tools_bigfont_2") }
         step("font back") { instr.uiAutomation.executeShellCommand("settings put system font_scale 1.0").close(); Thread.sleep(1500) }
         // Tools with no service connected: the way to Accounts.

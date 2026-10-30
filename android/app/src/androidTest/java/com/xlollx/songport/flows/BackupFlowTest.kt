@@ -14,6 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.xlollx.songport.Demo
 import com.xlollx.songport.MainActivity
 import com.xlollx.songport.R
+import com.xlollx.songport.data.Store
 import com.xlollx.songport.providers.LocalFilesProvider
 import com.xlollx.songport.providers.playlists
 import kotlinx.coroutines.runBlocking
@@ -51,18 +52,34 @@ class BackupFlowTest : FlowTest() {
     }
 
     @Test
-    fun fullBackupWritesEveryPlaylistAndASecondRunSkipsTheUnchanged() {
-        openTool(R.string.tools_backup_title)
-        click(s(R.string.tools_backup_run))
-        // Spotify: Road Trip (8), Chill Evening (5), Old Favourites (5).
-        waitText(s(R.string.tools_backup_done, 3, 18), ms = 30_000, substring = true)
+    fun backupNowWritesEveryPlaylistAndASecondRunWritesNothingNew() {
+        openTool(R.string.backup_title)
+        click(s(R.string.backup_now))
+        // Spotify and Deezer are connected: both backed up; Spotify's Road Trip (8), Chill Evening (5), Old Favourites (5) among the files.
+        waitText(s(R.string.backup_now_done, 2), ms = 30_000, substring = true)
         val files = runBlocking { LocalFilesProvider.playlists(app) }
-        assertEquals(3, files.size)
-        assertEquals(18, files.sumOf { it.trackCount })
+        assertTrue(files.size >= 3)
+        assertTrue(files.any { it.name.contains("Road Trip") && it.trackCount == 8 })
 
-        click(s(R.string.tools_backup_run))
-        waitText(s(R.string.tools_backup_unchanged, 3), ms = 30_000, substring = true)
-        assertEquals("nothing new written", 3, runBlocking { LocalFilesProvider.playlists(app) }.size)
+        click(s(R.string.backup_now))
+        waitText(s(R.string.backup_now_done, 2), ms = 30_000, substring = true)
+        assertEquals("nothing new written", files.size, runBlocking { LocalFilesProvider.playlists(app) }.size)
+    }
+
+    @Test
+    fun theSetUpIsSavedToAFileAndRestoredFromIt() {
+        openTool(R.string.backup_title)
+        // Saved: the "save as" answer is a file in the cache.
+        click(s(R.string.backup_config_save))
+        waitText(s(R.string.backup_config_saved))
+        val text = exported.readText()
+        assertTrue(text.contains("trackhop-config"))
+        // Restored from that file: a summary first, then the import.
+        toImport.writeText(text)
+        click(s(R.string.backup_config_restore))
+        waitText(s(R.string.backup_config_confirm_title))
+        click(s(R.string.backup_config_restore_action))
+        waitText(s(R.string.backup_config_restored, Store.get(app).data.jobs.size), substring = true)
     }
 
     @Test

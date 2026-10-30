@@ -1187,4 +1187,24 @@
         <item quantity="other">%d Synchronisierungen pausiert</item>
     </plurals>
     <string name="syncs_running_paused">%1$d laufen · %2$d pausiert</string>
+    <string name="backup_title">Sicherung &amp; Wiederherstellung</string>
+    <string name="backup_row_desc">Deine Einrichtung und deine Playlists: sichern und zurückholen</string>
+    <string name="backup_row_folder">Auch kopiert nach %1$s</string>
+    <string name="backup_config_section">Deine Einrichtung</string>
+    <string name="backup_config_desc">Die Syncs, die hinzugefügten Dienste, die gewählten Zuordnungen, die ignorierten Titel, die Einstellungen und die Datei-Playlists in einer .trackhop-Datei. Nicht deine Anmeldungen oder Passwörter. Trackhop auf einem anderen Handy, Docker und Trackhop Desktop lesen sie.</string>
+    <string name="backup_config_save">Einrichtung in einer Datei sichern</string>
+    <string name="backup_config_restore">Einrichtung aus einer Datei wiederherstellen</string>
+    <string name="backup_config_saved">Einrichtung gesichert.</string>
+    <string name="backup_config_confirm_title">Diese Einrichtung wiederherstellen?</string>
+    <string name="backup_config_confirm_body">%1$d Syncs, %2$d von Hand gewählte Zuordnungen und %3$d Datei-Playlists, von %4$s. Vorhandene Syncs mit derselben ID werden ersetzt, die anderen bleiben; vorhandene Datei-Playlists bleiben. Deine Anmeldungen sind nicht dabei: verbinde die Dienste danach neu.</string>
+    <string name="backup_config_restore_action">Wiederherstellen</string>
+    <string name="backup_config_restored">Einrichtung wiederhergestellt: %1$d Syncs. Verbinde die Dienste unter Konten neu, dann geht es weiter.</string>
+    <string name="backup_config_invalid">Das ist keine Trackhop-Einrichtungsdatei.</string>
+    <string name="backup_playlists_section">Deine Playlists</string>
+    <string name="backup_now">Jetzt alle Playlists sichern</string>
+    <string name="backup_now_desc">Jeder verbundene Dienst, als datierte Dateien in Dateien gespeichert; mit einem unten gewählten Ordner auch dorthin kopiert.</string>
+    <string name="backup_now_done">%1$d Dienste gesichert</string>
+    <string name="backup_auto_section">Automatisch</string>
+    <string name="backup_auto_desc">Nach Zeitplan wird jeder verbundene Dienst gesichert. Wähle einen Ordner außerhalb des Handys (SD-Karte, Nextcloud, Drive…), dann werden die neuen Dateien und die Einrichtung des Tages auch dorthin kopiert und überleben das Handy.</string>
+    <string name="backup_last_run">Letzte Sicherung: %1$s</string>
 </resources>

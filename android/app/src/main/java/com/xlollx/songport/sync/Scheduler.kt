@@ -173,7 +173,8 @@ object Scheduler {
     fun applyBackup(ctx: Context) {
         val s = Store.get(ctx).data.settings
         val wm = WorkManager.getInstance(ctx)
-        if (s.backupFolder.isBlank() || s.backupSchedule == Schedule.MANUAL) {
+        // On a schedule the playlists are backed up on the phone; the folder, when chosen, gets copies.
+        if (s.backupSchedule == Schedule.MANUAL) {
             wm.cancelUniqueWork(BACKUP_WORK)
             return
         }

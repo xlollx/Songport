@@ -104,7 +104,7 @@ private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVecto
     EXPORT(Icons.Filled.Download, R.string.tools_export_title, R.string.tools_row_export, true),
     MAKE(Icons.Filled.PlaylistAdd, R.string.tools_make_title, R.string.tools_row_make, true),
     TRANSFER(Icons.Filled.SwapHoriz, R.string.tools_transfer_title, R.string.tools_row_transfer, true),
-    BACKUP(Icons.Filled.Backup, R.string.tools_backup_title, R.string.tools_backup_row_desc, true),
+    BACKUP(Icons.Filled.Backup, R.string.backup_title, R.string.backup_row_desc, false),
     DEDUPE(Icons.Filled.CleaningServices, R.string.tools_dedupe_title, R.string.tools_row_dedupe, true),
     SCAN(Icons.Filled.ContentCopy, R.string.tools_scan_title, R.string.tools_row_scan, true),
     COMPAT(Icons.Filled.Favorite, R.string.tools_compat_title, R.string.tools_row_compat, false),
@@ -131,7 +131,7 @@ private enum class Tool(val icon: androidx.compose.ui.graphics.vector.ImageVecto
  */
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, onUnplayable: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null, onSubpage: (Boolean) -> Unit = {}, onGoToAccounts: () -> Unit = {}, onStats: () -> Unit = {}, onCompareClosed: () -> Unit = {}) {
+fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onTransfer: () -> Unit = {}, onSyncStarted: () -> Unit = {}, onManage: (MusicProvider) -> Unit = {}, onScan: (MusicProvider) -> Unit = {}, onUnplayable: (MusicProvider) -> Unit = {}, compareLinks: Pair<String, String>? = null, onSubpage: (Boolean) -> Unit = {}, onGoToAccounts: () -> Unit = {}, onStats: () -> Unit = {}, onCompareClosed: () -> Unit = {}, onBackup: () -> Unit = {}) {
     val ctx = LocalContext.current
     val connected = Providers.connectors().filter { it.requiresAuth && it.isConnected(ctx) }
     var selectedId by rememberSaveable { mutableStateOf(connected.firstOrNull()?.id) }
@@ -180,7 +180,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
                     Tool.AI -> AiPlaylistCard(local, onSyncStarted)
                     Tool.EXPORT -> provider?.let { ExportCard(it, local) }
                     Tool.MAKE -> provider?.let { MakePlaylistCard(it, local) }
-                    Tool.BACKUP -> provider?.let { BackupCard(it, local) }
+                    Tool.BACKUP -> Unit
                     Tool.DEDUPE -> provider?.let { DedupeCard(it, local) }
                     Tool.COMPAT -> CompatibilityCard(local, compareLinks)
                     Tool.POSTER -> PosterCard(local)
@@ -241,7 +241,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
         }
 
         PrefSection(stringResource(R.string.tools_section_safety), description = stringResource(R.string.tools_section_safety_desc)) {
-            ToolRow(Tool.BACKUP, provider) { open = Tool.BACKUP }
+            ToolRow(Tool.BACKUP, provider) { onBackup() }
         }
     }
 }
@@ -366,77 +366,6 @@ private fun ExportCard(provider: MusicProvider, snackbar: SnackbarHostState) {
     }
 }
 
-@Composable
-private fun BackupCard(provider: MusicProvider, snackbar: SnackbarHostState) {
-    val ctx = LocalContext.current
-    val scope = rememberCoroutineScope()
-    var busy by remember { mutableStateOf(false) }
-    var progress by remember { mutableStateOf<Progress?>(null) }
-    var copying by remember { mutableStateOf(false) }
-    var details by remember { mutableStateOf<List<LibraryTools.Failure>?>(null) }
-    details?.let { list ->
-        AlertDialog(
-            onDismissRequest = { details = null },
-            title = { Text(stringResource(R.string.tools_backup_unread_title)) },
-            text = {
-                Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // The playlists that share a reason are listed once above it: a service's
-                    // explanation is long, and it is the same for every playlist it refused.
-                    list.groupBy { it.reason }.forEach { (reason, items) ->
-                        Column {
-                            Text(items.joinToString(", ") { it.name }, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                            Text(reason, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                    }
-                }
-            },
-            confirmButton = { TextButton(onClick = { details = null }) { Text(stringResource(R.string.ok)) } },
-        )
-    }
-    val folderSet = remember { com.xlollx.songport.data.Store.get(ctx).data.settings.backupFolder.isNotBlank() }
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.tools_backup_title), style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(6.dp))
-            Text(stringResource(R.string.tools_backup_desc, LocalFilesProvider.KEEP_VERSIONS), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(Modifier.height(10.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                if (busy) {
-                    CircularProgressIndicator(Modifier.size(18.dp)); Spacer(Modifier.width(8.dp))
-                    if (copying) Text(stringResource(R.string.backup_folder_copying), style = MaterialTheme.typography.bodySmall)
-                    else progress?.let { Text(stringResource(R.string.tools_progress_backup, it.done, it.total), style = MaterialTheme.typography.bodySmall) }
-                    Spacer(Modifier.width(8.dp))
-                }
-                Button(enabled = !busy, onClick = {
-                    busy = true
-                    scope.launch {
-                        try {
-                            val r = Tools.backupAll(ctx, provider) { progress = it }
-                            // The folder chosen in Settings gets the new files right away, as "Copy now" would.
-                            val copyNote = if (!folderSet) null else {
-                                copying = true
-                                try { ctx.getString(R.string.backup_folder_copied, BackupExport.copyNow(ctx)) } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { e.message }
-                            }
-                            copying = false
-                            val parts = listOfNotNull(
-                                ctx.getString(R.string.tools_backup_done, r.playlists, r.tracks),
-                                if (r.unchanged > 0) ctx.getString(R.string.tools_backup_unchanged, r.unchanged) else null,
-                                copyNote,
-                                if (r.failures.isNotEmpty()) ctx.resources.getQuantityString(R.plurals.tools_backup_unread, r.failures.size, r.failures.size) else null,
-                            )
-                            busy = false
-                            if (r.failures.isEmpty()) snackbar.showSnackbar(parts.joinToString(" · "))
-                            else if (snackbar.showSnackbar(parts.joinToString(" · "), actionLabel = ctx.getString(R.string.show_details), duration = SnackbarDuration.Long) == SnackbarResult.ActionPerformed) details = r.failures
-                        } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
-                            snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
-                        }
-                        busy = false
-                    }
-                }) { Text(stringResource(R.string.tools_backup_run)) }
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

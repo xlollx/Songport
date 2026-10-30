@@ -1165,4 +1165,24 @@
         <item quantity="other">%d 个同步已暂停</item>
     </plurals>
     <string name="syncs_running_paused">%1$d 个运行中 · %2$d 个已暂停</string>
+    <string name="backup_title">备份与恢复</string>
+    <string name="backup_row_desc">你的设置和歌单：保存并恢复</string>
+    <string name="backup_row_folder">同时复制到 %1$s</string>
+    <string name="backup_config_section">你的设置</string>
+    <string name="backup_config_desc">同步、已添加的服务、你选的匹配、忽略的曲目、设置和“文件”歌单，都放在一个 .trackhop 文件里。不含登录信息和密码。其他手机上的 Trackhop、Docker 和 Trackhop Desktop 都能读取。</string>
+    <string name="backup_config_save">将设置保存到文件</string>
+    <string name="backup_config_restore">从文件恢复设置</string>
+    <string name="backup_config_saved">设置已保存。</string>
+    <string name="backup_config_confirm_title">恢复这份设置？</string>
+    <string name="backup_config_confirm_body">来自 %4$s 的 %1$d 个同步、%2$d 个手动选择的匹配和 %3$d 个“文件”歌单。相同 ID 的同步会被替换，其余保留；已有的“文件”歌单保留。其中不含登录信息：之后请重新连接各服务。</string>
+    <string name="backup_config_restore_action">恢复</string>
+    <string name="backup_config_restored">设置已恢复：%1$d 个同步。在“账号”中重新连接服务后即可继续。</string>
+    <string name="backup_config_invalid">这不是 Trackhop 设置文件。</string>
+    <string name="backup_playlists_section">你的歌单</string>
+    <string name="backup_now">立即备份所有歌单</string>
+    <string name="backup_now_desc">每个已连接的服务都会以带日期的文件保存到“文件”；如果在下面选了文件夹，也会复制到那里。</string>
+    <string name="backup_now_done">已备份 %1$d 个服务</string>
+    <string name="backup_auto_section">自动</string>
+    <string name="backup_auto_desc">按计划备份每个已连接的服务。选择一个手机之外的文件夹（SD 卡、Nextcloud、Drive 等），新的文件和当天的设置也会复制过去，即使手机出问题也能保留。</string>
+    <string name="backup_last_run">上次备份：%1$s</string>
 </resources>

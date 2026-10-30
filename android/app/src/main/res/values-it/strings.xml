@@ -1187,4 +1187,24 @@
         <item quantity="other">%d sync in pausa</item>
     </plurals>
     <string name="syncs_running_paused">%1$d in corso · %2$d in pausa</string>
+    <string name="backup_title">Backup e ripristino</string>
+    <string name="backup_row_desc">La tua configurazione e le tue playlist: salvale e ripristinale</string>
+    <string name="backup_row_folder">Copiati anche in %1$s</string>
+    <string name="backup_config_section">La tua configurazione</string>
+    <string name="backup_config_desc">Le sync, i servizi aggiunti, gli abbinamenti scelti, i brani ignorati, le impostazioni e le playlist File, in un unico file .trackhop. Non gli accessi né le password. Lo leggono Trackhop su un altro telefono, Docker e Trackhop Desktop.</string>
+    <string name="backup_config_save">Salva la configurazione in un file</string>
+    <string name="backup_config_restore">Ripristina una configurazione da file</string>
+    <string name="backup_config_saved">Configurazione salvata.</string>
+    <string name="backup_config_confirm_title">Ripristinare questa configurazione?</string>
+    <string name="backup_config_confirm_body">%1$d sync, %2$d abbinamenti scelti a mano e %3$d playlist File, da %4$s. Le sync già presenti con lo stesso id vengono sostituite, le altre restano; le playlist File già presenti restano. Gli accessi non ci sono: ricollega i servizi dopo.</string>
+    <string name="backup_config_restore_action">Ripristina</string>
+    <string name="backup_config_restored">Configurazione ripristinata: %1$d sync. Ricollega i servizi in Account e ripartono.</string>
+    <string name="backup_config_invalid">Questo non è un file di configurazione di Trackhop.</string>
+    <string name="backup_playlists_section">Le tue playlist</string>
+    <string name="backup_now">Fai ora il backup di tutte le playlist</string>
+    <string name="backup_now_desc">Ogni servizio collegato, salvato come file datati in File; con una cartella scelta qui sotto, copiato anche lì.</string>
+    <string name="backup_now_done">Backup di %1$d servizi fatto</string>
+    <string name="backup_auto_section">In automatico</string>
+    <string name="backup_auto_desc">Secondo la programmazione, viene fatto il backup di ogni servizio collegato. Scegli una cartella fuori dal telefono (scheda SD, Nextcloud, Drive…) e ci vengono copiati anche i file nuovi e la configurazione del giorno, così sopravvivono al telefono.</string>
+    <string name="backup_last_run">Ultimo backup: %1$s</string>
 </resources>

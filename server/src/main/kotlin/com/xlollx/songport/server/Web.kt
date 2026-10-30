@@ -174,6 +174,9 @@ class Web(
         ex.sendResponseHeaders(303, -1)
     }
 
+    /** "Trackhop server" or "Trackhop Desktop". */
+    internal val productName: String get() = edition.product
+
     internal fun page(title: String, body: String, refresh: Int? = null) = Html.page(title, body, version, refresh, edition, currentPath.get().orEmpty())
 
     /** The path being answered, for the header's current tab. */

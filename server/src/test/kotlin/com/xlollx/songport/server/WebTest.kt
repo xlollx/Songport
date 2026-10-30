@@ -205,7 +205,7 @@ class WebTest {
         val folder = tmp.newFolder("copies")
         assertEquals(303, post("/tools/backup", "action=settings&schedule=WEEKLY&folder=${java.net.URLEncoder.encode(folder.path, "UTF-8")}", *origin).statusCode())
         assertEquals(com.xlollx.songport.model.Schedule.WEEKLY, env.store.data.settings.backupSchedule)
-        assertEquals(1, Backups.copyToFolder(env))
+        assertEquals("the file and the set-up", 2, Backups.copyToFolder(env))
         assertTrue(File(folder, "Dup.csv").exists())
         assertEquals(200, get("/tools/unplayable").statusCode())
         assertEquals(200, get("/tools").statusCode())
@@ -302,5 +302,42 @@ class WebTest {
         assertEquals(404, api("/api/v1/nope", token).statusCode())
         assertEquals(303, post("/tools/api", "action=revoke", *origin).statusCode())
         assertEquals(403, api("/api/v1/syncs", token).statusCode())
+    }
+
+    @Test fun configurationExportsAndImportsWithoutSignIns() {
+        File(data, "csv").mkdirs()
+        File(data, "csv/Keep.csv").writeText("title,artist\nSong,Band\n")
+        env.store.upsertJob(com.xlollx.songport.model.SyncJob("c1", "Mine", com.xlollx.songport.model.PlaylistRef("csv", "Keep", "Keep"), com.xlollx.songport.model.PlaylistRef("csv", null, "Copy"), color = "teal"))
+        env.store.update { it.copy(matchCache = mapOf("a:b>c" to "d"), settings = it.settings.copy(clientSecrets = mapOf("youtube" to "secret!"), clientIds = mapOf("spotify" to "id1"))) }
+        env.tokens.set("spotify", com.xlollx.songport.data.Tokens(accessToken = "tok", refreshToken = "ref"))
+        val file = get("/tools/config?download=1")
+        assertEquals(200, file.statusCode())
+        val text = file.body()
+        assertTrue(text.contains("trackhop-config") && text.contains("\"Mine\"") && text.contains("Keep"))
+        assertFalse("no secrets", text.contains("secret!") || text.contains("tok") && text.contains("ref\""))
+        // Into an empty Trackhop.
+        val other = tmp.newFolder("other")
+        val env2 = ServerEnv(other, Strings(emptyMap()), "http://127.0.0.1")
+        val s = com.xlollx.songport.data.ConfigBackup.import(env2, com.xlollx.songport.data.ConfigBackup.read(text))
+        assertEquals(1, s.syncs); assertEquals(1, s.files)
+        assertEquals("teal", env2.store.job("c1")?.color)
+        assertEquals("d", env2.store.data.matchCache["a:b>c"])
+        assertEquals("id1", env2.store.data.settings.clientIds["spotify"])
+        assertTrue(env2.store.data.settings.clientSecrets.isEmpty())
+        assertTrue(File(other, "csv/Keep.csv").exists())
+        // Through the page: read first (a summary), then import.
+        val boundary = "----th"
+        val body = "--$boundary\r\nContent-Disposition: form-data; name=\"action\"\r\n\r\nread\r\n--$boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"x.trackhop\"\r\n\r\n$text\r\n--$boundary--\r\n"
+        val read = client.send(
+            HttpRequest.newBuilder(URI("$base/tools/config")).header("Authorization", auth).header("Origin", base)
+                .header("Content-Type", "multipart/form-data; boundary=$boundary").POST(HttpRequest.BodyPublishers.ofByteArray(body.toByteArray())).build(),
+            HttpResponse.BodyHandlers.ofString(),
+        )
+        assertEquals(200, read.statusCode())
+        assertTrue(read.body(), read.body().contains("1 syncs"))
+        val pending = Regex("""name="pending" value="([^"]+)"""").find(read.body())!!.groupValues[1]
+        assertEquals(303, post("/tools/config", "action=import&pending=$pending", *origin).statusCode())
+        assertTrue(get("/tools/config?download=1").body().contains("trackhop-config"))
+        assertEquals("not a file", 303, post("/tools/config", "action=import&pending=nope", *origin).statusCode())
     }
 }

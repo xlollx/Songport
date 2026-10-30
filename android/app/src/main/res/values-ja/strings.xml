@@ -1165,4 +1165,24 @@
         <item quantity="other">%d 件の同期を一時停止中</item>
     </plurals>
     <string name="syncs_running_paused">実行中 %1$d 件 · 一時停止中 %2$d 件</string>
+    <string name="backup_title">バックアップと復元</string>
+    <string name="backup_row_desc">設定とプレイリストを保存して、元に戻す</string>
+    <string name="backup_row_folder">%1$s にもコピー</string>
+    <string name="backup_config_section">設定</string>
+    <string name="backup_config_desc">同期、追加したサービス、選んだ一致、無視したトラック、設定、ファイルのプレイリストを 1 つの .trackhop ファイルに。ログイン情報やパスワードは含みません。別のスマホの Trackhop、Docker、Trackhop Desktop で読み込めます。</string>
+    <string name="backup_config_save">設定をファイルに保存</string>
+    <string name="backup_config_restore">ファイルから設定を復元</string>
+    <string name="backup_config_saved">設定を保存しました。</string>
+    <string name="backup_config_confirm_title">この設定を復元しますか？</string>
+    <string name="backup_config_confirm_body">%4$s からの同期 %1$d 件、手動で選んだ一致 %2$d 件、ファイルのプレイリスト %3$d 件。同じ ID の同期は置き換えられ、ほかはそのままです。既存のファイルのプレイリストは残ります。ログイン情報は含まれないため、あとでサービスを再接続してください。</string>
+    <string name="backup_config_restore_action">復元</string>
+    <string name="backup_config_restored">設定を復元しました：同期 %1$d 件。アカウントでサービスを再接続すると続きから動きます。</string>
+    <string name="backup_config_invalid">Trackhop の設定ファイルではありません。</string>
+    <string name="backup_playlists_section">プレイリスト</string>
+    <string name="backup_now">今すぐすべてのプレイリストをバックアップ</string>
+    <string name="backup_now_desc">接続中の各サービスを日付付きのファイルとしてファイルに保存します。下でフォルダを選ぶと、そこにもコピーします。</string>
+    <string name="backup_now_done">%1$d 件のサービスをバックアップしました</string>
+    <string name="backup_auto_section">自動</string>
+    <string name="backup_auto_desc">スケジュールに従って接続中の各サービスをバックアップします。スマホの外のフォルダ（SD カード、Nextcloud、Drive など）を選ぶと、新しいファイルとその日の設定もコピーされ、スマホに何かあっても残ります。</string>
+    <string name="backup_last_run">前回のバックアップ：%1$s</string>
 </resources>
