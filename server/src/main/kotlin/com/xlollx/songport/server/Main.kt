@@ -41,11 +41,16 @@ fun installServerConnectors() = Providers.install(
 )
 
 /** The settings, from the environment (what `docker run -e` sets). */
-class Config(env: Map<String, String>) {
-    val dataDir = File(env["SONGPORT_DATA"]?.takeIf { it.isNotBlank() } ?: "/data")
-    val port = env["SONGPORT_PORT"]?.toIntOrNull() ?: 8080
+class Config(
+    env: Map<String, String>,
+    defaultDataDir: String = "/data",
+    defaultPort: Int = 8080,
+    defaultHost: String = "localhost",
+) {
+    val dataDir = File(env["SONGPORT_DATA"]?.takeIf { it.isNotBlank() } ?: defaultDataDir)
+    val port = env["SONGPORT_PORT"]?.toIntOrNull() ?: defaultPort
     /** Where the browser reaches this server: OAuth sign-ins come back to <url>/callback. */
-    val baseUrl = (env["SONGPORT_URL"]?.takeIf { it.isNotBlank() } ?: "http://localhost:$port").trimEnd('/')
+    val baseUrl = (env["SONGPORT_URL"]?.takeIf { it.isNotBlank() } ?: "http://$defaultHost:$port").trimEnd('/')
     val password = env["SONGPORT_PASSWORD"]?.takeIf { it.isNotEmpty() }
     val locale = env["SONGPORT_LOCALE"]
 
@@ -61,6 +66,22 @@ class Config(env: Map<String, String>) {
 fun main() {
     System.setProperty("java.awt.headless", "true")
     val config = Config(System.getenv())
+    val app = launch(config, Html.Edition.SERVER)
+    app.web.start(config.port)
+    app.started(config.password == null)
+}
+
+/** The engine set up on [config]'s data folder, not yet serving: [web] is started by the caller. */
+class Launched(val env: ServerEnv, val runner: Runner, val web: Web, val version: String, private val config: Config, private val edition: Html.Edition) {
+    /** Once the pages are served: the scheduler, the first log line, the data saved on exit. */
+    fun started(warnNoPassword: Boolean) {
+        runner.startScheduler()
+        env.log("server", "${edition.product} $version (ALPHA: an early test version, keep a copy of the data folder), data in ${config.dataDir.absolutePath}" + if (warnNoPassword) " (no password: set SONGPORT_PASSWORD if others can reach this port)" else "")
+        Runtime.getRuntime().addShutdownHook(Thread { env.store.flush() })
+    }
+}
+
+fun launch(config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null): Launched {
     config.dataDir.mkdirs()
     Log.init(config.dataDir)
     val version = Config::class.java.getResourceAsStream("/songport-version.txt")?.use { String(it.readBytes()).trim() } ?: "dev"
@@ -72,9 +93,6 @@ fun main() {
     if (!env.store.data.settings.connectorsInit) env.store.updateSettings { it.copy(connectorsInit = true) }
 
     val runner = Runner(env)
-    Web(env, runner, Auth(env), config.password, version).start(config.port)
-    runner.startScheduler()
-    env.log("server", "Trackhop server $version (ALPHA: an early test version, keep a copy of the data folder), data in ${config.dataDir.absolutePath}" + if (config.password == null) " (no password: set SONGPORT_PASSWORD if others can reach this port)" else "")
-
-    Runtime.getRuntime().addShutdownHook(Thread { env.store.flush() })
+    val web = Web(env, runner, Auth(env), config.password, version, edition, onQuit)
+    return Launched(env, runner, web, version, config, edition)
 }

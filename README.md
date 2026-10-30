@@ -62,6 +62,11 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   Install the companion plugin **[Trackhop Bridge](https://github.com/xlollx/Trackhop-Bridge)**
   (GitHub only, read its notes first), or switch to the F-Droid/GitHub build above, which has them
   built in. [Which Trackhop?](https://xlollx.github.io/Trackhop/guide/versions) compares the two.
+- **Desktop (Windows, Linux, ⚠️ alpha)**: an early test version. The same engine as a program on your
+  computer, with its own Java runtime, an icon next to the clock and the same web page as the server:
+  the `Trackhop-Desktop-…` files of the [latest release](https://github.com/xlollx/Trackhop/releases/latest)
+  (Windows `.msi` or portable `.zip`, Linux `.deb` or `.tar.gz`); see the
+  [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop).
 - **Server (Docker, ⚠️ alpha)**: an early test version, expect rough edges. The same engine on a home server or a NAS, with a web page and
   scheduled syncs: `docker run -p 8080:8080 -v trackhop-data:/data ghcr.io/xlollx/trackhop`. Official
   APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
@@ -318,7 +323,7 @@ Trackhop/
 │   ├── google-shared-client.md    # shipping a shared Google client: verification and quota
 │   ├── guide/                     # the guide on the site (getting started, troubleshooting, Docker…)
 │   └── store/                     # 512×512 icon and 1024×500 feature graphic (en/it)
-├── server/                        # Trackhop on a server: JVM build on android/core and android/ytm, web page, Dockerfile
+├── server/                        # Trackhop on a server and on the desktop: JVM build on android/core and android/ytm, web page, Dockerfile, desktop/ (packaging)
 └── android/
     ├── build.gradle, settings.gradle, gradle.properties
     ├── core/                      # the engine without Android (model, matching, connectors, sync), shared with server/

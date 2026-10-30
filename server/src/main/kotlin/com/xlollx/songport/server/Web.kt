@@ -14,6 +14,7 @@ import com.xlollx.songport.server.Html.h
 import com.xlollx.songport.sync.SoundCloudPublic
 import com.xlollx.songport.sync.SyncState
 import kotlinx.coroutines.runBlocking
+import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -47,10 +48,23 @@ class Web(
     private val auth: Auth,
     private val password: String?,
     private val version: String,
+    private val edition: Html.Edition = Html.Edition.SERVER,
+    /** Desktop: stops the app (the page's "Quit" button). */
+    private val onQuit: (() -> Unit)? = null,
 ) {
-    /** Serves the pages on [port] (0: any free port, for tests); returns the running server. */
-    fun start(port: Int): HttpServer {
-        val server = HttpServer.create(InetSocketAddress(port), 0)
+    /** The addresses a desktop install answers to; null (a server) answers to any. */
+    @Volatile private var localHosts: Set<String>? = null
+
+    /**
+     * Serves the pages on [port] (0: any free port, for tests); returns the running server.
+     * [loopbackOnly] (desktop): listens on 127.0.0.1 only and answers only requests addressed to it
+     * by that name or as localhost, so a web page that points its own domain at 127.0.0.1 (DNS
+     * rebinding) cannot reach it.
+     */
+    fun start(port: Int, loopbackOnly: Boolean = false): HttpServer {
+        val address = if (loopbackOnly) InetSocketAddress(InetAddress.getLoopbackAddress(), port) else InetSocketAddress(port)
+        val server = HttpServer.create(address, 0)
+        if (loopbackOnly) server.address.port.let { p -> localHosts = setOf("127.0.0.1:$p", "localhost:$p") }
         server.executor = Executors.newFixedThreadPool(8)
         server.createContext("/") { ex ->
             try {
@@ -74,6 +88,9 @@ class Web(
     private fun handle(ex: HttpExchange) {
         val path = ex.requestURI.path.trim('/').split('/').filter { it.isNotEmpty() }.map { decode(it) }
         // Health checks (Docker, a reverse proxy) need no password.
+        localHosts?.let { hosts ->
+            if (ex.requestHeaders.getFirst("Host")?.lowercase() !in hosts) return send(ex, 403, "Unknown host", "text/plain")
+        }
         if (path == listOf("health")) return send(ex, 200, "ok", "text/plain")
         if (!authorized(ex)) {
             ex.responseHeaders.add("WWW-Authenticate", "Basic realm=\"Trackhop\", charset=\"UTF-8\"")
@@ -89,6 +106,7 @@ class Web(
             path == listOf("style.css") -> send(ex, 200, Html.CSS, "text/css")
             path == listOf("log") -> log(r)
             path == listOf("callback") -> callback(r)
+            path == listOf("quit") && onQuit != null && method == "POST" -> quit(r, onQuit)
             path[0] == "connectors" -> connectors(r, path.drop(1))
             path[0] == "syncs" -> syncs(r, path.drop(1))
             else -> send(ex, 404, page("Not found", "<p><a href=\"/\">Back</a></p>"))
@@ -128,7 +146,13 @@ class Web(
         ex.sendResponseHeaders(303, -1)
     }
 
-    private fun page(title: String, body: String, refresh: Int? = null) = Html.page(title, body, version, refresh)
+    private fun page(title: String, body: String, refresh: Int? = null) = Html.page(title, body, version, refresh, edition)
+
+    private fun quit(r: Req, stop: () -> Unit) {
+        send(r.ex, 200, page("Trackhop has stopped", """<p>Scheduled syncs wait until you open Trackhop again. You can close this tab.</p>"""))
+        // After the answer has left: stopping closes this server.
+        Thread { Thread.sleep(300); stop() }.apply { isDaemon = false }.start()
+    }
 
     private fun notice(r: Req): String =
         (r.query["ok"]?.let { """<div class="card ok">${h(it)}</div>""" } ?: "") +

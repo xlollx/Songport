@@ -143,6 +143,8 @@ a { color: var(--link); text-underline-offset: 2px; }
 .data { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; color: var(--ink-2); }
 .data p { margin: 0 0 10px; }
 .data p:last-child { margin: 0; }
+.button-dl { display: inline-block; padding: 10px 20px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-weight: 600; text-decoration: none; }
+.server .get { gap: 16px; margin: 0; }
 .server pre { margin: 0 0 14px; padding: 14px; border-radius: 12px; background: var(--surface-2); color: var(--ink); overflow-x: auto; font-size: .9rem; }
 
 @media (max-width: 860px) {

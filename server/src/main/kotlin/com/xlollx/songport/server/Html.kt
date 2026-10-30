@@ -15,7 +15,13 @@ object Html {
             fields.entries.joinToString("") { (k, v) -> """<input type="hidden" name="${h(k)}" value="${h(v)}">""" } +
             """<button class="${h(style)}">${h(label)}</button></form>"""
 
-    fun page(title: String, body: String, version: String, refreshSeconds: Int? = null): String = """<!doctype html>
+    /** Where the engine runs: in a container ([SERVER]) or as an app on the user's computer ([DESKTOP]). */
+    enum class Edition(val product: String, val guide: String) {
+        SERVER("Trackhop server", "https://xlollx.github.io/Trackhop/guide/docker"),
+        DESKTOP("Trackhop Desktop", "https://xlollx.github.io/Trackhop/guide/desktop"),
+    }
+
+    fun page(title: String, body: String, version: String, refreshSeconds: Int? = null, edition: Edition = Edition.SERVER): String = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 ${refreshSeconds?.let { """<meta http-equiv="refresh" content="$it">""" } ?: ""}
@@ -23,12 +29,12 @@ ${refreshSeconds?.let { """<meta http-equiv="refresh" content="$it">""" } ?: ""}
 <link rel="stylesheet" href="/style.css">
 </head><body>
 <header><a class="brand" href="/">Trackhop <span class="alpha">alpha</span></a><nav><a href="/">Syncs</a><a href="/connectors">Services</a><a href="/log">Log</a></nav></header>
-<p class="alpha-note"><strong>Alpha.</strong> The server is an early test version: things can break or change between releases. Keep a copy of the data folder and <a href="https://xlollx.github.io/Trackhop/guide/reporting-a-problem">report what goes wrong</a>.</p>
+<p class="alpha-note"><strong>Alpha.</strong> ${h(edition.product)} is an early test version: things can break or change between releases. Keep a copy of the data folder and <a href="https://xlollx.github.io/Trackhop/guide/reporting-a-problem">report what goes wrong</a>.</p>
 <main>
 <h1>${h(title)}</h1>
 $body
 </main>
-<footer>Trackhop server ${h(version)} (alpha) · <a href="https://xlollx.github.io/Trackhop/guide/docker">Guide</a> · <a href="https://github.com/xlollx/Trackhop">GitHub</a></footer>
+<footer>${h(edition.product)} ${h(version)} (alpha) · <a href="${edition.guide}">Guide</a> · <a href="https://github.com/xlollx/Trackhop">GitHub</a>${if (edition == Edition.DESKTOP) " · " + postButton("/quit", "Quit Trackhop", "link", confirm = "Stop Trackhop? Scheduled syncs run only while it is running.") else ""}</footer>
 </body></html>"""
 
     const val CSS = """
@@ -54,6 +60,7 @@ button,.button{font:inherit;cursor:pointer;border:0;border-radius:999px;padding:
 button.secondary,.button.secondary{background:var(--surface-2);color:var(--ink)}
 button.danger{background:transparent;color:var(--err);border:1px solid var(--line)}
 form.inline{display:inline}
+button.link{background:none;padding:0;border-radius:0;color:var(--link);text-decoration:underline;font-size:inherit}
 label{display:block;margin:10px 0 4px;font-weight:600;font-size:14px}
 input[type=text],input[type=password],input[type=url],select,textarea{width:100%;font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .check{display:flex;gap:8px;align-items:center;font-weight:400}

@@ -1,0 +1,109 @@
+name: Desktop
+
+# Trackhop Desktop (alpha, docs/guide/desktop.md): the server's engine and pages packed as an app
+# with its own Java runtime, by server/desktop/package.sh. Windows: an MSI (per-user, no
+# administrator) and a portable ZIP; Linux: a .deb and a tar.gz for any distribution. Every run keeps
+# them as artifacts; on main, once build.yml has published the release for this version, they are
+# added to it (only if it has none yet, so a later server-only change leaves a release as it was).
+on:
+  push:
+    paths:
+      - 'server/**'
+      - 'android/core/**'
+      - 'android/ytm/**'
+      - 'android/app/src/main/res/**'
+      - 'android/app/build.gradle'
+      - '.github/workflows/desktop.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'server/**'
+      - 'android/core/**'
+      - 'android/ytm/**'
+      - 'android/app/src/main/res/**'
+      - 'android/app/build.gradle'
+      - '.github/workflows/desktop.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup JDK 21 (jpackage)
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '8.14.3'
+
+      - name: WiX 3 (MSI)
+        if: runner.os == 'Windows'
+        run: |
+          choco install wixtoolset --no-progress -y
+          echo "C:\\Program Files (x86)\\WiX Toolset v3.14\\bin" >> "$GITHUB_PATH"
+
+      - name: fakeroot (deb)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y -q fakeroot
+
+      - name: Tests and build
+        run: gradle -p server test installDist --no-daemon --stacktrace
+
+      - name: Package
+        run: server/desktop/package.sh
+
+      - name: Starts and answers
+        # The packed app on its own runtime: it serves its pages on 127.0.0.1 and stops from the page.
+        env:
+          APPDATA: ${{ runner.temp }}/appdata
+          XDG_DATA_HOME: ${{ runner.temp }}/appdata
+        run: |
+          if [ "$RUNNER_OS" = Windows ]; then app=server/build/desktop/Trackhop/Trackhop.exe; else app=server/build/desktop/Trackhop/bin/Trackhop; fi
+          "$app" --background &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:8642/health && break; sleep 1; done
+          curl -sf http://127.0.0.1:8642/ | grep -q "Trackhop Desktop"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: evil.example' http://127.0.0.1:8642/)" = 403
+          curl -sf -X POST -H "Origin: http://127.0.0.1:8642" http://127.0.0.1:8642/quit > /dev/null
+          sleep 3
+          ! curl -sf -m 3 http://127.0.0.1:8642/health
+
+      - name: Keep as artifact
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: Trackhop-Desktop-${{ runner.os }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Add to the release
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v=v$(sed -n 's/.*versionName "\([^"]*\)".*/\1/p' android/app/build.gradle | head -1)
+          # build.yml creates the release when this version is new: wait for it (up to 40 minutes).
+          for i in $(seq 1 80); do gh release view "$v" > /dev/null 2>&1 && break; sleep 30; done
+          if ! gh release view "$v" > /dev/null 2>&1; then echo "No release $v: nothing to add to."; exit 0; fi
+          system=$(echo "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')
+          if gh release view "$v" --json assets -q '.assets[].name' | grep -q "^Trackhop-Desktop-.*-$system\."; then
+            echo "$v already has the desktop files for $system."; exit 0
+          fi
+          gh release upload "$v" dist/*
