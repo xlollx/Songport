@@ -5,6 +5,14 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## 0.5.1
+
+- **Shazam syncs**: every song you Shazam, in a playlist of your choice on any service. Shazam keeps
+  your Shazams in a "My Shazam Tracks" playlist on Spotify once you connect it in Shazam's settings;
+  New Shazam sync (on the home page) finds that playlist on your connected Spotify, or says how to
+  turn it on, and syncs it every hour. Its card wears Shazam's mark, and the API's syncs say
+  `"shazam": true`.
+
 ## 0.5.0
 
 - **Radio syncs**: Trackhop listens to an internet radio on the days and in the hours you choose

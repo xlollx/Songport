@@ -73,6 +73,8 @@ object Api {
         put("schedule", j.schedule.name.lowercase())
         put("mirrorRemovals", j.mirrorRemovals)
         put("enabled", j.enabled)
+        // Its source is the playlist the Shazam app fills on Spotify or Apple Music.
+        put("shazam", j.shazam)
         put("running", running)
         put("lastRun", if (j.lastRunEpoch > 0) JsonPrimitive(j.lastRunEpoch) else JsonNull)
         put("nextRun", Runner.nextRun(j)?.let { JsonPrimitive(it) } ?: JsonNull)
