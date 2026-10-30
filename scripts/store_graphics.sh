@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The brand surfaces, from one set of parameters: the app icon as PNG (store, site), the feature
-# graphics (EN and IT, Play and F-Droid) and, on request, previews for review.
+# graphics (EN and IT, Play and F-Droid), GitHub's social preview and, on request, previews for review.
 #
 #   scripts/store_graphics.sh            # writes the icon and the feature graphics into the repo
 #   scripts/store_graphics.sh preview DIR  # also icon previews (48/108/512 px, themed) into DIR
@@ -118,15 +118,22 @@ icon_png() {
 }
 
 # ------------------------------------------------------------------------------------- feature
-# feature OUT TITLE LEAD SUB: 1024×500. The text on the left, on the dark side; the tile on the
-# right, the band crossing its upper part as it crosses the icon's; a soft shadow under the text.
+# feature OUT TITLE LEAD SUB [W H]: 1024×500 by default (Play, F-Droid); 1280×640 is GitHub's social
+# preview. The text on the left, on the dark side; the tile on the right, the band crossing its
+# upper part as it crosses the icon's; a soft shadow under the text. Other sizes take the 1024×500
+# layout scaled to fit (k) and centred vertically (dy), the tile kept 70 px (scaled) from the right.
 # The contrast of each line against the brightest point under it is printed: keep it ≥ 4.5:1.
 feature() {
-  local out=$1 title=$2 lead=$3 sub=$4 w=1024 h=500
-  beam "$tmp/f_bg.png" $w $h $w 270 "$BEAM_SWEEP"
-  tile "$tmp/f_tile.png" 300
-  convert "$tmp/f_bg.png" "$tmp/f_tile.png" -geometry +654+100 -composite "$tmp/f_base.png"
-  local lines=("title:$title:$FONT_BOLD:104:64:300" "lead:$lead:$FONT:36:68:372" "sub:$sub:$FONT:24:68:428")
+  local out=$1 title=$2 lead=$3 sub=$4 w=${5:-1024} h=${6:-500}
+  local k dy; k=$(awk "BEGIN{a=$w/1024; b=$h/500; print (a<b)?a:b}"); dy=$(awk "BEGIN{printf \"%d\", ($h-500*$k)/2}")
+  px() { awk "BEGIN{printf \"%d\", $1*$k}"; }
+  y() { echo $(( $(px "$1") + dy )); }
+  local side tx ty; side=$(px 300); tx=$((w - $(px 70) - side)); ty=$(y 100)
+  beam "$tmp/f_bg.png" $w $h $w "$(y 270)" "$BEAM_SWEEP"
+  tile "$tmp/f_tile.png" "$side"
+  convert "$tmp/f_bg.png" "$tmp/f_tile.png" -geometry "+$tx+$ty" -composite "$tmp/f_base.png"
+  local lines=("title:$title:$FONT_BOLD:$(px 104):$(px 64):$(y 300)" "lead:$lead:$FONT:$(px 36):$(px 68):$(y 372)"
+    "sub:$sub:$FONT:$(px 24):$(px 68):$(y 428)")
   local args=() l name text font size x y
   for l in "${lines[@]}"; do
     IFS=: read -r name text font size x y <<<"$l"
@@ -144,8 +151,8 @@ feature() {
     local box bw bh bx by
     box=$(convert -size "${w}x${h}" xc:none -fill white -font "$font" -pointsize "$size" -annotate "+$x+$y" "$text" -format "%@" info:)
     IFS='x+' read -r bw bh bx by <<<"$box"
-    # The title and the lead stop short of the tile (x 654); the sub-line runs under it (y ≥ 400).
-    local limit=636; [ "$name" = sub ] && limit=1000
+    # The title and the lead stop short of the tile; the sub-line runs under it.
+    local limit=$((tx - $(px 16))); [ "$name" = sub ] && limit=$((w - $(px 24)))
     [ $((bx + bw)) -le $limit ] || echo "  $(basename "$out"): $name is $((bx + bw - limit)) px too wide" >&2
     printf '  %s: %s: contrast %.1f:1\n' "$(basename "$out")" "$name" "$(contrast "$tmp/f_under.png" "$bx" "$by" "$bw" "$bh")"
   done
@@ -162,6 +169,10 @@ feature "$root/docs/store/feature_it.png" "Trackhop" "Le tue playlist, su ogni s
 cp "$root/docs/store/feature_en.png" "$root/fastlane/metadata/android/en-US/images/featureGraphic.png"
 cp "$root/docs/store/feature_it.png" "$root/fastlane/metadata/android/it-IT/images/featureGraphic.png"
 echo "feature graphics: docs/store/feature_{en,it}.png, fastlane en-US/it-IT featureGraphic.png"
+
+# GitHub's social preview (Settings › General › Social preview), uploaded by hand.
+feature "$root/docs/store/social_preview.png" "Trackhop" "Your playlists, on every service." "Free · Manual or scheduled sync · No subscription" 1280 640
+echo "social preview: docs/store/social_preview.png"
 
 if [ "${1:-}" = preview ]; then
   dir=${2:?preview DIR}; mkdir -p "$dir"
