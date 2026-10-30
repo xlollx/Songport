@@ -38,18 +38,19 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
             jobId == ALL -> store.data.jobs.filter { it.enabled }
             else -> listOfNotNull(store.job(jobId))
         }
-        val engine = SyncEngine(ctx)
         // Rete ancora assente al risveglio: non e' un esito della sync, la si rimette in coda.
-        var retryLater = false
+        val retryLater = java.util.concurrent.atomic.AtomicBoolean(false)
         // Le sync manuali possono durare piu' dei 10 minuti concessi a un lavoro in background
         // (migliaia di brani verso YouTube): in primo piano, con una notifica di avanzamento.
         // Every worker shares one notification (see SyncNotice): its content is all the syncs running.
         val foreground = !scheduled && runCatching { setForeground(SyncNotice.foregroundInfo(ctx)) }.isSuccess
         if (foreground) SyncNotice.enter(ctx)
         try {
-            for (job in jobs) {
-                if (job.id in SyncState.running.value) continue
+            // Several at once, never two on the same account (see ParallelRuns).
+            com.xlollx.songport.sync.ParallelRuns.run(jobs) { job ->
+                if (job.id in SyncState.running.value) return@run
                 SyncState.start(job.id)
+                val engine = SyncEngine(ctx)
                 Diagnostics.log(ctx, "sync", "start ${job.name} (${if (scheduled) "scheduled" else "manual"})")
                 try {
                     val report = try {
@@ -77,7 +78,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                     // riprova col suo backoff, quindi niente notifica d'errore per una giornata persa.
                     val networkGone = scheduled && !report.ok && isTransientNetwork(report.error)
                     if (networkGone) {
-                        retryLater = true
+                        retryLater.set(true)
                         Diagnostics.log(ctx, "sync", "no network for ${job.name}: will retry")
                     }
                     SupportPrompt.offer(store, report)
@@ -94,7 +95,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         }
         SyncWidget.refresh(ctx)
         store.flush()
-        return if (retryLater) Result.retry() else Result.success()
+        return if (retryLater.get()) Result.retry() else Result.success()
     }
 
     override suspend fun getForegroundInfo(): ForegroundInfo = SyncNotice.foregroundInfo(applicationContext)
@@ -103,7 +104,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         const val KEY_JOB = "job"
         const val KEY_SCHEDULED = "scheduled"
         const val ALL = "*"
-        /** Several syncs run one after another in a single worker (a batch transfer). */
+        /** Several syncs in a single worker (a batch transfer): together where they use different accounts (ParallelRuns). */
         const val KEY_JOBS = "jobs"
         /** No notice of the result: a radio sync's runs while it listens (one every 10 minutes), not the one when its window closes. */
         const val KEY_QUIET = "quiet"
@@ -262,8 +263,8 @@ object Scheduler {
     }
 
     /**
-     * Several syncs in a row, in one worker: a batch transfer of many playlists would otherwise
-     * start them all at once and hit the services' rate limits together.
+     * Several syncs in one worker: a batch transfer of many playlists would otherwise start them all
+     * at once and hit the services' rate limits together. Those on the same account run in turn.
      */
     fun runInSequence(ctx: Context, jobIds: List<String>) {
         if (jobIds.isEmpty()) return

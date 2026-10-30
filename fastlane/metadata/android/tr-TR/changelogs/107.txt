@@ -1,1 +1,1 @@
-Radyo eşitlemeleri: bir radyo ve saatler seç, Trackhop çalınan şarkıları herhangi bir servisteki listeye kaydeder. Telefonda çalan şarkıyı 2 dakikada bir, varsayılan olarak Wi-Fi ile kontrol eder.
+Radyo eşitlemeleri: bir radyo ve saatler seç, Trackhop çalınan şarkıları herhangi bir servisteki listeye kaydeder. Telefonda çalan şarkıyı 2 dakikada bir, varsayılan olarak Wi-Fi ile kontrol eder. Tümünü eşitle farklı hesaplardakileri birlikte çalıştırır.

@@ -1284,4 +1284,6 @@
     <string name="whats_new_15_radio_body">Elige una radio y el horario: Trackhop anota las canciones que pone y las añade a una playlist en cualquier servicio.</string>
     <string name="whats_new_15_light_title">Ligera con batería y datos</string>
     <string name="whats_new_15_light_body">En el móvil mira la canción en antena cada 2 minutos, por defecto solo con Wi-Fi, con una pequeña notificación.</string>
+    <string name="whats_new_15_parallel_title">Sincronizar todo, más rápido</string>
+    <string name="whats_new_15_parallel_body">Las sincronizaciones en cuentas distintas van a la vez, hasta tres; dos en la misma cuenta siguen por turnos.</string>
 </resources>

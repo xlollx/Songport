@@ -1254,4 +1254,6 @@
     <string name="whats_new_15_radio_body">选择电台和时段：Trackhop 记录播放的歌曲，并添加到任意服务上的播放列表。</string>
     <string name="whats_new_15_light_title">省电又省流量</string>
     <string name="whats_new_15_light_body">在手机上每 2 分钟查看一次正在播放的歌曲，默认仅在 Wi-Fi 下，并显示一条小通知。</string>
+    <string name="whats_new_15_parallel_title">更快的全部同步</string>
+    <string name="whats_new_15_parallel_body">不同账号的同步现在可同时进行，最多三个；同一账号的仍会排队。</string>
 </resources>

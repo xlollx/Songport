@@ -1322,4 +1322,6 @@
     <string name="whats_new_15_radio_body">Wybierz stację i godziny: Trackhop zapisuje grane utwory i dodaje je do playlisty w dowolnym serwisie.</string>
     <string name="whats_new_15_light_title">Oszczędza baterię i dane</string>
     <string name="whats_new_15_light_body">Na telefonie co 2 minuty sprawdza bieżący utwór, domyślnie tylko przez Wi-Fi, z małym powiadomieniem.</string>
+    <string name="whats_new_15_parallel_title">Szybsze Synchronizuj wszystko</string>
+    <string name="whats_new_15_parallel_body">Synchronizacje na różnych kontach działają razem, do trzech naraz; dwie na tym samym koncie czekają na swoją kolej.</string>
 </resources>

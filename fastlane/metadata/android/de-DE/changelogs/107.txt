@@ -1,1 +1,1 @@
-Radio-Syncs: Wähle einen Sender und die Zeiten, und Trackhop speichert die gespielten Songs in einer Playlist bei jedem Dienst. Auf dem Handy prüft es alle 2 Minuten den laufenden Song, standardmäßig im WLAN, mit einer kleinen Benachrichtigung.
+Radio-Syncs: Wähle einen Sender und die Zeiten, und Trackhop speichert die gespielten Songs in einer Playlist bei jedem Dienst. Auf dem Handy prüft es alle 2 Minuten den laufenden Song, standardmäßig im WLAN, mit einer kleinen Benachrichtigung. Alle synchronisieren startet Syncs verschiedener Konten gleichzeitig.

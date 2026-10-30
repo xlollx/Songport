@@ -1276,4 +1276,6 @@
     <string name="whats_new_15_radio_body">Scegli una radio e gli orari: Trackhop annota i brani che trasmette e li aggiunge a una playlist su qualsiasi servizio. Riconoscila dalla radiolina.</string>
     <string name="whats_new_15_light_title">Leggera su batteria e dati</string>
     <string name="whats_new_15_light_body">Sul telefono controlla il brano in onda ogni 2 minuti, in Wi-Fi di default, con una piccola notifica mentre ascolta.</string>
+    <string name="whats_new_15_parallel_title">Sync all più veloce</string>
+    <string name="whats_new_15_parallel_body">Le sync su account diversi ora partono insieme, fino a tre alla volta; due sullo stesso account restano in fila.</string>
 </resources>

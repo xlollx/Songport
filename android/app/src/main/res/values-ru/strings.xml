@@ -1320,4 +1320,6 @@
     <string name="whats_new_15_radio_body">Выберите станцию и часы: Trackhop записывает звучащие песни и добавляет их в плейлист в любом сервисе.</string>
     <string name="whats_new_15_light_title">Бережёт батарею и трафик</string>
     <string name="whats_new_15_light_body">На телефоне проверяет текущую песню раз в 2 минуты, по умолчанию только по Wi-Fi, с небольшим уведомлением.</string>
+    <string name="whats_new_15_parallel_title">Быстрее «Синхронизировать всё»</string>
+    <string name="whats_new_15_parallel_body">Синхронизации разных аккаунтов идут одновременно, до трёх; две на одном аккаунте — по очереди.</string>
 </resources>

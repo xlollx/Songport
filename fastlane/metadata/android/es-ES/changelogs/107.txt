@@ -1,1 +1,1 @@
-Sincronizaciones de radio: elige una radio y el horario, y Trackhop guarda las canciones que pone en una playlist de cualquier servicio. En el móvil mira la canción en antena cada 2 minutos, por defecto con Wi-Fi, con una pequeña notificación.
+Sincronizaciones de radio: elige una radio y el horario, y Trackhop guarda las canciones que pone en una playlist de cualquier servicio. En el móvil mira la canción en antena cada 2 minutos, por defecto con Wi-Fi, con una pequeña notificación. Sincronizar todo ejecuta a la vez las de cuentas distintas.

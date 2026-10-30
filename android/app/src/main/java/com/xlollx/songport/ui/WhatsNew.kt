@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.SettingsBackupRestore
@@ -88,6 +89,7 @@ object WhatsNew {
                 listOf(
                     Item(Icons.Filled.Radio, JobColor.PINK, R.string.whats_new_15_radio_title, R.string.whats_new_15_radio_body),
                     Item(Icons.Filled.Wifi, JobColor.GREEN, R.string.whats_new_15_light_title, R.string.whats_new_15_light_body),
+                    Item(Icons.Filled.Speed, JobColor.BLUE, R.string.whats_new_15_parallel_title, R.string.whats_new_15_parallel_body),
                 ),
             ),
             Release(

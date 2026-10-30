@@ -1274,4 +1274,6 @@
     <string name="whats_new_15_radio_body">Bir radyo ve saatler seç: Trackhop çalınan şarkıları not eder ve herhangi bir servisteki çalma listesine ekler.</string>
     <string name="whats_new_15_light_title">Pil ve veri dostu</string>
     <string name="whats_new_15_light_body">Telefonda çalan şarkıyı 2 dakikada bir kontrol eder, varsayılan olarak yalnızca Wi-Fi ile, küçük bir bildirimle.</string>
+    <string name="whats_new_15_parallel_title">Daha hızlı Tümünü eşitle</string>
+    <string name="whats_new_15_parallel_body">Farklı hesaplardaki eşitlemeler artık birlikte, en fazla üç tane çalışır; aynı hesaptakiler sırayla.</string>
 </resources>

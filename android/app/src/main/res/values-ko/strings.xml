@@ -1253,4 +1253,6 @@
     <string name="whats_new_15_radio_body">라디오와 시간대를 고르면 방송된 노래를 기록해 원하는 서비스의 플레이리스트에 추가합니다.</string>
     <string name="whats_new_15_light_title">배터리와 데이터를 아껴요</string>
     <string name="whats_new_15_light_body">휴대폰에서는 2분마다 방송 중인 곡을 확인하며, 기본은 Wi-Fi 전용이고 작은 알림이 표시됩니다.</string>
+    <string name="whats_new_15_parallel_title">더 빨라진 모두 동기화</string>
+    <string name="whats_new_15_parallel_body">서로 다른 계정의 동기화는 최대 3개까지 동시에 실행되며, 같은 계정은 차례로 실행됩니다.</string>
 </resources>

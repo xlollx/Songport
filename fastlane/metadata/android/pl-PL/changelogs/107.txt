@@ -1,1 +1,1 @@
-Synchronizacje radia: wybierz stację i godziny, a Trackhop zapisze grane utwory w playliście w dowolnym serwisie. Na telefonie co 2 minuty sprawdza bieżący utwór, domyślnie przez Wi-Fi, z małym powiadomieniem.
+Synchronizacje radia: wybierz stację i godziny, a Trackhop zapisze grane utwory w playliście w dowolnym serwisie. Na telefonie co 2 minuty sprawdza bieżący utwór, domyślnie przez Wi-Fi, z małym powiadomieniem. Synchronizuj wszystko uruchamia razem te z różnych kont.
