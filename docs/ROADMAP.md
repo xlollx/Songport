@@ -98,6 +98,38 @@ The shape: a "conductor" that plays each track with the right player and moves t
 plus a queue and a mixed-playlist editor built on File playlists (which already hold tracks from
 any service). A large piece of work, months rather than weeks: a 2.0, if people ask for it.
 
+## Idea: community plugins, Stremio-style
+
+Today a connector plugin is a separate Android app (as Trackhop Bridge is): hard to write, Android
+only. Stremio's model is lighter: a plugin is a **small web service with an address**. The user
+pastes the address, and Trackhop sees one more "service".
+
+- A plugin answers a few JSON calls over HTTP: a manifest (name, icon, what it can do: read,
+  write, search), its playlists, a playlist's tracks, search, and, if it can write, add and remove.
+- Written in any language (50 lines of Python are enough), hosted anywhere, even for free. The same
+  plugin works in the app, Docker and Trackhop Desktop.
+- A **community catalog**: a page on the site and a screen in the GitHub/F-Droid build, listing
+  the plugins people submit (description, author, link, "community plugin, not checked by
+  Trackhop"). Never in the Google Play build, as for the Bridge.
+- Safety: a plugin sees only the playlists it is asked for, never sign-ins or other services'
+  tokens.
+- Ideas for plugins: Bandcamp collection, Discogs wantlist, Mixcloud, Beatport, charts (Billboard,
+  Shazam charts by country), RateYourMusic lists, Rekordbox/Serato crates, festival line-ups, a
+  Discord bot collecting the songs shared in a channel.
+- Work: a documented format and a guide for developers, an example plugin, the support in Trackhop,
+  the catalog. Decided on 30/10/2026: not now; after the radio in the app.
+
+## Idea: stream-safe playlists for streamers
+
+Not "the same song without copyright" (a cover or an 8-bit version still uses the original
+composition, and Twitch and YouTube flag covers too), but **a playlist in the same style made only
+of stream-safe music**: similar genre, mood and tempo, from catalogues made for streamers
+(StreamBeats, NCS, Monstercat's creator licence, YouTube Audio Library, Creative Commons on Free
+Music Archive). The user's AI proposes, Trackhop keeps only artists and labels on a curated
+stream-safe list, and says clearly that each catalogue has its own terms (some ask for a credit).
+First on Docker/Desktop and as an API (a Twitch bot or OBS asking for "30 safe songs like this
+playlist"), then in the app.
+
 ## Getting the word out
 
 Listings to ask for once the F-Droid page is live (each is a pull request or a form, done once):
