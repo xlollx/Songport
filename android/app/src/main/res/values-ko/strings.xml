@@ -263,7 +263,7 @@
     <string name="ai_row_desc">플레이리스트를 설명하면 내 AI가 작성하고 Trackhop이 곡을 찾아요.</string>
     <string name="tools_backup_row_desc">이 서비스의 모든 플레이리스트, 좋아요 표시한 곡, 앨범, 아티스트를 날짜별 파일로 저장해요.</string>
     <string name="tools_none">먼저 서비스를 연결하세요.</string>
-    <string name="spotify_forbidden">Spotify가 요청을 거부했어요(%1$s). Development Mode 앱은 Spotify가 직접 만든 플레이리스트(Discover Weekly, Release Radar, 에디토리얼 믹스)를 읽을 수 없고, 앱의 User Management에 등록된 계정만 쓸 수 있어요. 나 또는 다른 사용자가 만든 플레이리스트를 고르거나, developer.spotify.com에서 계정을 추가하세요.</string>
+    <string name="spotify_forbidden">Spotify가 요청을 거부했습니다(%1$s). 2026년부터 Development Mode 앱은 직접 만들었거나 공동 작업 중인 플레이리스트만 읽을 수 있으며(다른 사용자나 Spotify가 만든 것은 불가), 앱의 User Management에 등록된 계정만 사용할 수 있습니다. 다른 사람의 플레이리스트는 Spotify에서 곡을 내 플레이리스트로 복사한 뒤 그 플레이리스트를 동기화하세요.</string>
     <string name="spotify_scope_reconnect">Spotify가 요청을 거부했어요(%1$s). 이 권한은 연결한 뒤에 추가된 것이에요. 계정에서 Spotify를 다시 연결하면 권한이 부여됩니다.</string>
     <string name="spotify_premium_required">Spotify가 요청을 거부했어요. 키를 만든 계정에 활성 Premium이 없고, 2026년 2월부터 Spotify는 Premium이 없는 개발자 앱을 꺼 버려요(구독 변경 후 몇 시간 걸릴 수 있어요). 대신 “Spotify (웹)” 경로를 쓰거나, 나를 사용자로 등록한 Premium 계정이 만든 키를 사용하세요.</string>
     <string name="spotify_rate_limited">Spotify가 속도를 늦춰 달라고 해요. 짧은 시간에 요청이 너무 많았어요. %1$s 후 다시 시도하세요.</string>

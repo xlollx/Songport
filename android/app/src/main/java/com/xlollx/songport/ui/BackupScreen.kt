@@ -133,12 +133,14 @@ fun BackupScreen(onClose: () -> Unit) {
         val r = done ?: return@LaunchedEffect
         BackupExport.finished.value = null
         stateVersion++
-        snackbar.showSnackbar(
+        // In the screen's scope: clearing [finished] restarts this effect, which would cancel the
+        // snackbar the moment it appeared.
+        scope.launch { snackbar.showSnackbar(
             if (r.folderMissing) r.failed.first()
             else ctx.getString(R.string.backup_now_done, r.services) +
                 (if (r.copied > 0) " · " + ctx.getString(R.string.backup_folder_copied, r.copied) else "") +
                 (if (r.failed.isNotEmpty()) " · " + r.failed.first() else ""),
-        )
+        ) }
     }
     var scheduleOpen by remember { mutableStateOf(false) }
     if (scheduleOpen) ChoiceDialog(

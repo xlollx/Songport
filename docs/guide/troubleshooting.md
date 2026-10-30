@@ -5,10 +5,13 @@ Every error shown in the app is also in *Settings → Diagnostics*. If what you 
 
 ## Spotify
 
-**"Spotify refused the request (Forbidden)" with your own key.** Apps in Spotify's *Development Mode*
-serve only the accounts listed in the app's *User Management* on developer.spotify.com, and cannot
-read playlists made by Spotify itself (Discover Weekly, Release Radar, editorial mixes). Add your
-account there, or use a playlist made by you or another user, or use the quick route (*Spotify (web)*).
+**"Spotify refused the request (Forbidden)" with your own key.** Since February 2026, apps in
+Spotify's *Development Mode* can only read the playlists the signed-in account created or
+collaborates on: not those of other users, nor those made by Spotify itself (Discover Weekly,
+Release Radar, editorial mixes). Your own playlists and liked songs work. They also serve only the
+accounts listed in the app's *User Management* on developer.spotify.com. For someone else's
+playlist, copy its tracks into a playlist of your own in Spotify and sync that one, or use the quick
+route (*Spotify (web)*), which reads any playlist the account can open.
 
 **"Spotify did not hand out a token".** The web session needs a fresh sign-in: *Accounts → Spotify
 (web) → Disconnect*, then connect again.
