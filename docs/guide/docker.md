@@ -201,8 +201,9 @@ Its card wears a radio and says what is on air.
 
 A station that sends no titles is reported on the card ("this stream sends no song titles"): try
 another of its streams (an MP3 one rather than HLS), or another station. Listening uses the
-station's bandwidth (128 kbps is about 60 MB an hour), which is why radio syncs live on the server
-and on Trackhop Desktop, which are always on, before the app.
+station's bandwidth (128 kbps is about 60 MB an hour) on the server and on Trackhop Desktop, which
+are always on. The Android app has radio syncs too: there the phone samples the stream every 2
+minutes, on Wi‑Fi by default, instead of listening throughout ([guide](radio)).
 
 ## Behind a reverse proxy
 

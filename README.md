@@ -83,10 +83,9 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
   [Docker guide](https://xlollx.github.io/Trackhop/guide/docker). To update: `docker pull ghcr.io/xlollx/trackhop`,
   then remove and start the container again (the data stays in its volume).
-- Desktop and Docker also have **radio syncs**: Trackhop listens to an internet radio in the hours
-  you choose and saves the songs it plays to a playlist on any service
-  ([how](https://xlollx.github.io/Trackhop/guide/docker#radio-syncs)), and **Shazam syncs**, like the
-  app's ([how](https://xlollx.github.io/Trackhop/guide/shazam)).
+- Desktop and Docker also have **radio syncs** and **Shazam syncs**, like the app's
+  ([radio](https://xlollx.github.io/Trackhop/guide/docker#radio-syncs),
+  [Shazam](https://xlollx.github.io/Trackhop/guide/shazam)).
 - Desktop and Docker also have a **REST API and a webhook**, for Home Assistant, n8n, Node-RED or a
   script: list and start syncs, read their results, add and remove tracks in any connected
   service's playlists, get notified when a run ends. See
@@ -168,6 +167,7 @@ that is exactly what to report.
 | | Keep the source order | After the adds, the target is put in the source's order; Spotify (both routes), YouTube Music and Deezer can move tracks. |
 | | "Liked songs" as source or target | Spotify, Deezer, Subsonic, Jellyfin, Last.fm, ListenBrainz. |
 | | Shazam sync | Every song you Shazam, in a playlist of your choice on any service. Shazam has no API for your library, so nothing unofficial is used: in Shazam's settings, connect Spotify or Apple Music and Shazam keeps every Shazam in a "My Shazam Tracks" playlist there; "Shazam" as the source in the editor finds that playlist on your connected account (or says how to turn it on) and syncs it hourly. The card wears Shazam's mark. Also on Desktop and Docker (Spotify). [Guide](https://xlollx.github.io/Trackhop/guide/shazam). |
+| | Radio sync | The songs an internet radio plays in the hours you choose (days, from, to; past midnight too), in a playlist on any service. Find the station by name in radio-browser.info or paste its stream; only the song title the station sends with its stream is read, never the audio, and adverts, news and the station's name are left out. On the phone the stream is sampled every 2 minutes (a few seconds each, a few MB an hour), on Wi‑Fi by default, from a quiet "Listening to …" notification; the songs are synced every 10 minutes and when the window closes. The card wears a radio and says what is on air. Also on Desktop and Docker. [Guide](https://xlollx.github.io/Trackhop/guide/radio). |
 | | Saved albums, followed artists, podcasts | Sync or transfer them like a playlist (Spotify, Deezer, Subsonic/Navidrome, Jellyfin; Apple Music albums, add only). Matched by UPC where available, then title and artist; the review works the same. YouTube Music and TIDAL not yet. |
 | Preview | What would change, before doing it | Already present, to add, to remove, not found, uncertain. |
 | Matching | Rules per sync | Strictness, explicit or clean preference, same album, studio versions only. |

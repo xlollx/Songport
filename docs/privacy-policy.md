@@ -32,6 +32,10 @@ TIDAL, Deezer) and local files. All processing happens **on your device**.
   or a compatible server you choose), the description you type, the optional reference tracks and the
   number of tracks are sent to that provider, under its own policy; your API key is stored encrypted on
   the device only. Nothing else (playlists, tokens) is sent. The feature is off until you add a key.
+- **Radio syncs (optional)**: to find a station by name, the name you type is sent to the public
+  radio directory radio-browser.info (anonymous, no account). While a radio sync's window is open, the
+  app briefly opens the station's stream every 2 minutes to read the title of the song on air, as any
+  radio player would; the audio is not kept. The songs heard are saved in a playlist file on the device.
 - **Connections log**: the app keeps, on the device, the list of host names it has contacted and how
   many times (Settings › Developer options › Show connections), so you can verify the above yourself. Only host
   names, never content; you can clear it at any time.
@@ -78,6 +82,11 @@ YouTube Music, TIDAL, Deezer) e file locali. Tutta l'elaborazione avviene **sul 
   o un server compatibile a tua scelta), la descrizione che scrivi, gli eventuali brani di riferimento e il
   numero di brani vengono inviati a quel fornitore, secondo la sua informativa; la chiave API resta cifrata
   solo sul dispositivo. Nient'altro (playlist, token) viene inviato. La funzione è spenta finché non aggiungi una chiave.
+- **Sync da radio (facoltative)**: per cercare una stazione per nome, il nome che scrivi viene inviato
+  all'elenco pubblico di radio radio-browser.info (in forma anonima, senza account). Mentre la finestra di
+  una sync da radio è aperta, l'app apre per qualche secondo il flusso della stazione ogni 2 minuti per
+  leggere il titolo della canzone in onda, come farebbe qualsiasi lettore radio; l'audio non viene
+  conservato. Le canzoni ascoltate sono salvate in un file playlist sul dispositivo.
 - **Registro delle connessioni**: l'app conserva, sul dispositivo, l'elenco degli host che ha contattato e quante
   volte (Impostazioni › Opzioni sviluppatore › Mostra le connessioni), così puoi verificare tu stesso quanto sopra. Solo nomi
   di host, mai contenuti; puoi svuotarlo quando vuoi.
