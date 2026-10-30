@@ -22,13 +22,14 @@ class WebTest {
     private lateinit var server: HttpServer
     private lateinit var base: String
     private lateinit var data: File
+    private lateinit var env: ServerEnv
     private val client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).build()
     private val auth = "Basic " + Base64.getEncoder().encodeToString("any:sekret".toByteArray())
 
     @Before fun start() {
         data = tmp.newFolder("data")
         installServerConnectors()
-        val env = ServerEnv(data, Strings(emptyMap()), "https://songport.example.org")
+        env = ServerEnv(data, Strings(emptyMap()), "https://songport.example.org")
         server = Web(env, Runner(env), Auth(env), "sekret", "test").start(0)
         base = "http://127.0.0.1:${server.address.port}"
     }
@@ -122,5 +123,8 @@ class WebTest {
         assertEquals(404, get("/files/..%2Fsecret.csv").statusCode())
         assertEquals(404, get("/files/tokens.json").statusCode())
         assertEquals(401, get("/files/Road%20trip.csv", withAuth = false).statusCode())
+        // A sync that writes to File offers its CSV on its card.
+        env.store.upsertJob(com.xlollx.songport.model.SyncJob("j1", "Trip", com.xlollx.songport.model.PlaylistRef("subsonic", "p", "Trip"), com.xlollx.songport.model.PlaylistRef("csv", "Road trip", "Road trip")))
+        assertTrue(get("/").body().contains("Download CSV"))
     }
 }

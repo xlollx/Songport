@@ -189,11 +189,14 @@ class Web(
             else -> """<span class="ok">+${last.added} −${last.removed}</span>""" + (if (last.unmatched.isNotEmpty()) """ <span class="muted">· ${last.unmatched.size} not found</span>""" else "")
         }
         val next = Runner.nextRun(job)?.let { " · next ${Html.date(it)}" } ?: ""
+        // A playlist written to File: its CSV, a click away.
+        val file = if (Providers.byId(job.target.provider) is LocalFilesProvider) csvFiles().firstOrNull { it.nameWithoutExtension == job.target.playlistId } else null
+        val download = file?.let { """ <a class="button secondary" href="/files/${q(it.name)}" download>Download CSV</a>""" } ?: ""
         return """<div class="card"><div class="row"><div><a href="/syncs/${q(job.id)}"><b>${h(job.name)}</b></a><br>
 <span class="muted">${h(label(job.source.provider))}: ${h(job.source.playlistName)} → ${h(label(job.target.provider))}: ${h(job.target.playlistName.ifBlank { "new playlist" })}</span><br>
 <span class="badge">${h(scheduleName(job.schedule))}</span>${if (job.mirrorRemovals) " <span class=\"badge\">mirror</span>" else ""}${if (!job.enabled) " <span class=\"badge\">off</span>" else ""}
 <span class="muted">Last run ${Html.date(job.lastRunEpoch)}$next</span></div>
-<div class="actions">${if (isRunning) Html.postButton("/syncs/${q(job.id)}/stop", "Stop", "secondary") else Html.postButton("/syncs/${q(job.id)}/run", "Run now")}</div></div>
+<div class="actions">${if (isRunning) Html.postButton("/syncs/${q(job.id)}/stop", "Stop", "secondary") else Html.postButton("/syncs/${q(job.id)}/run", "Run now")}$download</div></div>
 <div>$status</div></div>"""
     }
 
@@ -305,7 +308,8 @@ class Web(
     private fun connectorPage(r: Req, p: MusicProvider) {
         val body = StringBuilder(notice(r))
         if (p is YtmServerProvider) body.append(ytmNote())
-        else {
+        // The app's note for File points to its own screens ("Save as file", Tools): here the list below says it.
+        else if (p !is LocalFilesProvider) {
             body.append("""<div class="card"><p>${h(env.text(p.noteName))}</p>""")
             if (p.beta) body.append("""<p><span class="badge">beta</span></p>""")
             body.append("</div>")
@@ -347,7 +351,7 @@ class Web(
             for (f in files) sb.append("""<li><a href="/files/${q(f.name)}" download>${h(f.nameWithoutExtension)}</a> <span class="muted">(${h(f.name)})</span></li>""")
             sb.append("</ul>")
         }
-        sb.append("""<p class="muted">A sync whose target is File writes its playlist here: click one to download it. To use a CSV file as a source, put it in <code>${h(dir.path)}</code>.</p></div>""")
+        sb.append("""<p class="muted">Playlists saved inside Trackhop, as CSV files. A sync whose target is File writes its playlist here: click one to download it. To use a CSV file as a source, put it in <code>${h(dir.path)}</code>.</p></div>""")
         return sb.toString()
     }
 

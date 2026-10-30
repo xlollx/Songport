@@ -31,7 +31,7 @@ class ServerEnv(
     override val tokens: TokenVault = JsonTokenVault(File(dataDir, "tokens.json"))
     override val redirectUri: String get() = "$baseUrl/callback"
 
-    override fun text(name: String, vararg args: Any): String = strings.text(name, *args)
+    override fun text(name: String, vararg args: Any): String = SERVER_TEXTS[name] ?: strings.text(name, *args)
     fun textArray(name: String): List<String> = strings.array(name)
     fun hasText(name: String) = strings.has(name)
 
@@ -87,3 +87,11 @@ class ServerEnv(
         return null
     }
 }
+
+/**
+ * The engine's texts that point to the app's own screens, said the way the web page works instead.
+ * In English, like the rest of the page.
+ */
+private val SERVER_TEXTS = mapOf(
+    "note_file_target" to "Saved inside Trackhop as a CSV file: download it from Services › File.",
+)
