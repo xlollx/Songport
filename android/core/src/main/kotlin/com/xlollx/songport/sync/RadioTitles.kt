@@ -55,6 +55,23 @@ object RadioTitles {
         else minute < r.endMinute && ((day + 5) % 7 + 1) in r.days
     }
 
+    /**
+     * The first moment after [after] when [r]'s window opens: its start time on one of its days (an
+     * all-day window opens at midnight). Null when it has no day. A window already open does not
+     * count: this is when the next one begins.
+     */
+    fun nextStart(r: RadioSource, after: LocalDateTime): LocalDateTime? {
+        if (r.days.isEmpty()) return null
+        val base = after.toLocalDate()
+        for (d in 0..8) {
+            val day = base.plusDays(d.toLong())
+            val m = r.startMinute.coerceIn(0, 24 * 60 - 1)
+            val at = day.atTime(m / 60, m % 60)
+            if (at.isAfter(after) && day.dayOfWeek.value in r.days) return at
+        }
+        return null
+    }
+
     /** "Mon–Fri 08:00–10:00", "Every day, all day"… for the card. */
     fun describe(r: RadioSource): String {
         val names = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
