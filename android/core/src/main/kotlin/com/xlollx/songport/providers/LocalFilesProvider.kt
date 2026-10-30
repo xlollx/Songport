@@ -34,10 +34,33 @@ object LocalFilesProvider : MusicProvider {
     private fun write(f: File, text: String) {
         val tmp = File(f.parentFile, ".${f.name}.tmp")
         tmp.writeText(text)
-        try {
-            java.nio.file.Files.move(tmp.toPath(), f.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE)
-        } catch (e: java.nio.file.AtomicMoveNotSupportedException) {
-            java.nio.file.Files.move(tmp.toPath(), f.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        busyRetry(f) {
+            try {
+                java.nio.file.Files.move(tmp.toPath(), f.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE)
+            } catch (e: java.nio.file.AtomicMoveNotSupportedException) {
+                java.nio.file.Files.move(tmp.toPath(), f.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+            }
+        }
+    }
+
+    /** [f]'s text. On Windows a file being swapped in by [write] cannot be opened for an instant: tried again. */
+    private fun read(f: File): String = busyRetry(f) { f.readText() }
+
+    /**
+     * [block], tried again for up to a second while Windows has [f] in use (a reader holds it while
+     * [write] replaces it, or the other way round). Elsewhere the first try succeeds. A file that is
+     * not there is not waited for. (The error's text is in the system's language: not looked at.)
+     */
+    private fun <T> busyRetry(f: File, block: () -> T): T {
+        var attempt = 0
+        while (true) {
+            try {
+                return block()
+            } catch (e: java.io.IOException) {
+                val gone = e is java.nio.file.NoSuchFileException || (e is java.io.FileNotFoundException && !f.exists())
+                if (gone || ++attempt >= 100) throw e
+                Thread.sleep(10)
+            }
         }
     }
 
@@ -50,12 +73,12 @@ object LocalFilesProvider : MusicProvider {
 
     override suspend fun playlists(ctx: Env): List<Playlist> =
         dir(ctx).listFiles { f -> f.extension == "csv" }.orEmpty().sortedBy { it.name.lowercase() }.map { f ->
-            Playlist(id = f.nameWithoutExtension, name = f.nameWithoutExtension, trackCount = CsvCodec.parse(f.readText()).size)
+            Playlist(id = f.nameWithoutExtension, name = f.nameWithoutExtension, trackCount = CsvCodec.parse(read(f)).size)
         }
 
     override suspend fun tracks(ctx: Env, playlistId: String): List<Track> {
         val f = file(ctx, playlistId)
-        return if (f.exists()) CsvCodec.parse(f.readText()) else emptyList()
+        return if (f.exists()) CsvCodec.parse(read(f)) else emptyList()
     }
 
     /** Un file puo' "contenere" qualunque brano: il candidato e' il brano stesso con id stabile. */
@@ -72,7 +95,7 @@ object LocalFilesProvider : MusicProvider {
 
     override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
         val f = file(ctx, playlistId)
-        val current = if (f.exists()) CsvCodec.parse(f.readText()) else emptyList()
+        val current = if (f.exists()) CsvCodec.parse(read(f)) else emptyList()
         val ids = current.map { it.id }.toHashSet()
         val merged = current + tracks.map { CsvCodec.withStableId(it) }.filter { ids.add(it.id) }
         write(f, CsvCodec.encode(merged))
@@ -104,7 +127,7 @@ object LocalFilesProvider : MusicProvider {
         val f = file(ctx, playlistId)
         if (!f.exists()) return
         val remove = tracks.map { it.id }.toHashSet()
-        write(f, CsvCodec.encode(CsvCodec.parse(f.readText()).filter { it.id !in remove }))
+        write(f, CsvCodec.encode(CsvCodec.parse(read(f)).filter { it.id !in remove }))
     }
 
     // --- import/export per la UI (Storage Access Framework) ---
@@ -149,7 +172,7 @@ object LocalFilesProvider : MusicProvider {
     }
 
     fun exportText(ctx: Env, playlistId: String, format: Export): String {
-        val tracks = file(ctx, playlistId).takeIf { it.exists() }?.readText()?.let { CsvCodec.parse(it) } ?: emptyList()
+        val tracks = file(ctx, playlistId).takeIf { it.exists() }?.let { read(it) }?.let { CsvCodec.parse(it) } ?: emptyList()
         return format.encode(playlistId, tracks)
     }
 
@@ -185,7 +208,7 @@ object LocalFilesProvider : MusicProvider {
             val stampedAt = tail?.let { runCatching { stamp().parse(it.groupValues[1])?.time }.getOrNull() }
             val base = COPY_TAIL.replace(STAMP_TAIL.replace(name, ""), "")
             Entry(
-                id = name, name = name, trackCount = CsvCodec.parse(f.readText()).size,
+                id = name, name = name, trackCount = CsvCodec.parse(read(f)).size,
                 service = base.substringBefore(" - ", "").trim().takeIf { it.isNotEmpty() },
                 base = base, stamped = stampedAt != null, writtenAt = stampedAt ?: f.lastModified(),
             )
@@ -202,7 +225,7 @@ object LocalFilesProvider : MusicProvider {
         val base = CsvCodec.safeName("$service - $playlistName")
         val versions = entries(ctx).filter { it.base == base && it.service != null }.sortedByDescending { it.writtenAt }
         val text = CsvCodec.encode(tracks)
-        if (versions.firstOrNull()?.let { file(ctx, it.id).readText() } == text) return BackupOutcome.UNCHANGED
+        if (versions.firstOrNull()?.let { read(file(ctx, it.id)) } == text) return BackupOutcome.UNCHANGED
         val when_ = stamp().format(java.util.Date(now))
         var id = "$base ($when_)"
         var n = 2
