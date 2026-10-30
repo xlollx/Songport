@@ -77,6 +77,27 @@ quota meter; own API keys to escape shared quotas.
 1. **Last.fm loves** (needs the API secret for the session flow).
 2. A throttled YouTube Music queue that resumes the next day by itself.
 
+## Ideas for a 2.0: a player for mixed playlists
+
+One playlist, any service: a few songs from Spotify, some from YouTube Music, local files, a
+SoundCloud mix, played in a row by Trackhop. Feasible, if every service is played the way it allows,
+never by pulling its audio stream into our own player (that breaks every streaming service's terms,
+can mean circumventing DRM, risks the user's account, and Google Play would refuse the app).
+
+| Source | How it could play | Notes |
+|---|---|---|
+| Local files, Navidrome/Subsonic, Jellyfin, Plex | Our own player (Media3/ExoPlayer), streaming from the user's own server | Fully allowed: the user's own music and server APIs made for it |
+| Spotify | Hand-off to the installed Spotify app through the official App Remote SDK; Trackhop moves on when the track ends | Premium only; the SDK needs an app registered with package and signature, and Development Mode allows 5 users |
+| Apple Music | MusicKit for Android (official) | Subscription; the developer token we already use |
+| TIDAL | TIDAL's Player SDK for third-party apps | Check the terms and whether partner approval is needed |
+| YouTube Music / YouTube | The official embedded player (IFrame API), visible on screen | Allowed only with the player visible, no background play, ads included; extracting the audio (as NewPipe does) is against YouTube's terms and out of the question for the Play build |
+| SoundCloud | The official widget for public tracks | Stream URLs need an API client, and SoundCloud registers no new apps |
+| Deezer, Amazon Music | Not playable | No public playback SDK (Deezer: 30-second previews only) |
+
+The shape: a "conductor" that plays each track with the right player and moves to the next one,
+plus a queue and a mixed-playlist editor built on File playlists (which already hold tracks from
+any service). A large piece of work, months rather than weeks: a 2.0, if people ask for it.
+
 ## Getting the word out
 
 Listings to ask for once the F-Droid page is live (each is a pull request or a form, done once):
