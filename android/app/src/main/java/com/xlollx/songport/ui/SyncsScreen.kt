@@ -454,7 +454,9 @@ private fun JobCard(
                         Text(job.name.ifBlank { job.source.playlistName }, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     Text(
-                        (src?.label(ctx) ?: job.source.provider).let { if (job.source.link != null) stringResource(R.string.source_link_label, it) else it } + " · " + srcName +
+                        // A radio sync's source is its station, not the File playlist that keeps what it heard.
+                        (job.radio?.let { stringResource(R.string.editor_source_radio) + " · " + it.station }
+                            ?: ((src?.label(ctx) ?: job.source.provider).let { if (job.source.link != null) stringResource(R.string.source_link_label, it) else it } + " · " + srcName)) +
                             (if (job.linkedJobId != null) "  ↔  " else "  →  ") +
                             (dst?.label(ctx) ?: job.target.provider) + " · " + dstName,
                         style = MaterialTheme.typography.bodyMedium,
