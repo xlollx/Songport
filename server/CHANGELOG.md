@@ -17,6 +17,7 @@ The app's Tools on the page.
 - **AI playlist**: your own AI (free keys from OpenRouter, Groq or Gemini, or a local model with
   Ollama, no key at all) writes a playlist from a description; Trackhop creates it on a service or
   in File.
+- **Your numbers**: what the syncs did, as the app's Stats (Tools, or from the home page).
 - **Buy me a coffee** in the footer: optional, nothing is unlocked.
 
 ## 0.1.0
