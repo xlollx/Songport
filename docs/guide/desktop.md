@@ -11,18 +11,21 @@ pages in your browser, and runs scheduled syncs while the computer is on. It is 
 
 ## Install
 
-The current version is **0.5.3** ([what's in it](https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.3)); every version is in the
+The current version is **0.5.5** ([what's in it](https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.5)); every version is in the
 [Desktop & Server releases](https://github.com/xlollx/Trackhop/releases?q=server-v&expanded=true)
 (tagged `server-v…`: Desktop and Docker have their own version, separate from the app's).
 
 | System | Download | How |
 |---|---|---|
-| Windows 10 or 11 | [Installer (.msi)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.3/Trackhop-Desktop-v0.5.3-windows.msi) | Open it. It installs for your user only, no administrator needed, with a Start menu entry. |
-| Windows, no install | [Portable (.zip)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.3/Trackhop-Desktop-v0.5.3-windows.zip) | Unzip anywhere (Documents, a USB stick) and run `Trackhop\Trackhop.exe`. |
-| Debian, Ubuntu, Mint… | [.deb](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.3/Trackhop-Desktop-v0.5.3-linux.deb) | `sudo apt install ./Trackhop-Desktop-v0.5.3-linux.deb`, then *Trackhop* in the menu. |
-| Any other Linux (x86-64) | [.tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.3/Trackhop-Desktop-v0.5.3-linux.tar.gz) | Unpack and run `Trackhop/bin/Trackhop`. |
+| Windows 10 or 11 | [Installer (.msi)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-windows.msi) | Open it. It installs for your user only, no administrator needed, with a Start menu entry. |
+| Windows, no install | [Portable (.zip)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-windows.zip) | Unzip anywhere (Documents, a USB stick) and run `Trackhop\Trackhop.exe`. |
+| macOS 11 or later, Apple silicon | [.dmg (arm64)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-macos-arm64.dmg) | Open it, drag *Trackhop* into *Applications*; the first time, [Open Anyway](#macos). |
+| macOS 11 or later, Intel | [.dmg (x64)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-macos-x64.dmg) | The same, for Intel Macs. |
+| Debian, Ubuntu, Mint… | [.deb](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-linux.deb) | `sudo apt install ./Trackhop-Desktop-v0.5.5-linux.deb`, then *Trackhop* in the menu. |
+| Any other Linux (x86-64) | [.tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-linux.tar.gz) | Unpack and run `Trackhop/bin/Trackhop`. |
+| Linux with Flatpak | [.flatpak](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-linux.flatpak) | `flatpak install --user Trackhop-Desktop-v0.5.5-linux.flatpak` (Flatpak offers GNOME's runtime from Flathub), then *Trackhop* in the menu. |
 
-**Package managers and stores.** Scoop has Trackhop Desktop already; the others are on their way,
+**Package managers and stores.** Scoop and Homebrew have Trackhop Desktop already; the others are on their way,
 and their commands do not work until the *(soon)* goes away here:
 
 | Where | Command |
@@ -30,7 +33,8 @@ and their commands do not work until the *(soon)* goes away here:
 | winget (Windows) | `winget install xlollx.Trackhop` *(soon, in review)* |
 | Chocolatey (Windows) | `choco install trackhop` *(soon, in review)* |
 | Scoop (Windows) | `scoop bucket add xlollx https://github.com/xlollx/scoop-bucket`, then `scoop install xlollx/trackhop` |
-| Microsoft Store (Windows) | *(soon)* |
+| Homebrew (macOS) | `brew install --cask xlollx/tap/trackhop` |
+| Microsoft Store (Windows) | *(soon, in certification)* |
 | Flathub (Linux) | `flatpak install flathub io.github.xlollx.Trackhop` *(soon)* |
 
 **Windows warns about an unrecognised app** ("Windows protected your PC"): the installer is not

@@ -14,7 +14,8 @@ note off each one once its channel is live.
 | winget | `winget/manifests/…/0.5.1/` | First PR open, in review | Fork, first PR by hand, a token | `stores.yml` opens the PR to `microsoft/winget-pkgs` |
 | Chocolatey | `chocolatey/` | 0.5.1 pushed, in moderation | Account, API key secret | `stores.yml` packs, tests and pushes; moderation approves |
 | Scoop | `scoop/trackhop.json` | **Live** ([xlollx/scoop-bucket](https://github.com/xlollx/scoop-bucket)) | Create `xlollx/scoop-bucket` | The bucket's Excavator updates the manifest |
-| Microsoft Store | `msix/`, `desktop.yml` | Ready, needs Partner Center | Account, reserve the name, three variables, first submission | Upload the release's `.msix` in Partner Center |
+| Homebrew (macOS) | `homebrew/` | **Live** ([xlollx/homebrew-tap](https://github.com/xlollx/homebrew-tap)) | Create `xlollx/homebrew-tap` | The tap's own workflow updates the cask |
+| Microsoft Store | `msix/`, `desktop.yml` | Submitted, in certification ("Trackhop Desktop") | Account, reserve the name, three variables, first submission | Upload the release's `.msix` in Partner Center |
 | Flathub | `flatpak/`, `flatpak.yml` | Needs owner action, review risk | Desktop screenshots, a release with these files, the submission PR | A PR in the Flathub repo per release |
 
 Secrets and variables go in GitHub: *Settings › Secrets and variables › Actions*, in the

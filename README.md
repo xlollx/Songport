@@ -30,8 +30,9 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
 
 <p align="center">
   <b>On a computer or a server?</b> <sub>(beta)</sub><br>
-  <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.5.3/Trackhop-Desktop-v0.5.3-windows.msi"><img src="docs/assets/badges/windows.svg" height="56" alt="Get it for Windows"></a>
-  <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.5.3/Trackhop-Desktop-v0.5.3-linux.deb"><img src="docs/assets/badges/linux.svg" height="56" alt="Get it for Linux"></a>
+  <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-windows.msi"><img src="docs/assets/badges/windows.svg" height="56" alt="Get it for Windows"></a>
+  <a href="https://xlollx.github.io/Trackhop/guide/desktop#macos"><img src="docs/assets/badges/macos.svg" height="56" alt="Get it for macOS"></a>
+  <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-linux.deb"><img src="docs/assets/badges/linux.svg" height="56" alt="Get it for Linux"></a>
   <a href="https://xlollx.github.io/Trackhop/guide/docker"><img src="docs/assets/badges/docker.svg" height="56" alt="Run it on Docker"></a>
 </p>
 
@@ -69,17 +70,22 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   Install the companion plugin **[Trackhop Bridge](https://github.com/xlollx/Trackhop-Bridge)**
   (GitHub only, read its notes first), or switch to the F-Droid/GitHub build above, which has them
   built in. [Which Trackhop?](https://xlollx.github.io/Trackhop/guide/versions) compares the two.
-- **Desktop (Windows, Linux, beta)**: works for everyday use, still young. The same engine as a program on your
+- **Desktop (Windows, macOS, Linux, beta)**: works for everyday use, still young. The same engine as a program on your
   computer, with its own Java runtime (no Java or Docker to install, no administrator rights), an icon
-  next to the clock and the same web page as the server. Version 0.5.3 ([what's in it](https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.3)):
-  [Windows installer](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.3/Trackhop-Desktop-v0.5.3-windows.msi) ·
-  [Windows, no install (.zip)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.3/Trackhop-Desktop-v0.5.3-windows.zip) ·
-  [Linux .deb](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.3/Trackhop-Desktop-v0.5.3-linux.deb) ·
-  [Linux .tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.3/Trackhop-Desktop-v0.5.3-linux.tar.gz). See the
+  next to the clock and the same web page as the server. Version 0.5.5 ([what's in it](https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.5)):
+  [Windows installer](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-windows.msi) ·
+  [Windows, no install (.zip)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-windows.zip) ·
+  [macOS, Apple silicon](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-macos-arm64.dmg) ·
+  [macOS, Intel](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-macos-x64.dmg) ·
+  [Linux .deb](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-linux.deb) ·
+  [Linux .tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-linux.tar.gz) ·
+  [Linux Flatpak](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-linux.flatpak). See the
   [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop); every version is in the
   [Desktop & Server releases](https://github.com/xlollx/Trackhop/releases?q=server-v&expanded=true) (`server-v…`).
   With [Scoop](https://github.com/xlollx/scoop-bucket): `scoop bucket add xlollx https://github.com/xlollx/scoop-bucket`
-  then `scoop install xlollx/trackhop`. *Coming soon, not live yet:* `winget install xlollx.Trackhop`,
+  then `scoop install xlollx/trackhop`; with [Homebrew](https://github.com/xlollx/homebrew-tap) on a Mac:
+  `brew install --cask xlollx/tap/trackhop`. The Mac app is not signed by Apple: the first time,
+  *System Settings › Privacy & Security › Open Anyway* ([how](https://xlollx.github.io/Trackhop/guide/desktop#macos)). *Coming soon, not live yet:* `winget install xlollx.Trackhop`,
   `choco install trackhop` (both in review), the Microsoft Store, and
   `flatpak install flathub io.github.xlollx.Trackhop` ([packaging/](packaging/README.md)).
 - **Server (Docker, beta)**: works for everyday use, still young. The same engine on a home server or a NAS, with a web page and
@@ -99,7 +105,7 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
 - And a **command line**, `trackhop`: `trackhop run --all --wait`, `trackhop add spotify Focus "Bonobo - Kerala"`,
   from a terminal, cron or Task Scheduler, with nothing to set up on the same machine or in the
   container (`docker exec trackhop trackhop syncs`). See [the trackhop command](https://xlollx.github.io/Trackhop/guide/cli).
-- Desktop and Docker have their **own version** (now 0.5.3), separate from the app's.
+- Desktop and Docker have their **own version** (now 0.5.5), separate from the app's.
 
 Android 8.0 or newer. Languages: English, Italian, French, German, Spanish, Portuguese (Brazil), Polish,
 Russian, Turkish, Chinese, Japanese, Korean.
