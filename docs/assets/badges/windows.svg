@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 168 58" width="168" height="58" role="img" aria-label="GET IT FOR Windows">
+  <rect x="1" y="1" width="166" height="56" rx="8" fill="#000" stroke="#a6a6a6" stroke-width="1.5"/>
+  <g transform="translate(10 9)"><rect x="0" y="0" width="19" height="19" fill="#F25022"/><rect x="21" y="0" width="19" height="19" fill="#7FBA00"/><rect x="0" y="21" width="19" height="19" fill="#00A4EF"/><rect x="21" y="21" width="19" height="19" fill="#FFB900"/></g>
+  <text x="56" y="23" fill="#fff" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="10" letter-spacing=".6">GET IT FOR</text>
+  <text x="55" y="44" fill="#fff" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="21" font-weight="600">Windows</text>
+</svg>

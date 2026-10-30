@@ -29,7 +29,10 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
 </p>
 
 <p align="center">
-  <b>On a computer?</b> <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.1.0/Trackhop-Desktop-v0.1.0-windows.msi">Trackhop Desktop for Windows</a> · <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.1.0/Trackhop-Desktop-v0.1.0-linux.deb">for Linux</a> · <a href="https://xlollx.github.io/Trackhop/guide/docker">Docker</a> <sub>(alpha)</sub>
+  <b>On a computer or a server?</b> <sub>(alpha)</sub><br>
+  <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.1.0/Trackhop-Desktop-v0.1.0-windows.msi"><img src="docs/assets/badges/windows.svg" height="56" alt="Get it for Windows"></a>
+  <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.1.0/Trackhop-Desktop-v0.1.0-linux.deb"><img src="docs/assets/badges/linux.svg" height="56" alt="Get it for Linux"></a>
+  <a href="https://xlollx.github.io/Trackhop/guide/docker"><img src="docs/assets/badges/docker.svg" height="56" alt="Run it on Docker"></a>
 </p>
 
 <p align="center"><img src="docs/store/demo.gif" width="200" alt="A tour of Trackhop: syncs, a new sync, accounts, tools, a shared track, the compatibility and poster cards, unplayable tracks, settings"></p>
