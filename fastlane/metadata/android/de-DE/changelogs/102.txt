@@ -1,0 +1,1 @@
+Sicherung & Wiederherstellung an einem Ort (Einstellungen oder Werkzeuge): die ganze Einrichtung (Syncs, Einstellungen, gewählte Zuordnungen, Datei-Playlists; nie Anmeldungen) als .trackhop-Datei sichern und auf einem anderen Handy, in Trackhop Desktop oder Docker wiederherstellen; alle Playlists jetzt oder nach Zeitplan sichern, mit oder ohne Ordner.

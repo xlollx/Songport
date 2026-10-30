@@ -1,0 +1,1 @@
+Backup e ripristino, in un solo posto (Impostazioni o Strumenti): salva tutta la configurazione (sync, impostazioni, abbinamenti scelti, playlist File; mai gli accessi) in un file .trackhop e ripristinala su un altro telefono o in Trackhop Desktop e Docker; backup di tutte le playlist ora o programmato, con o senza cartella, che ora riceve anche la configurazione del giorno.

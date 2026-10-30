@@ -5,6 +5,15 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## 0.4.0
+
+- **Backup & restore** in one place (Tools): your whole set-up (syncs, services added, matches you
+  chose, ignored tracks, settings, File playlists; never sign-ins) saved to a .trackhop file and
+  restored here or in the app (1.3.9) or the other Trackhop; the playlists backed up now or on a
+  schedule; the backup folder also gets the set-up of the day.
+- **Spotify and Deezer without a key** (unofficial, alpha): through their web players, signed in
+  with the cookies of a browser where you are signed in, as YouTube Music already was.
+
 ## 0.3.0
 
 - **Trackhop Desktop has its own window**: the pages in a window of their own with Trackhop's icon,

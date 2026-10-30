@@ -1,0 +1,1 @@
+Sauvegarde et restauration au même endroit (Réglages ou Outils) : enregistre toute ta configuration (synchros, réglages, correspondances choisies, playlists Fichier ; jamais tes connexions) dans un fichier .trackhop et restaure-la sur un autre téléphone, dans Trackhop Desktop ou Docker ; sauvegarde de toutes les playlists maintenant ou programmée, avec ou sans dossier.

@@ -1,0 +1,1 @@
+Backup & restore, in one place (Settings or Tools): save your whole set-up (syncs, settings, matches you chose, File playlists; never your sign-ins) to a .trackhop file and restore it on another phone or in Trackhop Desktop and Docker; back up every playlist now or on a schedule, with or without a folder, which now also gets the set-up of the day.

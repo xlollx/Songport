@@ -1,0 +1,1 @@
+Backup e restauração em um só lugar (Configurações ou Ferramentas): salve toda a sua configuração (sincronizações, ajustes, correspondências escolhidas, playlists de Arquivo; nunca seus logins) em um arquivo .trackhop e restaure em outro celular, no Trackhop Desktop ou no Docker; backup de todas as playlists agora ou programado, com ou sem pasta.
