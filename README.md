@@ -29,7 +29,7 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
 </p>
 
 <p align="center">
-  <b>On a computer or a server?</b> <sub>(alpha)</sub><br>
+  <b>On a computer or a server?</b> <sub>(Desktop alpha, Docker beta)</sub><br>
   <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.3.0/Trackhop-Desktop-v0.3.0-windows.msi"><img src="docs/assets/badges/windows.svg" height="56" alt="Get it for Windows"></a>
   <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.3.0/Trackhop-Desktop-v0.3.0-linux.deb"><img src="docs/assets/badges/linux.svg" height="56" alt="Get it for Linux"></a>
   <a href="https://xlollx.github.io/Trackhop/guide/docker"><img src="docs/assets/badges/docker.svg" height="56" alt="Run it on Docker"></a>
@@ -78,7 +78,7 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   [Linux .tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.3.0/Trackhop-Desktop-v0.3.0-linux.tar.gz). See the
   [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop); every version is in the
   [Desktop & Server releases](https://github.com/xlollx/Trackhop/releases?q=server-v&expanded=true) (`server-v…`).
-- **Server (Docker, ⚠️ alpha)**: an early test version, expect rough edges. The same engine on a home server or a NAS, with a web page and
+- **Server (Docker, beta)**: works for everyday use, still young. The same engine on a home server or a NAS, with a web page and
   scheduled syncs: `docker run -p 8080:8080 -v trackhop-data:/data ghcr.io/xlollx/trackhop`. Official
   APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
   [Docker guide](https://xlollx.github.io/Trackhop/guide/docker). To update: `docker pull ghcr.io/xlollx/trackhop`,

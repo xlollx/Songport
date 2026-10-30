@@ -14,7 +14,7 @@ description (architecture, matching, services and their limits) stays in the
 - [Cards](cards): "how compatible are we?" between two playlists, and the playlist poster with a QR code.
 - [Unplayable tracks](unplayable-tracks): the greyed-out tracks in your playlists, and how Trackhop replaces them.
 - [Trackhop Desktop (Windows, Linux; alpha)](desktop): an early test version. The engine as a program on your computer, no Docker needed.
-- [Trackhop on a server (Docker, alpha)](docker): an early test version. Scheduled syncs on a home server or a NAS, with a web page.
+- [Trackhop on a server (Docker, beta)](docker): works for everyday use, still young. Scheduled syncs on a home server or a NAS, with a web page.
 
 **Maintaining it**
 - [Release process](release-process): version, changelogs, what CI does, F-Droid and Obtainium.

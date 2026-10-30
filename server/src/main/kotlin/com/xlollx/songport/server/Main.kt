@@ -78,7 +78,7 @@ class Launched(val env: ServerEnv, val runner: Runner, val web: Web, val version
     /** Once the pages are served: the scheduler, the first log line, the data saved on exit. */
     fun started(warnNoPassword: Boolean) {
         runner.startScheduler()
-        env.log("server", "${edition.product} $version (ALPHA: an early test version, keep a copy of the data folder), data in ${config.dataDir.absolutePath}" + if (warnNoPassword) " (no password: set SONGPORT_PASSWORD if others can reach this port)" else "")
+        env.log("server", "${edition.product} $version (${edition.stage.uppercase()}: keep a copy of the data folder), data in ${config.dataDir.absolutePath}" + if (warnNoPassword) " (no password: set SONGPORT_PASSWORD if others can reach this port)" else "")
         Runtime.getRuntime().addShutdownHook(Thread { env.store.flush() })
     }
 }

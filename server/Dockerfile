@@ -18,8 +18,8 @@ COPY server server
 RUN gradle -p server installDist --no-daemon --quiet
 
 FROM eclipse-temurin:17-jre
-LABEL org.opencontainers.image.title="Trackhop server (alpha)" \
-      org.opencontainers.image.description="Alpha, an early test version. Keeps playlists in sync between music services, on your own server" \
+LABEL org.opencontainers.image.title="Trackhop server (beta)" \
+      org.opencontainers.image.description="Beta. Keeps playlists in sync between music services, on your own server" \
       org.opencontainers.image.source="https://github.com/xlollx/Trackhop" \
       org.opencontainers.image.licenses="GPL-3.0-only"
 # The system user, the install path and the SONGPORT_* variables keep their names from before the

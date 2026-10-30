@@ -1,9 +1,9 @@
-# Trackhop on a server (Docker, alpha)
+# Trackhop on a server (Docker, beta)
 
-> **⚠️ Alpha.** The server is an early test version: it has had little real use, things can break,
-> and settings or the data format can change between releases without a migration. Use it alongside
-> the app rather than instead of it, keep a copy of the data volume, and
-> [report](reporting-a-problem) what goes wrong.
+> **Beta.** The server works for everyday use (it has run scheduled syncs for days) but is still
+> young: pages and settings can change between releases. Keep a copy of the data volume (or save the
+> set-up from *Tools › Backup & restore*) and [report](reporting-a-problem) what goes wrong. The
+> unofficial connectors below stay an alpha.
 
 The same sync engine as the Android app, running on a home server, a NAS or a small VPS, with a
 web page to connect services, create syncs and see how they went. Scheduled syncs run there,

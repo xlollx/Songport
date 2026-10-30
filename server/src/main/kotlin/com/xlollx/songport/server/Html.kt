@@ -16,9 +16,10 @@ object Html {
             """<button class="${h(style)}">${h(label)}</button></form>"""
 
     /** Where the engine runs: in a container ([SERVER]) or as an app on the user's computer ([DESKTOP]). */
-    enum class Edition(val product: String, val guide: String) {
-        SERVER("Trackhop server", "https://xlollx.github.io/Trackhop/guide/docker"),
-        DESKTOP("Trackhop Desktop", "https://xlollx.github.io/Trackhop/guide/desktop"),
+    /** [stage]: the server on Docker is a beta since 0.4.0; Desktop, newer, is still an alpha. */
+    enum class Edition(val product: String, val guide: String, val stage: String) {
+        SERVER("Trackhop server", "https://xlollx.github.io/Trackhop/guide/docker", "beta"),
+        DESKTOP("Trackhop Desktop", "https://xlollx.github.io/Trackhop/guide/desktop", "alpha"),
     }
 
     /** The Trackhop mark (the app's ic_brand_mark), white, for the header's tile. */
@@ -82,16 +83,16 @@ ${refreshSeconds?.let { """<meta http-equiv="refresh" content="$it">""" } ?: ""}
 <link rel="stylesheet" href="/style.css">
 ${if (edition == Edition.DESKTOP) DESKTOP_LINKS else ""}
 </head><body>
-<header class="top"><a class="brand" href="/"><span class="tile">$MARK</span>Trackhop <span class="alpha">alpha</span></a>
+<header class="top"><a class="brand" href="/"><span class="tile">$MARK</span>Trackhop <span class="${edition.stage}">${edition.stage}</span></a>
 <nav>${NAV.joinToString("") { (href, label) -> val on = if (href == "/") path.isEmpty() || path.startsWith("syncs") else path.startsWith(href.drop(1)); """<a href="$href"${if (on) " class=\"on\" aria-current=\"page\"" else ""}>$label</a>""" }}</nav></header>
-<p class="alpha-note"><strong>Alpha.</strong> ${h(edition.product)} is an early test version: things can break or change between releases. Keep a copy of the data folder and <a href="https://xlollx.github.io/Trackhop/guide/reporting-a-problem">report what goes wrong</a>.</p>
+<p class="alpha-note">${if (edition.stage == "beta") "<strong>Beta.</strong> ${h(edition.product)} works for everyday use but is still young: things can change between releases." else "<strong>Alpha.</strong> ${h(edition.product)} is an early test version: things can break or change between releases."} Keep a copy of the data folder and <a href="https://xlollx.github.io/Trackhop/guide/reporting-a-problem">report what goes wrong</a>.</p>
 <main>
 ${backTo(path)?.let { """<a class="back" href="${h(it)}">‹ Back</a>""" } ?: ""}
 <h1>${h(title)}</h1>
 $body
 </main>
 <footer><a class="coffee" href="https://ko-fi.com/xlollx" target="_blank" rel="noopener">☕ Buy me a coffee</a> <span class="muted">Optional: nothing is unlocked, everything stays free.</span><br>
-${h(edition.product)} ${h(version)} · alpha · <a href="${edition.guide}">Guide</a> · <a href="https://github.com/xlollx/Trackhop">GitHub</a> · <a href="https://github.com/sponsors/xlollx" target="_blank" rel="noopener">Sponsor</a>${if (edition == Edition.DESKTOP) " · " + postButton("/quit", "Quit Trackhop", "link", confirm = "Stop Trackhop? Scheduled syncs run only while it is running.") else ""}</footer>
+${h(edition.product)} ${h(version)} · ${edition.stage} · <a href="${edition.guide}">Guide</a> · <a href="https://github.com/xlollx/Trackhop">GitHub</a> · <a href="https://github.com/sponsors/xlollx" target="_blank" rel="noopener">Sponsor</a>${if (edition == Edition.DESKTOP) " · " + postButton("/quit", "Quit Trackhop", "link", confirm = "Stop Trackhop? Scheduled syncs run only while it is running.") else ""}</footer>
 </body></html>"""
 
     /**
@@ -146,6 +147,7 @@ h3{margin:0 0 4px;font-size:16px}
 .card.ok,.card.err{color:var(--ink)}
 .card.ok{box-shadow:inset 4px 0 0 var(--ok)}.card.err{box-shadow:inset 4px 0 0 var(--err)}
 .alpha{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:1px 8px;border-radius:999px;background:#ffb4ab;color:#690005;vertical-align:middle}
+.beta{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:1px 8px;border-radius:999px;background:#c8e6ff;color:#003258;vertical-align:middle}
 .alpha-note{margin:0;padding:10px 16px;background:var(--surface-2);color:var(--ink-2);font-size:13.5px;text-align:center}
 .badge{display:inline-block;font-size:12px;padding:2px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-2)}
 button,.button{font:inherit;font-weight:600;font-size:14px;cursor:pointer;border:0;border-radius:999px;padding:9px 18px;background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-block;line-height:1.3}

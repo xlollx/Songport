@@ -7,6 +7,8 @@ the Docker image carried the app's version.
 
 ## 0.4.0
 
+- **The server on Docker is now a beta**: it has run scheduled syncs for days without trouble.
+  Trackhop Desktop, newer, stays an alpha; the unofficial connectors too.
 - **Backup & restore** in one place (Tools): your whole set-up (syncs, services added, matches you
   chose, ignored tracks, settings, File playlists; never sign-ins) saved to a .trackhop file and
   restored here or in the app (1.3.9) or the other Trackhop; the playlists backed up now or on a
