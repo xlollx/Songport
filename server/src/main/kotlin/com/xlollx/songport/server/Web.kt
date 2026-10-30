@@ -113,6 +113,7 @@ class Web(
         val parts = if (type.startsWith("multipart/form-data")) Multipart.parse(type, bytes) else null
         val form = parts?.fields ?: if (method == "POST") parseForm(String(bytes, StandardCharsets.UTF_8)) else emptyMap()
         val r = Req(ex, method, path, parseForm(ex.requestURI.rawQuery ?: ""), form, parts?.files.orEmpty())
+        currentPath.set(path.joinToString("/"))
         when {
             path.isEmpty() -> home(r)
             path == listOf("style.css") -> send(ex, 200, Html.CSS, "text/css")
@@ -162,7 +163,16 @@ class Web(
         ex.sendResponseHeaders(303, -1)
     }
 
-    internal fun page(title: String, body: String, refresh: Int? = null) = Html.page(title, body, version, refresh, edition)
+    internal fun page(title: String, body: String, refresh: Int? = null) = Html.page(title, body, version, refresh, edition, currentPath.get().orEmpty())
+
+    /** The path being answered, for the header's current tab. */
+    private val currentPath = ThreadLocal<String>()
+
+    /** A service's mark, as the app shows it. */
+    internal fun logo(id: String, size: Int = 32): String {
+        val p = Providers.byId(id)
+        return Html.logo(p?.serviceId ?: id, p?.brandColor, p?.label(env) ?: id, size)
+    }
 
     private fun quit(r: Req, stop: () -> Unit) {
         send(r.ex, 200, page("Trackhop has stopped", """<p>Scheduled syncs wait until you open Trackhop again. You can close this tab.</p>"""))
@@ -183,6 +193,11 @@ class Web(
         val running = SyncState.running.value
         val connected = Providers.connectors().filter { it.isConnected(env) || !it.requiresAuth }
         val body = StringBuilder(notice(r))
+        val lastRun = jobs.maxOfOrNull { it.lastRunEpoch } ?: 0
+        body.append(
+            """<div class="hero"><h2>Your playlists, everywhere</h2><p class="muted">${jobs.size} ${if (jobs.size == 1) "sync" else "syncs"} · ${connected.size} ${if (connected.size == 1) "service" else "services"}${if (lastRun > 0) " · last sync ${Html.date(lastRun)}" else ""}</p>
+<div class="actions">${if (jobs.any { it.enabled }) Html.postButton("/syncs/all", if (running.isNotEmpty()) "Syncing…" else "Sync all now") else ""}</div></div>""",
+        )
         if (connected.size < 1) {
             body.append("""<div class="card">Connect a service first: <a href="/connectors">Services</a>.</div>""")
         }
@@ -208,12 +223,12 @@ class Web(
         // A playlist written to File: its CSV, a click away.
         val file = if (Providers.byId(job.target.provider) is LocalFilesProvider) csvFiles().firstOrNull { it.nameWithoutExtension == job.target.playlistId } else null
         val download = file?.let { """ <a class="button secondary" href="/files/${q(it.name)}" download>Download CSV</a>""" } ?: ""
-        return """<div class="card"><div class="row"><div><a href="/syncs/${q(job.id)}"><b>${h(job.name)}</b></a><br>
-<span class="muted">${h(label(job.source.provider))}: ${h(job.source.playlistName)} → ${h(label(job.target.provider))}: ${h(job.target.playlistName.ifBlank { "new playlist" })}</span><br>
+        return """<div class="card"${Html.jobStyle(job.color)}><div class="row"><div class="who"><span class="pair">${logo(job.source.provider, 36)}${logo(job.target.provider, 36)}</span><div><a href="/syncs/${q(job.id)}"><b>${h(job.name)}</b></a><br>
+<span class="muted">${h(label(job.source.provider))}: ${h(job.source.playlistName)} → ${h(label(job.target.provider))}: ${h(job.target.playlistName.ifBlank { "new playlist" })}</span></div></div></div>
+<div>
 <span class="badge">${h(scheduleName(job.schedule))}</span>${if (job.mirrorRemovals) " <span class=\"badge\">mirror</span>" else ""}${if (!job.enabled) " <span class=\"badge\">off</span>" else ""}
-<span class="muted">Last run ${Html.date(job.lastRunEpoch)}$next</span></div>
-<div class="actions">${if (isRunning) Html.postButton("/syncs/${q(job.id)}/stop", "Stop", "secondary") else Html.postButton("/syncs/${q(job.id)}/run", "Run now")}$download</div></div>
-<div>$status</div></div>"""
+<span class="muted">Last run ${Html.date(job.lastRunEpoch)}$next</span>
+<div class="row"><div>$status</div><div class="actions">${if (isRunning) Html.postButton("/syncs/${q(job.id)}/stop", "Stop", "secondary") else Html.postButton("/syncs/${q(job.id)}/run", "Run now")}$download</div></div></div></div>"""
     }
 
     private fun progressText(jobId: String): String {
@@ -302,7 +317,7 @@ class Web(
                 !p.isConfigured(env) -> """<span class="muted">needs your key</span>"""
                 else -> """<span class="muted">not connected</span>"""
             }
-            body.append("""<div class="card row"><div><a href="/connectors/${q(p.id)}"><b>${h(p.label(env))}</b></a>${unofficialBadges(p)} $state</div></div>""")
+            body.append("""<div class="card"><div class="who">${logo(p.id, 40)}<div><a href="/connectors/${q(p.id)}"><b>${h(p.label(env))}</b></a>${unofficialBadges(p)}<br>$state</div></div></div>""")
         }
         // A link-only source (SoundCloud) is not added: it is offered when a sync is created.
         val available = Providers.services().filter { s -> !s.linkOnly && added.none { it.id == s.id } }
@@ -425,6 +440,10 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
     private fun syncs(r: Req, rest: List<String>) {
         when {
             rest == listOf("new") -> newSync(r)
+            rest == listOf("all") && r.method == "POST" -> {
+                env.store.data.jobs.filter { it.enabled }.forEach { runner.start(it) }
+                redirect(r.ex, "/")
+            }
             rest.isEmpty() && r.method == "POST" -> createSync(r)
             rest.isEmpty() -> redirect(r.ex, "/")
             else -> {
@@ -441,7 +460,8 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
                     "schedule" -> {
                         val s = runCatching { Schedule.valueOf(r.form["schedule"].orEmpty()) }.getOrDefault(job.schedule)
                         val name = r.form["name"]?.trim()?.takeIf { it.isNotEmpty() } ?: job.name
-                        env.store.upsertJob(job.copy(name = name, schedule = s, mirrorRemovals = r.form["mirror"] == "on"))
+                        val color = r.form["color"]?.takeIf { it in Html.JOB_COLORS }
+                        env.store.upsertJob(job.copy(name = name, schedule = s, mirrorRemovals = r.form["mirror"] == "on", color = color))
                         redirect(r.ex, "$back?ok=${q("Saved.")}")
                     }
                     "delete" -> { env.store.deleteJob(job.id); redirect(r.ex, "/") }
@@ -545,7 +565,9 @@ ${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input 
         val schedules = Schedule.values().joinToString("") { """<option value="${it.name}"${if (it == job.schedule) " selected" else ""}>${h(scheduleName(it))}</option>""" }
         body.append(
             """<form method="post" action="/syncs/$id/schedule" class="card"><label>Name</label><input type="text" name="name" value="${h(job.name)}"><label>Schedule</label><select name="schedule">$schedules</select>
-<label class="check"><input type="checkbox" name="mirror"${if (job.mirrorRemovals) " checked" else ""}> Mirror removals</label><p><button class="secondary">Save</button></p></form>""",
+<label class="check"><input type="checkbox" name="mirror"${if (job.mirrorRemovals) " checked" else ""}> Mirror removals</label>
+<label>Colour</label><div class="swatches"><label title="None"><input type="radio" name="color" value=""${if (job.color == null) " checked" else ""} aria-label="None"><span class="dot none"></span></label>${Html.JOB_COLORS.entries.joinToString("") { (k, v) -> """<label title="$k"><input type="radio" name="color" value="$k"${if (job.color == k) " checked" else ""} aria-label="$k"><span class="dot" style="background:${v.first}"></span></label>""" }}</div>
+<p><button class="secondary">Save</button></p></form>""",
         )
         val reports = env.store.data.reports.filter { it.jobId == job.id }.take(10)
         if (reports.isNotEmpty()) body.append("<h2>Last runs</h2>")
