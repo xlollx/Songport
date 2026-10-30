@@ -40,8 +40,9 @@ services:
       # SONGPORT_LOCALE: it
 ```
 
-*Coming soon:* the same image on Docker Hub as `xlollx/trackhop` (`docker pull xlollx/trackhop`),
-for tools that only search there; until it is announced here, use `ghcr.io/xlollx/trackhop`.
+The same image is also on [Docker Hub](https://hub.docker.com/r/xlollx/trackhop) as `xlollx/trackhop`
+(`docker pull xlollx/trackhop`, the same `latest` and version tags), for tools and NAS app stores that
+only search there. Either name works; the commands in this guide use `ghcr.io/xlollx/trackhop`.
 
 The image runs on `amd64` and `arm64` (Raspberry Pi 4/5, most NAS). To build it yourself, from the
 repository root: `docker build -f server/Dockerfile -t trackhop .`

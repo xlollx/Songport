@@ -78,15 +78,16 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   [Linux .tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.1/Trackhop-Desktop-v0.5.1-linux.tar.gz). See the
   [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop); every version is in the
   [Desktop & Server releases](https://github.com/xlollx/Trackhop/releases?q=server-v&expanded=true) (`server-v…`).
-  *Coming soon, not live yet:* `winget install xlollx.Trackhop`, `choco install trackhop`,
-  `scoop bucket add xlollx https://github.com/xlollx/scoop-bucket` then `scoop install trackhop`, the
-  Microsoft Store, and `flatpak install flathub io.github.xlollx.Trackhop` ([packaging/](packaging/README.md)).
+  With [Scoop](https://github.com/xlollx/scoop-bucket): `scoop bucket add xlollx https://github.com/xlollx/scoop-bucket`
+  then `scoop install xlollx/trackhop`. *Coming soon, not live yet:* `winget install xlollx.Trackhop`,
+  `choco install trackhop` (both in review), the Microsoft Store, and
+  `flatpak install flathub io.github.xlollx.Trackhop` ([packaging/](packaging/README.md)).
 - **Server (Docker, beta)**: works for everyday use, still young. The same engine on a home server or a NAS, with a web page and
   scheduled syncs: `docker run -p 8080:8080 -v trackhop-data:/data ghcr.io/xlollx/trackhop`. Official
   APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
   [Docker guide](https://xlollx.github.io/Trackhop/guide/docker). To update: `docker pull ghcr.io/xlollx/trackhop`,
-  then remove and start the container again (the data stays in its volume). *Coming soon:* the same
-  image on Docker Hub, `docker pull xlollx/trackhop`.
+  then remove and start the container again (the data stays in its volume). The same image is also on
+  [Docker Hub](https://hub.docker.com/r/xlollx/trackhop): `docker pull xlollx/trackhop`.
 - Desktop and Docker also have **radio syncs**: Trackhop listens to an internet radio in the hours
   you choose and saves the songs it plays to a playlist on any service
   ([how](https://xlollx.github.io/Trackhop/guide/docker#radio-syncs)), and **Shazam syncs**, like the

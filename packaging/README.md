@@ -5,15 +5,15 @@ Trackhop Desktop (Windows, Linux) and the Docker image are released together as 
 "latest"** on GitHub (that belongs to the Android app, `v1.x`): every version check below looks at
 `server-v*` tags, never at `/releases/latest`.
 
-None of these channels is live yet. The guides and the README list the commands as "coming soon";
-take the note off each one once its channel is live.
+The guides and the README list the commands of the channels not live yet as "coming soon"; take the
+note off each one once its channel is live.
 
 | Channel | In this folder | Status | What the owner does once | Then, on each release |
 |---|---|---|---|---|
-| Docker Hub | `dockerhub/README.md`, `server.yml` | Ready | Docker Hub account and token, two secrets | `server.yml` pushes `xlollx/trackhop` and updates its page |
-| winget | `winget/manifests/…/0.5.1/` | Ready, needs the first PR | Fork, first PR by hand, a token | `stores.yml` opens the PR to `microsoft/winget-pkgs` |
-| Chocolatey | `chocolatey/` | Ready | Account, API key secret | `stores.yml` packs, tests and pushes; moderation approves |
-| Scoop | `scoop/trackhop.json` | Ready, needs the bucket | Create `xlollx/scoop-bucket` | The bucket's Excavator updates the manifest |
+| Docker Hub | `dockerhub/README.md`, `server.yml` | **Live** ([xlollx/trackhop](https://hub.docker.com/r/xlollx/trackhop)) | Docker Hub account and token, two secrets | `server.yml` pushes `xlollx/trackhop` and updates its page |
+| winget | `winget/manifests/…/0.5.1/` | First PR open, in review | Fork, first PR by hand, a token | `stores.yml` opens the PR to `microsoft/winget-pkgs` |
+| Chocolatey | `chocolatey/` | 0.5.1 pushed, in moderation | Account, API key secret | `stores.yml` packs, tests and pushes; moderation approves |
+| Scoop | `scoop/trackhop.json` | **Live** ([xlollx/scoop-bucket](https://github.com/xlollx/scoop-bucket)) | Create `xlollx/scoop-bucket` | The bucket's Excavator updates the manifest |
 | Microsoft Store | `msix/`, `desktop.yml` | Ready, needs Partner Center | Account, reserve the name, three variables, first submission | Upload the release's `.msix` in Partner Center |
 | Flathub | `flatpak/`, `flatpak.yml` | Needs owner action, review risk | Desktop screenshots, a release with these files, the submission PR | A PR in the Flathub repo per release |
 
