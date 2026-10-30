@@ -14,6 +14,7 @@ on:
       - 'android/bridge/src/main/java/**'
       - 'android/app/src/main/res/**'
       - 'android/app/build.gradle'
+      - 'packaging/msix/**'
       - '.github/workflows/desktop.yml'
   pull_request:
     branches: [ main ]
@@ -24,6 +25,7 @@ on:
       - 'android/bridge/src/main/java/**'
       - 'android/app/src/main/res/**'
       - 'android/app/build.gradle'
+      - 'packaging/msix/**'
       - '.github/workflows/desktop.yml'
   workflow_dispatch:
 
@@ -70,6 +72,19 @@ jobs:
 
       - name: Package
         run: server/desktop/package.sh
+
+      - name: MSIX (Microsoft Store)
+        # Unsigned: the Store signs it. The identity is Partner Center's (Product identity), kept as
+        # repository variables; the defaults only make a package to try out.
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          IDENTITY_NAME: ${{ vars.MSIX_IDENTITY_NAME || 'xlollx.Trackhop' }}
+          PUBLISHER: ${{ vars.MSIX_PUBLISHER || 'CN=xlollx' }}
+          PUBLISHER_DISPLAY_NAME: ${{ vars.MSIX_PUBLISHER_DISPLAY_NAME || 'xlollx' }}
+        run: >-
+          ./packaging/msix/build.ps1 -IdentityName $env:IDENTITY_NAME -Publisher $env:PUBLISHER
+          -PublisherDisplayName $env:PUBLISHER_DISPLAY_NAME
 
       - name: Starts and answers
         # The packed app on its own runtime: it serves its pages on 127.0.0.1 and stops from the page.
@@ -129,6 +144,8 @@ jobs:
           cat >> notes.md <<EOF
 
           **Docker:** \`docker pull ghcr.io/xlollx/trackhop:$v\` (or \`:latest\`). [Docker guide](https://xlollx.github.io/Trackhop/guide/docker) · [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop)
+
+          The \`.msix\` is the package for the Microsoft Store, unsigned: it does not install by itself; use the \`.msi\` or the \`.zip\`.
           EOF
           gh release create "$tag" dist/* --target "$GITHUB_SHA" --prerelease --latest=false \
             --title "Trackhop Desktop & Server $v (beta)" --notes-file notes.md

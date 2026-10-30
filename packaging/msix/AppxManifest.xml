@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Trackhop Desktop as an MSIX, for the Microsoft Store (packaging/README.md). build.ps1 fills the
+     @…@ values: the version from server/VERSION, and the identity that Partner Center shows under
+     Product management › Product identity, kept as the repository variables MSIX_IDENTITY_NAME,
+     MSIX_PUBLISHER and MSIX_PUBLISHER_DISPLAY_NAME. Values are case-sensitive. -->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap desktop rescap">
+
+  <Identity Name="@IDENTITY_NAME@" Publisher="@PUBLISHER@" Version="@VERSION@.0" ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>Trackhop</DisplayName>
+    <PublisherDisplayName>@PUBLISHER_DISPLAY_NAME@</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+    <Description>Keeps playlists in sync between music services (beta)</Description>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+
+  <Applications>
+    <Application Id="Trackhop" Executable="Trackhop.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="Trackhop"
+        Description="Keeps playlists in sync between music services"
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <!-- Starting with the computer: the tray's "Start with the computer" writes the user's Run key,
+             which an MSIX app only sees in its own private copy of the registry. Windows' own switch
+             for packaged apps is this task, off until the user turns it on (Settings › Apps ›
+             Startup, or Task Manager › Startup apps). It starts TrackhopStartup.exe, Trackhop's
+             launcher started in the background (build.ps1), so no window opens at sign-in. -->
+        <desktop:Extension Category="windows.startupTask" Executable="TrackhopStartup.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="TrackhopStartup" Enabled="false" DisplayName="Trackhop" />
+        </desktop:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <Capability Name="internetClient" />
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>
