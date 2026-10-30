@@ -216,31 +216,31 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
             }
         }
 
-        PrefSection(stringResource(R.string.tools_section_music), description = stringResource(R.string.tools_section_music_desc)) {
+        PrefSection(stringResource(R.string.tools_section_music), accent = JobColor.BLUE, description = stringResource(R.string.tools_section_music_desc)) {
             ToolRow(Tool.STATS, provider) { onStats() }
             ToolRow(Tool.MANAGE, provider) { onManage(it!!) }
             ToolRow(Tool.SCAN, provider) { onScan(it!!) }
         }
 
-        PrefSection(stringResource(R.string.tools_section_move), description = stringResource(R.string.tools_section_move_desc)) {
+        PrefSection(stringResource(R.string.tools_section_move), accent = JobColor.TEAL, description = stringResource(R.string.tools_section_move_desc)) {
             ToolRow(Tool.TRANSFER, provider) { onTransfer() }
             ToolRow(Tool.EXPORT, provider) { open = Tool.EXPORT }
             ToolRow(Tool.MAKE, provider) { open = Tool.MAKE }
             ToolRow(Tool.FILES, provider) { open = Tool.FILES }
         }
 
-        PrefSection(stringResource(R.string.tools_section_clean), description = stringResource(R.string.tools_section_clean_desc)) {
+        PrefSection(stringResource(R.string.tools_section_clean), accent = JobColor.ORANGE, description = stringResource(R.string.tools_section_clean_desc)) {
             ToolRow(Tool.DEDUPE, provider) { open = Tool.DEDUPE }
             ToolRow(Tool.UNPLAYABLE, provider) { onUnplayable(it!!) }
         }
 
-        PrefSection(stringResource(R.string.tools_section_share), description = stringResource(R.string.tools_section_share_desc)) {
+        PrefSection(stringResource(R.string.tools_section_share), accent = JobColor.PINK, description = stringResource(R.string.tools_section_share_desc)) {
             ToolRow(Tool.COMPAT, provider) { open = Tool.COMPAT }
             ToolRow(Tool.POSTER, provider) { open = Tool.POSTER }
             ToolRow(Tool.AI, provider, beta = true) { open = Tool.AI }
         }
 
-        PrefSection(stringResource(R.string.tools_section_safety), description = stringResource(R.string.tools_section_safety_desc)) {
+        PrefSection(stringResource(R.string.tools_section_safety), accent = JobColor.GREEN, description = stringResource(R.string.tools_section_safety_desc)) {
             ToolRow(Tool.BACKUP, provider) { onBackup() }
         }
     }

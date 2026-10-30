@@ -31,11 +31,14 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -63,22 +66,27 @@ fun PrefSection(
     description: String? = null,
     footer: String? = null,
     help: (@Composable () -> Unit)? = null,
+    accent: JobColor? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val dark = LocalAppDark.current
+    val color = accent?.let { if (dark) it.dark else it.light }
+    // The heading in the section's colour, a little deeper in light mode so small text still reads.
+    val headingColor = color?.let { if (dark) it else lerp(it, MaterialTheme.colorScheme.onSurface, 0.25f) } ?: MaterialTheme.colorScheme.primary
     Column(modifier.fillMaxWidth()) {
-        if (help == null) Text(
-            title,
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = if (description == null) 8.dp else 2.dp).semantics { heading() },
-        ) else Row(verticalAlignment = Alignment.CenterVertically) {
+        val heading = @Composable { m: Modifier ->
+            Row(m, verticalAlignment = Alignment.CenterVertically) {
+                if (color != null) {
+                    Box(Modifier.size(width = 4.dp, height = 16.dp).clip(RoundedCornerShape(2.dp)).background(color))
+                    Spacer(Modifier.width(8.dp))
+                }
+                Text(title, style = MaterialTheme.typography.titleSmall, color = headingColor, modifier = Modifier.semantics { heading() })
+            }
+        }
+        if (help == null) heading(Modifier.padding(start = 16.dp, end = 16.dp, bottom = if (description == null) 8.dp else 2.dp))
+        else Row(verticalAlignment = Alignment.CenterVertically) {
             // The "?" keeps its 48dp target at the end of the heading.
-            Text(
-                title,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.weight(1f).padding(start = 16.dp).semantics { heading() },
-            )
+            heading(Modifier.weight(1f).padding(start = 16.dp))
             Box(Modifier.padding(end = 4.dp)) { help() }
         }
         if (description != null) Text(
@@ -87,12 +95,18 @@ fun PrefSection(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
         )
+        // The card stands off the page: white with a soft shadow in light mode, a raised surface in
+        // dark mode (where shadows do not show), tinted with the section's colour when it has one.
+        val base = if (dark) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.surfaceContainerLowest
         Card(
             Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.large,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+            colors = CardDefaults.cardColors(containerColor = color?.let { lerp(base, it, if (dark) 0.10f else 0.05f) } ?: base),
+            elevation = CardDefaults.cardElevation(defaultElevation = if (dark) 0.dp else 1.dp),
         ) {
-            Column(Modifier.padding(vertical = 6.dp), content = content)
+            CompositionLocalProvider(LocalPrefAccent provides color) {
+                Column(Modifier.padding(vertical = 6.dp), content = content)
+            }
         }
         if (footer != null) Text(
             footer,
@@ -103,17 +117,27 @@ fun PrefSection(
     }
 }
 
+/** The colour of the section a row is in (null for a plain one): its icons wear it. */
+val LocalPrefAccent = staticCompositionLocalOf<Color?> { null }
+
 /** The row's icon: the glyph in a soft tonal circle, so the eye finds the row before reading it. */
 @Composable
 fun PrefIcon(icon: ImageVector, danger: Boolean = false, enabled: Boolean = true) {
+    val accent = LocalPrefAccent.current
     Box(
         Modifier.alpha(if (enabled) 1f else 0.5f).size(40.dp).clip(RoundedCornerShape(14.dp))
-            .background(if (danger) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceContainerHighest),
+            .background(
+                when {
+                    danger -> MaterialTheme.colorScheme.errorContainer
+                    accent != null -> lerp(MaterialTheme.colorScheme.surfaceContainerHighest, accent, if (LocalAppDark.current) 0.28f else 0.16f)
+                    else -> MaterialTheme.colorScheme.surfaceContainerHighest
+                },
+            ),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             icon, null,
-            tint = if (danger) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.primary,
+            tint = if (danger) MaterialTheme.colorScheme.onErrorContainer else accent ?: MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(22.dp),
         )
     }

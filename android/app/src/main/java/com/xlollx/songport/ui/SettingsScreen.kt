@@ -135,7 +135,7 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
         // ---------------------------------------------------------------- Appearance
-        PrefSection(stringResource(R.string.settings_section_appearance)) {
+        PrefSection(stringResource(R.string.settings_section_appearance), accent = JobColor.PURPLE) {
             val mode = ThemeMode.of(settings.themeMode)
             val themeLabels = ThemeMode.entries.map {
                 it to stringResource(when (it) { ThemeMode.SYSTEM -> R.string.settings_theme_system; ThemeMode.LIGHT -> R.string.settings_theme_light; ThemeMode.DARK -> R.string.settings_theme_dark })
@@ -171,7 +171,7 @@ fun SettingsScreen(
         }
 
         // ---------------------------------------------------------------- Syncing
-        PrefSection(stringResource(R.string.settings_section_syncing)) {
+        PrefSection(stringResource(R.string.settings_section_syncing), accent = JobColor.BLUE) {
             PrefSwitch(Icons.Filled.Verified, stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_summary), settings.isrcLookup, help = { HelpButton(Helps.isrc) }) { v ->
                 store.updateSettings { it.copy(isrcLookup = v) }
             }
@@ -190,7 +190,7 @@ fun SettingsScreen(
         }
 
         // ---------------------------------------------------------------- Notifications
-        PrefSection(stringResource(R.string.settings_section_notifications)) {
+        PrefSection(stringResource(R.string.settings_section_notifications), accent = JobColor.ORANGE) {
             PrefSwitch(Icons.Filled.Notifications, stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_summary), settings.notifyOnSync, help = { HelpButton(Helps.notifications) }) { v ->
                 store.updateSettings { it.copy(notifyOnSync = v) }
             }
@@ -209,7 +209,7 @@ fun SettingsScreen(
 
         // ---------------------------------------------------------------- Backup & restore
         // One place for both kinds (BackupScreen): the set-up as a file, and the playlists' backups.
-        PrefSection(stringResource(R.string.backup_title)) {
+        PrefSection(stringResource(R.string.backup_title), accent = JobColor.GREEN) {
             val folder = settings.backupFolder
             PrefRow(
                 Icons.Filled.Backup, stringResource(R.string.backup_title),
@@ -220,6 +220,7 @@ fun SettingsScreen(
         // ---------------------------------------------------------------- Privacy and security
         PrefSection(
             stringResource(R.string.settings_section_privacy),
+            accent = JobColor.TEAL,
             footer = stringResource(if (Ads.enabled) R.string.settings_ads_note else R.string.settings_free_note),
         ) {
             PrefSwitch(Icons.Filled.Lock, stringResource(R.string.security_lock), stringResource(R.string.security_lock_desc), settings.appLock) { v ->
@@ -268,7 +269,7 @@ fun SettingsScreen(
                 }
             }
             // What a plugin is, above the list; nothing about where plugins come from.
-            PrefSection(stringResource(R.string.plugins_title), description = stringResource(R.string.plugins_desc), footer = stringResource(R.string.plugins_where), help = { HelpButton(Helps.plugins) }) {
+            PrefSection(stringResource(R.string.plugins_title), accent = JobColor.PINK, description = stringResource(R.string.plugins_desc), footer = stringResource(R.string.plugins_where), help = { HelpButton(Helps.plugins) }) {
                 val list = plugins
                 if (list != null && list.isEmpty()) PrefRow(Icons.Filled.Extension, stringResource(R.string.plugins_none))
                 list?.forEach { (p, services) ->

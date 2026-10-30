@@ -163,11 +163,11 @@ fun BackupScreen(onClose: () -> Unit) {
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
         Column(Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
-            PrefSection(stringResource(R.string.backup_config_section), description = stringResource(R.string.backup_config_desc)) {
+            PrefSection(stringResource(R.string.backup_config_section), accent = JobColor.BLUE, description = stringResource(R.string.backup_config_desc)) {
                 PrefRow(Icons.Filled.Save, stringResource(R.string.backup_config_save), null, chevron = false) { save.launch(ConfigBackup.fileName()) }
                 PrefRow(Icons.Filled.Restore, stringResource(R.string.backup_config_restore), null, chevron = false) { open.launch(arrayOf("*/*")) }
             }
-            PrefSection(stringResource(R.string.backup_playlists_section), description = stringResource(R.string.tools_backup_desc, LocalFilesProvider.KEEP_VERSIONS)) {
+            PrefSection(stringResource(R.string.backup_playlists_section), accent = JobColor.GREEN, description = stringResource(R.string.tools_backup_desc, LocalFilesProvider.KEEP_VERSIONS)) {
                 state.lastError?.let { PrefBlock { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) } }
                     ?: state.lastOk.takeIf { it > 0 }?.let { PrefBlock { Text(stringResource(R.string.backup_last_run, formatDate(it)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) } }
                 PrefRow(
@@ -178,7 +178,7 @@ fun BackupScreen(onClose: () -> Unit) {
                 ) { BackupExport.start(ctx) }
             }
             val folder = settings.backupFolder
-            PrefSection(stringResource(R.string.backup_auto_section), description = stringResource(R.string.backup_auto_desc), help = { HelpButton(Helps.backups) }) {
+            PrefSection(stringResource(R.string.backup_auto_section), accent = JobColor.TEAL, description = stringResource(R.string.backup_auto_desc), help = { HelpButton(Helps.backups) }) {
                 PrefRow(Icons.Filled.Schedule, stringResource(R.string.editor_schedule), scheduleLabel(settings.backupSchedule)) { scheduleOpen = true }
                 PrefRow(
                     Icons.Filled.Folder, stringResource(R.string.backup_folder_title),
