@@ -106,6 +106,12 @@ a { color: var(--link); text-underline-offset: 2px; }
 .get .apk:hover { background: rgba(255,255,255,.12); }
 .get .apk.plugin { border-style: dashed; }
 .playnote { margin-top: 14px; font-size: .95rem; opacity: .9; }
+.also { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; font-size: .95rem; }
+.also .os { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 999px; background: rgba(255,255,255,.14); color: #fff; text-decoration: none; font-weight: 600; }
+.also .os:hover { background: rgba(255,255,255,.24); }
+.also .os svg { width: 18px; height: 18px; }
+.also .muted-on-dark { opacity: .75; font-size: .85rem; }
+.also .muted-on-dark a { color: inherit; }
 .playnote a { color: inherit; text-decoration: underline; }
 .phone {
   justify-self: center; width: 250px; padding: 10px; border-radius: 34px;
