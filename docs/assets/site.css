@@ -65,6 +65,14 @@ a { color: var(--link); text-underline-offset: 2px; }
 .top nav { display: flex; gap: 18px; flex-wrap: wrap; }
 .top nav a { color: var(--ink-2); text-decoration: none; font-size: 15px; }
 .top nav a:hover { color: var(--ink); }
+.top nav { align-items: center; }
+/* The coffee link: a small warm pill, visible without shouting; on a phone only the cup. */
+.top nav a.coffee { padding: 4px 12px; border-radius: 999px; background: #ffe2a8; color: #4a2c00; font-weight: 600; font-size: 14px; }
+.top nav a.coffee:hover { background: #ffd47f; color: #4a2c00; }
+:root[data-theme="dark"] .top nav a.coffee { background: #4a3410; color: #ffdf9e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .top nav a.coffee { background: #4a3410; color: #ffdf9e; } }
+@media (max-width: 480px) { .top nav a.coffee .long { display: none; } }
+.foot p.support { margin-bottom: 10px; color: var(--ink-2); }
 .foot { border-top: 1px solid var(--line); margin-top: 64px; padding: 28px 16px 40px; text-align: center; color: var(--ink-3); font-size: 14px; }
 .foot div { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
 .foot a { color: var(--ink-2); }
