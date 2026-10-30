@@ -160,10 +160,10 @@ a { color: var(--link); text-underline-offset: 2px; }
 .server pre { margin: 0 0 14px; padding: 14px; border-radius: 12px; background: var(--surface-2); color: var(--ink); overflow-x: auto; font-size: .9rem; }
 
 @media (max-width: 860px) {
-  /* One column: the band's edge 285 px down, as on the icon; where the white text crosses the
-     bright part of the beam, a soft shadow keeps it readable. */
-  :root { --beam-edge: calc(100% - 285px); }
-  .hero h1, .hero p { text-shadow: 0 1px 3px rgba(0, 0, 0, .6), 0 0 18px rgba(0, 0, 0, .5); }
+  /* One column: the band's edge near the top, crossing the tile as it crosses the icon's, so the
+     heading and the text below it sit on the dark side of the beam at any phone width. */
+  :root { --beam-edge: calc(100% - 150px); }
+  .hero h1, .hero p { text-shadow: 0 1px 10px rgba(0, 0, 0, .45); }
   .hero .wrap { grid-template-columns: 1fr; padding-top: 40px; padding-bottom: 40px; }
   .phone { width: 220px; }
   .cards { grid-template-columns: 1fr 1fr; }
