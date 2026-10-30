@@ -138,6 +138,8 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
     val provider = connected.firstOrNull { it.id == selectedId } ?: connected.firstOrNull()
     // Saved: a rotation or a fold keeps the open tool on screen.
     var open by rememberSaveable { mutableStateOf<Tool?>(null) }
+    // The list's position, kept while a tool's page is open: back lands on the tool just used.
+    val listScroll = rememberScrollState()
     // Two playlist links shared together open the comparison straight away.
     LaunchedEffect(compareLinks) { if (compareLinks != null) open = Tool.COMPAT }
 
@@ -192,7 +194,7 @@ fun ToolsScreen(snackbar: SnackbarHostState, onManageFiles: () -> Unit = {}, onT
     }
 
     Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+        Modifier.fillMaxSize().verticalScroll(listScroll)
             .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp + LocalBottomBarInset.current),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {

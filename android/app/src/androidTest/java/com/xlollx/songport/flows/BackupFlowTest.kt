@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.performTextReplacement
@@ -64,6 +66,16 @@ class BackupFlowTest : FlowTest() {
         click(s(R.string.backup_now))
         waitText(s(R.string.backup_now_done, 2), ms = 30_000, substring = true)
         assertEquals("nothing new written", files.size, runBlocking { LocalFilesProvider.playlists(app) }.size)
+    }
+
+    @Test
+    fun backFromAToolLandsWhereTheListWas() {
+        // Backup & restore is at the end of Tools: opening it scrolls the list down to it.
+        openTool(R.string.backup_title)
+        waitText(s(R.string.backup_now))
+        back()
+        waitText(s(R.string.tools_section_safety))
+        compose.onNode(hasClickAction() and hasText(s(R.string.backup_title))).assertIsDisplayed()
     }
 
     @Test

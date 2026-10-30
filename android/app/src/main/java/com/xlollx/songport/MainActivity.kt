@@ -259,6 +259,9 @@ private fun MainScreen(
     var editingTwinId by rememberSaveable { mutableStateOf<String?>(null) }
     var wizardFor by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
     var unmatchedReport by rememberSaveable { mutableStateOf<String?>(null) }
+    // Each tab keeps its own state (where it was scrolled to, above all) while a page covers it or
+    // another tab is shown: back from a tool or a setting lands where the user left.
+    val tabStates = androidx.compose.runtime.saveable.rememberSaveableStateHolder()
     var filesOpen by rememberSaveable { mutableStateOf(false) }
     var logOpen by rememberSaveable { mutableStateOf(false) }
     // Settings › How to: the offline guides.
@@ -614,7 +617,7 @@ private fun MainScreen(
         // Only the top inset: the content runs under the glass bar, and each screen pads its own list by LocalBottomBarInset.
         CompositionLocalProvider(LocalBottomBarInset provides barInset) {
             Box(Modifier.fillMaxSize().hazeSource(state = haze).padding(top = padding.calculateTopPadding())) {
-            TabContent(tab) { shown -> when (shown) {
+            TabContent(tab) { shown -> tabStates.SaveableStateProvider(shown) { when (shown) {
                 MainActivity.TAB_SYNCS -> SyncsScreen(
                     data = data,
                     // The "↔" half of a two-way pair is edited through its original: one set of settings for both.
@@ -650,7 +653,7 @@ private fun MainScreen(
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
                 MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks, onSubpage = { toolSubpage = it }, onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS }, onStats = { statsOpen = true }, onCompareClosed = { compareLinks = null }, onBackup = { backupOpen = true })
                 else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true }, onHowTo = { howToOpen = true }, onBackup = { backupOpen = true })
-            } }
+            } } }
             }
         }
     }
