@@ -1,0 +1,52 @@
+name: Flatpak
+
+# Builds the Flatpak of Trackhop Desktop (packaging/flatpak, for Flathub) as Flathub's builders do:
+# from source, offline, with Gradle's files from gradle-sources.json. It fails when a dependency
+# changed without update-sources.sh being run again. The bundle is kept as an artifact, to try:
+#   flatpak install --user Trackhop.flatpak
+on:
+  push:
+    paths:
+      - 'packaging/flatpak/**'
+      - 'server/build.gradle'
+      - 'server/settings.gradle'
+      - 'android/core/build.gradle'
+      - 'android/ytm/build.gradle'
+      - '.github/workflows/flatpak.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'packaging/flatpak/**'
+      - 'server/build.gradle'
+      - 'server/settings.gradle'
+      - 'android/core/build.gradle'
+      - 'android/ytm/build.gradle'
+      - '.github/workflows/flatpak.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  flatpak:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
+      options: --privileged
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Metadata
+        run: |
+          command -v desktop-file-validate > /dev/null && command -v appstreamcli > /dev/null \
+            || dnf install -y -q desktop-file-utils appstream
+          desktop-file-validate packaging/flatpak/io.github.xlollx.Trackhop.desktop
+          appstreamcli validate --no-net packaging/flatpak/io.github.xlollx.Trackhop.metainfo.xml
+
+      - name: Build
+        uses: flatpak/flatpak-github-actions/flatpak-builder@aa777012a985fe1b1fd3e66ea2173609cf0c9a70 # v6.8
+        with:
+          manifest-path: packaging/flatpak/io.github.xlollx.Trackhop.yml
+          bundle: Trackhop.flatpak
+          artifact-name: Trackhop-Flatpak

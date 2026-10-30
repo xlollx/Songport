@@ -28,3 +28,7 @@ Thumbs.db
 # Chiave di debug: locale o dal secret DEBUG_KEYSTORE_BASE64 in CI, mai nel repo
 android/app/debug.keystore
 dist/
+
+# flatpak-builder (packaging/flatpak)
+.flatpak-builder/
+build-dir/

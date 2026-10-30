@@ -1,0 +1,22 @@
+// The Flatpak's build has no network: plugins and libraries come only from the Maven repository
+// that flatpak-builder filled from gradle-sources.json (maven-local/ in the source tree). Used by
+// io.github.xlollx.Trackhop.yml with `gradle --offline --init-script`.
+def local = new File(System.getenv('FLATPAK_MAVEN_REPO') ?: "${System.getenv('FLATPAK_BUILDER_BUILDDIR')}/maven-local")
+
+beforeSettings { settings ->
+    settings.pluginManagement.repositories {
+        maven { url = local.toURI() }
+    }
+}
+
+settingsEvaluated { settings ->
+    [settings.pluginManagement.repositories, settings.dependencyResolutionManagement.repositories].each { repos ->
+        repos.removeAll { !(it instanceof MavenArtifactRepository && it.url == local.toURI()) }
+        if (repos.isEmpty()) repos.maven { url = local.toURI() }
+    }
+}
+
+allprojects {
+    buildscript.repositories.clear()
+    buildscript.repositories.maven { url = local.toURI() }
+}

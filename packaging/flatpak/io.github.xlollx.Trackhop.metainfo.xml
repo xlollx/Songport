@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Trackhop Desktop's AppStream metadata, for Flathub and the Linux software centres
+     (packaging/flatpak, packaging/README.md). Add a <release> for each server-v version. -->
+<component type="desktop-application">
+  <id>io.github.xlollx.Trackhop</id>
+  <name>Trackhop</name>
+  <summary>Keep your playlists in sync</summary>
+  <developer id="io.github.xlollx">
+    <name>xlollx</name>
+  </developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+
+  <description>
+    <p>
+      Trackhop keeps the same playlist identical on several music services, on a schedule, without
+      rebuilding it by hand. It is the sync engine of the Trackhop Android app as a program for your
+      computer: it runs in the background with an icon next to the clock and keeps running the
+      scheduled syncs while the computer is on.
+    </p>
+    <ul>
+      <li>Spotify, YouTube and TIDAL with your own developer key</li>
+      <li>Navidrome and other Subsonic servers, Jellyfin and Plex</li>
+      <li>Last.fm, ListenBrainz and SoundCloud links as sources, and CSV, M3U and other playlist files</li>
+      <li>One-way or two-way syncs, hourly to weekly, with a report of what was added and what was not found</li>
+      <li>Radio syncs: the songs an internet radio plays, saved to a playlist</li>
+      <li>Full backups of your playlists, and an API for Home Assistant, scripts and Prometheus</li>
+    </ul>
+    <p>
+      Its pages open in its own window, and in any browser on this computer at 127.0.0.1, port 8642;
+      nothing outside the computer can reach them. Sign-ins and keys stay on your computer.
+    </p>
+    <p>
+      Trackhop Desktop is a beta: it works for everyday use, but its pages and settings can still
+      change between releases.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">io.github.xlollx.Trackhop.desktop</launchable>
+  <provides>
+    <binary>trackhop</binary>
+  </provides>
+
+  <url type="homepage">https://xlollx.github.io/Trackhop/</url>
+  <url type="help">https://xlollx.github.io/Trackhop/guide/desktop</url>
+  <url type="bugtracker">https://github.com/xlollx/Trackhop/issues</url>
+  <url type="vcs-browser">https://github.com/xlollx/Trackhop</url>
+
+  <categories>
+    <category>AudioVideo</category>
+    <category>Audio</category>
+  </categories>
+  <keywords>
+    <keyword>playlist</keyword>
+    <keyword>sync</keyword>
+    <keyword>Spotify</keyword>
+    <keyword>YouTube Music</keyword>
+    <keyword>TIDAL</keyword>
+    <keyword>Navidrome</keyword>
+    <keyword>Jellyfin</keyword>
+    <keyword>Plex</keyword>
+  </keywords>
+
+  <!-- TODO before the Flathub submission: Desktop's own window, captured on Linux (see
+       packaging/README.md). These are the Android app's pages, which Desktop's pages follow. -->
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/xlollx/Trackhop/9cdd7afa718d088b0fec4f18e6329662f2f367eb/docs/store/play/en-US/1.jpg</image>
+      <caption>Syncs with what each run added, removed and did not find</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/xlollx/Trackhop/9cdd7afa718d088b0fec4f18e6329662f2f367eb/docs/store/play/en-US/2.jpg</image>
+      <caption>A new sync from one service to another</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/xlollx/Trackhop/9cdd7afa718d088b0fec4f18e6329662f2f367eb/docs/store/play/en-US/3.jpg</image>
+      <caption>The services you connected</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/xlollx/Trackhop/9cdd7afa718d088b0fec4f18e6329662f2f367eb/docs/store/play/en-US/4.jpg</image>
+      <caption>Tools for your playlists</caption>
+    </screenshot>
+  </screenshots>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#c9bdff</color>
+    <color type="primary" scheme_preference="dark">#1e1452</color>
+  </branding>
+
+  <content_rating type="oars-1.1" />
+
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">768</display_length>
+    <internet>always</internet>
+  </requires>
+
+  <releases>
+    <release version="0.5.1" date="2026-10-30">
+      <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.1</url>
+      <description>
+        <p>Shazam syncs: every song you Shazam, in a playlist of your choice on any service.</p>
+      </description>
+    </release>
+    <release version="0.5.0" date="2026-10-30">
+      <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.0</url>
+      <description>
+        <p>Radio syncs: the songs an internet radio plays in the hours you choose, saved to a playlist on any service.</p>
+      </description>
+    </release>
+    <release version="0.4.3" date="2026-10-30">
+      <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.4.3</url>
+      <description>
+        <p>Playlists and tracks through the API: create, rename and delete playlists, add and remove tracks.</p>
+      </description>
+    </release>
+  </releases>
+</component>

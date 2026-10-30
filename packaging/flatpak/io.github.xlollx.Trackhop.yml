@@ -1,0 +1,72 @@
+# Trackhop Desktop as a Flatpak, for Flathub (packaging/README.md, Flathub section). Built from source,
+# offline: Gradle's plugins and libraries come from gradle-sources.json (update-sources.sh), Gradle
+# itself from its release archive, Java from the OpenJDK 21 SDK extension.
+#
+#   flatpak-builder --user --install --force-clean build-dir packaging/flatpak/io.github.xlollx.Trackhop.yml
+#   flatpak run io.github.xlollx.Trackhop
+#
+# The source below is this checkout (for local builds and CI). The copy in the Flathub repository
+# builds a release tag instead; packaging/README.md has the block that replaces it.
+id: io.github.xlollx.Trackhop
+runtime: org.gnome.Platform
+# WebKitGTK 4.1 (GTK 3), which SWT's browser uses, is in the GNOME runtime up to 51; GNOME 52's
+# runtime keeps only WebKitGTK 6 (GTK 4).
+runtime-version: '51'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.openjdk21
+command: trackhop
+finish-args:
+  # Its window (SWT on GTK 3) and Java's dialogs and fallback tray icon: X11, Xwayland on Wayland.
+  - --socket=x11
+  - --share=ipc
+  # WebKitGTK's hardware rendering.
+  - --device=dri
+  # The music services it syncs, and its pages on 127.0.0.1:8642 for the browser.
+  - --share=network
+
+modules:
+  - name: openjdk
+    buildsystem: simple
+    build-commands:
+      - /usr/lib/sdk/openjdk21/install.sh
+
+  - name: trackhop
+    buildsystem: simple
+    build-options:
+      env:
+        PATH: /app/bin:/usr/bin:/usr/lib/sdk/openjdk21/bin
+        JAVA_HOME: /usr/lib/sdk/openjdk21/jvm/openjdk-21
+        GRADLE_USER_HOME: /run/build/trackhop/gradle-home
+    build-commands:
+      - gradle/bin/gradle -p server --offline --no-daemon --console=plain
+          --init-script "$PWD/packaging/flatpak/offline.init.gradle" installDist desktopLibs
+      - install -d /app/lib/trackhop
+      - install -m644 -t /app/lib/trackhop server/build/install/songport-server/lib/*.jar
+      - install -m644 -t /app/lib/trackhop server/build/desktop-libs/linux/*.jar
+      - install -Dm755 packaging/flatpak/trackhop.sh /app/bin/trackhop
+      - install -Dm644 packaging/flatpak/io.github.xlollx.Trackhop.desktop -t /app/share/applications
+      - install -Dm644 packaging/flatpak/io.github.xlollx.Trackhop.metainfo.xml -t /app/share/metainfo
+      - install -Dm644 docs/store/icon512.png /app/share/icons/hicolor/512x512/apps/io.github.xlollx.Trackhop.png
+    sources:
+      - type: dir
+        path: ../..
+        skip:
+          - .git
+          - android/app/build
+          - android/bridge/build
+          - android/core/build
+          - android/ytm/build
+          - server/build
+          - server/.gradle
+          - server/.kotlin
+          - fastlane
+          - build-dir
+          - flatpak_app
+          - repo
+          - .flatpak-builder
+      - type: archive
+        url: https://services.gradle.org/distributions/gradle-8.14.3-bin.zip
+        sha256: bd71102213493060956ec229d946beee57158dbd89d0e62b91bca0fa2c5f3531
+        dest: gradle
+      - gradle-sources.json

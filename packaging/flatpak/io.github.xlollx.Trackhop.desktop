@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Trackhop
+GenericName=Playlist Sync
+Comment=Keep your playlists in sync between music services
+Exec=trackhop
+Icon=io.github.xlollx.Trackhop
+Terminal=false
+Categories=AudioVideo;Audio;
+Keywords=playlist;sync;music;spotify;youtube;tidal;navidrome;subsonic;jellyfin;plex;
+StartupWMClass=Trackhop
+SingleMainWindow=true
