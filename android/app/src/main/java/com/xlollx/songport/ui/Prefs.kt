@@ -37,6 +37,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -46,6 +49,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.xlollx.songport.R
 
@@ -77,10 +83,10 @@ fun PrefSection(
         val heading = @Composable { m: Modifier ->
             Row(m, verticalAlignment = Alignment.CenterVertically) {
                 if (color != null) {
-                    Box(Modifier.size(width = 4.dp, height = 16.dp).clip(RoundedCornerShape(2.dp)).background(color))
+                    Box(Modifier.size(width = 4.dp, height = 18.dp).clip(RoundedCornerShape(2.dp)).background(color))
                     Spacer(Modifier.width(8.dp))
                 }
-                Text(title, style = MaterialTheme.typography.titleSmall, color = headingColor, modifier = Modifier.semantics { heading() })
+                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = headingColor, modifier = Modifier.semantics { heading() })
             }
         }
         if (help == null) heading(Modifier.padding(start = 16.dp, end = 16.dp, bottom = if (description == null) 8.dp else 2.dp))
@@ -105,7 +111,17 @@ fun PrefSection(
             elevation = CardDefaults.cardElevation(defaultElevation = if (dark) 0.dp else 1.dp),
         ) {
             CompositionLocalProvider(LocalPrefAccent provides color) {
-                Column(Modifier.padding(vertical = 6.dp), content = content)
+                val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+                Column(
+                    Modifier.drawBehind {
+                        // In light mode the colour also runs as a band along the leading edge, as on the sync cards.
+                        if (color != null && !dark) {
+                            val w = 6.dp.toPx()
+                            drawRect(color, topLeft = Offset(if (rtl) size.width - w else 0f, 0f), size = Size(w, size.height))
+                        }
+                    }.padding(vertical = 6.dp),
+                    content = content,
+                )
             }
         }
         if (footer != null) Text(
