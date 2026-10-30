@@ -83,6 +83,9 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
   [Docker guide](https://xlollx.github.io/Trackhop/guide/docker). To update: `docker pull ghcr.io/xlollx/trackhop`,
   then remove and start the container again (the data stays in its volume).
+- Desktop and Docker also have a **REST API and a webhook**, for Home Assistant, n8n, Node-RED or a
+  script: list and start syncs, read their results, get notified when a run ends. See
+  [Automation: REST API and webhook](#automation-rest-api-and-webhook).
 - Desktop and Docker have their **own version** (now 0.4.1), separate from the app's.
 
 Android 8.0 or newer. Languages: English, Italian, French, German, Spanish, Portuguese (Brazil), Polish,
@@ -131,6 +134,7 @@ that is exactly what to report.
 - [Features](#features)
 - [Supported services and their limits](#supported-services-and-their-limits)
 - [Connector plugins](#connector-plugins)
+- [Automation: REST API and webhook](#automation-rest-api-and-webhook) (Desktop and Docker)
 - [How tracks are matched](#how-tracks-are-matched)
 - [How logins are protected](#how-logins-are-protected)
 - [Architecture](#architecture)
@@ -279,6 +283,40 @@ services appear only when a plugin is already installed, with generic wording, a
 code that uses unofficial interfaces. The `full` flavor, the APK on GitHub Releases and on F-Droid,
 has the web connectors built in and no ads. See
 [Publishing on Google Play](#publishing-on-google-play).
+
+## Automation: REST API and webhook
+
+Trackhop Desktop and the Docker server expose a small REST API, so other tools (Home Assistant,
+n8n, Node-RED, a cron script) can list the syncs, start them and read how they went. The Android
+app has none: it has no server to answer.
+
+Turn it on in **Tools › API** on the web page: make a token (shown once, only its SHA-256 hash is
+stored) and send it as `Authorization: Bearer <token>`. It is separate from the page's password.
+On Trackhop Desktop only the computer itself can reach it (loopback only).
+
+| Call | What it does |
+|---|---|
+| `GET /api/v1/status` | Version, number of syncs, the ones running, the last run's time |
+| `GET /api/v1/syncs` | Every sync: source, target, schedule, running, last result |
+| `GET /api/v1/syncs/<id>` | One sync and its last 20 runs |
+| `POST /api/v1/syncs/<id>/run` | Starts it (202 Accepted) |
+| `POST /api/v1/syncs/run-all` | Starts every enabled sync |
+| `GET /api/v1/runs/<id>` | A run: added, removed, not found, with the tracks |
+| `GET /api/v1/services` | The services and whether they are connected |
+| `GET /api/v1/files`, `GET /api/v1/files/<name>.csv?format=m3u` | The File playlists, in any export format |
+
+```sh
+curl -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/syncs
+curl -X POST -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/syncs/run-all
+```
+
+**Webhook.** With an address set in *Tools › API*, every finished run is POSTed there as JSON
+(`"event": "sync.finished"`, the sync, and the run with its added and not-found tracks). With a
+secret, the `X-Trackhop-Signature: sha256=<hex>` header is the HMAC-SHA256 of the body, to check
+that the call came from your Trackhop. Example: a Home Assistant *Webhook* trigger that sends a
+notification when tracks were not found, and a `rest_command` that starts every sync.
+
+Details and more examples: [Docker guide › API](https://xlollx.github.io/Trackhop/guide/docker#api).
 
 ## How tracks are matched
 
