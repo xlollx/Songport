@@ -22,6 +22,7 @@ description (architecture, matching, services and their limits) stays in the
 - [Move Spotify playlists to TIDAL](spotify-to-tidal), with exact ISRC matching.
 - [Sync Spotify playlists to Navidrome, Jellyfin or Plex](spotify-to-navidrome-jellyfin), from your own library.
 - [Export a playlist to CSV or M3U](export-playlist-csv), and back up all of them.
+- [Your Shazams in a playlist](shazam): every song you Shazam, on any service.
 
 **Maintaining it**
 - [Release process](release-process): version, changelogs, what CI does, F-Droid and Obtainium.

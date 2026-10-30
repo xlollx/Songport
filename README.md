@@ -85,7 +85,8 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   then remove and start the container again (the data stays in its volume).
 - Desktop and Docker also have **radio syncs**: Trackhop listens to an internet radio in the hours
   you choose and saves the songs it plays to a playlist on any service
-  ([how](https://xlollx.github.io/Trackhop/guide/docker#radio-syncs)).
+  ([how](https://xlollx.github.io/Trackhop/guide/docker#radio-syncs)), and **Shazam syncs**, like the
+  app's ([how](https://xlollx.github.io/Trackhop/guide/shazam)).
 - Desktop and Docker also have a **REST API and a webhook**, for Home Assistant, n8n, Node-RED or a
   script: list and start syncs, read their results, add and remove tracks in any connected
   service's playlists, get notified when a run ends. See
@@ -166,6 +167,7 @@ that is exactly what to report.
 | | Bidirectional | One switch creates the reverse twin sync without removals; the two are deleted together. |
 | | Keep the source order | After the adds, the target is put in the source's order; Spotify (both routes), YouTube Music and Deezer can move tracks. |
 | | "Liked songs" as source or target | Spotify, Deezer, Subsonic, Jellyfin, Last.fm, ListenBrainz. |
+| | Shazam sync | Every song you Shazam, in a playlist of your choice on any service. Shazam has no API for your library, so nothing unofficial is used: in Shazam's settings, connect Spotify or Apple Music and Shazam keeps every Shazam in a "My Shazam Tracks" playlist there; "Shazam" as the source in the editor finds that playlist on your connected account (or says how to turn it on) and syncs it hourly. The card wears Shazam's mark. Also on Desktop and Docker (Spotify). [Guide](https://xlollx.github.io/Trackhop/guide/shazam). |
 | | Saved albums, followed artists, podcasts | Sync or transfer them like a playlist (Spotify, Deezer, Subsonic/Navidrome, Jellyfin; Apple Music albums, add only). Matched by UPC where available, then title and artist; the review works the same. YouTube Music and TIDAL not yet. |
 | Preview | What would change, before doing it | Already present, to add, to remove, not found, uncertain. |
 | Matching | Rules per sync | Strictness, explicit or clean preference, same album, studio versions only. |
@@ -191,7 +193,7 @@ that is exactly what to report.
 | | Music links open with Trackhop (optional) | Settings › "Offer Trackhop for music links": Android then lists Trackhop among the apps for a Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link. Off by default; Trackhop never takes a link by itself. |
 | Files | Import/export | Reads CSV, TSV, M3U/M3U8, XSPF, JSPF, OPML (podcasts), Apple Music/iTunes XML, JSON, Shazam exports, plain text lists; writes CSV, M3U, XSPF, JSPF and plain text. |
 | | setlist.fm | Share or paste a setlist.fm link: the concert becomes a playlist to sync anywhere. |
-| | Shazam | Share a song from the Shazam app: title and artist are read from the shared text (nothing is asked of Shazam) and the song goes into a playlist on any connected service. To have every Shazam everywhere, connect Spotify or Apple Music in Shazam's settings and sync its "My Shazam Tracks" playlist: the editor suggests it. |
+| | Shazam | Share a song from the Shazam app: title and artist are read from the shared text (nothing is asked of Shazam) and the song goes into a playlist on any connected service. To have every Shazam everywhere, make a Shazam sync (above): "Sync my Shazams" in the sheet opens one. |
 | Widget and shortcuts | Home widget and long-press on the icon | Last sync, "Sync all", "New sync". |
 | Diagnostics | "Share technical details" in the log | Version, device, services, last runs, error log; no tokens. |
 | | "Test the connection" per account | Account, playlist list and one search, with the service's answer on failure. |
