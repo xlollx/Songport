@@ -1,6 +1,6 @@
 # Google Play listing – texts, answers and checklist
 
-The app is **Trackhop** on Google Play as everywhere else (see `docs/ROADMAP.md` › Name). Same code,
+The app is **Trackhop** on Google Play as everywhere else. Same code,
 same name, same package id `com.xlollx.songport`, same signing key as every other build: the `play`
 flavor only drops the built-in web connectors, describes plugin-based services generically and
 adds the AdMob banner with the UMP consent form. Upload **only the `play` AAB** (the
