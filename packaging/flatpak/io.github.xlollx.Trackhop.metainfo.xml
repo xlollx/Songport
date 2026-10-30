@@ -99,6 +99,18 @@
   </requires>
 
   <releases>
+    <release version="0.5.3" date="2026-10-30">
+      <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.3</url>
+      <description>
+        <p>The Microsoft Store package, with only the official connections.</p>
+      </description>
+    </release>
+    <release version="0.5.2" date="2026-10-30">
+      <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.2</url>
+      <description>
+        <p>Finding a radio by name works again when the station directory's usual servers are down.</p>
+      </description>
+    </release>
     <release version="0.5.1" date="2026-10-30">
       <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.1</url>
       <description>

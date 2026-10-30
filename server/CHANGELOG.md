@@ -5,6 +5,26 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## Next
+
+- **Linux: a Flatpak** among the release's files (`Trackhop-Desktop-v<version>-linux.flatpak`),
+  built from source as Flathub would: `flatpak install --user` it. Its data lives in
+  `~/.var/app/io.github.xlollx.Trackhop/data/trackhop`, apart from the .deb's and the tar.gz's.
+
+## 0.5.3
+
+- **Microsoft Store**: the package for the Store (the release's `.msix`) is built with the Store's
+  identity, "Trackhop Desktop". Inside it, Desktop offers only the official connections, the
+  personal servers, Last.fm, ListenBrainz and files (store rules, as for the app on Google Play), and
+  starting with the computer is Windows' own switch (Settings › Apps › Startup) instead of the
+  tray's. The installer, the ZIP, Linux and Docker are unchanged.
+
+## 0.5.2
+
+- **Finding a radio by name** works again when the station directory's usual servers are down:
+  Trackhop asks radio-browser.info's live servers first instead of four fixed ones (two of which no
+  longer exist), and when none answers it says so plainly and suggests pasting the stream.
+
 ## 0.5.1
 
 - **Shazam syncs**: every song you Shazam, in a playlist of your choice on any service. Shazam keeps

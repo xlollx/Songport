@@ -4,7 +4,9 @@ name: Flatpak
 # from source, offline, with Gradle's files from gradle-sources.json. It fails when a dependency
 # changed without update-sources.sh being run again. The bundle is kept as an artifact, to try:
 #   flatpak install --user Trackhop.flatpak
+# desktop.yml calls it too, on main, and adds the bundle to a new server-v release.
 on:
+  workflow_call:
   push:
     paths:
       - 'packaging/flatpak/**'

@@ -110,12 +110,18 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  flatpak:
+    # On main, the Flatpak bundle for the release (flatpak.yml: built from source, as Flathub would).
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    uses: ./.github/workflows/flatpak.yml
+
   release:
     # On main, a server version without its release yet: the release "server-v<version>" with the
-    # files of both systems and the notes of server/CHANGELOG.md. A prerelease, never "latest": the
-    # app's releases (v<version>) stay the ones Obtainium and the site's links pick.
-    needs: package
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    # files of both systems, the Flatpak and the notes of server/CHANGELOG.md. A prerelease, never
+    # "latest": the app's releases (v<version>) stay the ones Obtainium and the site's links pick.
+    # A failed Flatpak does not hold the release back: it goes out without the bundle.
+    needs: [ package, flatpak ]
+    if: ${{ !cancelled() && needs.package.result == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     outputs:
       # Set only when this run made the release, for the stores job.
@@ -131,6 +137,13 @@ jobs:
           path: dist
           merge-multiple: true
 
+      - name: Flatpak
+        if: ${{ needs.flatpak.result == 'success' }}
+        uses: actions/download-artifact@v7
+        with:
+          name: Trackhop-Flatpak
+          path: flatpak
+
       - name: Release
         id: release
         env:
@@ -139,6 +152,7 @@ jobs:
           v=$(tr -d '[:space:]' < server/VERSION)
           tag="server-v$v"
           if gh release view "$tag" > /dev/null 2>&1; then echo "$tag is out already."; exit 0; fi
+          if [ -f flatpak/Trackhop.flatpak ]; then mv flatpak/Trackhop.flatpak "dist/Trackhop-Desktop-v$v-linux.flatpak"; fi
           # This version's section of server/CHANGELOG.md, without its heading.
           awk -v v="$v" '/^## /{p = ($2 == v)} p && !/^## /' server/CHANGELOG.md > notes.md
           cat >> notes.md <<EOF
@@ -146,6 +160,8 @@ jobs:
           **Docker:** \`docker pull ghcr.io/xlollx/trackhop:$v\` (or \`:latest\`). [Docker guide](https://xlollx.github.io/Trackhop/guide/docker) · [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop)
 
           The \`.msix\` is the package for the Microsoft Store, unsigned: it does not install by itself; use the \`.msi\` or the \`.zip\`.
+
+          **Flatpak (Linux):** \`flatpak install --user Trackhop-Desktop-v$v-linux.flatpak\`, then *Trackhop* in the menu (needs Flathub's GNOME runtime, which Flatpak offers to install).
           EOF
           gh release create "$tag" dist/* --target "$GITHUB_SHA" --prerelease --latest=false \
             --title "Trackhop Desktop & Server $v (beta)" --notes-file notes.md
