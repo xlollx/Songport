@@ -55,6 +55,17 @@ class WebTest {
         assertEquals(200, get("/").statusCode())
     }
 
+    @Test fun theInstallableAppsFilesNeedNoPassword() {
+        val manifest = get("/manifest.webmanifest", withAuth = false)
+        assertEquals(200, manifest.statusCode())
+        assertTrue(manifest.body().contains("\"display\": \"standalone\""))
+        assertEquals(200, get("/sw.js", withAuth = false).statusCode())
+        assertEquals(200, get("/icon-512.png", withAuth = false).statusCode())
+        assertTrue(get("/").body().contains("rel=\"manifest\""))
+        // Only those: the pages still ask.
+        assertEquals(401, get("/icon-512.png/../log", withAuth = false).statusCode())
+    }
+
     @Test fun ownFormsWorkInBrowsers() {
         // "no-referrer" makes browsers send "Origin: null" on the page's own forms, which is refused.
         assertEquals("same-origin", get("/").headers().firstValue("Referrer-Policy").orElse(""))

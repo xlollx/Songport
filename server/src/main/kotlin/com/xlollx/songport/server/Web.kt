@@ -104,6 +104,15 @@ class Web(
             if (ex.requestHeaders.getFirst("Host")?.lowercase() !in hosts) return send(ex, 403, "Unknown host", "text/plain")
         }
         if (path == listOf("health")) return send(ex, 200, "ok", "text/plain")
+        // The installable app's manifest, icons and service worker (Pwa.kt): nothing private, and the
+        // browser fetches them on its own, without the password.
+        if (path.size == 1 && path[0] in Pwa.files && ex.requestMethod.uppercase() == "GET") {
+            val (bytes, type) = Pwa.file(path[0]) ?: return send(ex, 404, "Not found", "text/plain")
+            ex.responseHeaders.set("Content-Type", type)
+            ex.responseHeaders.set("Cache-Control", if (path[0] == "sw.js") "no-cache" else "max-age=86400")
+            ex.sendResponseHeaders(200, bytes.size.toLong())
+            return ex.responseBody.use { it.write(bytes) }
+        }
         // The API has its own token (Tools › API) instead of the page's password, and no cookies to forge.
         if (path.size >= 2 && path[0] == "api" && path[1] == "v1") return api(ex, ex.requestMethod.uppercase(), path, parseForm(ex.requestURI.rawQuery ?: ""))
         if (!authorized(ex)) {

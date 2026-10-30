@@ -1,0 +1,38 @@
+name: Update
+
+# Every 6 hours (or by hand): the newest Trackhop Desktop release (a server-v<version> tag, never
+# GitHub's "latest", which is the Android app), its two .dmg files hashed, and Casks/trackhop.rb
+# rewritten and committed when the version changed. Like Scoop's Excavator, with nothing to set up.
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Newest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          v=$(gh api 'repos/xlollx/Trackhop/releases?per_page=50' --jq '[.[] | select(.tag_name | test("^server-v[0-9.]+$")) | select(.draft | not)][0].tag_name' | sed 's/^server-v//')
+          current=$(sed -n 's/^  version "\(.*\)"$/\1/p' Casks/trackhop.rb)
+          echo "newest $v, cask $current"
+          [ -n "$v" ] && [ "$v" != "$current" ] || exit 0
+          base="https://github.com/xlollx/Trackhop/releases/download/server-v$v/Trackhop-Desktop-v$v-macos"
+          arm=$(curl -fsSL "$base-arm64.dmg" | sha256sum | cut -d' ' -f1)
+          intel=$(curl -fsSL "$base-x64.dmg" | sha256sum | cut -d' ' -f1)
+          sed -i -e "s/^  version \".*\"$/  version \"$v\"/" \
+                 -e "s/^  sha256 arm:   \".*\",$/  sha256 arm:   \"$arm\",/" \
+                 -e "s/^         intel: \".*\"$/         intel: \"$intel\"/" Casks/trackhop.rb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "trackhop $v"
+          git push

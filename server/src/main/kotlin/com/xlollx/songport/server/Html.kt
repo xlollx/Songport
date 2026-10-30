@@ -81,7 +81,7 @@ object Html {
 ${refreshSeconds?.let { """<meta http-equiv="refresh" content="$it">""" } ?: ""}
 <title>${h(title)} · Trackhop</title>
 <link rel="stylesheet" href="/style.css">
-${if (edition == Edition.DESKTOP) DESKTOP_LINKS else ""}
+${if (edition == Edition.DESKTOP) DESKTOP_LINKS else Pwa.HEAD}
 </head><body>
 <header class="top"><a class="brand" href="/"><span class="tile">$MARK</span>Trackhop <span class="${edition.stage}">${edition.stage}</span></a>
 <nav>${NAV.joinToString("") { (href, label) -> val on = if (href == "/") path.isEmpty() || path.startsWith("syncs") else path.startsWith(href.drop(1)); """<a href="$href"${if (on) " class=\"on\" aria-current=\"page\"" else ""}>$label</a>""" }}</nav></header>

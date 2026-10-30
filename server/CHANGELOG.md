@@ -5,6 +5,12 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## Next
+
+- **On the phone, as an app**: the server's page can be added to the home screen and opens full
+  screen, like an app (a PWA: manifest, icons, a service worker that keeps nothing and says so when
+  the server cannot be reached). [How](https://xlollx.github.io/Trackhop/guide/docker#on-your-phone-as-an-app).
+
 ## 0.5.4
 
 - **The `trackhop` command**: run syncs (`trackhop run --all --wait`), read their results, list

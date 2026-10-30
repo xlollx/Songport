@@ -215,6 +215,21 @@ Point the proxy at port 8080 and set `SONGPORT_URL` to the public `https://` add
 needs nothing else: no websockets, no special headers. `/health` answers `ok` without a password,
 for health checks.
 
+## On your phone, as an app
+
+Trackhop's page can sit on your phone's home screen and open full screen, like an app (a PWA):
+the syncs keep running on the server, so it works with the phone off too.
+
+- **iPhone, iPad**: open the page in Safari, *Share › Add to Home Screen*. The first time it opens
+  from the home screen it asks for the password again (it keeps its own sign-in).
+- **Android**: open the page in Chrome. With an `https://` address (a [reverse proxy](#behind-a-reverse-proxy),
+  Tailscale…), *⋮ › Install app*; on a plain `http://192.168.…` address Chrome only offers
+  *⋮ › Add to Home screen*, a shortcut that opens in the browser.
+
+It shows the server's pages live, nothing is kept on the phone; if the server is off or out of
+reach, it says so. Connect the services (Spotify and the others) from a browser: their sign-in can
+leave the home-screen app and not come back to it.
+
 ## How it runs
 
 - Scheduled syncs (hourly, every 6 hours, daily, weekly) start on their own; the page also has
