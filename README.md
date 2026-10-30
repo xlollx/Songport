@@ -64,7 +64,7 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   built in. [Which Trackhop?](https://xlollx.github.io/Trackhop/guide/versions) compares the two.
 - **Desktop (Windows, Linux, ⚠️ alpha)**: an early test version. The same engine as a program on your
   computer, with its own Java runtime, an icon next to the clock and the same web page as the server:
-  the `Trackhop-Desktop-…` files of the [latest release](https://github.com/xlollx/Trackhop/releases/latest)
+  the `Trackhop-Desktop-…` files of the latest [Desktop & Server release](https://github.com/xlollx/Trackhop/releases?q=server-v&expanded=true) (`server-v…`, its own version)
   (Windows `.msi` or portable `.zip`, Linux `.deb` or `.tar.gz`); see the
   [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop).
 - **Server (Docker, ⚠️ alpha)**: an early test version, expect rough edges. The same engine on a home server or a NAS, with a web page and

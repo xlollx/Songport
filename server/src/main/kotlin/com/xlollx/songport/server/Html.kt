@@ -66,7 +66,7 @@ ${refreshSeconds?.let { """<meta http-equiv="refresh" content="$it">""" } ?: ""}
 <h1>${h(title)}</h1>
 $body
 </main>
-<footer>${h(edition.product)} ${h(version)} (alpha) · <a href="${edition.guide}">Guide</a> · <a href="https://github.com/xlollx/Trackhop">GitHub</a>${if (edition == Edition.DESKTOP) " · " + postButton("/quit", "Quit Trackhop", "link", confirm = "Stop Trackhop? Scheduled syncs run only while it is running.") else ""}</footer>
+<footer>${h(edition.product)} ${h(version)} · alpha · <a href="${edition.guide}">Guide</a> · <a href="https://github.com/xlollx/Trackhop">GitHub</a>${if (edition == Edition.DESKTOP) " · " + postButton("/quit", "Quit Trackhop", "link", confirm = "Stop Trackhop? Scheduled syncs run only while it is running.") else ""}</footer>
 </body></html>"""
 
     /**

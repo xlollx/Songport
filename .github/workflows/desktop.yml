@@ -3,8 +3,8 @@ name: Desktop
 # Trackhop Desktop (alpha, docs/guide/desktop.md): the server's engine and pages packed as an app
 # with its own Java runtime, by server/desktop/package.sh. Windows: an MSI (per-user, no
 # administrator) and a portable ZIP; Linux: a .deb and a tar.gz for any distribution. Every run keeps
-# them as artifacts; on main, once build.yml has published the release for this version, they are
-# added to it (only if it has none yet, so a later server-only change leaves a release as it was).
+# them as artifacts; on main, a new server/VERSION gets its own release, server-v<version>, with
+# them (the Docker image of the same version comes from server.yml).
 on:
   push:
     paths:
@@ -93,17 +93,36 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Add to the release
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  release:
+    # On main, a server version without its release yet: the release "server-v<version>" with the
+    # files of both systems and the notes of server/CHANGELOG.md. A prerelease, never "latest": the
+    # app's releases (v<version>) stay the ones Obtainium and the site's links pick.
+    needs: package
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Files of both systems
+        uses: actions/download-artifact@v7
+        with:
+          pattern: Trackhop-Desktop-*
+          path: dist
+          merge-multiple: true
+
+      - name: Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          v=v$(sed -n 's/.*versionName "\([^"]*\)".*/\1/p' android/app/build.gradle | head -1)
-          # build.yml creates the release when this version is new: wait for it (up to 40 minutes).
-          for i in $(seq 1 80); do gh release view "$v" > /dev/null 2>&1 && break; sleep 30; done
-          if ! gh release view "$v" > /dev/null 2>&1; then echo "No release $v: nothing to add to."; exit 0; fi
-          system=$(echo "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')
-          if gh release view "$v" --json assets -q '.assets[].name' | grep -q "^Trackhop-Desktop-.*-$system\."; then
-            echo "$v already has the desktop files for $system."; exit 0
-          fi
-          gh release upload "$v" dist/*
+          v=$(tr -d '[:space:]' < server/VERSION)
+          tag="server-v$v"
+          if gh release view "$tag" > /dev/null 2>&1; then echo "$tag is out already."; exit 0; fi
+          # This version's section of server/CHANGELOG.md, without its heading.
+          awk -v v="$v" '/^## /{p = ($2 == v)} p && !/^## /' server/CHANGELOG.md > notes.md
+          cat >> notes.md <<EOF
+
+          **Docker:** \`docker pull ghcr.io/xlollx/trackhop:$v\` (or \`:latest\`). [Docker guide](https://xlollx.github.io/Trackhop/guide/docker) · [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop)
+          EOF
+          gh release create "$tag" dist/* --target "$GITHUB_SHA" --prerelease --latest=false \
+            --title "Trackhop Desktop & Server $v (alpha)" --notes-file notes.md

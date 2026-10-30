@@ -11,10 +11,24 @@
    builds it from source a few days later and, because the build is reproducible, publishes the
    GitHub APK with its own signature.
 
+## Desktop and Docker
+
+They have their own version, separate from the app's: `server/VERSION`, with its notes in
+`server/CHANGELOG.md`. Bump it (and add its section) when a server or Desktop change should reach
+people; the app's version does not move for it, nor theirs for an app-only change.
+
+- On every push to `main` that touches the server, `server.yml` publishes the Docker image as
+  `latest` and as `server/VERSION`.
+- When `server/VERSION` has no release yet, `desktop.yml` builds Desktop for Windows and Linux and
+  creates the release `server-vX.Y.Z`: a prerelease that is never "latest", so Obtainium and the
+  links to `releases/latest` keep finding the app.
+- The page's footer shows both: the server's version and the app version whose engine it runs.
+
 ## Keeping the F-Droid build reproducible
 
-- No build variable that changes the app in the GitHub build (`SPOTIFY_CLIENT_ID`,
-  `GOOGLE_CLIENT_ID`, `LASTFM_API_KEY`, `APPLE_DEVELOPER_TOKEN`…): F-Droid builds without them.
+- The full APK is built with none of the repository's variables (`build.yml`: `env -u …`), so it is
+  what F-Droid builds from source. A variable that changed it (1.3.6: an old `PRIVACY_POLICY_URL`)
+  made F-Droid's build fail. The Play bundle keeps them.
 - The release key never changes (certificate SHA-256
   `21eadf268c72f85565961a6045bf4be5abaf256d680d1e0d808d93ed22d35032`). Keep a backup of the keystore and
   its passwords outside GitHub.

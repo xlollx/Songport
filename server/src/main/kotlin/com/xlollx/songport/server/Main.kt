@@ -84,7 +84,9 @@ class Launched(val env: ServerEnv, val runner: Runner, val web: Web, val version
 fun launch(config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null): Launched {
     config.dataDir.mkdirs()
     Log.init(config.dataDir)
-    val version = Config::class.java.getResourceAsStream("/songport-version.txt")?.use { String(it.readBytes()).trim() } ?: "dev"
+    fun resource(name: String) = Config::class.java.getResourceAsStream(name)?.use { String(it.readBytes()).trim() }
+    // The server's own version, then the app version whose engine it runs.
+    val version = (resource("/songport-version.txt") ?: "dev") + (resource("/engine-version.txt")?.let { " (engine $it)" } ?: "")
 
     BuildDefaults.values = config.buildDefaults
     installServerConnectors()

@@ -40,22 +40,29 @@ def appStrings = tasks.register('appStrings', Copy) {
 sourceSets.main.resources.srcDir(layout.buildDirectory.dir('generated/appStrings'))
 tasks.named('processResources') { dependsOn appStrings }
 
-// The app's version, shown in the page footer and used as the image tag.
+// Two versions: the server's own (server/VERSION: Docker and Desktop, released on their own as
+// server-v<version>), shown in the page footer and used as the image tag; and the app's, whose engine
+// (:core) it runs, shown next to it.
+def serverVersion = file('VERSION').text.trim()
 def appVersion = {
     def m = file('../android/app/build.gradle').text =~ /versionName\s+"([^"]+)"/
     m.find() ? m.group(1) : 'dev'
 }()
-version = appVersion
+version = serverVersion
 def versionFile = tasks.register('versionFile') {
-    def out = layout.buildDirectory.file('generated/version/songport-version.txt')
-    inputs.property('version', appVersion)
-    outputs.file(out)
-    doLast { out.get().asFile.text = appVersion }
+    def dir = layout.buildDirectory.dir('generated/version')
+    inputs.property('version', serverVersion)
+    inputs.property('engine', appVersion)
+    outputs.dir(dir)
+    doLast {
+        dir.get().file('songport-version.txt').asFile.text = serverVersion
+        dir.get().file('engine-version.txt').asFile.text = appVersion
+    }
 }
 sourceSets.main.resources.srcDir(layout.buildDirectory.dir('generated/version'))
 tasks.named('processResources') { dependsOn versionFile }
 
-tasks.register('printVersion') { doLast { println appVersion } }
+tasks.register('printVersion') { doLast { println serverVersion } }
 
 test {
     // File names with accents (a playlist "Città"): the JVM reads them in the locale's encoding.

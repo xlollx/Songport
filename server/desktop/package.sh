@@ -11,7 +11,7 @@
 set -euo pipefail
 root=$(cd "$(dirname "$0")/../.." && pwd)
 cd "$root"
-version=$(sed -n 's/.*versionName "\([^"]*\)".*/\1/p' android/app/build.gradle | head -1)
+version=$(tr -d '[:space:]' < server/VERSION)
 lib=server/build/install/songport-server/lib
 [ -f "$lib/songport-server-$version.jar" ] || { echo "Run 'gradle -p server installDist' first" >&2; exit 1; }
 work=server/build/desktop

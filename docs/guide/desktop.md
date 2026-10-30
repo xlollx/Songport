@@ -11,7 +11,7 @@ pages in your browser, and runs scheduled syncs while the computer is on. It is 
 
 ## Install
 
-Download from the [latest release](https://github.com/xlollx/Trackhop/releases/latest):
+Download from the latest [Desktop & Server release](https://github.com/xlollx/Trackhop/releases?q=server-v&expanded=true) (tagged `server-v…`: Desktop and Docker have their own version, separate from the app's):
 
 | System | File | How |
 |---|---|---|
