@@ -196,7 +196,7 @@ class Web(
         val lastRun = jobs.maxOfOrNull { it.lastRunEpoch } ?: 0
         body.append(
             """<div class="hero"><h2>Your playlists, everywhere</h2><p class="muted">${jobs.size} ${if (jobs.size == 1) "sync" else "syncs"} · ${connected.size} ${if (connected.size == 1) "service" else "services"}${if (lastRun > 0) " · last sync ${Html.date(lastRun)}" else ""}</p>
-<div class="actions">${if (jobs.any { it.enabled }) Html.postButton("/syncs/all", if (running.isNotEmpty()) "Syncing…" else "Sync all now") else ""}</div></div>""",
+<div class="actions">${if (jobs.any { it.enabled }) Html.postButton("/syncs/all", if (running.isNotEmpty()) "Syncing…" else "Sync all now") else ""} <a class="hero-link" href="/tools/stats">Your numbers ›</a></div></div>""",
         )
         if (connected.size < 1) {
             body.append("""<div class="card">Connect a service first: <a href="/connectors">Services</a>.</div>""")

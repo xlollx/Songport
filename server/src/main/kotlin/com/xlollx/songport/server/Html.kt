@@ -106,6 +106,9 @@ h3{margin:0 0 4px;font-size:16px}
 .hero h2{margin:0 0 4px;font-size:22px}
 .hero .muted{color:rgba(255,255,255,.85)}
 .hero button{background:#fff;color:#1c1b22}
+.hero-link{color:#fff;font-weight:600;font-size:14px;text-decoration:none;margin-left:6px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:0 0 12px}
+.stat{margin:0;display:flex;flex-direction:column;gap:2px}.stat b{font-size:24px}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .who{display:flex;gap:12px;align-items:center;min-width:0}
 .pair{display:inline-flex;align-items:center}
