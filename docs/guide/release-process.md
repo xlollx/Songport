@@ -23,6 +23,10 @@ people; the app's version does not move for it, nor theirs for an app-only chang
   creates the release `server-vX.Y.Z`: a prerelease that is never "latest", so Obtainium and the
   links to `releases/latest` keep finding the app.
 - The page's footer shows both: the server's version and the app version whose engine it runs.
+- After a new release, `stores.yml` opens the winget pull request and pushes the Chocolatey package
+  (each once its secret exists); Docker Hub follows `server.yml`; Scoop's bucket updates itself; the
+  Microsoft Store (the release's `.msix`) and Flathub need a step by hand. All of it is in
+  [packaging/README.md](https://github.com/xlollx/Trackhop/blob/main/packaging/README.md).
 - The direct download links (README, the site's "Also on a computer" section, the Desktop guide)
   name the version: point them at the new `server-v…` files once its release is out.
 

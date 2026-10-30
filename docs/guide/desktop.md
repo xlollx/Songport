@@ -22,6 +22,17 @@ The current version is **0.5.1** ([what's in it](https://github.com/xlollx/Track
 | Debian, Ubuntu, Mint… | [.deb](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.1/Trackhop-Desktop-v0.5.1-linux.deb) | `sudo apt install ./Trackhop-Desktop-v0.5.1-linux.deb`, then *Trackhop* in the menu. |
 | Any other Linux (x86-64) | [.tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.1/Trackhop-Desktop-v0.5.1-linux.tar.gz) | Unpack and run `Trackhop/bin/Trackhop`. |
 
+**Package managers and stores (coming soon).** Trackhop Desktop is on its way to these; none of
+them has it yet, so the commands below do not work until it is announced here:
+
+| Where | Command |
+|---|---|
+| winget (Windows) | `winget install xlollx.Trackhop` *(soon)* |
+| Chocolatey (Windows) | `choco install trackhop` *(soon)* |
+| Scoop (Windows) | `scoop bucket add xlollx https://github.com/xlollx/scoop-bucket`, then `scoop install trackhop` *(soon)* |
+| Microsoft Store (Windows) | *(soon)* |
+| Flathub (Linux) | `flatpak install flathub io.github.xlollx.Trackhop` *(soon)* |
+
 **Windows warns about an unrecognised app** ("Windows protected your PC"): the installer is not
 signed with a paid certificate, as is usual for open-source projects. Choose *More info*, then
 *Run anyway*. The files are built by GitHub from this repository's code, in the

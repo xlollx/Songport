@@ -78,14 +78,19 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   [Linux .tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.1/Trackhop-Desktop-v0.5.1-linux.tar.gz). See the
   [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop); every version is in the
   [Desktop & Server releases](https://github.com/xlollx/Trackhop/releases?q=server-v&expanded=true) (`server-v…`).
+  *Coming soon, not live yet:* `winget install xlollx.Trackhop`, `choco install trackhop`,
+  `scoop bucket add xlollx https://github.com/xlollx/scoop-bucket` then `scoop install trackhop`, the
+  Microsoft Store, and `flatpak install flathub io.github.xlollx.Trackhop` ([packaging/](packaging/README.md)).
 - **Server (Docker, beta)**: works for everyday use, still young. The same engine on a home server or a NAS, with a web page and
   scheduled syncs: `docker run -p 8080:8080 -v trackhop-data:/data ghcr.io/xlollx/trackhop`. Official
   APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
   [Docker guide](https://xlollx.github.io/Trackhop/guide/docker). To update: `docker pull ghcr.io/xlollx/trackhop`,
-  then remove and start the container again (the data stays in its volume).
-- Desktop and Docker also have **radio syncs** and **Shazam syncs**, like the app's
-  ([radio](https://xlollx.github.io/Trackhop/guide/docker#radio-syncs),
-  [Shazam](https://xlollx.github.io/Trackhop/guide/shazam)).
+  then remove and start the container again (the data stays in its volume). *Coming soon:* the same
+  image on Docker Hub, `docker pull xlollx/trackhop`.
+- Desktop and Docker also have **radio syncs**: Trackhop listens to an internet radio in the hours
+  you choose and saves the songs it plays to a playlist on any service
+  ([how](https://xlollx.github.io/Trackhop/guide/docker#radio-syncs)), and **Shazam syncs**, like the
+  app's ([how](https://xlollx.github.io/Trackhop/guide/shazam)).
 - Desktop and Docker also have a **REST API and a webhook**, for Home Assistant, n8n, Node-RED or a
   script: list and start syncs, read their results, add and remove tracks in any connected
   service's playlists, get notified when a run ends. See
@@ -399,6 +404,7 @@ Trackhop/
 │   ├── guide/                     # the guide on the site (getting started, troubleshooting, Docker…)
 │   └── store/                     # 512×512 icon and 1024×500 feature graphic (en/it)
 ├── server/                        # Trackhop on a server and on the desktop: JVM build on android/core and android/ytm, web page, Dockerfile, desktop/ (packaging)
+├── packaging/                     # Desktop and Docker for winget, Chocolatey, Scoop, the Microsoft Store (MSIX), Flathub, Docker Hub
 └── android/
     ├── build.gradle, settings.gradle, gradle.properties
     ├── core/                      # the engine without Android (model, matching, connectors, sync), shared with server/

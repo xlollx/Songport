@@ -1,0 +1,288 @@
+# Trackhop Desktop and the Docker image in stores and package managers
+
+Trackhop Desktop (Windows, Linux) and the Docker image are released together as `server-v<version>`
+(`server/VERSION`, `.github/workflows/desktop.yml`). These releases are **prereleases, never
+"latest"** on GitHub (that belongs to the Android app, `v1.x`): every version check below looks at
+`server-v*` tags, never at `/releases/latest`.
+
+None of these channels is live yet. The guides and the README list the commands as "coming soon";
+take the note off each one once its channel is live.
+
+| Channel | In this folder | Status | What the owner does once | Then, on each release |
+|---|---|---|---|---|
+| Docker Hub | `dockerhub/README.md`, `server.yml` | Ready | Docker Hub account and token, two secrets | `server.yml` pushes `xlollx/trackhop` and updates its page |
+| winget | `winget/manifests/…/0.5.1/` | Ready, needs the first PR | Fork, first PR by hand, a token | `stores.yml` opens the PR to `microsoft/winget-pkgs` |
+| Chocolatey | `chocolatey/` | Ready | Account, API key secret | `stores.yml` packs, tests and pushes; moderation approves |
+| Scoop | `scoop/trackhop.json` | Ready, needs the bucket | Create `xlollx/scoop-bucket` | The bucket's Excavator updates the manifest |
+| Microsoft Store | `msix/`, `desktop.yml` | Ready, needs Partner Center | Account, reserve the name, three variables, first submission | Upload the release's `.msix` in Partner Center |
+| Flathub | `flatpak/`, `flatpak.yml` | Needs owner action, review risk | Desktop screenshots, a release with these files, the submission PR | A PR in the Flathub repo per release |
+
+Secrets and variables go in GitHub: *Settings › Secrets and variables › Actions*, in the
+*Secrets* or *Variables* tab, *New repository secret/variable*.
+
+---
+
+## Docker Hub
+
+**In the repository.** `server.yml` also pushes the image to `docker.io/xlollx/trackhop` (`latest`
+and the version, amd64 and arm64) when the secrets below exist, and then sets the Docker Hub page
+from `dockerhub/README.md` (with `peter-evans/dockerhub-description`, pinned). Without the secrets
+both steps are skipped and nothing else changes; `ghcr.io/xlollx/trackhop` stays the main image.
+
+**Once:**
+
+1. Sign up at [hub.docker.com](https://hub.docker.com/signup) as `xlollx` (or use an organisation;
+   then set the variable `DOCKERHUB_REPOSITORY` to `<namespace>/trackhop`).
+2. Create the public repository `trackhop` (*Repositories › Create*). The first push would create it
+   too, but private on some plans.
+3. *Account settings › Personal access tokens › Generate new token*, access **Read, Write, Delete**
+   (the description update needs it; Read & Write only pushes images).
+4. Secrets: `DOCKERHUB_USERNAME` (the user name) and `DOCKERHUB_TOKEN` (the token).
+5. Run *Actions › Server › Run workflow* on `main`, or wait for the next server change.
+
+**Each release:** automatic. Then remove the "coming soon" note from `docs/guide/docker.md` and the README.
+
+---
+
+## winget
+
+**In the repository.** `winget/manifests/x/xlollx/Trackhop/0.5.1/`: the three files of a multi-file
+manifest (schema 1.10, the format `microsoft/winget-pkgs` requires), validated against the official
+JSON schemas. `PackageIdentifier: xlollx.Trackhop`; installer: the release's MSI (WiX, per-user,
+`Scope: user`, no elevation), its SHA-256 and its `ProductCode` read from the MSI
+(`{814DEDF3-BE95-3D1C-9364-D639845B0CFD}`; jpackage makes a new one each version, the
+`UpgradeCode` `{5B8F3C1E-7A2D-4E9B-9C61-2F0D8A4B7E13}` stays).
+
+`stores.yml` (called by `desktop.yml` after a new release) runs
+[WinGet Releaser](https://github.com/vedantmgoyal9/winget-releaser) (pinned to a commit), which
+builds the new version's manifests from the last one in winget-pkgs (Komac reads the new MSI's
+hash and ProductCode) and opens the pull request from the fork.
+
+**Once:**
+
+1. Fork [microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs) under `xlollx` (*Fork*,
+   keep the name).
+2. **The first version must be a pull request by hand** (WinGet Releaser only updates a package that
+   is already there). In the fork, on a new branch, add the three files of
+   `packaging/winget/manifests/x/xlollx/Trackhop/0.5.1/` at the same path
+   (`manifests/x/xlollx/Trackhop/0.5.1/`). If a newer `server-v` release is out by then, use
+   `komac new xlollx.Trackhop` or `wingetcreate new <msi url>` for it instead.
+3. Optional, on Windows: `winget settings --enable LocalManifestFiles`, then
+   `winget validate --manifest <folder>` and `winget install --manifest <folder>`.
+4. Open the pull request to `microsoft/winget-pkgs` `master`, titled
+   `New package: xlollx.Trackhop version 0.5.1`, fill in its checklist, and sign the Microsoft CLA when
+   the bot asks. The validation pipeline installs it in a sandbox; a moderator merges it.
+5. Once it is merged: create a **classic** token (*GitHub › Settings › Developer settings › Personal
+   access tokens › Tokens (classic)*) with `public_repo` and `workflow` (fine-grained tokens do not
+   work with WinGet Releaser), and add it as the secret `WINGET_TOKEN`.
+
+**Each release:** automatic (a pull request per version; moderators merge it, usually within a day
+or two). To send a release again: *Actions › Stores › Run workflow*, version `x.y.z`.
+
+---
+
+## Chocolatey
+
+**In the repository.** `chocolatey/trackhop/`: `trackhop.nuspec` (every element the moderation
+checks ask for; the icon from the site, not a raw GitHub URL, which the rules refuse),
+`tools/chocolateyinstall.ps1` (downloads the release's MSI and checks its SHA-256, installs it
+silently; no binaries in the package, so no `VERIFICATION.txt`) and `tools/chocolateyuninstall.ps1`.
+`chocolatey/update.ps1` sets the version, the MSI address and the checksum for a release.
+
+`stores.yml`, on a Windows runner: downloads the release's MSI and hashes it, runs `update.ps1`,
+`choco pack`, installs and uninstalls the package on the runner as a test, then `choco push` to the
+community repository.
+
+Notes: the MSI is per user, so `choco install trackhop` (run elevated by the user) installs into that
+user's `%LOCALAPPDATA%\Trackhop`; from another administrator account or SYSTEM it would install
+there. The package version is the plain `0.5.1`, with "beta" in the description: a `-beta`
+version would hide it unless users add `--pre`.
+
+**Once:**
+
+1. Sign up at [community.chocolatey.org](https://community.chocolatey.org/account/Register) as
+   `xlollx`, confirm the e-mail.
+2. *Account › API Keys*: copy the key into the secret `CHOCOLATEY_API_KEY`.
+3. First version: *Actions › Stores › Run workflow*, version `0.5.1`, winget unticked (or wait for
+   the next release). The first version of a new package waits in moderation (automatic validation
+   and verification, then a person); answer the moderators' comments on the package page. Later
+   versions go faster.
+
+**Each release:** automatic push; each version is approved by moderation before it is public.
+
+---
+
+## Scoop
+
+**In the repository.** `scoop/trackhop.json`: the portable ZIP (`extract_dir: Trackhop`), its
+hash, a Start menu shortcut and the `trackhop` command; `checkver` reads the GitHub releases API
+and takes the newest `server-v` tag (`"tag_name": "server-vX.Y.Z"`, never `releases/latest`);
+`autoupdate` points at the version's ZIP. No `persist`: the data is in `%APPDATA%\Trackhop`, outside
+Scoop's folders, so updates and uninstalls leave it alone (the manifest's notes say so).
+
+**Scoop Extras is not possible yet:** its rules ask for a "reasonably well-known and widely used"
+project, *at least 100 stars and/or 50 forks*, the "latest stable version", and an issue (package
+request) before any pull request. Trackhop has 8 stars and its Desktop is a beta. So: our own
+bucket.
+
+**Once:**
+
+1. On [ScoopInstaller/BucketTemplate](https://github.com/ScoopInstaller/BucketTemplate), *Use this
+   template › Create a new repository*: owner `xlollx`, name `scoop-bucket`, public.
+2. In the new repository: *Settings › Actions › General*: allow all actions; workflow permissions
+   *Read and write*. Replace the placeholder in `bin/auto-pr.ps1` with `xlollx/scoop-bucket`.
+3. Copy `packaging/scoop/trackhop.json` to `bucket/trackhop.json`, commit, push. Add the topic
+   `scoop-bucket` to be listed on scoop.sh.
+4. Try it on Windows: `scoop bucket add xlollx https://github.com/xlollx/scoop-bucket`,
+   `scoop install trackhop`; `bin/checkver.ps1 trackhop` in the bucket prints the version found.
+
+**Each release:** the bucket's Excavator (every 4 hours) finds the new `server-v` tag, rewrites the
+version, URL and hash and commits. `packaging/scoop/trackhop.json` here is only the starting copy.
+
+---
+
+## Microsoft Store (MSIX)
+
+**In the repository.** On Windows, `desktop.yml` packs jpackage's app image as
+`Trackhop-Desktop-v<version>-windows.msix` with MakeAppx from the runner's Windows SDK
+(`msix/build.ps1`, manifest template `msix/AppxManifest.xml`, tiles in `msix/Assets/` made from
+`docs/store/icon512.png` by `msix/assets.sh`) and adds it to the release. Capabilities:
+`runFullTrust` (a desktop app) and `internetClient`.
+
+- **Unsigned on purpose.** Microsoft: packages submitted to the Store "don't have to be signed with a
+  certificate rooted in a trusted certificate authority"; the Store re-signs them with its own
+  certificate after certification
+  ([App package requirements](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/app-package-requirements)).
+  So no certificate to buy. An unsigned MSIX cannot be installed by double-clicking (the release
+  notes say so); outside the Store, people use the MSI or the ZIP.
+- **Version.** The Store wants the first number above 0 and keeps the fourth: Trackhop `x.y.z` is
+  package `(x+1).y.z.0` (0.5.1 is 1.5.1.0, 1.0.0 will be 2.0.0.0), always increasing.
+- **Identity.** Name, Publisher and Publisher display name must be exactly Partner Center's; they
+  come from the repository variables `MSIX_IDENTITY_NAME`, `MSIX_PUBLISHER`,
+  `MSIX_PUBLISHER_DISPLAY_NAME` (defaults `xlollx.Trackhop`, `CN=xlollx`, `xlollx`, which the
+  Store refuses: set the variables before building the package to upload).
+- **What changes under MSIX.** The app keeps working: it writes only under `%APPDATA%\Trackhop`,
+  which Windows redirects for packaged apps into the package's own folder
+  (`%LOCALAPPDATA%\Packages\<package>\LocalCache\Roaming\Trackhop`), removed when the app is
+  uninstalled; the data of an MSI install is not shared. **The tray's "Start with the computer"
+  does not work there**: it writes the Run key, which a packaged app only sees in its private copy
+  of the registry. The manifest declares a startup task instead (off by default; the user turns it
+  on in *Settings › Apps › Startup* or Task Manager), which starts `TrackhopStartup.exe`, the same
+  launcher with `--background`. Hiding the tray entry inside the MSIX (for example when
+  `jpackage.app-path` is under `\WindowsApps\`) is a small change in `Desktop.kt`, left for later.
+  Port 8642 on 127.0.0.1 and WebView2 work as with the MSI (full-trust apps are not sandboxed).
+
+**Once:**
+
+1. Open a developer account at [storedeveloper.microsoft.com](https://storedeveloper.microsoft.com)
+   (*Get started for free*; no fee for individual or company accounts; identity check with an ID).
+2. In [Partner Center](https://partner.microsoft.com/dashboard/apps-and-games/overview): *New
+   product › MSIX or PWA app*, reserve the name **Trackhop**.
+3. *Product management › Product identity*: copy **Package/Identity/Name**,
+   **Package/Identity/Publisher** (`CN=…`) and **Package/Properties/PublisherDisplayName** into the
+   repository variables `MSIX_IDENTITY_NAME`, `MSIX_PUBLISHER`, `MSIX_PUBLISHER_DISPLAY_NAME`.
+4. Build a package with them: *Actions › Desktop › Run workflow* on `main` (the `.msix` is in the
+   *Trackhop-Desktop-Windows* artifact), or wait for the next release (it is a release file).
+5. Create the submission:
+   - *Pricing and availability*: free, markets.
+   - *Properties*: category *Music* (or *Productivity*), privacy policy URL
+     `https://xlollx.github.io/Trackhop/privacy-policy`, website, support contact
+     (`https://github.com/xlollx/Trackhop/issues`).
+   - *Age ratings*: the IARC questionnaire (no violence, no user interaction or sharing, no
+     purchases, no ads in Desktop).
+   - *Packages*: upload the `.msix`. Device family: Desktop.
+   - *Store listings* (English, optionally Italian…): description, at least one screenshot of the
+     Desktop window (1366×768 or larger), the 300×300 logo (from `docs/store/icon512.png`).
+   - *Submission options › Restricted capabilities*: explain `runFullTrust`: "Trackhop Desktop is a
+     Java desktop app (jpackage) with a tray icon and a local web server on 127.0.0.1; it needs full
+     trust to run its own runtime."
+6. Submit; certification takes a few days.
+
+**Each release:** download the release's `.msix` and upload it in a new submission (*Update*).
+Partner Center can also be driven by the Microsoft Store Developer CLI (`msstore publish`) with an
+Entra app, if this ever needs to be automatic.
+
+---
+
+## Flathub
+
+**In the repository.** `flatpak/`:
+
+- `io.github.xlollx.Trackhop.yml`: the manifest. GNOME runtime 51 (it still has WebKitGTK 4.1,
+  which SWT's browser needs on GTK 3), the OpenJDK 21 SDK extension for Java, Gradle 8.14.3 from its
+  release archive, and a fully **offline build from source** (`offline.init.gradle` makes Gradle use
+  only the Maven files listed in `gradle-sources.json`). Permissions: X11 and IPC (SWT and Java's
+  AWT; AWT has no Wayland backend, Xwayland covers Wayland sessions), DRI (WebKit), network (the
+  services, and the pages on 127.0.0.1:8642). No access to home: the data lives in
+  `~/.var/app/io.github.xlollx.Trackhop/data/trackhop`.
+- `gradle-sources.json`: the 123 Maven files the build needs, with sha512; `update-sources.sh`
+  regenerates it (run it whenever a dependency or plugin version changes in `server/`,
+  `android/core` or `android/ytm`).
+- `io.github.xlollx.Trackhop.metainfo.xml` (passes `appstreamcli validate`),
+  `io.github.xlollx.Trackhop.desktop` (passes `desktop-file-validate`), `trackhop.sh` (the
+  launcher), `flathub.json` (x86_64 only: the build carries SWT for Linux x86_64 only).
+- `.github/workflows/flatpak.yml` builds it in Flathub's GNOME 51 container on every change to
+  these files or to the Gradle builds, and keeps a `.flatpak` bundle to try.
+
+**Policy found** ([requirements](https://docs.flathub.org/docs/for-app-authors/requirements)):
+
+- "All source available submissions must be built entirely from source code"; prebuilt binaries
+  and `extra-data` are for non-redistributable apps (exceptions only for well-known vendors). So the
+  release tarball is not an option: the manifest builds from source, offline ("There is no network
+  access during the build process").
+- The ID: `io.github.xlollx.Trackhop` matches the GitHub repository; the domain part is lowercase as
+  required. Verification: sign in on flathub.org with the `xlollx` GitHub account.
+- **Stable software only**: "The Flathub stable repository is dedicated to hosting only stable
+  software" and "New application submissions will not be accepted directly into the Flathub beta
+  repository". Desktop calls itself a beta and its GitHub releases are prereleases: reviewers may
+  refuse it until it drops "beta".
+- "Simple web wrapper applications that embed local or remote content in a web engine without
+  providing significant polish, functionality, or meaningful desktop integration will not be
+  accepted." Trackhop has its own engine, scheduler, tray and API, but its window is a web view of
+  its own pages: say so in the PR.
+- Screenshots: the metainfo points at the Android app's screenshots (pinned to a commit) for now.
+  **Replace them with Desktop windows captured on Linux** (with the window's title bar, not
+  maximised, 1000×700 or smaller) before submitting.
+- The icon fills its square to the edges; Flathub's quality guidelines prefer some margin (not a
+  blocker, but it keeps it out of the featured lists).
+- GNOME 52's runtime (March 2027) drops WebKitGTK 4.1: by then SWT needs GTK 4 (WebKitGTK 6), or the
+  manifest has to build WebKitGTK 4.1 itself.
+
+**Once:**
+
+1. Release a version that contains `packaging/flatpak/` (the Flathub build reads the metainfo,
+   the desktop file and the Gradle init script from the tagged sources). Add its `<release>` to the
+   metainfo first.
+2. Take Desktop screenshots on Linux, put them in the repository (for example `docs/store/desktop/`)
+   and point the metainfo's `<image>` at them through a tag or commit URL.
+3. Build and test locally:
+   `flatpak install flathub org.flatpak.Builder` and
+   `flatpak run org.flatpak.Builder --force-clean --user --install --install-deps-from=flathub build-dir packaging/flatpak/io.github.xlollx.Trackhop.yml`,
+   then `flatpak run io.github.xlollx.Trackhop`; lint with
+   `flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest packaging/flatpak/io.github.xlollx.Trackhop.yml`
+   and `… appstream packaging/flatpak/io.github.xlollx.Trackhop.metainfo.xml`.
+4. Fork [flathub/flathub](https://github.com/flathub/flathub) with "Copy the master branch only"
+   **unticked**, then `git clone --branch=new-pr git@github.com:xlollx/flathub.git`,
+   `git checkout -b add-trackhop new-pr`.
+5. Add the manifest, `gradle-sources.json` and `flathub.json`, with the manifest's `type: dir`
+   source replaced by the release tag:
+
+   ```yaml
+         - type: git
+           url: https://github.com/xlollx/Trackhop.git
+           tag: server-vX.Y.Z
+           commit: <the tag's full commit hash>
+           x-checker-data:
+             type: git
+             tag-pattern: ^server-v([\d.]+)$
+   ```
+
+6. Push and open the pull request against **`new-pr`** (not `master`), titled
+   `Add io.github.xlollx.Trackhop`, keep the template and explain the permissions (X11 for AWT,
+   network). Answer the review there, then comment `bot, build`.
+7. Once accepted, Flathub creates `flathub/io.github.xlollx.Trackhop`; enable 2FA on GitHub and
+   accept the invitation within a week. Then verify the app on flathub.org.
+
+**Each release:** a pull request in `flathub/io.github.xlollx.Trackhop` with the new tag and commit
+(Flathub's external data checker opens it by itself thanks to `x-checker-data`), plus a fresh
+`gradle-sources.json` whenever dependencies changed, and the new `<release>` in the metainfo here.
