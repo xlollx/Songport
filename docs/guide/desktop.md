@@ -11,16 +11,16 @@ pages in your browser, and runs scheduled syncs while the computer is on. It is 
 
 ## Install
 
-The current version is **0.5.1** ([what's in it](https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.1)); every version is in the
+The current version is **0.5.2** ([what's in it](https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.2)); every version is in the
 [Desktop & Server releases](https://github.com/xlollx/Trackhop/releases?q=server-v&expanded=true)
 (tagged `server-v…`: Desktop and Docker have their own version, separate from the app's).
 
 | System | Download | How |
 |---|---|---|
-| Windows 10 or 11 | [Installer (.msi)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.1/Trackhop-Desktop-v0.5.1-windows.msi) | Open it. It installs for your user only, no administrator needed, with a Start menu entry. |
-| Windows, no install | [Portable (.zip)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.1/Trackhop-Desktop-v0.5.1-windows.zip) | Unzip anywhere (Documents, a USB stick) and run `Trackhop\Trackhop.exe`. |
-| Debian, Ubuntu, Mint… | [.deb](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.1/Trackhop-Desktop-v0.5.1-linux.deb) | `sudo apt install ./Trackhop-Desktop-v0.5.1-linux.deb`, then *Trackhop* in the menu. |
-| Any other Linux (x86-64) | [.tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.1/Trackhop-Desktop-v0.5.1-linux.tar.gz) | Unpack and run `Trackhop/bin/Trackhop`. |
+| Windows 10 or 11 | [Installer (.msi)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.2/Trackhop-Desktop-v0.5.2-windows.msi) | Open it. It installs for your user only, no administrator needed, with a Start menu entry. |
+| Windows, no install | [Portable (.zip)](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.2/Trackhop-Desktop-v0.5.2-windows.zip) | Unzip anywhere (Documents, a USB stick) and run `Trackhop\Trackhop.exe`. |
+| Debian, Ubuntu, Mint… | [.deb](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.2/Trackhop-Desktop-v0.5.2-linux.deb) | `sudo apt install ./Trackhop-Desktop-v0.5.2-linux.deb`, then *Trackhop* in the menu. |
+| Any other Linux (x86-64) | [.tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.5.2/Trackhop-Desktop-v0.5.2-linux.tar.gz) | Unpack and run `Trackhop/bin/Trackhop`. |
 
 **Package managers and stores.** Scoop has Trackhop Desktop already; the others are on their way,
 and their commands do not work until the *(soon)* goes away here:
