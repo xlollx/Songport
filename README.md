@@ -30,8 +30,8 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
 
 <p align="center">
   <b>On a computer or a server?</b> <sub>(beta)</sub><br>
-  <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.4.0/Trackhop-Desktop-v0.4.0-windows.msi"><img src="docs/assets/badges/windows.svg" height="56" alt="Get it for Windows"></a>
-  <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.4.0/Trackhop-Desktop-v0.4.0-linux.deb"><img src="docs/assets/badges/linux.svg" height="56" alt="Get it for Linux"></a>
+  <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.4.1/Trackhop-Desktop-v0.4.1-windows.msi"><img src="docs/assets/badges/windows.svg" height="56" alt="Get it for Windows"></a>
+  <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.4.1/Trackhop-Desktop-v0.4.1-linux.deb"><img src="docs/assets/badges/linux.svg" height="56" alt="Get it for Linux"></a>
   <a href="https://xlollx.github.io/Trackhop/guide/docker"><img src="docs/assets/badges/docker.svg" height="56" alt="Run it on Docker"></a>
 </p>
 
@@ -71,11 +71,11 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   built in. [Which Trackhop?](https://xlollx.github.io/Trackhop/guide/versions) compares the two.
 - **Desktop (Windows, Linux, beta)**: works for everyday use, still young. The same engine as a program on your
   computer, with its own Java runtime (no Java or Docker to install, no administrator rights), an icon
-  next to the clock and the same web page as the server. Version 0.4.0 ([what's in it](https://github.com/xlollx/Trackhop/releases/tag/server-v0.4.0)):
-  [Windows installer](https://github.com/xlollx/Trackhop/releases/download/server-v0.4.0/Trackhop-Desktop-v0.4.0-windows.msi) ·
-  [Windows, no install (.zip)](https://github.com/xlollx/Trackhop/releases/download/server-v0.4.0/Trackhop-Desktop-v0.4.0-windows.zip) ·
-  [Linux .deb](https://github.com/xlollx/Trackhop/releases/download/server-v0.4.0/Trackhop-Desktop-v0.4.0-linux.deb) ·
-  [Linux .tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.4.0/Trackhop-Desktop-v0.4.0-linux.tar.gz). See the
+  next to the clock and the same web page as the server. Version 0.4.1 ([what's in it](https://github.com/xlollx/Trackhop/releases/tag/server-v0.4.1)):
+  [Windows installer](https://github.com/xlollx/Trackhop/releases/download/server-v0.4.1/Trackhop-Desktop-v0.4.1-windows.msi) ·
+  [Windows, no install (.zip)](https://github.com/xlollx/Trackhop/releases/download/server-v0.4.1/Trackhop-Desktop-v0.4.1-windows.zip) ·
+  [Linux .deb](https://github.com/xlollx/Trackhop/releases/download/server-v0.4.1/Trackhop-Desktop-v0.4.1-linux.deb) ·
+  [Linux .tar.gz](https://github.com/xlollx/Trackhop/releases/download/server-v0.4.1/Trackhop-Desktop-v0.4.1-linux.tar.gz). See the
   [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop); every version is in the
   [Desktop & Server releases](https://github.com/xlollx/Trackhop/releases?q=server-v&expanded=true) (`server-v…`).
 - **Server (Docker, beta)**: works for everyday use, still young. The same engine on a home server or a NAS, with a web page and
@@ -83,7 +83,7 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
   [Docker guide](https://xlollx.github.io/Trackhop/guide/docker). To update: `docker pull ghcr.io/xlollx/trackhop`,
   then remove and start the container again (the data stays in its volume).
-- Desktop and Docker have their **own version** (now 0.4.0), separate from the app's.
+- Desktop and Docker have their **own version** (now 0.4.1), separate from the app's.
 
 Android 8.0 or newer. Languages: English, Italian, French, German, Spanish, Portuguese (Brazil), Polish,
 Russian, Turkish, Chinese, Japanese, Korean.
