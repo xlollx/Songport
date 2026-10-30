@@ -33,12 +33,14 @@ cp server/build/desktop-libs/$os/*.jar "$lib"/
 modules=java.base,java.desktop,java.instrument,java.logging,java.net.http,java.xml,jdk.httpserver,jdk.unsupported,jdk.crypto.ec,jdk.charsets,jdk.localedata
 locales=en,it,fr,de,es,pt,pl,ru,tr,zh,ja,ko
 
-# The app itself: the jars, the launcher (no console window on Windows) and a trimmed runtime.
+# The app itself: the jars, the launcher (no console window on Windows), the command line's
+# launcher trackhop-cli (cli.properties) and a trimmed runtime.
 jpackage --type app-image --name Trackhop --dest "$work/out" \
   --input "$lib" --main-jar "songport-server-$version.jar" --main-class com.xlollx.songport.server.DesktopKt \
   --app-version "$version" --vendor xlollx --copyright "GPL-3.0-only" \
   --description "Trackhop Desktop (beta): keeps playlists in sync between music services" \
   --icon "$icon" --java-options "-Xmx512m" \
+  --add-launcher trackhop-cli=server/desktop/cli.properties \
   --add-modules "$modules" \
   --jlink-options "--strip-debug --no-man-pages --no-header-files --include-locales=$locales"
 

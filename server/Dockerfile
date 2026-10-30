@@ -29,7 +29,8 @@ RUN groupadd --system songport && useradd --system --gid songport --home-dir /da
 COPY --from=build /src/server/build/install/songport-server /opt/songport
 USER songport
 # UTF-8 file names (a playlist file "Città.csv").
-ENV SONGPORT_DATA=/data SONGPORT_PORT=8080 LANG=C.UTF-8 LC_ALL=C.UTF-8
+# bin/ on the PATH: `docker exec <container> trackhop …` is the command line (Cli.kt).
+ENV SONGPORT_DATA=/data SONGPORT_PORT=8080 LANG=C.UTF-8 LC_ALL=C.UTF-8 PATH="/opt/songport/bin:${PATH}"
 VOLUME /data
 EXPOSE 8080
 ENTRYPOINT ["/opt/songport/bin/songport-server"]

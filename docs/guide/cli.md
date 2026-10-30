@@ -1,0 +1,100 @@
+---
+title: The trackhop command
+description: Run your playlist syncs, list them and add or remove tracks from a terminal, a script or a scheduled task, with the trackhop command of Trackhop Desktop and the Docker server. Free and open source.
+---
+
+# The `trackhop` command
+
+Trackhop Desktop and the Docker server come with a command line, `trackhop`: start syncs, see how
+they went, list playlists, add and remove tracks, from a terminal, a script, a cron job or Windows'
+Task Scheduler. It talks to the Trackhop that is running: on the same computer, or inside the same
+container, it needs nothing set up.
+
+```
+trackhop syncs                     # every sync, with its last result
+trackhop run "Road trip" --wait    # run one and wait for the result
+trackhop run --all                 # run every sync that is turned on
+trackhop add spotify "Focus" "Bonobo - Kerala" https://music.youtube.com/watch?v=…
+```
+
+## Where it is
+
+| Where Trackhop runs | The command |
+|---|---|
+| Docker | `docker exec trackhop trackhop …` (the container's name, then the command) |
+| Windows, installed with Scoop | `trackhop …` |
+| Windows, installer (.msi) | `"%LOCALAPPDATA%\Trackhop\trackhop-cli.exe" …` |
+| Windows, portable (.zip) | `trackhop-cli.exe` in the `Trackhop` folder |
+| Linux, .deb | `/opt/trackhop/bin/trackhop-cli …` |
+| Linux, .tar.gz | `Trackhop/bin/trackhop-cli` where you unpacked it |
+
+On Windows the program itself is `Trackhop.exe`, so the command is `trackhop-cli`. To type just
+`trackhop`, add an alias: in PowerShell, `Set-Alias trackhop "$env:LOCALAPPDATA\Trackhop\trackhop-cli.exe"`
+in your profile; in bash, `alias trackhop=/opt/trackhop/bin/trackhop-cli` in `~/.bashrc`.
+
+Trackhop has to be running: Desktop next to the clock, or the container. The command finds it
+through a key Trackhop makes at each start and leaves in its data folder (`cli.json`, readable by
+your user only), accepted from this computer only. When Trackhop is not running, the command says so.
+
+## Commands
+
+**Syncs**
+
+| Command | What it does |
+|---|---|
+| `trackhop syncs` | Every sync: its route, schedule, last run and result, next run. |
+| `trackhop show <sync>` | One sync, with its last runs. |
+| `trackhop run <sync>…` | Starts these syncs. `--wait` waits until they end and prints the result. |
+| `trackhop run --all` | Starts every sync that is turned on (with `--wait` too). |
+| `trackhop enable <sync>`, `trackhop disable <sync>` | Turns a sync's schedule on or off. |
+
+A `<sync>` is its name, the start of its name, or its id. When a name could mean more than one sync,
+the command lists them and asks you to say which.
+
+**Services and playlists**
+
+| Command | What it does |
+|---|---|
+| `trackhop services` | The services you added, and whether they are connected. |
+| `trackhop playlists <service>` | A service's playlists, with their ids. |
+| `trackhop tracks <service> <playlist>` | A playlist's tracks. |
+| `trackhop add <service> <playlist> <track>…` | Adds tracks. A track is `"Artist - Title"` (searched and matched as a sync does), a link from any service, or its id on that service. Tracks already there are not added again. |
+| `trackhop remove <service> <playlist> <track>…` | Removes tracks, named the same way. |
+| `trackhop create <service> <name>` | A new playlist. |
+
+A `<service>` is its name or id (`spotify`, `tidal`, `subsonic`…, as `trackhop services` shows); a
+`<playlist>` its name or id.
+
+**Files and backups**
+
+| Command | What it does |
+|---|---|
+| `trackhop files` | The playlist files of the File service. |
+| `trackhop import <file>` | A playlist file into the File service: CSV, M3U, XSPF, JSPF, iTunes XML, JSON or text. |
+| `trackhop backup` | Backs up every playlist now (`--wait` to wait for the end). |
+| `trackhop config [<file>]` | Your whole set-up as one file, as Backup & restore makes it; to the screen without `<file>`. |
+
+**Other:** `trackhop status` (version, syncs, what is running), `trackhop help`, `trackhop --version`.
+
+## In scripts
+
+- `--json` prints what the API answers, for `jq` or your own code.
+- The exit code: `0` done, `1` failed (a sync that ended with an error, a call refused, a sync or
+  playlist not found), `2` wrong use, `3` no Trackhop reached.
+
+```
+# Every night at 3, in cron: run everything and keep a log.
+0 3 * * * docker exec trackhop trackhop run --all --wait >> /var/log/trackhop.log 2>&1
+```
+
+## A server elsewhere
+
+To drive a Trackhop server from another computer, make a token on its page (**Tools › API**) and
+give the command its address and the token:
+
+```
+trackhop --url https://trackhop.example.org --token th_… syncs
+```
+
+or set `TRACKHOP_URL` and `TRACKHOP_TOKEN`. The command is the same program as on the server, so
+any Trackhop Desktop has it; or call the [API](docker#api) directly.

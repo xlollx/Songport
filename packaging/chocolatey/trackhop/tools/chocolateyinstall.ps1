@@ -14,3 +14,7 @@ $packageArgs = @{
 }
 
 Install-ChocolateyPackage @packageArgs
+
+# The command line (trackhop-cli.exe, next to Trackhop.exe) as `trackhop` on the PATH.
+$cli = Join-Path $env:LOCALAPPDATA 'Trackhop\trackhop-cli.exe'
+if (Test-Path $cli) { Install-BinFile -Name 'trackhop' -Path $cli }

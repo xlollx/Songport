@@ -78,9 +78,10 @@ fun main() {
 
 /** The engine set up on [config]'s data folder, not yet serving: [web] is started by the caller. */
 class Launched(val env: ServerEnv, val runner: Runner, val web: Web, val version: String, private val config: Config, private val edition: Html.Edition) {
-    /** Once the pages are served: the scheduler, the first log line, the data saved on exit. */
-    fun started(warnNoPassword: Boolean) {
+    /** Once the pages are served on [port]: the scheduler, the command line's key, the first log line, the data saved on exit. */
+    fun started(warnNoPassword: Boolean, port: Int = config.port) {
         runner.startScheduler()
+        runCatching { LocalKey.write(config.dataDir, port) }.onFailure { env.log("server", "no key for the command line: ${it.message}") }
         env.log("server", "${edition.product} $version (${edition.stage.uppercase()}: keep a copy of the data folder), data in ${config.dataDir.absolutePath}" + if (warnNoPassword) " (no password: set SONGPORT_PASSWORD if others can reach this port)" else "")
         Runtime.getRuntime().addShutdownHook(Thread { env.store.flush() })
     }

@@ -2,6 +2,8 @@
 # %APPDATA%\Trackhop stays.
 $ErrorActionPreference = 'Stop'
 
+Uninstall-BinFile -Name 'trackhop'
+
 [array]$keys = Get-UninstallRegistryKey -SoftwareName 'Trackhop'
 if ($keys.Count -eq 1) {
   $packageArgs = @{

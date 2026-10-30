@@ -270,7 +270,9 @@ found.
 Other tools (Home Assistant, n8n, Node-RED, a script) can list the syncs, start them and read how
 they went. Turn it on in **Tools › API**: make a token (shown once; only its hash is kept) and send
 it as `Authorization: Bearer <token>`. It is separate from the page's password; on Trackhop Desktop
-only the computer itself can reach it.
+only the computer itself can reach it. From a terminal or a script, the [`trackhop` command](cli)
+does the same with less typing: `docker exec trackhop trackhop run --all`, no token needed inside
+the container.
 
 | Call | What it does |
 |---|---|

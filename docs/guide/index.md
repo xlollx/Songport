@@ -15,6 +15,7 @@ description (architecture, matching, services and their limits) stays in the
 - [Unplayable tracks](unplayable-tracks): the greyed-out tracks in your playlists, and how Trackhop replaces them.
 - [Trackhop Desktop (Windows, Linux; beta)](desktop): works for everyday use, still young. The engine as a program on your computer, no Docker needed.
 - [Trackhop on a server (Docker, beta)](docker): works for everyday use, still young. Scheduled syncs on a home server or a NAS, with a web page.
+- [The trackhop command](cli): run syncs, read their results, add and remove tracks from a terminal or a script, with Desktop or Docker.
 
 **Step by step**
 - [Sync Spotify playlists to YouTube Music](spotify-to-youtube-music), and keep them in sync.

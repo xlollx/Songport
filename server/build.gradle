@@ -51,6 +51,19 @@ sourceSets.main.kotlin {
     exclude { e -> !e.directory && e.file.toPath().startsWith(bridgeDir.toPath()) && !(e.name in bridgeClients) }
 }
 
+// `trackhop`, the command line (Cli.kt), next to the server's own script in installDist's bin/:
+// the Docker image puts that folder on the PATH. A short-lived JVM: quick to start, small heap.
+def cliScripts = tasks.register('cliStartScripts', CreateStartScripts) {
+    mainClass = 'com.xlollx.songport.server.CliKt'
+    applicationName = 'trackhop'
+    outputDir = layout.buildDirectory.dir('cli-scripts').get().asFile
+    classpath = tasks.named('startScripts').get().classpath
+    defaultJvmOpts = ['-XX:TieredStopAtLevel=1', '-XX:+UseSerialGC', '-Xmx128m']
+}
+distributions.main.contents {
+    into('bin') { from(cliScripts) }
+}
+
 tasks.register('desktopLibs', Copy) {
     into(layout.buildDirectory.dir('desktop-libs'))
     from(configurations.swtWindows) { into 'windows' }

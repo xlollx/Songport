@@ -96,6 +96,9 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   script: list and start syncs, read their results, add and remove tracks in any connected
   service's playlists, get notified when a run ends. See
   [Automation: REST API and webhook](#automation-rest-api-and-webhook).
+- And a **command line**, `trackhop`: `trackhop run --all --wait`, `trackhop add spotify Focus "Bonobo - Kerala"`,
+  from a terminal, cron or Task Scheduler, with nothing to set up on the same machine or in the
+  container (`docker exec trackhop trackhop syncs`). See [the trackhop command](https://xlollx.github.io/Trackhop/guide/cli).
 - Desktop and Docker have their **own version** (now 0.5.3), separate from the app's.
 
 Android 8.0 or newer. Languages: English, Italian, French, German, Spanish, Portuguese (Brazil), Polish,

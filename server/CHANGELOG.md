@@ -7,6 +7,12 @@ the Docker image carried the app's version.
 
 ## Next
 
+- **The `trackhop` command**: run syncs (`trackhop run --all --wait`), read their results, list
+  playlists, add and remove tracks, import playlist files, back up, from a terminal, cron or Task
+  Scheduler. It talks to the Trackhop running on the same computer or in the same container with
+  nothing to set up (a key Trackhop leaves in its data folder, accepted from this machine only),
+  or to a server elsewhere with its API token. Desktop: `trackhop-cli` (`trackhop` with Scoop and
+  Chocolatey); Docker: `docker exec trackhop trackhop …`. [The guide](https://xlollx.github.io/Trackhop/guide/cli).
 - **Linux: a Flatpak** among the release's files (`Trackhop-Desktop-v<version>-linux.flatpak`),
   built from source as Flathub would: `flatpak install --user` it. Its data lives in
   `~/.var/app/io.github.xlollx.Trackhop/data/trackhop`, apart from the .deb's and the tar.gz's.

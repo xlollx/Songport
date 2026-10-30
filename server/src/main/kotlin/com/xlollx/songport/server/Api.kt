@@ -186,8 +186,12 @@ private const val MAX_API_BODY = 20_000_000
 internal fun Web.api(ex: HttpExchange, method: String, path: List<String>, query: Map<String, String>) {
     fun json(code: Int, e: JsonElement) = send(ex, code, e.toString(), "application/json")
     fun error(code: Int, message: String) = json(code, buildJsonObject { put("error", message) })
-    if (!Api.enabled(env)) return error(403, "The API is off: make a token on the page, Tools › API.")
-    if (!Api.authorized(env, ex.requestHeaders.getFirst("Authorization"))) return error(401, "Send the API token as: Authorization: Bearer <token>")
+    // The command line on this machine (LocalKey) gets in without the API being turned on.
+    val auth = ex.requestHeaders.getFirst("Authorization")
+    if (!LocalKey.matches(auth, ex.remoteAddress?.address)) {
+        if (!Api.enabled(env)) return error(403, "The API is off: make a token on the page, Tools › API.")
+        if (!Api.authorized(env, auth)) return error(401, "Send the API token as: Authorization: Bearer <token>")
+    }
     val running = SyncState.running.value
     val jobs = env.store.data.jobs
     val rest = path.drop(2)
