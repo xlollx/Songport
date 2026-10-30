@@ -82,9 +82,9 @@ quota meter; own API keys to escape shared quotas.
 Listings to ask for once the F-Droid page is live (each is a pull request or a form, done once):
 
 - [x] **F-Droid** badge in the README (added before the page went live: check that https://f-droid.org/packages/com.xlollx.songport/ answers).
-- [ ] **Obtainium's app list** (github.com/ImranR98/apps.obtainium.imranr.dev): a pull request adding the app's JSON entry.
-- [ ] **Navidrome**: the apps page of the documentation (navidrome/website repository), as a tool that syncs streaming playlists into Navidrome.
-- [ ] **Jellyfin**: the third-party clients list on jellyfin.org (jellyfin/jellyfin.org repository), and awesome-jellyfin.
+- [ ] **Obtainium's app list** (github.com/ImranR98/apps.obtainium.imranr.dev): a pull request adding the app's JSON entry. Needs 35 stars and a project at least 4 months old (from 16/01/2027).
+- [ ] **Navidrome**: the apps catalog (navidrome/website, `assets/apps/trackhop/`), as a tool that syncs streaming playlists into Navidrome. Needs 15 stars and a real screenshot as thumbnail.
+- [ ] **Jellyfin**: awesome-jellyfin (Companion Apps & Tools › Music). The clients list on jellyfin.org takes only players with a year of development: not for Trackhop.
 - [ ] **Awesome lists on GitHub**: offa/android-foss, pcqpcq/open-source-android-apps (Multimedia), and any awesome-subsonic or self-hosted music list; read each one's contributing rules first.
 - [x] **AlternativeTo**: listed as an alternative to Soundiiz, TuneMyMusic, FreeYourMusic, SongShift, Spotlistr and Playlist Converter (renamed to Trackhop on 30/10/2026).
 - [ ] **IzzyOnDroid** repository (request on its GitLab issue tracker).
@@ -93,7 +93,7 @@ Listings to ask for once the F-Droid page is live (each is a pull request or a f
 - [x] Repository social preview image (`docs/store/social_preview.png`).
 - [x] **Google Search Console**: the project site verified (file and HTML tag), sitemap sent (30/10/2026).
 - [x] Step-by-step guides for the searches people make (Spotify to YouTube Music, Apple Music to Spotify, Spotify to TIDAL, to Navidrome/Jellyfin/Plex, export to CSV/M3U).
-- [ ] Repository topics (Settings: About).
+- [x] Repository topics (Settings: About).
 - [ ] A domain of its own (trackhop.org chosen, not bought yet), pointed at the same GitHub Pages site.
 
 ## Name
