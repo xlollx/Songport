@@ -7,6 +7,7 @@ import com.xlollx.songport.model.PlaylistRef
 import com.xlollx.songport.model.Schedule
 import com.xlollx.songport.model.SyncJob
 import com.xlollx.songport.providers.CredentialsProvider
+import com.xlollx.songport.providers.LocalFilesProvider
 import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.OAuthProvider
 import com.xlollx.songport.providers.Providers
@@ -108,6 +109,7 @@ class Web(
             path == listOf("callback") -> callback(r)
             path == listOf("quit") && onQuit != null && method == "POST" -> quit(r, onQuit)
             path[0] == "connectors" -> connectors(r, path.drop(1))
+            path.size == 2 && path[0] == "files" && method == "GET" -> download(r, path[1])
             path[0] == "syncs" -> syncs(r, path.drop(1))
             else -> send(ex, 404, page("Not found", "<p><a href=\"/\">Back</a></p>"))
         }
@@ -309,9 +311,8 @@ class Web(
             body.append("</div>")
         }
         when {
-            !p.requiresAuth -> body.append(
-                """<div class="card">Put CSV playlist files in <code>${h(java.io.File(env.dataDir, "csv").path)}</code> inside the data volume: they show up as playlists here.</div>""",
-            )
+            p is LocalFilesProvider -> body.append(fileList())
+            !p.requiresAuth -> Unit
             p.isConnected(env) -> body.append(
                 """<div class="card row"><div><span class="ok">Connected</span>${p.accountName(env)?.let { " as <b>" + h(it) + "</b>" } ?: ""}</div>""" +
                     Html.postButton("/connectors/${q(p.id)}/disconnect", "Disconnect", "secondary") + "</div>",
@@ -333,6 +334,31 @@ class Web(
         }
         body.append("""<p>${Html.postButton("/connectors/${q(p.id)}/remove", "Remove from the list", "danger", confirm = "Remove this service from the list?")}</p>""")
         send(r.ex, 200, page(p.label(env), body.toString()))
+    }
+
+    /** The File service's playlists, each one downloadable; new ones are files put in its folder. */
+    private fun fileList(): String {
+        val dir = LocalFilesProvider.dir(env)
+        val files = csvFiles()
+        val sb = StringBuilder("""<div class="card">""")
+        if (files.isEmpty()) sb.append("""<p class="muted">No playlist files yet.</p>""")
+        else {
+            sb.append("<ul>")
+            for (f in files) sb.append("""<li><a href="/files/${q(f.name)}" download>${h(f.nameWithoutExtension)}</a> <span class="muted">(${h(f.name)})</span></li>""")
+            sb.append("</ul>")
+        }
+        sb.append("""<p class="muted">A sync whose target is File writes its playlist here: click one to download it. To use a CSV file as a source, put it in <code>${h(dir.path)}</code>.</p></div>""")
+        return sb.toString()
+    }
+
+    private fun csvFiles() = LocalFilesProvider.dir(env).listFiles { f -> f.isFile && f.extension == "csv" }.orEmpty().sortedBy { it.name.lowercase() }
+
+    /** One of [csvFiles], by its exact name: nothing else in the data folder can be asked for. */
+    private fun download(r: Req, name: String) {
+        val f = csvFiles().firstOrNull { it.name == name } ?: return send(r.ex, 404, page("Not found", """<p><a href="/connectors/csv">Back</a></p>"""))
+        val ascii = name.replace(Regex("[^A-Za-z0-9._ ()-]"), "_")
+        r.ex.responseHeaders.set("Content-Disposition", "attachment; filename=\"$ascii\"; filename*=UTF-8''${q(name).replace("+", "%20")}")
+        send(r.ex, 200, f.readText(), "text/csv")
     }
 
     private fun ytmNote(): String = """<div class="card"><p><span class="badge">unofficial</span> <span class="alpha">alpha</span></p>

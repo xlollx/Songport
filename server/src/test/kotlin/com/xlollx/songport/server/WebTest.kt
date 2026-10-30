@@ -109,4 +109,18 @@ class WebTest {
         assertTrue(ok.headers().firstValue("Location").orElse(""), ok.headers().firstValue("Location").orElse("").startsWith("/syncs/"))
         assertTrue(get("/").body().contains("Mine"))
     }
+
+    @Test fun playlistFilesDownloadAndNothingElse() {
+        File(data, "csv").mkdirs()
+        File(data, "csv/Road trip.csv").writeText("title,artist\nSong,Band\n")
+        File(data, "secret.csv").writeText("no")
+        val ok = get("/files/Road%20trip.csv")
+        assertEquals(200, ok.statusCode())
+        assertTrue(ok.body().contains("Song,Band"))
+        assertTrue(ok.headers().firstValue("Content-Disposition").orElse("").startsWith("attachment"))
+        assertTrue(get("/connectors/csv").body().contains("/files/Road+trip.csv"))
+        assertEquals(404, get("/files/..%2Fsecret.csv").statusCode())
+        assertEquals(404, get("/files/tokens.json").statusCode())
+        assertEquals(401, get("/files/Road%20trip.csv", withAuth = false).statusCode())
+    }
 }

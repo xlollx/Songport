@@ -38,7 +38,9 @@ jpackage --type app-image --name Trackhop --dest "$work" \
   --jlink-options "--strip-debug --no-man-pages --no-header-files --include-locales=$locales"
 
 if [ "$os" = windows ]; then
-  (cd "$work" && powershell -NoProfile -Command "Compress-Archive -Path Trackhop -DestinationPath '$root/dist/$name-windows.zip' -Force")
+  # PowerShell wants Windows paths, not Git Bash's /d/a/….
+  zip=$(cygpath -w "$root/dist/$name-windows.zip")
+  (cd "$work" && powershell -NoProfile -Command "Compress-Archive -Path Trackhop -DestinationPath '$zip' -Force")
   # The upgrade code stays the same forever: a newer MSI replaces the installed one.
   jpackage --type msi --app-image "$work/Trackhop" --name Trackhop --dest "$work" \
     --app-version "$version" --vendor xlollx --description "Trackhop Desktop (alpha)" \
