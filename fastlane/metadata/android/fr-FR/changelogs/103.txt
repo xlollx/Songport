@@ -1,0 +1,1 @@
+Sauvegarde et restauration : les sections ont les mêmes marges et espacements que Réglages et Outils.

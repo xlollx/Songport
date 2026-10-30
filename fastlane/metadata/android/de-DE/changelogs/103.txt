@@ -1,0 +1,1 @@
+Sicherung & Wiederherstellung: die Bereiche haben dieselben Ränder und Abstände wie Einstellungen und Werkzeuge.

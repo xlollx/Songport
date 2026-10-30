@@ -1,0 +1,1 @@
+Backup & restore: the sections have the same margins and spacing as Settings and Tools.

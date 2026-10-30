@@ -3,6 +3,7 @@ package com.xlollx.songport.ui
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -162,7 +163,11 @@ fun BackupScreen(onClose: () -> Unit) {
         },
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
-        Column(Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
+        // The same margins and gaps as Settings and Tools: the sections stand apart, off the screen's edges.
+        Column(
+            Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+        ) {
             PrefSection(stringResource(R.string.backup_config_section), accent = JobColor.BLUE, description = stringResource(R.string.backup_config_desc)) {
                 PrefRow(Icons.Filled.Save, stringResource(R.string.backup_config_save), null, chevron = false) { save.launch(ConfigBackup.fileName()) }
                 PrefRow(Icons.Filled.Restore, stringResource(R.string.backup_config_restore), null, chevron = false) { open.launch(arrayOf("*/*")) }
