@@ -15,6 +15,9 @@ import java.util.UUID
 /** The radio's mark on a radio sync's card, as the AI's sparkles mark an AI playlist. */
 internal const val RADIO_ICON = """<svg class="kind" viewBox="0 0 24 24" width="18" height="18" aria-label="Radio sync" role="img"><path fill="currentColor" d="M3.24 6.15C2.51 6.43 2 7.17 2 8v12c0 1.1.89 2 2 2h16c1.11 0 2-.9 2-2V8c0-1.11-.89-2-2-2H8.3l8.26-3.34L15.88 1 3.24 6.15zM7 20c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-8h-2v-2h-2v2H4V8h16v4z"/></svg>"""
 
+/** The AI's sparkles on a playlist written by the user's AI, as in the app. */
+internal const val AI_ICON = """<svg class="kind" viewBox="0 0 24 24" width="18" height="18" aria-label="Written by your AI" role="img"><path fill="currentColor" d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>"""
+
 private val DAY_NAMES = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
 private fun hm(m: Int) = "%02d:%02d".format(m / 60, m % 60)

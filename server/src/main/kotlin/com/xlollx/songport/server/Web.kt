@@ -241,7 +241,7 @@ class Web(
         // A playlist written to File: its CSV, a click away.
         val file = if (Providers.byId(job.target.provider) is LocalFilesProvider) csvFiles().firstOrNull { it.nameWithoutExtension == job.target.playlistId } else null
         val download = file?.let { """ <a class="button secondary" href="/files/${q(it.name)}" download>Download CSV</a>""" } ?: ""
-        return """<div class="card"${Html.jobStyle(job.color)}><div class="row"><div class="who"><span class="pair">${logo(job.source.provider, 36)}${logo(job.target.provider, 36)}</span><div><a href="/syncs/${q(job.id)}">${if (radio != null) "$RADIO_ICON " else ""}${if (job.shazam) "$SHAZAM_ICON " else ""}<b>${h(job.name)}</b></a><br>
+        return """<div class="card"${Html.jobStyle(job.color)}><div class="row"><div class="who"><span class="pair">${logo(job.source.provider, 36)}${logo(job.target.provider, 36)}</span><div><a href="/syncs/${q(job.id)}">${if (radio != null) "$RADIO_ICON " else ""}${if (job.shazam) "$SHAZAM_ICON " else ""}${if (job.aiPrompt != null) "$AI_ICON " else ""}<b>${h(job.name)}</b></a><br>
 <span class="muted">${if (radio != null) "Radio: ${h(radio.station)}" else "${h(label(job.source.provider))}: ${h(job.source.playlistName)}"} → ${h(label(job.target.provider))}: ${h(job.target.playlistName.ifBlank { "new playlist" })}</span></div></div></div>
 <div>
 <span class="badge">${h(if (radio != null) com.xlollx.songport.sync.RadioTitles.describe(radio) else scheduleName(job.schedule))}</span>${if (job.mirrorRemovals) " <span class=\"badge\">mirror</span>" else ""}${if (!job.enabled) " <span class=\"badge\">off</span>" else ""}
