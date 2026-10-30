@@ -299,6 +299,29 @@ class WebTest {
         }
         assertTrue(api("/api/v1/syncs/j9", token).body().contains("\"runs\""))
         assertEquals(200, api("/api/v1/services", token).statusCode())
+        // Off and on again from a script.
+        assertTrue(api("/api/v1/syncs/j9/disable", token, "POST").body().contains("\"enabled\":false"))
+        assertTrue(api("/api/v1/syncs/j9/enable", token, "POST").body().contains("\"enabled\":true"))
+        // Prometheus metrics: one series per sync, labelled with its name.
+        val metrics = api("/api/v1/metrics", token)
+        assertTrue(metrics.headers().firstValue("Content-Type").orElse("").startsWith("text/plain"))
+        assertTrue(metrics.body(), metrics.body().contains("trackhop_syncs 1") && metrics.body().contains("trackhop_sync_last_added{id=\"j9\",name=\"Api\"} 1"))
+        // The set-up as a .trackhop file.
+        assertTrue(api("/api/v1/config", token).body().contains("\"format\": \"trackhop-config\""))
+        // A playlist file pushed in the body, then listed.
+        val pushed = client.send(
+            HttpRequest.newBuilder(URI("$base/api/v1/files/Pushed.m3u")).header("Authorization", "Bearer $token")
+                .POST(HttpRequest.BodyPublishers.ofString("#EXTM3U\n#EXTINF:200,Band - Song\nsong.mp3\n")).build(),
+            HttpResponse.BodyHandlers.ofString(),
+        )
+        assertEquals(pushed.body(), 201, pushed.statusCode())
+        assertTrue(api("/api/v1/files", token).body().contains("Pushed"))
+        // A full backup started from the API, followed through its task.
+        val backup = api("/api/v1/backup", token, "POST")
+        assertEquals(backup.body(), 202, backup.statusCode())
+        val taskId = Regex(""""task":"([^"]+)"""").find(backup.body())!!.groupValues[1]
+        assertTrue(api("/api/v1/tasks/$taskId", token).body().contains("\"title\":\"Backup\""))
+        assertEquals(200, api("/api/v1/backup", token).statusCode())
         assertEquals(404, api("/api/v1/nope", token).statusCode())
         assertEquals(303, post("/tools/api", "action=revoke", *origin).statusCode())
         assertEquals(403, api("/api/v1/syncs", token).statusCode())

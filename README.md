@@ -304,6 +304,13 @@ On Trackhop Desktop only the computer itself can reach it (loopback only).
 | `GET /api/v1/runs/<id>` | A run: added, removed, not found, with the tracks |
 | `GET /api/v1/services` | The services and whether they are connected |
 | `GET /api/v1/files`, `GET /api/v1/files/<name>.csv?format=m3u` | The File playlists, in any export format |
+| `POST /api/v1/files/<name>` | Adds a playlist file sent as the body (CSV, M3U, XSPF, JSPF, iTunes XML, JSON or text), ready to sync (201) |
+| `POST /api/v1/syncs/<id>/enable`, `…/disable` | Turns a sync on or off |
+| `GET /api/v1/backup`, `POST /api/v1/backup` | The last full backup and its schedule; starts one (202, with a task id) |
+| `GET /api/v1/tasks/<id>` | A background task (a backup): progress, done, error |
+| `GET /api/v1/config` (`?history=true`) | The whole set-up as a `.trackhop` file, as *Tools › Backup & restore* saves it |
+| `GET /api/v1/metrics` | Prometheus metrics: syncs, running, and per sync the last run's time, result, added, removed and not found |
+| `GET /health` | `ok`, with no token: for Docker's health check, Uptime Kuma or a reverse proxy |
 
 ```sh
 curl -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/syncs
@@ -311,10 +318,13 @@ curl -X POST -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/sync
 ```
 
 **Webhook.** With an address set in *Tools › API*, every finished run is POSTed there as JSON
-(`"event": "sync.finished"`, the sync, and the run with its added and not-found tracks). With a
-secret, the `X-Trackhop-Signature: sha256=<hex>` header is the HMAC-SHA256 of the body, to check
+(`"event": "sync.finished"`, the sync, and the run with its added and not-found tracks), and every
+full backup as `"event": "backup.finished"`. With a secret, the `X-Trackhop-Signature: sha256=<hex>` header is the HMAC-SHA256 of the body, to check
 that the call came from your Trackhop. Example: a Home Assistant *Webhook* trigger that sends a
 notification when tracks were not found, and a `rest_command` that starts every sync.
+
+**Grafana.** Point Prometheus at `/api/v1/metrics` with the token as `bearer_token` to chart what
+every sync adds and misses, and alert when one fails.
 
 Details and more examples: [Docker guide › API](https://xlollx.github.io/Trackhop/guide/docker#api).
 

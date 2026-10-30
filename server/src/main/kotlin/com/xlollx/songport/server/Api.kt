@@ -104,18 +104,60 @@ object Api {
         }
     }
 
+    // ------------------------------------------------------------------ metrics
+
+    /**
+     * The syncs as Prometheus metrics (text format 0.0.4), for Grafana and the like: one series per
+     * sync, labelled with its id and name, from its last run.
+     */
+    fun metrics(env: ServerEnv, running: Set<String>): String = buildString {
+        fun esc(v: String) = v.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", " ")
+        val jobs = env.store.data.jobs
+        fun gauge(name: String, help: String, value: Number) { append("# HELP $name $help\n# TYPE $name gauge\n$name $value\n") }
+        gauge("trackhop_syncs", "Syncs configured", jobs.size)
+        gauge("trackhop_syncs_enabled", "Syncs enabled", jobs.count { it.enabled })
+        gauge("trackhop_syncs_running", "Syncs running now", running.size)
+        gauge("trackhop_backup_last_run_timestamp_seconds", "Last full backup", Backups.lastRun(env) / 1000)
+        val series = listOf(
+            Triple("trackhop_sync_last_run_timestamp_seconds", "When the sync last ran") { j: SyncJob, _: SyncReport? -> j.lastRunEpoch / 1000 },
+            Triple("trackhop_sync_last_ok", "1 if the last run succeeded") { _: SyncJob, r: SyncReport? -> if (r?.ok == true) 1 else 0 },
+            Triple("trackhop_sync_last_added", "Tracks added by the last run") { _: SyncJob, r: SyncReport? -> r?.added ?: 0 },
+            Triple("trackhop_sync_last_removed", "Tracks removed by the last run") { _: SyncJob, r: SyncReport? -> r?.removed ?: 0 },
+            Triple("trackhop_sync_last_not_found", "Tracks not found by the last run") { _: SyncJob, r: SyncReport? -> r?.unmatched?.size ?: 0 },
+            Triple("trackhop_sync_source_tracks", "Tracks in the source at the last run") { _: SyncJob, r: SyncReport? -> r?.sourceCount ?: 0 },
+            Triple("trackhop_sync_running", "1 while the sync runs") { j: SyncJob, _: SyncReport? -> if (j.id in running) 1 else 0 },
+        )
+        for ((name, help, value) in series) {
+            append("# HELP $name $help\n# TYPE $name gauge\n")
+            for (j in jobs) {
+                val r = j.lastReportId?.let { env.store.report(it) }
+                append("$name{id=\"${esc(j.id)}\",name=\"${esc(j.name)}\"} ${value(j, r)}\n")
+            }
+        }
+    }
+
     // ------------------------------------------------------------------ webhook
 
     private val client by lazy { HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build() }
 
     /** Tells the webhook a run ended. Never fails the run: an error goes to the log. */
-    fun notify(env: ServerEnv, job: SyncJob, report: SyncReport) {
+    fun notify(env: ServerEnv, job: SyncJob, report: SyncReport) = post(env, buildJsonObject {
+        put("event", "sync.finished")
+        put("sync", buildJsonObject { put("id", job.id); put("name", job.name) })
+        put("run", run(report))
+    })
+
+    /** Tells the webhook a full backup ended: how many services, how many failures. */
+    fun notifyBackup(env: ServerEnv, services: Int, failures: Int) = post(env, buildJsonObject {
+        put("event", "backup.finished")
+        put("services", services)
+        put("failures", failures)
+        put("ok", failures == 0)
+    })
+
+    private fun post(env: ServerEnv, event: JsonObject) {
         val url = webhook(env).ifEmpty { return }
-        val body = buildJsonObject {
-            put("event", "sync.finished")
-            put("sync", buildJsonObject { put("id", job.id); put("name", job.name) })
-            put("run", run(report))
-        }.toString()
+        val body = event.toString()
         val req = HttpRequest.newBuilder(URI(url)).timeout(Duration.ofSeconds(20))
             .header("Content-Type", "application/json").header("User-Agent", "Trackhop")
         env.keyValues(KV)["secret"].orEmpty().takeIf { it.isNotEmpty() }?.let { secret ->
@@ -126,6 +168,8 @@ object Api {
             .onFailure { env.log("api", "webhook: ${it.message}") }
     }
 }
+
+private const val MAX_API_BODY = 20_000_000
 
 /** /api/v1/…: answered before the page's own password, with the API's token instead. */
 internal fun Web.api(ex: HttpExchange, method: String, path: List<String>, query: Map<String, String>) {
@@ -144,6 +188,29 @@ internal fun Web.api(ex: HttpExchange, method: String, path: List<String>, query
             put("lastRun", jobs.maxOfOrNull { it.lastRunEpoch } ?: 0)
         })
         rest == listOf("syncs") && method == "GET" -> json(200, JsonArray(jobs.map { Api.job(env, it, it.id in running) }))
+        rest == listOf("metrics") && method == "GET" -> send(ex, 200, Api.metrics(env, running.keys), "text/plain; version=0.0.4")
+        rest == listOf("config") && method == "GET" -> {
+            ex.responseHeaders.add("Content-Disposition", "attachment; filename=\"${com.xlollx.songport.data.ConfigBackup.fileName()}\"")
+            send(ex, 200, com.xlollx.songport.data.ConfigBackup.export(env, "$productName $version (API)", history = query["history"] == "true"), "application/json")
+        }
+        rest == listOf("backup") && method == "GET" -> json(200, buildJsonObject {
+            put("running", Tasks.running(Backups.TITLE))
+            put("lastRun", Backups.lastRun(env))
+            put("schedule", env.store.data.settings.backupSchedule.name.lowercase())
+        })
+        rest == listOf("backup") && method == "POST" -> {
+            if (Tasks.running(Backups.TITLE)) return error(409, "A backup is already running.")
+            val task = Tasks.start(Backups.TITLE, "/tools/backup", { env.log("backup", it) }) { t -> Backups.run(env) { t.progress = it } }
+            json(202, buildJsonObject { put("task", task.id) })
+        }
+        rest.size == 2 && rest[0] == "tasks" && method == "GET" -> {
+            val t = Tasks.get(rest[1]) ?: return error(404, "No task with that id (finished tasks are kept for an hour).")
+            json(200, buildJsonObject {
+                put("id", t.id); put("title", t.title); put("done", t.done); put("progress", t.progress)
+                put("error", t.error?.let { JsonPrimitive(it) } ?: JsonNull)
+                put("finished", if (t.finishedAt > 0) JsonPrimitive(t.finishedAt) else JsonNull)
+            })
+        }
         rest == listOf("syncs", "run-all") && method == "POST" -> {
             val started = jobs.filter { it.enabled }
             started.forEach { runner.start(it) }
@@ -156,6 +223,10 @@ internal fun Web.api(ex: HttpExchange, method: String, path: List<String>, query
                     Api.job(env, job, job.id in running).forEach { (k, v) -> put(k, v) }
                     put("runs", JsonArray(env.store.data.reports.filter { it.jobId == job.id }.take(20).map { Api.run(it, tracks = false) }))
                 })
+                rest.size == 3 && (rest[2] == "enable" || rest[2] == "disable") && method == "POST" -> {
+                    env.store.upsertJob(job.copy(enabled = rest[2] == "enable"))
+                    json(200, Api.job(env, env.store.job(job.id) ?: job, job.id in running))
+                }
                 rest.size == 3 && rest[2] == "run" && method == "POST" -> {
                     val already = job.id in running
                     runner.start(job)
@@ -176,6 +247,16 @@ internal fun Web.api(ex: HttpExchange, method: String, path: List<String>, query
             }
         }))
         rest == listOf("files") && method == "GET" -> json(200, JsonArray(csvFiles().map { JsonPrimitive(it.name) }))
+        rest.size == 2 && rest[0] == "files" && (method == "POST" || method == "PUT") -> {
+            // A playlist file in the body (CSV, M3U, XSPF, JSPF, iTunes XML, JSON, plain text), named by the path.
+            val bytes = ex.requestBody.readNBytes(MAX_API_BODY + 1)
+            if (bytes.size > MAX_API_BODY) return error(413, "Files up to ${MAX_API_BODY / 1_000_000} MB.")
+            val n = runCatching { com.xlollx.songport.providers.LocalFilesProvider.importFile(env, rest[1], com.xlollx.songport.sync.PlaylistFiles.decode(bytes)) }
+                .getOrElse { return error(400, it.message ?: "Could not read the file.") }
+            if (n == 0) return error(400, "No tracks found in the file.")
+            env.log("files", "imported ${rest[1]} through the API: $n tracks")
+            json(201, buildJsonObject { put("tracks", n) })
+        }
         rest.size == 2 && rest[0] == "files" && method == "GET" -> {
             val f = csvFiles().firstOrNull { it.name == rest[1] } ?: return error(404, "No such file.")
             val format = ExportFormat.of(query["format"])

@@ -43,6 +43,7 @@ object Backups {
         copied.exceptionOrNull()?.let { sb.append("""<div class="card err">Copy to the folder: ${h(it.message)}</div>""") }
         env.kv()["last"] = System.currentTimeMillis().toString()
         env.log("backup", "${providers.size} services backed up, $failures failures")
+        Api.notifyBackup(env, providers.size, failures)
         return sb.append("""<p><a href="/connectors/csv">See the files</a></p>""").toString()
     }
 

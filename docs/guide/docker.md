@@ -253,6 +253,13 @@ only the computer itself can reach it.
 | `GET /api/v1/runs/<id>` | A run: added, removed, not found, with the tracks |
 | `GET /api/v1/services` | The services and whether they are connected |
 | `GET /api/v1/files`, `GET /api/v1/files/<name>.csv?format=m3u` | The File playlists, in any export format |
+| `POST /api/v1/files/<name>` | Adds a playlist file sent as the body (CSV, M3U, XSPF, JSPF, iTunes XML, JSON or text), ready to sync (201) |
+| `POST /api/v1/syncs/<id>/enable`, `…/disable` | Turns a sync on or off |
+| `GET /api/v1/backup`, `POST /api/v1/backup` | The last full backup and its schedule; starts one (202, with a task id) |
+| `GET /api/v1/tasks/<id>` | A background task (a backup): progress, done, error |
+| `GET /api/v1/config` (`?history=true`) | The whole set-up as a `.trackhop` file, as *Tools › Backup & restore* saves it |
+| `GET /api/v1/metrics` | Prometheus metrics: syncs, running, and per sync the last run's time, result, added, removed and not found |
+| `GET /health` | `ok`, with no token: for Docker's health check, Uptime Kuma or a reverse proxy |
 
 ```sh
 curl -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/syncs
@@ -260,10 +267,29 @@ curl -X POST -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/sync
 ```
 
 **Webhook.** With an address set in Tools › API, every finished run is POSTed there as JSON
-(`"event": "sync.finished"`, the sync, and the run with its added and not-found tracks). With a
-secret, `X-Trackhop-Signature: sha256=<hex>` is the HMAC-SHA256 of the body. In Home Assistant, a
+(`"event": "sync.finished"`, the sync, and the run with its added and not-found tracks), and every
+full backup as `"event": "backup.finished"` (services, failures). With a secret, `X-Trackhop-Signature: sha256=<hex>` is the HMAC-SHA256 of the body. In Home Assistant, a
 *Webhook* trigger with that address starts an automation (a notification when tracks were not
 found, say); a `rest_command` that POSTs to `/api/v1/syncs/run-all` starts every sync from one.
+
+**Prometheus and Grafana.** `/api/v1/metrics` speaks Prometheus' text format; a scrape job with the
+token is enough:
+
+```yaml
+scrape_configs:
+  - job_name: trackhop
+    metrics_path: /api/v1/metrics
+    bearer_token: th_your_token
+    static_configs:
+      - targets: ["trackhop:8080"]
+```
+
+**Scripts.** Push a playlist file and sync it, or save the set-up every night:
+
+```sh
+curl -X POST -H "Authorization: Bearer $TOKEN" --data-binary @mix.m3u http://127.0.0.1:8080/api/v1/files/mix.m3u
+curl -H "Authorization: Bearer $TOKEN" -o trackhop-$(date +%F).trackhop http://127.0.0.1:8080/api/v1/config
+```
 
 ## Not there yet
 
