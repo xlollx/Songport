@@ -46,7 +46,7 @@ class ShazamSyncFlowTest : FlowTest() {
         assertFalse(job.mirrorRemovals)
 
         // Past the preview of its first run, the card: Shazam's mark before the name.
-        waitNode("the preview's back arrow", hasClickAction() and hasContentDescription(s(R.string.nav_back)), ms = 30_000)
+        waitText(s(R.string.preview_target_new), ms = 30_000)
         back()
         waitNode("Shazam's mark on the card", hasContentDescription(s(R.string.shazam_badge_desc)))
         snapshot("shazam-card")
