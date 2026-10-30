@@ -553,9 +553,12 @@ private fun MainScreen(
                 AppTopBar(stringResource(if (tab == MainActivity.TAB_SYNCS) R.string.app_name else label)) {
                     // What the parts of a sync card and of an account card mean: one "?" for each list.
                     when (tab) {
-                        MainActivity.TAB_SYNCS -> if (data.jobs.isNotEmpty()) com.xlollx.songport.ui.HelpButton(
-                            Helps.status, Helps.route, Helps.figures, Helps.toFix, Helps.runNow, label = stringResource(R.string.help_cards_title),
-                        )
+                        MainActivity.TAB_SYNCS -> {
+                            com.xlollx.songport.ui.CoffeePill()
+                            if (data.jobs.isNotEmpty()) com.xlollx.songport.ui.HelpButton(
+                                Helps.status, Helps.route, Helps.figures, Helps.toFix, Helps.runNow, label = stringResource(R.string.help_cards_title),
+                            )
+                        }
                         MainActivity.TAB_ACCOUNTS -> {
                             val topics = listOfNotNull(
                                 Helps.connectors, Helps.tags, Helps.disconnect, Helps.removeAccount, Helps.test,

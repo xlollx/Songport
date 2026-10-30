@@ -439,3 +439,29 @@ fun playlistDisplayName(playlistId: String?, name: String): String = when (playl
     MusicProvider.RECENT_ID -> stringResource(R.string.recently_played)
     else -> name
 }
+
+/**
+ * A small warm "☕ Ko-fi" pill for the Syncs header, as on the site: visible without shouting. Only
+ * in the GitHub/F-Droid build: the Play build never points to payments outside Google Play.
+ */
+@Composable
+fun CoffeePill() {
+    if (com.xlollx.songport.ads.Ads.enabled || com.xlollx.songport.BuildConfig.KOFI_URL.isBlank()) return
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    val dark = LocalAppDark.current
+    val label = androidx.compose.ui.res.stringResource(com.xlollx.songport.R.string.support_button)
+    Box(
+        Modifier.padding(end = 4.dp).heightIn(min = 48.dp).clip(RoundedCornerShape(999.dp))
+            .clickable(onClickLabel = label) { openSupport(ctx) }
+            .semantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            "☕ Ko-fi",
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+            color = if (dark) Color(0xFFFFDF9E) else Color(0xFF4A2C00),
+            modifier = Modifier.clip(RoundedCornerShape(999.dp)).background(if (dark) Color(0xFF4A3410) else Color(0xFFFFE2A8)).padding(horizontal = 12.dp, vertical = 6.dp),
+        )
+    }
+}
