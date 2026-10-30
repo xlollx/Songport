@@ -5,6 +5,14 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## 0.5.0
+
+- **Radio syncs**: Trackhop listens to an internet radio on the days and in the hours you choose
+  and saves the songs it plays to a playlist on any service. Find the station by name (the
+  radio-browser.info directory) or paste its stream; the songs are read from the titles the
+  station sends (Icecast/Shoutcast), the audio is never kept; announcements, adverts and news are
+  left out. Its card wears a radio and shows what is on air. On the home page: New radio sync.
+
 ## 0.4.3
 
 - **Playlists and tracks through the API**: a connected service's playlists and their tracks;

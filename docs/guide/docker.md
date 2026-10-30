@@ -180,6 +180,30 @@ when you sign out in that browser. Spotify's access token is read from the playe
 the cookies: when that page answers as a signed-out visitor, Trackhop says the cookies have expired.
 Paste fresh ones then.
 
+## Radio syncs
+
+A radio sync listens to an internet radio in the hours you choose and saves the songs it plays to a
+playlist on any service: the morning show's music in your Spotify, a station's evening mix on
+YouTube Music. On the home page, **New radio sync**:
+
+1. **Find the station** by name (from [radio-browser.info](https://www.radio-browser.info), a free
+   directory of some 50,000 radios), or paste its stream's address.
+2. **Pick where the songs go**: a service, then a playlist or a new one.
+3. **Pick the days and the hours.** The same time twice listens all day; an end before the start runs
+   past midnight (Friday 22:00–02:00 listens into Saturday night).
+
+While its window is open, Trackhop reads the title of each song the station sends with its stream
+(Icecast and Shoutcast do, as most internet radios and the streams of FM stations); the audio itself
+is read and dropped, never kept. Each new song is noted once in a File playlist of its own
+(*Radio - <station>*), the station's announcements, adverts and news left out, and the sync takes
+them to your playlist every 10 minutes and once more when the window closes, matched as any sync.
+Its card wears a radio and says what is on air.
+
+A station that sends no titles is reported on the card ("this stream sends no song titles"): try
+another of its streams (an MP3 one rather than HLS), or another station. Listening uses the
+station's bandwidth (128 kbps is about 60 MB an hour), which is why radio syncs live on the server
+and on Trackhop Desktop, which are always on, before the app.
+
 ## Behind a reverse proxy
 
 Point the proxy at port 8080 and set `SONGPORT_URL` to the public `https://` address. Trackhop

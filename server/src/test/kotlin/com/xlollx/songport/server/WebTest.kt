@@ -349,6 +349,24 @@ class WebTest {
         assertEquals(403, api("/api/v1/syncs", token).statusCode())
     }
 
+    @Test fun aRadioSyncIsMadeFromAStreamAndWearsTheRadioMark() {
+        assertTrue(get("/syncs/radio").body().contains("Find a station"))
+        val step = get("/syncs/radio?station=Test%20FM&stream=${java.net.URLEncoder.encode("http://127.0.0.1:9/stream", "UTF-8")}&dst=csv").body()
+        assertTrue(step, step.contains("Start listening") && step.contains("name=\"day1\""))
+        val made = post("/syncs/radio", "station=Test+FM&stream=http%3A%2F%2F127.0.0.1%3A9%2Fstream&dst=csv&dstPlaylist=&day1=on&day2=on&start=08%3A00&end=10%3A00", *origin)
+        assertEquals(303, made.statusCode())
+        val job = env.store.data.jobs.single { it.radio != null }
+        assertEquals(listOf(1, 2), job.radio!!.days)
+        assertEquals(8 * 60, job.radio!!.startMinute)
+        assertEquals("Test FM radio", job.target.playlistName)
+        val home = get("/").body()
+        assertTrue(home.contains("aria-label=\"Radio sync\"") && home.contains("Mon, Tue 08:00–10:00") && home.contains("Radio: Test FM"))
+        // Its hours can change on its page.
+        assertEquals(303, post("/syncs/${job.id}/radio", "day6=on&day7=on&start=12%3A00&end=12%3A00", *origin).statusCode())
+        assertEquals("Weekends, all day", com.xlollx.songport.sync.RadioTitles.describe(env.store.job(job.id)!!.radio!!))
+        assertTrue(post("/syncs/${job.id}/radio", "start=12%3A00&end=13%3A00", *origin).headers().firstValue("Location").orElse("").contains("err="))
+    }
+
     @Test fun configurationExportsAndImportsWithoutSignIns() {
         File(data, "csv").mkdirs()
         File(data, "csv/Keep.csv").writeText("title,artist\nSong,Band\n")

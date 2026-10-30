@@ -105,6 +105,27 @@ data class SyncJob(
      * edited through that sync, and keeps its own name, ignore list and reports.
      */
     val twin: Boolean = false,
+    /**
+     * A radio sync: Trackhop listens to this station in its time window, notes the songs it plays in
+     * the source (a File playlist) and syncs them to the target. Null for every other sync.
+     */
+    val radio: RadioSource? = null,
+)
+
+/**
+ * A radio station a sync listens to: its stream (Icecast/Shoutcast, which send the title of the
+ * song on air with the audio), the days (1 = Monday … 7 = Sunday) and the daily window, in minutes
+ * from midnight, local time. [startMinute] == [endMinute] means all day; an end before the start
+ * runs past midnight.
+ */
+@Serializable
+data class RadioSource(
+    val station: String,
+    val stream: String,
+    val homepage: String? = null,
+    val days: List<Int> = listOf(1, 2, 3, 4, 5, 6, 7),
+    val startMinute: Int = 0,
+    val endMinute: Int = 0,
 )
 
 /**

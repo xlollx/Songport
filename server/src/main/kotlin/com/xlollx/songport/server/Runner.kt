@@ -27,6 +27,9 @@ class Runner(private val env: ServerEnv) {
     /** A scheduled sync that found no network is tried again sooner than its next interval. */
     private val retryAt = ConcurrentHashMap<String, Long>()
 
+    /** Radio syncs listen to their station while their window is open (see RadioListener). */
+    val radio by lazy { RadioListener(env, this) }
+
     fun isRunning(jobId: String) = jobId in SyncState.running.value
 
     /** Starts [job] now unless it is already running (checked and marked at once: posts come in parallel). */
@@ -75,6 +78,7 @@ class Runner(private val env: ServerEnv) {
 
     /** The scheduler: once a minute, the syncs that are due. */
     fun startScheduler() {
+        radio.start()
         scope.launch {
             delay(STARTUP_DELAY_MS)
             while (isActive) {

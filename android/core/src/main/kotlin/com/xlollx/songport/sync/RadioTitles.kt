@@ -1,0 +1,72 @@
+package com.xlollx.songport.sync
+
+import com.xlollx.songport.model.RadioSource
+import com.xlollx.songport.model.Track
+import java.time.LocalDateTime
+
+/**
+ * What a radio says is on air, as a track: the "StreamTitle" Icecast and Shoutcast send between
+ * blocks of audio ("Daft Punk - Digital Love"), with the station's own announcements, adverts and
+ * jingles left out. And whether a moment falls in a radio sync's window. Kotlin puro: coperto dai test.
+ */
+object RadioTitles {
+
+    private val STREAM_TITLE = Regex("""StreamTitle='(.*?)';""", RegexOption.DOT_MATCHES_ALL)
+
+    /** Titles that are the station talking, not a song: adverts, news, jingles, the station's own name. */
+    private val NOT_A_SONG = Regex(
+        """\b(advert|advertising|commercial|adbreak|ad break|jingle|news|notiziario|giornale radio|pubblicit[aà]|spot|werbung|nachrichten|publicit[eé]|anuncio|traffic|weather|meteo|promo|station id|live show|on air|in onda)\b""",
+        RegexOption.IGNORE_CASE,
+    )
+
+    /** The StreamTitle inside an ICY metadata block, or null when there is none. */
+    fun streamTitle(metadata: String): String? = STREAM_TITLE.find(metadata)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotEmpty() }
+
+    /**
+     * [title] as a track ("Artist - Title"), or null when it is not a song: no separator, the
+     * station's name, a URL, an advert or the news.
+     */
+    fun track(title: String, station: String = ""): Track? {
+        val t = title.trim().replace(Regex("""\s+"""), " ")
+        if (t.length < 3 || t.contains("://") || t.contains("www.", ignoreCase = true)) return null
+        if (station.isNotBlank() && t.contains(station.trim(), ignoreCase = true) && !t.contains(" - ")) return null
+        if (NOT_A_SONG.containsMatchIn(t)) return null
+        val sep = listOf(" - ", " – ", " — ", " ~ ").firstOrNull { t.contains(it) } ?: return null
+        val artist = t.substringBefore(sep).trim()
+        val song = t.substringAfter(sep).trim()
+            // "(Radio Edit)" and the like stay; a trailing "[2024]" or "| Station" does not.
+            .replace(Regex("""\s*\|.*$"""), "").replace(Regex("""\s*\[\d{4}]$"""), "").trim()
+        if (artist.isEmpty() || song.isEmpty() || artist.equals(song, ignoreCase = true)) return null
+        if (station.isNotBlank() && (artist.equals(station.trim(), ignoreCase = true) || song.equals(station.trim(), ignoreCase = true))) return null
+        return Track(id = "", title = song, artists = artist.split(Regex("""\s*(?:,|&| feat\.? | ft\.? | x )\s*""", RegexOption.IGNORE_CASE)).filter { it.isNotBlank() })
+    }
+
+    /** The same song, whatever the case or spacing: to note each one once. */
+    fun key(t: Track): String = (t.artists.joinToString(",") + "|" + t.title).lowercase().replace(Regex("""[^\p{L}\p{N}|,]"""), "")
+
+    /** True when [at] falls on one of [r]'s days and inside its daily window. */
+    fun inWindow(r: RadioSource, at: LocalDateTime): Boolean {
+        val minute = at.hour * 60 + at.minute
+        val day = at.dayOfWeek.value
+        if (r.startMinute == r.endMinute) return day in r.days
+        return if (r.startMinute < r.endMinute) day in r.days && minute >= r.startMinute && minute < r.endMinute
+        // Past midnight: the evening part belongs to its day, the small hours to the day before.
+        else if (minute >= r.startMinute) day in r.days
+        else minute < r.endMinute && ((day + 5) % 7 + 1) in r.days
+    }
+
+    /** "Mon–Fri 08:00–10:00", "Every day, all day"… for the card. */
+    fun describe(r: RadioSource): String {
+        val names = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+        val d = r.days.sorted()
+        val days = when {
+            d.size == 7 -> "Every day"
+            d == listOf(1, 2, 3, 4, 5) -> "Mon–Fri"
+            d == listOf(6, 7) -> "Weekends"
+            d.isEmpty() -> "No day"
+            else -> d.joinToString(", ") { names[it - 1] }
+        }
+        fun hm(m: Int) = "%02d:%02d".format(m / 60, m % 60)
+        return if (r.startMinute == r.endMinute) "$days, all day" else "$days ${hm(r.startMinute)}–${hm(r.endMinute)}"
+    }
+}

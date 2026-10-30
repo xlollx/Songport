@@ -159,6 +159,8 @@ button.link{background:none;padding:0;border-radius:0;color:var(--link);text-dec
 label{display:block;margin:12px 0 6px;font-weight:600;font-size:14px}
 input[type=text],input[type=password],input[type=url],input[type=file],select,textarea{width:100%;font:inherit;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .check{display:flex;gap:8px;align-items:center;font-weight:400}
+.check.inline{display:inline-flex;margin-right:10px}
+svg.kind{vertical-align:-3px;color:var(--accent)}
 pre{white-space:pre-wrap;word-break:break-word;font-size:12.5px;background:var(--surface);border-radius:var(--radius);padding:14px;overflow:auto}
 code{background:var(--surface-2);padding:1px 6px;border-radius:6px;word-break:break-all}
 ol li,ul li{margin:4px 0}

@@ -215,7 +215,7 @@ class Web(
         if (connected.size < 1) {
             body.append("""<div class="card">Connect a service first: <a href="/connectors">Services</a>.</div>""")
         }
-        body.append("""<p class="actions"><a class="button" href="/syncs/new">New sync</a></p>""")
+        body.append("""<p class="actions"><a class="button" href="/syncs/new">New sync</a> <a class="button secondary" href="/syncs/radio">$RADIO_ICON New radio sync</a></p>""")
         if (jobs.isEmpty()) body.append("""<p class="muted">No syncs yet.</p>""")
         for (job in jobs) body.append(jobCard(job, running.containsKey(job.id)))
         send(r.ex, 200, page("Syncs", body.toString(), refresh = if (running.isNotEmpty()) 5 else null))
@@ -234,14 +234,18 @@ class Web(
                 (if (last.hasReview()) """ · <a href="/syncs/${q(job.id)}/review/${q(last.id)}">Review</a>""" else "")
         }
         val next = Runner.nextRun(job)?.let { " · next ${Html.date(it)}" } ?: ""
+        val radio = job.radio
+        val onAir = radio?.let { runner.radio.status[job.id] }?.let { st ->
+            if (st.error != null) """<br><span class="err">${h(st.error)}</span>""" else """<br><span class="ok">On air: ${h(st.lastTitle ?: "listening…")}</span>"""
+        } ?: ""
         // A playlist written to File: its CSV, a click away.
         val file = if (Providers.byId(job.target.provider) is LocalFilesProvider) csvFiles().firstOrNull { it.nameWithoutExtension == job.target.playlistId } else null
         val download = file?.let { """ <a class="button secondary" href="/files/${q(it.name)}" download>Download CSV</a>""" } ?: ""
-        return """<div class="card"${Html.jobStyle(job.color)}><div class="row"><div class="who"><span class="pair">${logo(job.source.provider, 36)}${logo(job.target.provider, 36)}</span><div><a href="/syncs/${q(job.id)}"><b>${h(job.name)}</b></a><br>
-<span class="muted">${h(label(job.source.provider))}: ${h(job.source.playlistName)} → ${h(label(job.target.provider))}: ${h(job.target.playlistName.ifBlank { "new playlist" })}</span></div></div></div>
+        return """<div class="card"${Html.jobStyle(job.color)}><div class="row"><div class="who"><span class="pair">${logo(job.source.provider, 36)}${logo(job.target.provider, 36)}</span><div><a href="/syncs/${q(job.id)}">${if (radio != null) "$RADIO_ICON " else ""}<b>${h(job.name)}</b></a><br>
+<span class="muted">${if (radio != null) "Radio: ${h(radio.station)}" else "${h(label(job.source.provider))}: ${h(job.source.playlistName)}"} → ${h(label(job.target.provider))}: ${h(job.target.playlistName.ifBlank { "new playlist" })}</span></div></div></div>
 <div>
-<span class="badge">${h(scheduleName(job.schedule))}</span>${if (job.mirrorRemovals) " <span class=\"badge\">mirror</span>" else ""}${if (!job.enabled) " <span class=\"badge\">off</span>" else ""}
-<span class="muted">Last run ${Html.date(job.lastRunEpoch)}$next</span>
+<span class="badge">${h(if (radio != null) com.xlollx.songport.sync.RadioTitles.describe(radio) else scheduleName(job.schedule))}</span>${if (job.mirrorRemovals) " <span class=\"badge\">mirror</span>" else ""}${if (!job.enabled) " <span class=\"badge\">off</span>" else ""}
+<span class="muted">Last run ${Html.date(job.lastRunEpoch)}$next</span>$onAir
 <div class="row"><div>$status</div><div class="actions">${if (isRunning) Html.postButton("/syncs/${q(job.id)}/stop", "Stop", "secondary") else Html.postButton("/syncs/${q(job.id)}/run", "Run now")}$download</div></div></div></div>"""
     }
 
@@ -476,6 +480,7 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
     private fun syncs(r: Req, rest: List<String>) {
         when {
             rest == listOf("new") -> newSync(r)
+            rest == listOf("radio") -> if (r.method == "POST") radioCreate(r) else radioNew(r)
             rest == listOf("all") && r.method == "POST" -> {
                 env.store.data.jobs.filter { it.enabled }.forEach { runner.start(it) }
                 redirect(r.ex, "/")
@@ -499,6 +504,14 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
                         val color = r.form["color"]?.takeIf { it in Html.JOB_COLORS }
                         env.store.upsertJob(job.copy(name = name, schedule = s, mirrorRemovals = r.form["mirror"] == "on", color = color))
                         redirect(r.ex, "$back?ok=${q("Saved.")}")
+                    }
+                    "radio" -> {
+                        val base = job.radio ?: return redirect(r.ex, back)
+                        val (radio, problem) = radioWindow(r.form, base)
+                        if (radio == null) return redirect(r.ex, "$back?err=${q(problem!!)}")
+                        env.store.upsertJob(job.copy(radio = radio))
+                        runner.radio.tick(java.time.LocalDateTime.now())
+                        redirect(r.ex, "$back?ok=${q("Saved: ${com.xlollx.songport.sync.RadioTitles.describe(radio)}.")}")
                     }
                     "delete" -> { env.store.deleteJob(job.id); redirect(r.ex, "/") }
                     else -> send(r.ex, 404, page("Not found", ""))
@@ -590,6 +603,7 @@ ${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input 
         val running = runner.isRunning(job.id)
         val body = StringBuilder(notice(r))
         body.append(jobCard(job, running))
+        body.append(radioPanel(job))
         val id = q(job.id)
         body.append("""<div class="card actions">""")
         if (running) {
@@ -600,8 +614,8 @@ ${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input 
         body.append("</div>")
         val schedules = Schedule.values().joinToString("") { """<option value="${it.name}"${if (it == job.schedule) " selected" else ""}>${h(scheduleName(it))}</option>""" }
         body.append(
-            """<form method="post" action="/syncs/$id/schedule" class="card"><label>Name</label><input type="text" name="name" value="${h(job.name)}"><label>Schedule</label><select name="schedule">$schedules</select>
-<label class="check"><input type="checkbox" name="mirror"${if (job.mirrorRemovals) " checked" else ""}> Mirror removals</label>
+            """<form method="post" action="/syncs/$id/schedule" class="card"><label>Name</label><input type="text" name="name" value="${h(job.name)}">${if (job.radio != null) """<input type="hidden" name="schedule" value="MANUAL">""" else """<label>Schedule</label><select name="schedule">$schedules</select>
+<label class="check"><input type="checkbox" name="mirror"${if (job.mirrorRemovals) " checked" else ""}> Mirror removals</label>"""}
 <label>Colour</label><div class="swatches"><label title="None"><input type="radio" name="color" value=""${if (job.color == null) " checked" else ""} aria-label="None"><span class="dot none"></span></label>${Html.JOB_COLORS.entries.joinToString("") { (k, v) -> """<label title="$k"><input type="radio" name="color" value="$k"${if (job.color == k) " checked" else ""} aria-label="$k"><span class="dot" style="background:${v.first}"></span></label>""" }}</div>
 <p><button class="secondary">Save</button></p></form>""",
         )

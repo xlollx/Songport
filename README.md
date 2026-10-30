@@ -83,6 +83,9 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
   [Docker guide](https://xlollx.github.io/Trackhop/guide/docker). To update: `docker pull ghcr.io/xlollx/trackhop`,
   then remove and start the container again (the data stays in its volume).
+- Desktop and Docker also have **radio syncs**: Trackhop listens to an internet radio in the hours
+  you choose and saves the songs it plays to a playlist on any service
+  ([how](https://xlollx.github.io/Trackhop/guide/docker#radio-syncs)).
 - Desktop and Docker also have a **REST API and a webhook**, for Home Assistant, n8n, Node-RED or a
   script: list and start syncs, read their results, add and remove tracks in any connected
   service's playlists, get notified when a run ends. See

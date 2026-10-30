@@ -77,6 +77,15 @@ object Api {
         put("lastRun", if (j.lastRunEpoch > 0) JsonPrimitive(j.lastRunEpoch) else JsonNull)
         put("nextRun", Runner.nextRun(j)?.let { JsonPrimitive(it) } ?: JsonNull)
         put("lastResult", j.lastReportId?.let { env.store.report(it) }?.let { run(it, tracks = false) } ?: JsonNull)
+        j.radio?.let { r ->
+            put("radio", buildJsonObject {
+                put("station", r.station); put("stream", r.stream)
+                put("window", com.xlollx.songport.sync.RadioTitles.describe(r))
+                put("days", buildJsonArray { r.days.forEach { add(it) } })
+                put("start", "%02d:%02d".format(r.startMinute / 60, r.startMinute % 60))
+                put("end", "%02d:%02d".format(r.endMinute / 60, r.endMinute % 60))
+            })
+        }
     }
 
     private fun ref(env: ServerEnv, provider: String, id: String?, name: String) = buildJsonObject {
