@@ -1240,7 +1240,7 @@
     <string name="radio_search">Search</string>
     <string name="radio_searching">Searching…</string>
     <string name="radio_search_none">No station by that name. Try another spelling, or paste its stream below.</string>
-    <string name="radio_search_failed">The radio directory did not answer: %1$s</string>
+    <string name="radio_search_failed">The station directory (radio-browser.info) is not answering right now. Try again in a while, or paste the station\'s stream address below.</string>
     <string name="radio_stream_label">Or paste the stream\'s address</string>
     <string name="radio_stream_address">Stream address</string>
     <string name="radio_station_name">Station name</string>

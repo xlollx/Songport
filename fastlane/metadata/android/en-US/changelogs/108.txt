@@ -1,0 +1,1 @@
+Finding a radio by name works again when the station directory's usual servers are down, and says clearly when the directory itself is not answering.

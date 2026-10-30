@@ -1,0 +1,1 @@
+Die Suche nach einem Sender funktioniert wieder, wenn die üblichen Server des Radioverzeichnisses ausfallen, und sagt deutlich, wenn das Verzeichnis selbst nicht antwortet.

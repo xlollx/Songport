@@ -1,0 +1,1 @@
+Wyszukiwanie stacji po nazwie znów działa, gdy zwykłe serwery katalogu są niedostępne, i jasno informuje, gdy nie odpowiada sam katalog.

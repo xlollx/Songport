@@ -1,0 +1,1 @@
+Buscar una radio por su nombre vuelve a funcionar cuando caen los servidores habituales del directorio, y avisa con claridad cuando es el propio directorio el que no responde.

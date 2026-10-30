@@ -1248,7 +1248,7 @@
     <string name="radio_search">Rechercher</string>
     <string name="radio_searching">Recherche…</string>
     <string name="radio_search_none">Aucune station de ce nom. Essayez une autre orthographe, ou collez son flux ci-dessous.</string>
-    <string name="radio_search_failed">L\'annuaire des radios n\'a pas répondu : %1$s</string>
+    <string name="radio_search_failed">L\'annuaire des radios (radio-browser.info) ne répond pas pour le moment. Réessaie plus tard, ou colle l\'adresse du flux de la station ci-dessous.</string>
     <string name="radio_stream_label">Ou collez l\'adresse du flux</string>
     <string name="radio_stream_address">Adresse du flux</string>
     <string name="radio_station_name">Nom de la station</string>

@@ -1,0 +1,1 @@
+La recherche d'une radio par son nom fonctionne de nouveau quand les serveurs habituels de l'annuaire sont en panne, et indique clairement quand l'annuaire lui-même ne répond pas.

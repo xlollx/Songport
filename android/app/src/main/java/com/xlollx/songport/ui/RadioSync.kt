@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.xlollx.songport.R
+import com.xlollx.songport.data.Diagnostics
 import com.xlollx.songport.model.RadioSource
 import com.xlollx.songport.model.SyncJob
 import com.xlollx.songport.sync.RadioDirectory
@@ -155,7 +156,8 @@ internal fun RadioStationPicker(onPicked: (RadioDirectory.Station) -> Unit) {
                 throw e
             } catch (e: Exception) {
                 results = null
-                error = ctx.getString(R.string.radio_search_failed, e.message ?: ctx.getString(R.string.error_generic))
+                Diagnostics.log(ctx, "radio", "station search failed: ${(e as? RadioDirectory.Unavailable)?.detail ?: e.message}")
+                error = ctx.getString(R.string.radio_search_failed)
             }
             busy = false
         }

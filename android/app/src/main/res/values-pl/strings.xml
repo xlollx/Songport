@@ -1286,7 +1286,7 @@
     <string name="radio_search">Szukaj</string>
     <string name="radio_searching">Szukanie…</string>
     <string name="radio_search_none">Brak stacji o tej nazwie. Spróbuj innej pisowni albo wklej poniżej jej strumień.</string>
-    <string name="radio_search_failed">Katalog stacji radiowych nie odpowiedział: %1$s</string>
+    <string name="radio_search_failed">Katalog stacji radiowych (radio-browser.info) nie odpowiada w tej chwili. Spróbuj ponownie za chwilę albo wklej poniżej adres strumienia stacji.</string>
     <string name="radio_stream_label">Albo wklej adres strumienia</string>
     <string name="radio_stream_address">Adres strumienia</string>
     <string name="radio_station_name">Nazwa stacji</string>

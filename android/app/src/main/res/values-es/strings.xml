@@ -1248,7 +1248,7 @@
     <string name="radio_search">Buscar</string>
     <string name="radio_searching">Buscando…</string>
     <string name="radio_search_none">No hay ninguna emisora con ese nombre. Prueba a escribirlo de otra forma o pega su emisión abajo.</string>
-    <string name="radio_search_failed">El directorio de radios no respondió: %1$s</string>
+    <string name="radio_search_failed">El directorio de radios (radio-browser.info) no responde ahora mismo. Vuelve a intentarlo en un rato o pega abajo la dirección del stream de la emisora.</string>
     <string name="radio_stream_label">O pega la dirección de la emisión</string>
     <string name="radio_stream_address">Dirección de la emisión</string>
     <string name="radio_station_name">Nombre de la emisora</string>

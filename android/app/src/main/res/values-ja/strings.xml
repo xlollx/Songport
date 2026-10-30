@@ -1218,7 +1218,7 @@
     <string name="radio_search">検索</string>
     <string name="radio_searching">検索中…</string>
     <string name="radio_search_none">その名前の放送局はありません。別の綴りを試すか、下にストリームを貼り付けてください。</string>
-    <string name="radio_search_failed">ラジオのディレクトリが応答しませんでした: %1$s</string>
+    <string name="radio_search_failed">ラジオのディレクトリ（radio-browser.info）が現在応答していません。しばらくしてからもう一度試すか、下にストリームのアドレスを貼り付けてください。</string>
     <string name="radio_stream_label">またはストリームのアドレスを貼り付け</string>
     <string name="radio_stream_address">ストリームのアドレス</string>
     <string name="radio_station_name">放送局名</string>

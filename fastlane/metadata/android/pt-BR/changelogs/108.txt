@@ -1,0 +1,1 @@
+A busca de uma rádio pelo nome volta a funcionar quando os servidores habituais do diretório caem, e avisa com clareza quando é o próprio diretório que não responde.

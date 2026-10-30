@@ -1217,7 +1217,7 @@
     <string name="radio_search">검색</string>
     <string name="radio_searching">검색 중…</string>
     <string name="radio_search_none">그 이름의 방송국이 없습니다. 다른 철자로 시도하거나 아래에 스트림을 붙여 넣으세요.</string>
-    <string name="radio_search_failed">라디오 디렉터리가 응답하지 않았습니다: %1$s</string>
+    <string name="radio_search_failed">라디오 디렉터리(radio-browser.info)가 지금 응답하지 않습니다. 잠시 후 다시 시도하거나 아래에 방송국의 스트림 주소를 붙여 넣으세요.</string>
     <string name="radio_stream_label">또는 스트림 주소 붙여 넣기</string>
     <string name="radio_stream_address">스트림 주소</string>
     <string name="radio_station_name">방송국 이름</string>

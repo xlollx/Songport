@@ -1,0 +1,1 @@
+La ricerca di una radio per nome funziona di nuovo quando i soliti server dell'elenco radio sono giù, e dice chiaramente quando è l'elenco stesso a non rispondere.

@@ -1218,7 +1218,7 @@
     <string name="radio_search">搜索</string>
     <string name="radio_searching">正在搜索…</string>
     <string name="radio_search_none">没有这个名字的电台。试试别的拼写，或在下方粘贴它的直播流。</string>
-    <string name="radio_search_failed">电台目录没有响应：%1$s</string>
+    <string name="radio_search_failed">电台目录（radio-browser.info）现在没有响应。请稍后再试，或在下方粘贴电台的流地址。</string>
     <string name="radio_stream_label">或粘贴直播流的地址</string>
     <string name="radio_stream_address">直播流地址</string>
     <string name="radio_station_name">电台名称</string>

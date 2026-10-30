@@ -1284,7 +1284,7 @@
     <string name="radio_search">Найти</string>
     <string name="radio_searching">Поиск…</string>
     <string name="radio_search_none">Станции с таким названием нет. Попробуйте другое написание или вставьте её поток ниже.</string>
-    <string name="radio_search_failed">Каталог радиостанций не ответил: %1$s</string>
+    <string name="radio_search_failed">Каталог радиостанций (radio-browser.info) сейчас не отвечает. Попробуйте позже или вставьте адрес потока станции ниже.</string>
     <string name="radio_stream_label">Или вставьте адрес потока</string>
     <string name="radio_stream_address">Адрес потока</string>
     <string name="radio_station_name">Название станции</string>

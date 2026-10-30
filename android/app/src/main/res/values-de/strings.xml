@@ -1240,7 +1240,7 @@
     <string name="radio_search">Suchen</string>
     <string name="radio_searching">Suche läuft…</string>
     <string name="radio_search_none">Kein Sender mit diesem Namen. Versuche eine andere Schreibweise oder füge unten seinen Stream ein.</string>
-    <string name="radio_search_failed">Das Radioverzeichnis hat nicht geantwortet: %1$s</string>
+    <string name="radio_search_failed">Das Radioverzeichnis (radio-browser.info) antwortet gerade nicht. Versuche es später noch einmal oder füge unten die Stream-Adresse des Senders ein.</string>
     <string name="radio_stream_label">Oder füge die Adresse des Streams ein</string>
     <string name="radio_stream_address">Stream-Adresse</string>
     <string name="radio_station_name">Name des Senders</string>

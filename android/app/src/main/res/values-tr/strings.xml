@@ -1238,7 +1238,7 @@
     <string name="radio_search">Ara</string>
     <string name="radio_searching">Aranıyor…</string>
     <string name="radio_search_none">Bu adda bir istasyon yok. Başka bir yazımı dene ya da yayın adresini aşağıya yapıştır.</string>
-    <string name="radio_search_failed">Radyo dizini yanıt vermedi: %1$s</string>
+    <string name="radio_search_failed">Radyo dizini (radio-browser.info) şu anda yanıt vermiyor. Biraz sonra tekrar dene ya da istasyonun yayın adresini aşağıya yapıştır.</string>
     <string name="radio_stream_label">Ya da yayının adresini yapıştır</string>
     <string name="radio_stream_address">Yayın adresi</string>
     <string name="radio_station_name">İstasyon adı</string>
