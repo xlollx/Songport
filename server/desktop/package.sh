@@ -12,8 +12,8 @@ set -euo pipefail
 root=$(cd "$(dirname "$0")/../.." && pwd)
 cd "$root"
 version=$(tr -d '[:space:]' < server/VERSION)
-lib=server/build/install/songport-server/lib
-[ -f "$lib/songport-server-$version.jar" ] || { echo "Run 'gradle -p server installDist' first" >&2; exit 1; }
+built=server/build/install/songport-server/lib
+[ -f "$built/songport-server-$version.jar" ] || { echo "Run 'gradle -p server installDist desktopLibs' first" >&2; exit 1; }
 work=server/build/desktop
 rm -rf "$work" && mkdir -p "$work" dist
 name="Trackhop-Desktop-v$version"
@@ -22,6 +22,11 @@ case "$(uname -s)" in
   Linux) os=linux; icon=server/desktop/trackhop.png ;;
   *) echo "Windows or Linux only for now" >&2; exit 1 ;;
 esac
+# The jars, and SWT for this system: Desktop's own window (DesktopWindow.kt), not in the Docker image.
+lib="$work/lib"
+mkdir -p "$lib" && cp "$built"/*.jar "$lib"/
+ls server/build/desktop-libs/$os/*.jar > /dev/null 2>&1 || { echo "Run 'gradle -p server desktopLibs' first" >&2; exit 1; }
+cp server/build/desktop-libs/$os/*.jar "$lib"/
 
 # What the jars use (jdeps --print-module-deps), plus TLS's elliptic curves, the XML the texts are
 # read from, other charsets, and the formats of the app's languages.
@@ -29,7 +34,7 @@ modules=java.base,java.desktop,java.instrument,java.logging,java.net.http,java.x
 locales=en,it,fr,de,es,pt,pl,ru,tr,zh,ja,ko
 
 # The app itself: the jars, the launcher (no console window on Windows) and a trimmed runtime.
-jpackage --type app-image --name Trackhop --dest "$work" \
+jpackage --type app-image --name Trackhop --dest "$work/out" \
   --input "$lib" --main-jar "songport-server-$version.jar" --main-class com.xlollx.songport.server.DesktopKt \
   --app-version "$version" --vendor xlollx --copyright "GPL-3.0-only" \
   --description "Trackhop Desktop (alpha): keeps playlists in sync between music services" \
@@ -40,20 +45,21 @@ jpackage --type app-image --name Trackhop --dest "$work" \
 if [ "$os" = windows ]; then
   # PowerShell wants Windows paths, not Git Bash's /d/a/….
   zip=$(cygpath -w "$root/dist/$name-windows.zip")
-  (cd "$work" && powershell -NoProfile -Command "Compress-Archive -Path Trackhop -DestinationPath '$zip' -Force")
+  (cd "$work/out" && powershell -NoProfile -Command "Compress-Archive -Path Trackhop -DestinationPath '$zip' -Force")
   # The upgrade code stays the same forever: a newer MSI replaces the installed one.
-  jpackage --type msi --app-image "$work/Trackhop" --name Trackhop --dest "$work" \
+  jpackage --type msi --app-image "$work/out/Trackhop" --name Trackhop --dest "$work" \
     --app-version "$version" --vendor xlollx --description "Trackhop Desktop (alpha)" \
     --win-per-user-install --win-menu --win-menu-group Trackhop --win-shortcut \
     --win-upgrade-uuid 5b8f3c1e-7a2d-4e9b-9c61-2f0d8a4b7e13 \
     --about-url https://xlollx.github.io/Trackhop/guide/desktop
   mv "$work"/Trackhop-*.msi "dist/$name-windows.msi"
 else
-  tar -C "$work" -czf "dist/$name-linux.tar.gz" Trackhop
-  jpackage --type deb --app-image "$work/Trackhop" --name Trackhop --dest "$work" \
+  tar -C "$work/out" -czf "dist/$name-linux.tar.gz" Trackhop
+  jpackage --type deb --app-image "$work/out/Trackhop" --name Trackhop --dest "$work" \
     --app-version "$version" --vendor xlollx --description "Trackhop Desktop (alpha)" \
     --linux-package-name trackhop --linux-shortcut --linux-menu-group "AudioVideo;Audio" \
-    --linux-app-category sound --linux-deb-maintainer "xlollx@users.noreply.github.com" \
+    --linux-app-category sound \
+    --linux-package-deps "libwebkit2gtk-4.1-0 | libwebkit2gtk-4.0-37" --linux-deb-maintainer "xlollx@users.noreply.github.com" \
     --about-url https://xlollx.github.io/Trackhop/guide/desktop
   mv "$work"/trackhop_*.deb "dist/$name-linux.deb"
 fi

@@ -64,7 +64,7 @@ jobs:
         run: sudo apt-get install -y -q fakeroot
 
       - name: Tests and build
-        run: gradle -p server test installDist --no-daemon --stacktrace
+        run: gradle -p server test installDist desktopLibs --no-daemon --stacktrace
 
       - name: Package
         run: server/desktop/package.sh
@@ -75,7 +75,7 @@ jobs:
           APPDATA: ${{ runner.temp }}/appdata
           XDG_DATA_HOME: ${{ runner.temp }}/appdata
         run: |
-          if [ "$RUNNER_OS" = Windows ]; then app=server/build/desktop/Trackhop/Trackhop.exe; else app=server/build/desktop/Trackhop/bin/Trackhop; fi
+          if [ "$RUNNER_OS" = Windows ]; then app=server/build/desktop/out/Trackhop/Trackhop.exe; else app=server/build/desktop/out/Trackhop/bin/Trackhop; fi
           "$app" --background &
           for i in $(seq 1 60); do curl -sf http://127.0.0.1:8642/health && break; sleep 1; done
           curl -sf http://127.0.0.1:8642/ | grep -q "Trackhop Desktop"

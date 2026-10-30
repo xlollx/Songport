@@ -55,6 +55,8 @@ class Web(
     private val edition: Html.Edition = Html.Edition.SERVER,
     /** Desktop: stops the app (the page's "Quit" button). */
     private val onQuit: (() -> Unit)? = null,
+    /** Desktop: brings its window up (a second start asks the running one). */
+    private val onShow: (() -> Unit)? = null,
 ) {
     /** The addresses a desktop install answers to; null (a server) answers to any. */
     @Volatile private var localHosts: Set<String>? = null
@@ -123,6 +125,7 @@ class Web(
             path == listOf("log") -> log(r)
             path == listOf("callback") -> callback(r)
             path == listOf("quit") && onQuit != null && method == "POST" -> quit(r, onQuit)
+            path == listOf("show") && onShow != null && method == "POST" -> { onShow(); send(ex, 200, "ok", "text/plain") }
             path[0] == "connectors" -> connectors(r, path.drop(1))
             path.size == 2 && path[0] == "files" && method == "GET" -> download(r, path[1])
             path.size == 2 && path[0] == "files" && method == "POST" -> fileAction(r, path[1])
@@ -605,6 +608,24 @@ ${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input 
 
     private fun log(r: Req) {
         val lines = Log.recent().takeLast(500).reversed()
-        send(r.ex, 200, page("Log", """<p class="muted">Newest first. The full log is <code>songport.log</code> in the data folder, and <code>docker logs</code> shows it too.</p><pre>${h(lines.joinToString("\n"))}</pre>"""))
+        send(r.ex, 200, page("Log", """<div class="card row"><div><b>Something wrong?</b><br><span class="muted">Opens a report on GitHub with the version and the last lines of this log filled in. Read it before you send it: remove anything you would rather not share.</span></div><a class="button" href="${h(issueUrl())}" target="_blank" rel="noopener">Report an issue on GitHub</a></div>
+<p class="muted">Newest first. The full log is <code>songport.log</code> in the data folder${if (edition == Html.Edition.SERVER) ", and <code>docker logs</code> shows it too" else ""}.</p><pre>${h(lines.joinToString("\n"))}</pre>"""))
+    }
+
+    /** A new GitHub issue with the version, the system and the log's last lines, short enough for a link. */
+    internal fun issueUrl(): String {
+        val head = "**${edition.product} $version**, ${System.getProperty("os.name")} ${System.getProperty("os.arch")}, Java ${System.getProperty("java.version")}\n\n" +
+            "What happened, and what you expected:\n\n\n<details><summary>Log (last lines)</summary>\n\n```\n"
+        val tail = "\n```\n</details>\n"
+        val lines = ArrayList<String>()
+        var size = head.length + tail.length
+        // Newest last, and no more than fits a link: GitHub refuses addresses past about 8 000 characters.
+        for (line in Log.recent().asReversed()) {
+            val cost = q(line).length + 3
+            if (size + cost > 5_500 || lines.size >= 80) break
+            lines.add(0, line); size += cost
+        }
+        val title = "${edition.product} ${version.substringBefore(' ')}: "
+        return "https://github.com/xlollx/Trackhop/issues/new?title=${q(title)}&labels=${q("server")}&body=${q(head + lines.joinToString("\n") + tail)}"
     }
 }

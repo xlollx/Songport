@@ -72,6 +72,16 @@ object DesktopApp {
         runCatching { ProcessBuilder(cmd).start() }.onFailure { Log.add("desktop", "could not open the browser: ${it.message}; open $url") }
     }
 
+    /** True when this build carries SWT (Desktop's packages do; Docker and tests do not). */
+    val swtAvailable: Boolean get() = runCatching { Class.forName("org.eclipse.swt.widgets.Display") }.isSuccess
+
+    /** Asks the Trackhop already running on [baseUrl] to show its window; false if it did not answer. */
+    fun askToShow(baseUrl: String): Boolean = runCatching {
+        val client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build()
+        val req = HttpRequest.newBuilder(URI("$baseUrl/show")).timeout(Duration.ofSeconds(3)).header("Origin", baseUrl).POST(HttpRequest.BodyPublishers.noBody()).build()
+        client.send(req, HttpResponse.BodyHandlers.discarding()).statusCode() in 200..399
+    }.getOrDefault(false)
+
     fun error(message: String) {
         Log.add("desktop", message)
         if (!GraphicsEnvironment.isHeadless()) runCatching { JOptionPane.showMessageDialog(null, message, "Trackhop", JOptionPane.ERROR_MESSAGE) }
@@ -120,15 +130,18 @@ fun main(args: Array<String>) {
     val config = DesktopApp.config(System.getenv())
     // Already running (a second click on the icon): show it and leave.
     if (DesktopApp.isRunning(config.baseUrl)) {
-        if (!background) DesktopApp.openBrowser(config.baseUrl)
+        if (!background && !DesktopApp.askToShow(config.baseUrl)) DesktopApp.openBrowser(config.baseUrl)
         return
     }
     var tray: TrayIcon? = null
+    var window: DesktopWindow? = null
     val quit = {
+        window?.quit()
         tray?.let { t -> runCatching { SystemTray.getSystemTray().remove(t) } }
         exitProcess(0)
     }
-    val app = launch(config, Html.Edition.DESKTOP, onQuit = quit)
+    val show = { window?.showLater() ?: DesktopApp.openBrowser(config.baseUrl) }
+    val app = launch(config, Html.Edition.DESKTOP, onQuit = quit, onShow = show)
     try {
         app.web.start(config.port, loopbackOnly = true)
     } catch (e: BindException) {
@@ -136,6 +149,17 @@ fun main(args: Array<String>) {
         exitProcess(1)
     }
     app.started(warnNoPassword = false)
+    // Its own window where the package carries SWT and the system has a web engine; else the browser.
+    if (DesktopApp.swtAvailable && !GraphicsEnvironment.isHeadless()) {
+        val w = runCatching { DesktopWindow(config.baseUrl) }.onFailure { Log.add("desktop", "no window: ${it.message}") }.getOrNull()
+        if (w != null) {
+            window = w
+            val hasTray = w.installTray()
+            if ((!background || !hasTray) && !w.show()) DesktopApp.openBrowser(config.baseUrl)
+            w.run()
+            return
+        }
+    }
     tray = installTray(config.baseUrl, quit)
     if (!background || tray == null) DesktopApp.openBrowser(config.baseUrl)
 }

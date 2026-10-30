@@ -81,7 +81,7 @@ class Launched(val env: ServerEnv, val runner: Runner, val web: Web, val version
     }
 }
 
-fun launch(config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null): Launched {
+fun launch(config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null, onShow: (() -> Unit)? = null): Launched {
     config.dataDir.mkdirs()
     Log.init(config.dataDir)
     fun resource(name: String) = Config::class.java.getResourceAsStream(name)?.use { String(it.readBytes()).trim() }
@@ -95,6 +95,6 @@ fun launch(config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null):
     if (!env.store.data.settings.connectorsInit) env.store.updateSettings { it.copy(connectorsInit = true) }
 
     val runner = Runner(env)
-    val web = Web(env, runner, Auth(env), config.password, version, edition, onQuit)
+    val web = Web(env, runner, Auth(env), config.password, version, edition, onQuit, onShow)
     return Launched(env, runner, web, version, config, edition)
 }
