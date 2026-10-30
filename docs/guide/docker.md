@@ -94,12 +94,14 @@ playlist files. Back that folder up and you have backed up Trackhop.
 | SoundCloud | yes, as a source (unofficial) | Nothing: pick it as the source of a new sync and paste a public set or likes link. [More](soundcloud) |
 | CSV files | yes | Put them in `csv/` inside the data volume |
 | YouTube Music | yes (unofficial, alpha) | The cookies of a browser where you are signed in: [see below](#youtube-music-unofficial) |
-| Amazon Music, Spotify (web), Apple Music | no | See below |
+| Spotify (web) | yes (unofficial, alpha) | The `sp_dc` cookie of a browser where you are signed in: [see below](#spotify-and-deezer-without-a-key-unofficial) |
+| Deezer (web) | yes (unofficial, alpha) | The `arl` cookie of a browser where you are signed in: [see below](#spotify-and-deezer-without-a-key-unofficial) |
+| Amazon Music, Apple Music | no | See below |
 
-**Why not all of them.** The other quick routes (Amazon Music, Spotify without a key, Apple Music
-without a key) work by running the service's own web player inside the phone's browser engine:
-there is no such browser on a server. Apple Music's official route signs in with Apple's MusicKit
-JS, which needs one too. Keep those syncs in the app.
+**Why not all of them.** The other quick routes (Amazon Music, Apple Music without a key) work by
+running the service's own web player inside the phone's browser engine: there is no such browser
+on a server. Apple Music's official route signs in with Apple's MusicKit JS, which needs one too.
+Keep those syncs in the app.
 
 ## YouTube Music (unofficial)
 
@@ -155,6 +157,25 @@ the steps and shows the exact redirect address to paste. The rules each service 
 
 Signing in from another computer than the server is fine, as long as `SONGPORT_URL` is the
 address that computer's browser uses.
+
+## Spotify and Deezer without a key (unofficial)
+
+*Spotify (web)* and *Deezer (web)* talk to the web players' own backends, as the app's connectors of
+the same name do, signed in with the cookies of a browser where you are signed in. **Not an
+official API**: against the services' terms, they can stop working when the players change, and
+they are an **alpha** on the server.
+
+**Copy the cookie** (a desktop browser): sign in on [open.spotify.com](https://open.spotify.com)
+or [deezer.com](https://www.deezer.com), open the developer tools (<kbd>F12</kbd>), then
+**Application** (Firefox: **Storage**) › **Cookies** › `https://open.spotify.com` (or
+`https://www.deezer.com`). Copy `sp_dc` for Spotify (with `sp_key` and `sp_t` when listed) or `arl`
+for Deezer as `name=value`, several joined by `; `, and paste them in Trackhop, **Services**, in the
+connector's *Cookies*. The `cookie:` header of a request, a `cookies.txt` or a JSON export work too.
+
+The same cautions as YouTube Music apply: the cookies are as good as your password, and they end
+when you sign out in that browser. Spotify's access token is read from the player page fetched with
+the cookies: when that page answers as a signed-out visitor, Trackhop says the cookies have expired.
+Paste fresh ones then.
 
 ## Behind a reverse proxy
 

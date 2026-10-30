@@ -35,7 +35,7 @@ import java.net.URLEncoder
  * Same service id and the same mapping as the app's connector (YouTubeBridgeProvider and the
  * Bridge's methods), so a sync means the same thing on both.
  */
-class YtmServerProvider(override val slot: String = "") : MusicProvider {
+class YtmServerProvider(override val slot: String = "") : CookieConnector {
     override val serviceId = SERVICE
     override val displayName = "YouTube Music"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.EASY
@@ -58,6 +58,8 @@ class YtmServerProvider(override val slot: String = "") : MusicProvider {
     override val revokeUrl = "https://myaccount.google.com/device-activity"
     // As in the app: two searches at a time, paced by the client; more only gets the address blocked.
     override val searchParallelism = 2
+    override val cookieSite = "music.youtube.com"
+    override val cookieExample = "SAPISID=…; __Secure-3PAPISID=…; SID=…"
 
     override fun isConfigured(ctx: Env): Boolean = true
     override fun isConnected(ctx: Env): Boolean = session(ctx) != null
@@ -71,7 +73,7 @@ class YtmServerProvider(override val slot: String = "") : MusicProvider {
      * Stores the pasted cookies (a `Cookie` header, cookies.txt or a JSON export) and checks them with
      * one call. Fresh cookies also end a Google block: the user was told to pass Google's check first.
      */
-    suspend fun connect(ctx: Env, pasted: String, userAgent: String?) {
+    override suspend fun connect(ctx: Env, pasted: String, userAgent: String?) {
         val cookies = YtmCookies.parse(pasted) ?: throw ProviderException(
             "These cookies hold no signed-in YouTube session (no SAPISID cookie). Copy them from a browser where you are signed in to music.youtube.com.",
         )

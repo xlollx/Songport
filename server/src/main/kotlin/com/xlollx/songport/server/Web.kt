@@ -296,7 +296,7 @@ class Web(
                 redirect(r.ex, "$back?ok=${q("Saved.")}")
             }
             "connect" -> {
-                if (provider is YtmServerProvider) {
+                if (provider is CookieConnector) {
                     val result = runCatching { runBlocking { provider.connect(env, r.form["cookies"].orEmpty(), r.form["userAgent"]) } }
                     result.exceptionOrNull()?.let { return redirect(r.ex, "$back?err=${q(it.message ?: it.javaClass.simpleName)}") }
                     env.log("auth", "${provider.id} connected (pasted cookies)")
@@ -337,22 +337,22 @@ class Web(
         val available = Providers.services().filter { s -> !s.linkOnly && added.none { it.id == s.id } }
         if (available.isNotEmpty()) {
             body.append("""<h2>Add a service</h2><form method="post" action="/connectors/add" class="card"><select name="service">""")
-            available.forEach { body.append("""<option value="${h(it.id)}">${h(it.displayName)}${if (it is YtmServerProvider) " (unofficial, alpha)" else ""}</option>""") }
+            available.forEach { body.append("""<option value="${h(it.id)}">${h(it.displayName)}${if (it is CookieConnector) " (unofficial, alpha)" else ""}</option>""") }
             body.append("""</select><p><button>Add</button></p></form>""")
         }
         send(r.ex, 200, page("Services", body.toString()))
     }
 
-    /** The web connector is not an official API: said next to its name wherever it is listed. */
+    /** The web connectors are not an official API: said next to their name wherever they are listed. */
     private fun unofficialBadges(p: MusicProvider): String = when {
-        p is YtmServerProvider -> """ <span class="badge">unofficial</span> <span class="alpha">alpha</span>"""
+        p is CookieConnector -> """ <span class="badge">unofficial</span> <span class="alpha">alpha</span>"""
         p.linkOnly -> """ <span class="badge">unofficial</span>"""
         else -> ""
     }
 
     private fun connectorPage(r: Req, p: MusicProvider) {
         val body = StringBuilder(notice(r))
-        if (p is YtmServerProvider) body.append(ytmNote())
+        if (p is CookieConnector) body.append(if (p is YtmServerProvider) ytmNote() else webPlayerNote(p))
         // The app's note for File points to its own screens ("Save as file", Tools): here the list below says it.
         else if (p !is LocalFilesProvider) {
             body.append("""<div class="card"><p>${h(env.text(p.noteName))}</p>""")
@@ -366,7 +366,7 @@ class Web(
                 """<div class="card row"><div><span class="ok">Connected</span>${p.accountName(env)?.let { " as <b>" + h(it) + "</b>" } ?: ""}</div>""" +
                     Html.postButton("/connectors/${q(p.id)}/disconnect", "Disconnect", "secondary") + "</div>",
             )
-            p is YtmServerProvider -> body.append(ytmForm(p))
+            p is CookieConnector -> body.append(cookieForm(p))
             p is CredentialsProvider -> {
                 val f = p.loginForm
                 body.append("""<form method="post" action="/connectors/${q(p.id)}/connect" class="card">""")
@@ -389,11 +389,33 @@ class Web(
 <p>YouTube Music through the music.youtube.com web player, signed in with the cookies of a browser where you are signed in. Not an official API: Google can change it, or block it, at any time.</p>
 <p class="muted">Without the app's hidden browser every call is plain HTTP, which Google's abuse detection stops sooner, above all from a datacenter address: a server at home works best. When Google blocks this network, open music.youtube.com in a browser on the same network as this server, pass Google's check, then paste fresh cookies here. Signing out in that browser ends these cookies too. <a href="https://xlollx.github.io/Trackhop/guide/docker#youtube-music-unofficial">How to copy them</a></p></div>"""
 
+    /**
+     * Spotify and Deezer without a key: the cookie that names the account is HttpOnly, so it is copied
+     * from the developer tools' cookie list (or the Cookie header of a request) rather than from a script.
+     */
+    private fun webPlayerNote(p: CookieConnector): String {
+        val (service, about, cookie) = when (p) {
+            is SpotifyWebServerProvider -> Triple(
+                "Spotify",
+                "Spotify without a developer key, through the open.spotify.com web player. The official route with your own key stays available as “Spotify”.",
+                "<code>sp_dc</code> (and <code>sp_key</code>, <code>sp_t</code> when listed)",
+            )
+            else -> Triple(
+                "Deezer",
+                "Deezer without an app id (Deezer no longer registers new ones), through the deezer.com web player.",
+                "<code>arl</code>",
+            )
+        }
+        return """<div class="card"><p><span class="badge">unofficial</span> <span class="alpha">alpha</span></p>
+<p>${h(about)} Signed in with the cookies of a browser where you are signed in. Not an official API: against $service's terms, it can stop working whenever the player changes.</p>
+<p class="muted">In a desktop browser signed in to ${h(p.cookieSite)}, open the developer tools (F12), then <b>Application</b> (<b>Storage</b> in Firefox) › <b>Cookies</b> › <code>https://${h(p.cookieSite)}</code>, and copy $cookie as <code>name=value; name=value</code>. The <code>cookie:</code> header of any request to the site, a cookies.txt or a cookie-editor JSON export work too. They are as good as your password; signing out in that browser ends them: paste fresh ones then. <a href="https://xlollx.github.io/Trackhop/guide/docker#spotify-and-deezer-without-a-key-unofficial">How to copy them</a></p></div>"""
+    }
+
     /** The pasted cookies: a Cookie header, cookies.txt or a JSON export, and optionally the browser's user agent. */
-    private fun ytmForm(p: YtmServerProvider): String =
+    private fun cookieForm(p: CookieConnector): String =
         """<form method="post" action="/connectors/${q(p.id)}/connect" class="card">
-<label>Cookies of music.youtube.com</label>
-<textarea name="cookies" rows="6" required autocomplete="off" spellcheck="false" placeholder="SAPISID=…; __Secure-3PAPISID=…; SID=…  (the Cookie header, cookies.txt or a JSON export)"></textarea>
+<label>Cookies of ${h(p.cookieSite)}</label>
+<textarea name="cookies" rows="6" required autocomplete="off" spellcheck="false" placeholder="${h(p.cookieExample)}  (the Cookie header, cookies.txt or a JSON export)"></textarea>
 <label>Your browser's user agent (optional)</label>
 <input type="text" name="userAgent" autocomplete="off" placeholder="Mozilla/5.0 … Chrome/… Safari/537.36">
 <p class="muted">Stored only in this server's data folder, readable by its owner only, and never written to the log.</p>

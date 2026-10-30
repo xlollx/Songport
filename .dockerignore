@@ -2,6 +2,7 @@
 *
 !android/core
 !android/ytm
+!android/bridge/src/main/java
 !android/app/build.gradle
 !android/app/src/main/res
 !server
