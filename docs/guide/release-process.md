@@ -23,6 +23,8 @@ people; the app's version does not move for it, nor theirs for an app-only chang
   creates the release `server-vX.Y.Z`: a prerelease that is never "latest", so Obtainium and the
   links to `releases/latest` keep finding the app.
 - The page's footer shows both: the server's version and the app version whose engine it runs.
+- The direct download links (README, the site's "Also on a computer" section, the Desktop guide)
+  name the version: point them at the new `server-v…` files once its release is out.
 
 ## Keeping the F-Droid build reproducible
 
