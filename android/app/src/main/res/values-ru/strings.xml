@@ -1251,4 +1251,14 @@
     <string name="backup_auto_section">Автоматически</string>
     <string name="backup_auto_desc">По расписанию делается копия каждого подключённого сервиса. Выберите папку вне телефона (SD-карта, Nextcloud, Drive…), и туда будут копироваться новые файлы и настройки за день, чтобы пережить телефон.</string>
     <string name="backup_last_run">Последняя копия: %1$s</string>
+    <string name="editor_source_shazam">Shazam</string>
+    <string name="shazam_badge_desc">Синхронизация Shazam</string>
+    <string name="shazam_source_title">Ваши Shazam</string>
+    <string name="shazam_source_found">%1$s в %2$s</string>
+    <string name="shazam_source_found_desc">Shazam добавляет в этот плейлист каждый распознанный трек; каждая синхронизация переносит новые в плейлист, который вы выберете ниже.</string>
+    <string name="shazam_source_looking">Ищем ваши Shazam…</string>
+    <string name="shazam_howto_title">Включите плейлист Shazam</string>
+    <string name="shazam_howto_body">Shazam может сохранять каждый распознанный трек в плейлист «My Shazam Tracks» в Spotify или Apple Music. В приложении Shazam откройте Настройки › Подключить Spotify (или Apple Music), распознайте трек и проверьте снова.</string>
+    <string name="shazam_howto_connect">Затем подключите тот же аккаунт Spotify или Apple Music к Trackhop.</string>
+    <string name="shazam_howto_retry">Проверить снова</string>
 </resources>

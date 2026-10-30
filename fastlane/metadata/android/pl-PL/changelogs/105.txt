@@ -1,0 +1,1 @@
+Nowość: synchronizacje Shazama. Każdy utwór rozpoznany w Shazamie sam trafia do wybranej playlisty w dowolnym serwisie. W ustawieniach Shazama połącz Spotify lub Apple Music: Shazam zapisuje tam Twoje Shazamy w „My Shazam Tracks”. W Trackhop Nowa synchronizacja › Shazam znajduje tę playlistę (albo pokazuje, jak ją włączyć) i synchronizuje ją co godzinę. Karta ma znak Shazama.

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Link
-import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Sync
@@ -114,6 +113,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.xlollx.songport.Notifications
+import com.xlollx.songport.sync.ShazamLibrary
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.Edit
@@ -446,6 +446,11 @@ private fun JobCard(
                             Icon(Icons.Filled.AutoAwesome, stringResource(R.string.ai_badge_desc), Modifier.size(16.dp), tint = MaterialTheme.colorScheme.tertiary)
                             Spacer(Modifier.width(4.dp))
                         }
+                        // Every song the user Shazams: Shazam's mark, in the same place.
+                        if (job.shazam) {
+                            Icon(ShazamGlyph, stringResource(R.string.shazam_badge_desc), Modifier.size(16.dp), tint = shazamTint())
+                            Spacer(Modifier.width(4.dp))
+                        }
                         Text(job.name.ifBlank { job.source.playlistName }, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     Text(
@@ -724,6 +729,11 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
     // A pasted link is a source of its own: the field stays, the service's playlist list does not.
     var linkMode by rememberSaveable { mutableStateOf(job.source.link != null) }
     var linkText by rememberSaveable { mutableStateOf(job.source.link ?: "") }
+    // Every song the user Shazams: the source is the playlist the Shazam app fills on Spotify or
+    // Apple Music, looked up among the connected accounts instead of picked from a list.
+    var shazamMode by rememberSaveable { mutableStateOf(job.shazam) }
+    var shazamLookup by remember { mutableStateOf<ShazamLookup>(ShazamLookup.Looking) }
+    var shazamTry by remember { mutableIntStateOf(0) }
     // Written by the AI: the source is the AI's own list, kept in a file; nothing to pick.
     val aiSource = job.aiPrompt != null && job.source.provider == com.xlollx.songport.providers.LocalFilesProvider.id
     // With a single service there is nowhere else to write to: a file on the phone always is, so a
@@ -736,7 +746,8 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
     var createNew by rememberSaveable { mutableStateOf(job.target.playlistId == null) }
     var dstPlaylist by rememberSaveable(stateSaver = PlaylistSaver) { mutableStateOf<Playlist?>(job.target.playlistId?.let { Playlist(it, job.target.playlistName) }) }
     var newName by rememberSaveable { mutableStateOf(if (job.target.playlistId == null) job.target.playlistName else "") }
-    var schedule by rememberSaveable { mutableStateOf(job.schedule) }
+    // A new Shazam sync checks every hour: a song Shazamed in the morning is there by lunch.
+    var schedule by rememberSaveable { mutableStateOf(if (isNew && job.shazam) Schedule.HOURLY else job.schedule) }
     var mirror by rememberSaveable { mutableStateOf(job.mirrorRemovals) }
     var keepOrder by rememberSaveable { mutableStateOf(job.keepOrder) }
     var wifiOnly by rememberSaveable { mutableStateOf(job.wifiOnly) }
@@ -776,6 +787,32 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
         }
     }
 
+    // Shazam as the source: its playlist, once found (null: looked up by the effect below).
+    fun useShazam(playlist: Playlist? = null) {
+        if (!shazamMode && isNew) { schedule = Schedule.HOURLY; mirror = false }
+        shazamMode = true
+        linkMode = false
+        srcPlaylist = playlist
+    }
+    // Looks for Shazam's playlist on every connected Spotify and Apple Music account, the source's own first.
+    LaunchedEffect(shazamMode, shazamTry) {
+        if (!shazamMode) return@LaunchedEffect
+        shazamLookup = ShazamLookup.Looking
+        val hosts = (listOfNotNull(Providers.byId(srcProvider)) + Providers.connectors())
+            .filter { ShazamLibrary.canHost(it.serviceId) && it.isConnected(ctx) }.distinctBy { it.id }
+        val errors = ArrayList<String>()
+        for (p in hosts) {
+            val l = loadPlaylists(ctx, p.id, forTarget = false)
+            if (l is Loaded.Failed) errors += p.label(ctx) + ": " + l.message
+            val found = (l as? Loaded.Ok)?.items?.let { ShazamLibrary.find(it) } ?: continue
+            srcProvider = p.id
+            srcPlaylist = found
+            shazamLookup = ShazamLookup.Found
+            return@LaunchedEffect
+        }
+        shazamLookup = ShazamLookup.Missing(hostConnected = hosts.isNotEmpty(), errors = errors)
+    }
+
     // Save, from the bottom bar: the same checks and the same jobs as before the cards.
     fun save() {
         val sp = srcPlaylist
@@ -795,6 +832,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
             target = target,
             schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
             keepOrder = keepOrder, color = color,
+            shazam = shazamMode && !linkMode,
         )
         // The other half of the pair takes only what the two share (schedule, rules, the two playlists
         // swapped); its name, ignore list, reports and order setting stay its own. A pair never removes.
@@ -878,9 +916,17 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                 } else {
                     // Il servizio di un link incollato puo' non essere fra quelli collegati (playlist pubblica).
                     val srcProviders = (available + listOfNotNull(Providers.byId(srcProvider))).distinctBy { it.id }
-                    ProviderPicker(srcProviders, if (linkMode) "" else srcProvider, link = true, linkSelected = linkMode,
-                        onLink = { if (!linkMode) { linkMode = true; srcPlaylist = null } }) { srcProvider = it; srcPlaylist = null; linkMode = false }
-                    if (linkMode) {
+                    ProviderPicker(srcProviders, if (linkMode || shazamMode) "" else srcProvider, link = true, linkSelected = linkMode,
+                        onLink = { if (!linkMode) { linkMode = true; shazamMode = false; srcPlaylist = null } },
+                        shazam = true, shazamSelected = shazamMode, onShazam = { if (!shazamMode) useShazam() },
+                    ) { srcProvider = it; srcPlaylist = null; linkMode = false; shazamMode = false }
+                    if (shazamMode) {
+                        ShazamSource(
+                            shazamLookup, srcProvider, srcPlaylist,
+                            onRetry = { shazamTry++ },
+                            onConnect = onConnectService,
+                        )
+                    } else if (linkMode) {
                         LinkImportField(initial = linkText, keep = true) { providerId, playlist, text ->
                             srcProvider = providerId
                             srcPlaylist = playlist
@@ -891,13 +937,13 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                         }
                     } else {
                         PlaylistPicker(srcLists, srcPlaylist, label = stringResource(R.string.editor_playlist)) { srcPlaylist = it }
-                        // The playlist Shazam fills on Spotify or Apple Music: one tap to have every Shazam on another service.
-                        val shazam = (srcLists as? Loaded.Ok)?.items?.firstOrNull { it.name.contains("shazam", ignoreCase = true) }
-                        if (shazam != null && srcPlaylist?.id != shazam.id) {
+                        // The playlist Shazam fills on Spotify or Apple Music: one tap makes this a Shazam sync.
+                        val shazam = (srcLists as? Loaded.Ok)?.items?.takeIf { ShazamLibrary.canHost(Providers.byId(srcProvider)?.serviceId.orEmpty()) }?.let { ShazamLibrary.find(it) }
+                        if (shazam != null) {
                             androidx.compose.material3.AssistChip(
-                                onClick = { srcPlaylist = shazam; if (name.isBlank()) name = shazam.name },
+                                onClick = { useShazam(shazam) },
                                 label = { Text(stringResource(R.string.shazam_editor_suggest, shazam.name)) },
-                                leadingIcon = { Icon(Icons.Filled.MusicNote, null, Modifier.size(18.dp)) },
+                                leadingIcon = { Icon(ShazamGlyph, null, Modifier.size(18.dp), tint = shazamTint()) },
                             )
                         }
                     }
@@ -974,7 +1020,8 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                 val srcObj = Providers.byId(srcProvider)
                 // A public link or someone else's playlist can be read, not written: nothing to send back to.
                 val srcOwned = srcPlaylist?.ownedByMe == true && srcObj?.isConnected(ctx) == true
-                val biAllowed = !createNew && srcObj?.canWrite == true && srcOwned &&
+                // Not into Shazam's own playlist: Shazam alone writes there.
+                val biAllowed = !shazamMode && !createNew && srcObj?.canWrite == true && srcOwned &&
                     srcObj.supportsLibrary(srcPlaylist?.id, asTarget = true) &&
                     dstProviderObj?.supportsLibrary(dstPlaylist?.id, asTarget = false) == true
                 if (!biAllowed && bidirectional) bidirectional = false
@@ -1079,6 +1126,66 @@ private fun HelpLabel(text: String, help: @Composable () -> Unit) {
     }
 }
 
+/** Where the editor's search for Shazam's playlist stands. */
+private sealed class ShazamLookup {
+    object Looking : ShazamLookup()
+    object Found : ShazamLookup()
+    /** Not on any connected account; [hostConnected] false: no Spotify or Apple Music connected at all. */
+    data class Missing(val hostConnected: Boolean, val errors: List<String>) : ShazamLookup()
+}
+
+/**
+ * The source of a Shazam sync: Shazam's playlist once found, with the service it is on and its
+ * size; otherwise how to have Shazam keep one (its settings › connect Spotify or Apple Music), a
+ * "Check again", and the way to connect one of those two here when neither is.
+ */
+@Composable
+private fun ShazamSource(lookup: ShazamLookup, providerId: String, playlist: Playlist?, onRetry: () -> Unit, onConnect: () -> Unit) {
+    val ctx = LocalContext.current
+    when {
+        lookup is ShazamLookup.Looking -> Row(verticalAlignment = Alignment.CenterVertically) {
+            CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+            Spacer(Modifier.width(10.dp))
+            Text(stringResource(R.string.shazam_source_looking), style = MaterialTheme.typography.bodyMedium)
+        }
+        // Found, or (when it could not be looked up now) the one an existing sync already reads.
+        playlist != null -> Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
+            Row(Modifier.padding(14.dp), verticalAlignment = Alignment.Top) {
+                Icon(ShazamGlyph, null, Modifier.size(24.dp), tint = shazamTint())
+                Spacer(Modifier.width(10.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(stringResource(R.string.shazam_source_title), style = MaterialTheme.typography.titleSmall)
+                    val service = Providers.byId(providerId)?.label(ctx) ?: providerId
+                    val count = playlist.trackCount.takeIf { it >= 0 }?.let { pluralStringResource(R.plurals.card_tracks, it, it) }
+                    Text(stringResource(R.string.shazam_source_found, playlist.name, service) + (count?.let { " ($it)" } ?: ""), style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.shazam_source_found_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+        else -> Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(ShazamGlyph, null, Modifier.size(24.dp), tint = shazamTint())
+                    Spacer(Modifier.width(10.dp))
+                    Text(stringResource(R.string.shazam_howto_title), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                }
+                Text(stringResource(R.string.shazam_howto_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                val hostConnected = (lookup as? ShazamLookup.Missing)?.hostConnected == true
+                if (!hostConnected) {
+                    Text(stringResource(R.string.shazam_howto_connect), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.align(Alignment.End)) {
+                    TextButton(onClick = onRetry) { Text(stringResource(R.string.shazam_howto_retry)) }
+                    if (!hostConnected) FilledTonalButton(onClick = onConnect) { Text(stringResource(R.string.empty_syncs_cta_accounts)) }
+                }
+            }
+        }
+    }
+    (lookup as? ShazamLookup.Missing)?.errors?.forEach {
+        Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+    }
+}
+
 private suspend fun loadPlaylists(ctx: android.content.Context, providerId: String, forTarget: Boolean): Loaded {
     val p = Providers.byId(providerId) ?: return Loaded.Ok(emptyList())
     // Servizio non collegato (es. playlist pubblica da link): niente elenco, nessun errore.
@@ -1097,18 +1204,23 @@ private suspend fun loadPlaylists(ctx: android.content.Context, providerId: Stri
 private fun ProviderPicker(
     available: List<MusicProvider>, selected: String,
     link: Boolean = false, linkSelected: Boolean = false, onLink: () -> Unit = {},
+    shazam: Boolean = false, shazamSelected: Boolean = false, onShazam: () -> Unit = {},
     onSelect: (String) -> Unit,
 ) {
     val ctx = LocalContext.current
     // A row of tiles that scrolls: with several accounts and personal servers there can be many.
     val linkLabel = stringResource(R.string.editor_source_link)
+    val shazamLabel = stringResource(R.string.editor_source_shazam)
     val tiles = available.map { ServiceTile(it.id, it.label(ctx), it) } +
-        (if (link) listOf(ServiceTile(LINK_KEY, linkLabel, icon = Icons.Filled.Link)) else emptyList())
-    ServiceTiles(tiles, if (linkSelected) LINK_KEY else selected, { key -> if (key == LINK_KEY) onLink() else onSelect(key) })
+        (if (link) listOf(ServiceTile(LINK_KEY, linkLabel, icon = Icons.Filled.Link)) else emptyList()) +
+        (if (shazam) listOf(ServiceTile(SHAZAM_KEY, shazamLabel, icon = ShazamGlyph, brandColor = ServiceMarks.SHAZAM_COLOR)) else emptyList())
+    val current = when { linkSelected -> LINK_KEY; shazamSelected -> SHAZAM_KEY; else -> selected }
+    ServiceTiles(tiles, current, { key -> when (key) { LINK_KEY -> onLink(); SHAZAM_KEY -> onShazam(); else -> onSelect(key) } })
 }
 
 /** The "from a link" tile among the services. */
 private const val LINK_KEY = "link:"
+private const val SHAZAM_KEY = "shazam:"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

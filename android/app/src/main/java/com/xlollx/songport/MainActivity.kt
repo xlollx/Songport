@@ -412,7 +412,8 @@ private fun MainScreen(
             onClose = { sharedLink = null },
             onAdd = { p, t -> sharedLink = null; sharedTrack = p to t },
             onMessage = { messages.value = it },
-            onNewSync = { sharedLink = null; tab = MainActivity.TAB_SYNCS; editing = newJob() },
+            // "Sync my Shazams": the editor opens on Shazam as the source.
+            onNewSync = { sharedLink = null; tab = MainActivity.TAB_SYNCS; editing = newJob().copy(shazam = true) },
         )
     }
     if (firstSheet) com.xlollx.songport.ui.FirstSyncSheet(

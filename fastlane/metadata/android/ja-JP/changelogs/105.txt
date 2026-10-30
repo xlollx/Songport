@@ -1,0 +1,1 @@
+新機能：Shazam同期。Shazamで認識した曲が、どのサービスでも選んだプレイリストに自動で入ります。Shazamの設定でSpotifyかApple Musicを連携すると、Shazamは認識した曲をそこに「My Shazam Tracks」として保存します。Trackhopの「新しい同期 › Shazam」がそのプレイリストを見つけ（なければオンにする方法を表示）、1時間ごとに同期します。カードにはShazamのマークが付きます。

@@ -1185,4 +1185,14 @@
     <string name="backup_auto_section">自动</string>
     <string name="backup_auto_desc">按计划备份每个已连接的服务。选择一个手机之外的文件夹（SD 卡、Nextcloud、Drive 等），新的文件和当天的设置也会复制过去，即使手机出问题也能保留。</string>
     <string name="backup_last_run">上次备份：%1$s</string>
+    <string name="editor_source_shazam">Shazam</string>
+    <string name="shazam_badge_desc">Shazam 同步</string>
+    <string name="shazam_source_title">你的 Shazam</string>
+    <string name="shazam_source_found">%2$s 上的 %1$s</string>
+    <string name="shazam_source_found_desc">Shazam 会把你识别的每首歌加入这个歌单；每次同步都会把新歌带到你在下面选择的歌单。</string>
+    <string name="shazam_source_looking">正在查找你的 Shazam…</string>
+    <string name="shazam_howto_title">开启 Shazam 歌单</string>
+    <string name="shazam_howto_body">Shazam 可以把你识别的每首歌放进 Spotify 或 Apple Music 上的“My Shazam Tracks”歌单。在 Shazam 应用中打开“设置 › 连接到 Spotify（或 Apple Music）”，识别一首歌，然后再检查一次。</string>
+    <string name="shazam_howto_connect">然后把同一个 Spotify 或 Apple Music 账号连接到 Trackhop。</string>
+    <string name="shazam_howto_retry">再检查一次</string>
 </resources>

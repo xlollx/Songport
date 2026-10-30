@@ -1,0 +1,1 @@
+새 기능: Shazam 동기화. Shazam으로 인식한 모든 곡이 어떤 서비스든 원하는 플레이리스트에 자동으로 들어갑니다. Shazam 설정에서 Spotify나 Apple Music을 연결하면 Shazam이 인식한 곡을 그곳의 "My Shazam Tracks"에 모읍니다. Trackhop의 새 동기화 › Shazam이 그 플레이리스트를 찾고(없으면 켜는 방법을 알려 줌) 매시간 동기화합니다. 카드에 Shazam 표시가 붙습니다.

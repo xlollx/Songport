@@ -1205,4 +1205,14 @@
     <string name="backup_auto_section">Otomatik</string>
     <string name="backup_auto_desc">Programa göre bağlı her hizmet yedeklenir. Telefonun dışında bir klasör seç (SD kart, Nextcloud, Drive…); yeni dosyalar ve günün kurulumu da oraya kopyalanır, böylece telefon gitse de kalırlar.</string>
     <string name="backup_last_run">Son yedek: %1$s</string>
+    <string name="editor_source_shazam">Shazam</string>
+    <string name="shazam_badge_desc">Shazam eşitlemesi</string>
+    <string name="shazam_source_title">Shazam\'larınız</string>
+    <string name="shazam_source_found">%2$s üzerinde %1$s</string>
+    <string name="shazam_source_found_desc">Shazam tanıdığınız her şarkıyı bu çalma listesine ekler; her eşitleme yenilerini aşağıda seçtiğiniz çalma listesine taşır.</string>
+    <string name="shazam_source_looking">Shazam\'larınız aranıyor…</string>
+    <string name="shazam_howto_title">Shazam\'ın çalma listesini açın</string>
+    <string name="shazam_howto_body">Shazam, tanıdığınız her şarkıyı Spotify veya Apple Music\'te “My Shazam Tracks” çalma listesinde tutabilir. Shazam uygulamasında Ayarlar › Spotify\'a (veya Apple Music\'e) bağlan\'ı açın, bir şarkı tanıtın, sonra yeniden kontrol edin.</string>
+    <string name="shazam_howto_connect">Ardından aynı Spotify veya Apple Music hesabını Trackhop\'a bağlayın.</string>
+    <string name="shazam_howto_retry">Yeniden kontrol et</string>
 </resources>

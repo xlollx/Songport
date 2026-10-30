@@ -45,6 +45,10 @@ object FakeWorld {
     const val PUBLIC_YOUTUBE = "PLfakePublicRock2026ab"
     const val PUBLIC_SOUNDCLOUD = "nightdriver/sets/night-drive"
 
+    /** The playlist the Shazam app fills on Spotify once connected to it in Shazam's settings ([addShazamTracks]). */
+    const val SPOTIFY_SHAZAM = "4MyShazamTracksFakeList"
+    const val SHAZAM_NAME = "My Shazam Tracks"
+
     /** Songs 5 and 6 of the road trip are not on Deezer: a sync to Deezer finds 6 of 8. */
     val DEEZER_MISSING = setOf(Demo.SONGS[5].title, Demo.SONGS[6].title)
 
@@ -68,6 +72,14 @@ object FakeWorld {
         public["ytm"] = public.getValue("youtube")
         public["soundcloud"] = mutableMapOf(PUBLIC_SOUNDCLOUD to FakePlaylist(PUBLIC_SOUNDCLOUD, "Night Drive", songs("soundcloud", 6 until 11), owned = false))
         missing["deezer"] = DEEZER_MISSING
+    }
+
+    /**
+     * Shazam connected to the fake Spotify: its "My Shazam Tracks" with four songs. Not in the seed,
+     * so the other tests' Spotify keeps its three playlists.
+     */
+    fun addShazamTracks() {
+        playlists.getValue("spotify") += FakePlaylist(SPOTIFY_SHAZAM, SHAZAM_NAME, songs("spotify", 3 until 7))
     }
 
     fun songs(providerId: String, range: IntRange): MutableList<Track> = range.map { song(providerId, it) }.toMutableList()

@@ -1207,4 +1207,14 @@
     <string name="backup_auto_section">Automatisch</string>
     <string name="backup_auto_desc">Nach Zeitplan wird jeder verbundene Dienst gesichert. Wähle einen Ordner außerhalb des Handys (SD-Karte, Nextcloud, Drive…), dann werden die neuen Dateien und die Einrichtung des Tages auch dorthin kopiert und überleben das Handy.</string>
     <string name="backup_last_run">Letzte Sicherung: %1$s</string>
+    <string name="editor_source_shazam">Shazam</string>
+    <string name="shazam_badge_desc">Shazam-Sync</string>
+    <string name="shazam_source_title">Deine Shazams</string>
+    <string name="shazam_source_found">%1$s auf %2$s</string>
+    <string name="shazam_source_found_desc">Shazam fügt jeden erkannten Song dieser Playlist hinzu; jeder Sync bringt die neuen in die Playlist, die du unten wählst.</string>
+    <string name="shazam_source_looking">Suche deine Shazams…</string>
+    <string name="shazam_howto_title">Shazams Playlist einschalten</string>
+    <string name="shazam_howto_body">Shazam kann jeden erkannten Song in einer Playlist „My Shazam Tracks“ auf Spotify oder Apple Music sammeln. Öffne in der Shazam-App Einstellungen › Mit Spotify (oder Apple Music) verbinden, erkenne einen Song und prüfe dann erneut.</string>
+    <string name="shazam_howto_connect">Verbinde danach dasselbe Spotify- oder Apple-Music-Konto mit Trackhop.</string>
+    <string name="shazam_howto_retry">Erneut prüfen</string>
 </resources>

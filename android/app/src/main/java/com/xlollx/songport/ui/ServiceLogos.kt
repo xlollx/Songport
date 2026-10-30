@@ -66,6 +66,20 @@ object ServiceLogos {
 }
 
 /**
+ * Shazam's mark (Simple Icons, CC0): on a Shazam sync's card and in the editor's "Shazam" source,
+ * as the sparkles mark a playlist written by the user's AI.
+ */
+val ShazamGlyph: ImageVector by lazy {
+    ImageVector.Builder("shazam", 24.dp, 24.dp, 24f, 24f)
+        .addPath(pathData = addPathNodes(ServiceMarks.SHAZAM), fill = SolidColor(Color.White))
+        .build()
+}
+
+/** Shazam's blue, a little lighter on a dark theme so the mark reads on dark cards. */
+@Composable
+fun shazamTint(): Color = if (LocalAppDark.current) Color(0xFF4DA8FF) else Color(ServiceMarks.SHAZAM_COLOR)
+
+/**
  * The service's mark: its glyph in white on a circle of its colour; a generic icon for files and
  * personal servers without a mark; the initial otherwise. TalkBack reads the service's name.
  */
@@ -101,8 +115,14 @@ fun ServiceLogo(serviceId: String?, brandColor: Long?, name: String, size: Dp = 
     }
 }
 
-/** One choice in [ServiceTiles]: a service, or an extra entry such as "Link" with its own icon. */
-class ServiceTile(val key: String, val label: String, val provider: MusicProvider? = null, val icon: androidx.compose.ui.graphics.vector.ImageVector? = null, val detail: String? = null)
+/**
+ * One choice in [ServiceTiles]: a service, or an extra entry such as "Link" with its own icon. With
+ * a [brandColor] the icon is a brand's round mark (Shazam), drawn whole in that colour.
+ */
+class ServiceTile(
+    val key: String, val label: String, val provider: MusicProvider? = null, val icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
+    val detail: String? = null, val brandColor: Long? = null,
+)
 
 /**
  * The service picker: a horizontal row of tiles, the mark large enough to recognise at a glance
@@ -218,6 +238,7 @@ private fun Tile(t: ServiceTile, on: Boolean, width: Dp, onSelect: (String) -> U
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 if (t.provider != null) ServiceLogo(t.provider, 40.dp)
+                else if (t.icon != null && t.brandColor != null) Icon(t.icon, null, tint = Color(t.brandColor), modifier = Modifier.size(40.dp))
                 else Box(Modifier.size(40.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHighest), contentAlignment = Alignment.Center) {
                     t.icon?.let { Icon(it, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp)) }
                 }

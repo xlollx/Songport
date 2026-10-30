@@ -1185,4 +1185,14 @@
     <string name="backup_auto_section">自動</string>
     <string name="backup_auto_desc">スケジュールに従って接続中の各サービスをバックアップします。スマホの外のフォルダ（SD カード、Nextcloud、Drive など）を選ぶと、新しいファイルとその日の設定もコピーされ、スマホに何かあっても残ります。</string>
     <string name="backup_last_run">前回のバックアップ：%1$s</string>
+    <string name="editor_source_shazam">Shazam</string>
+    <string name="shazam_badge_desc">Shazam 同期</string>
+    <string name="shazam_source_title">あなたのShazam</string>
+    <string name="shazam_source_found">%2$s の %1$s</string>
+    <string name="shazam_source_found_desc">Shazamは認識した曲をすべてこのプレイリストに追加します。同期のたびに、新しい曲が下で選んだプレイリストに届きます。</string>
+    <string name="shazam_source_looking">あなたのShazamを探しています…</string>
+    <string name="shazam_howto_title">Shazamのプレイリストをオンにする</string>
+    <string name="shazam_howto_body">Shazamは認識した曲をすべて、SpotifyまたはApple Musicの「My Shazam Tracks」プレイリストに保存できます。Shazamアプリで「設定 › Spotify（またはApple Music）に接続」を開き、曲を1曲認識してから、もう一度確認してください。</string>
+    <string name="shazam_howto_connect">次に、同じSpotifyまたはApple MusicのアカウントをTrackhopに接続してください。</string>
+    <string name="shazam_howto_retry">もう一度確認</string>
 </resources>

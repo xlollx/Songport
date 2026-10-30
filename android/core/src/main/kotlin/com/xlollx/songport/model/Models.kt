@@ -110,6 +110,12 @@ data class SyncJob(
      * the source (a File playlist) and syncs them to the target. Null for every other sync.
      */
     val radio: RadioSource? = null,
+    /**
+     * A Shazam sync: its source is the playlist the Shazam app fills on the user's Spotify or Apple
+     * Music ("My Shazam Tracks", see [com.xlollx.songport.sync.ShazamLibrary]), so every song the user
+     * Shazams reaches the target. Only a mark for the card and the editor; the run is a plain sync.
+     */
+    val shazam: Boolean = false,
 )
 
 /**

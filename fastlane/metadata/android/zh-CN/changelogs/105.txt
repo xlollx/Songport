@@ -1,0 +1,1 @@
+新功能：Shazam 同步。你用 Shazam 识别的每首歌，都会自动进入你在任意服务上选择的歌单。在 Shazam 设置中连接 Spotify 或 Apple Music：Shazam 会把你的识别记录保存在那里的“My Shazam Tracks”歌单。在 Trackhop 中，新建同步 › Shazam 会找到这个歌单（找不到时说明如何开启），并每小时同步一次。卡片上会显示 Shazam 标志。

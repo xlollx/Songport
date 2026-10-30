@@ -1,0 +1,1 @@
+New: Shazam syncs. Every song you Shazam, automatically in a playlist of your choice on any service. In Shazam's settings, connect Spotify or Apple Music: Shazam keeps your Shazams in "My Shazam Tracks" there. In Trackhop, New sync › Shazam finds that playlist (or shows how to turn it on) and syncs it every hour. The card wears Shazam's mark.
