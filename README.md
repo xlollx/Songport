@@ -25,7 +25,7 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
 
 <p align="center">
   <b>Installed Trackhop from Google Play?</b> Add the plugin for YouTube Music, Amazon Music, and Spotify and Apple Music without developer keys:<br><br>
-  <a href="https://github.com/xlollx/Trackhop-Bridge/releases/latest"><img src="https://img.shields.io/badge/Download-Trackhop%20Bridge%20(plugin%20for%20the%20Play%20version)-1f6feb?style=for-the-badge&logo=android&logoColor=white" alt="Download Trackhop Bridge, the plugin for the Google Play version"></a>
+  <a href="https://github.com/xlollx/Trackhop-Bridge/releases/latest"><img src="docs/store/get-trackhop-bridge.png" width="480" alt="Get Trackhop Bridge, the plugin for the Google Play version"></a>
 </p>
 
 <p align="center"><img src="docs/store/demo.gif" width="200" alt="A tour of Trackhop: syncs, a new sync, accounts, tools, a shared track, the compatibility and poster cards, unplayable tracks, settings"></p>
