@@ -1,8 +1,8 @@
-# Trackhop Desktop (Windows, Linux; alpha)
+# Trackhop Desktop (Windows, Linux; beta)
 
-> **⚠️ Alpha.** Trackhop Desktop is an early test version: it has had little real use, things can
-> break, and settings or the data format can change between releases without a migration. Keep a
-> copy of the data folder and [report](reporting-a-problem) what goes wrong.
+> **Beta.** Trackhop Desktop works for everyday use but is still young: pages and settings can change
+> between releases. Keep a copy of the data folder (or save the set-up from *Tools › Backup &
+> restore*) and [report](reporting-a-problem) what goes wrong. The unofficial connectors stay an alpha.
 
 The same sync engine as the Android app, as a program on your computer, with nothing else to
 install: no Docker, no Java. It runs in the background with an icon next to the clock, shows its

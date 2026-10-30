@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Trackhop Desktop (alpha): packs the server build into an app with its own Java runtime.
+# Trackhop Desktop (beta): packs the server build into an app with its own Java runtime.
 #
 #   gradle -p server installDist && server/desktop/package.sh
 #
@@ -37,7 +37,7 @@ locales=en,it,fr,de,es,pt,pl,ru,tr,zh,ja,ko
 jpackage --type app-image --name Trackhop --dest "$work/out" \
   --input "$lib" --main-jar "songport-server-$version.jar" --main-class com.xlollx.songport.server.DesktopKt \
   --app-version "$version" --vendor xlollx --copyright "GPL-3.0-only" \
-  --description "Trackhop Desktop (alpha): keeps playlists in sync between music services" \
+  --description "Trackhop Desktop (beta): keeps playlists in sync between music services" \
   --icon "$icon" --java-options "-Xmx512m" \
   --add-modules "$modules" \
   --jlink-options "--strip-debug --no-man-pages --no-header-files --include-locales=$locales"
@@ -48,7 +48,7 @@ if [ "$os" = windows ]; then
   (cd "$work/out" && powershell -NoProfile -Command "Compress-Archive -Path Trackhop -DestinationPath '$zip' -Force")
   # The upgrade code stays the same forever: a newer MSI replaces the installed one.
   jpackage --type msi --app-image "$work/out/Trackhop" --name Trackhop --dest "$work" \
-    --app-version "$version" --vendor xlollx --description "Trackhop Desktop (alpha)" \
+    --app-version "$version" --vendor xlollx --description "Trackhop Desktop (beta)" \
     --win-per-user-install --win-menu --win-menu-group Trackhop --win-shortcut \
     --win-upgrade-uuid 5b8f3c1e-7a2d-4e9b-9c61-2f0d8a4b7e13 \
     --about-url https://xlollx.github.io/Trackhop/guide/desktop
@@ -56,7 +56,7 @@ if [ "$os" = windows ]; then
 else
   tar -C "$work/out" -czf "dist/$name-linux.tar.gz" Trackhop
   jpackage --type deb --app-image "$work/out/Trackhop" --name Trackhop --dest "$work" \
-    --app-version "$version" --vendor xlollx --description "Trackhop Desktop (alpha)" \
+    --app-version "$version" --vendor xlollx --description "Trackhop Desktop (beta)" \
     --linux-package-name trackhop --linux-shortcut --linux-menu-group "AudioVideo;Audio" \
     --linux-app-category sound \
     --linux-package-deps "libwebkit2gtk-4.1-0 | libwebkit2gtk-4.0-37" --linux-deb-maintainer "xlollx@users.noreply.github.com" \

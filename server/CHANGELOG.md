@@ -5,6 +5,11 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## 0.4.1
+
+- **Trackhop Desktop is now a beta** too, like the server on Docker. The unofficial connectors stay an
+  alpha.
+
 ## 0.4.0
 
 - **The server on Docker is now a beta**: it has run scheduled syncs for days without trouble.

@@ -29,7 +29,7 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
 </p>
 
 <p align="center">
-  <b>On a computer or a server?</b> <sub>(Desktop alpha, Docker beta)</sub><br>
+  <b>On a computer or a server?</b> <sub>(beta)</sub><br>
   <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.4.0/Trackhop-Desktop-v0.4.0-windows.msi"><img src="docs/assets/badges/windows.svg" height="56" alt="Get it for Windows"></a>
   <a href="https://github.com/xlollx/Trackhop/releases/download/server-v0.4.0/Trackhop-Desktop-v0.4.0-linux.deb"><img src="docs/assets/badges/linux.svg" height="56" alt="Get it for Linux"></a>
   <a href="https://xlollx.github.io/Trackhop/guide/docker"><img src="docs/assets/badges/docker.svg" height="56" alt="Run it on Docker"></a>
@@ -69,7 +69,7 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   Install the companion plugin **[Trackhop Bridge](https://github.com/xlollx/Trackhop-Bridge)**
   (GitHub only, read its notes first), or switch to the F-Droid/GitHub build above, which has them
   built in. [Which Trackhop?](https://xlollx.github.io/Trackhop/guide/versions) compares the two.
-- **Desktop (Windows, Linux, ⚠️ alpha)**: an early test version. The same engine as a program on your
+- **Desktop (Windows, Linux, beta)**: works for everyday use, still young. The same engine as a program on your
   computer, with its own Java runtime (no Java or Docker to install, no administrator rights), an icon
   next to the clock and the same web page as the server. Version 0.4.0 ([what's in it](https://github.com/xlollx/Trackhop/releases/tag/server-v0.4.0)):
   [Windows installer](https://github.com/xlollx/Trackhop/releases/download/server-v0.4.0/Trackhop-Desktop-v0.4.0-windows.msi) ·

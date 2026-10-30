@@ -1,6 +1,6 @@
 name: Desktop
 
-# Trackhop Desktop (alpha, docs/guide/desktop.md): the server's engine and pages packed as an app
+# Trackhop Desktop (beta, docs/guide/desktop.md): the server's engine and pages packed as an app
 # with its own Java runtime, by server/desktop/package.sh. Windows: an MSI (per-user, no
 # administrator) and a portable ZIP; Linux: a .deb and a tar.gz for any distribution. Every run keeps
 # them as artifacts; on main, a new server/VERSION gets its own release, server-v<version>, with
@@ -127,4 +127,4 @@ jobs:
           **Docker:** \`docker pull ghcr.io/xlollx/trackhop:$v\` (or \`:latest\`). [Docker guide](https://xlollx.github.io/Trackhop/guide/docker) · [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop)
           EOF
           gh release create "$tag" dist/* --target "$GITHUB_SHA" --prerelease --latest=false \
-            --title "Trackhop Desktop & Server $v (alpha)" --notes-file notes.md
+            --title "Trackhop Desktop & Server $v (beta)" --notes-file notes.md

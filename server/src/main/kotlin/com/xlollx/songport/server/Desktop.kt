@@ -20,7 +20,7 @@ import javax.swing.JOptionPane
 import kotlin.system.exitProcess
 
 /**
- * Trackhop Desktop (alpha): the server's engine and pages as an app on the user's own computer
+ * Trackhop Desktop (beta): the server's engine and pages as an app on the user's own computer
  * (Windows, Linux), packaged with its own Java runtime (.github/workflows/desktop.yml). No Docker,
  * no password: it listens on 127.0.0.1 only. An icon in the system tray opens the pages, starts it
  * with the computer, or quits; where there is no tray (GNOME without an extension) the browser

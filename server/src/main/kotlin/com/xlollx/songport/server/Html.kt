@@ -16,10 +16,10 @@ object Html {
             """<button class="${h(style)}">${h(label)}</button></form>"""
 
     /** Where the engine runs: in a container ([SERVER]) or as an app on the user's computer ([DESKTOP]). */
-    /** [stage]: the server on Docker is a beta since 0.4.0; Desktop, newer, is still an alpha. */
+    /** [stage]: the server on Docker is a beta since 0.4.0, Trackhop Desktop since 0.4.1. */
     enum class Edition(val product: String, val guide: String, val stage: String) {
         SERVER("Trackhop server", "https://xlollx.github.io/Trackhop/guide/docker", "beta"),
-        DESKTOP("Trackhop Desktop", "https://xlollx.github.io/Trackhop/guide/desktop", "alpha"),
+        DESKTOP("Trackhop Desktop", "https://xlollx.github.io/Trackhop/guide/desktop", "beta"),
     }
 
     /** The Trackhop mark (the app's ic_brand_mark), white, for the header's tile. */
