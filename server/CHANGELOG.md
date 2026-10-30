@@ -10,6 +10,8 @@ the Docker image carried the app's version.
 - **On the phone, as an app**: the server's page can be added to the home screen and opens full
   screen, like an app (a PWA: manifest, icons, a service worker that keeps nothing and says so when
   the server cannot be reached). [How](https://xlollx.github.io/Trackhop/guide/docker#on-your-phone-as-an-app).
+- **Fixed**: a radio sync could find its playlist empty when a new song was being saved at the
+  same moment, and add nothing that run. Playlist files are now written whole and swapped in.
 
 ## 0.5.4
 
