@@ -49,6 +49,22 @@ repository root: `docker build -f server/Dockerfile -t trackhop .`
 image name: keep your volume (or folder) and your settings. The variables keep their `SONGPORT_`
 prefix and the log file its name `songport.log`, so nothing else needs to change.
 
+## Update
+
+The image is `ghcr.io/xlollx/trackhop:latest`, or a version (`:0.1.0`): Docker and Trackhop Desktop
+have their own version, separate from the app's, listed in the
+[Desktop & Server releases](https://github.com/xlollx/Trackhop/releases?q=server-v&expanded=true). To
+update, pull the image and start the container again; everything is in the volume, so nothing is lost:
+
+```sh
+docker pull ghcr.io/xlollx/trackhop:latest
+docker rm -f trackhop
+docker run -d --name trackhop … ghcr.io/xlollx/trackhop:latest   # the same command as the first time
+```
+
+With Docker Compose: `docker compose pull && docker compose up -d`. The page's footer shows the
+version running, and the app version whose engine it uses.
+
 ## Settings
 
 | Variable | Default | What it does |
@@ -157,8 +173,7 @@ for health checks.
 
 ## Not there yet
 
-The app's review screens (choosing a match for a track that wasn't found, confirming uncertain
-matches), the playlist tools and backups are not in the web page yet: the server runs syncs and
-reports what was not found.
+The playlist tools beyond export (backups, duplicates, unplayable tracks, AI playlists) come in the
+next versions, then the web-player connectors (Amazon Music, Spotify and Apple Music without a key).
 
 [Back to the guide](./)
