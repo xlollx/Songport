@@ -127,4 +127,38 @@ class WebTest {
         env.store.upsertJob(com.xlollx.songport.model.SyncJob("j1", "Trip", com.xlollx.songport.model.PlaylistRef("subsonic", "p", "Trip"), com.xlollx.songport.model.PlaylistRef("csv", "Road trip", "Road trip")))
         assertTrue(get("/").body().contains("Download CSV"))
     }
+
+    @Test fun reviewPicksIgnoresAndConfirms() {
+        File(data, "csv").mkdirs()
+        File(data, "csv/Out.csv").writeText("title,artist\n")
+        val job = com.xlollx.songport.model.SyncJob("j2", "Mix", com.xlollx.songport.model.PlaylistRef("csv", "In", "In"), com.xlollx.songport.model.PlaylistRef("csv", "Out", "Out"))
+        env.store.upsertJob(job)
+        val a = com.xlollx.songport.model.Track(id = "a", title = "Alpha", artists = listOf("One"))
+        val b = com.xlollx.songport.model.Track(id = "b", title = "Beta", artists = listOf("Two"))
+        val c = com.xlollx.songport.model.Track(id = "c", title = "Gamma", artists = listOf("Three"))
+        env.store.addReport(
+            com.xlollx.songport.model.SyncReport(
+                id = "r1", jobId = "j2", jobName = "Mix", startedEpoch = 1, durationMs = 1,
+                unmatched = listOf(a.toString(), b.toString()), unmatchedTracks = listOf(a, b),
+                reviewTracks = listOf(com.xlollx.songport.model.MatchReview(c, c.copy(id = "c2"), 0.7)),
+            ),
+        )
+        val page = get("/syncs/j2/review/r1")
+        assertEquals(200, page.statusCode())
+        assertTrue(page.body().contains("Alpha") && page.body().contains("Gamma"))
+        assertTrue(get("/syncs/j2").body().contains("/syncs/j2/review/r1"))
+        // Pick a track for Alpha: it goes into the destination and leaves the list.
+        val chosen = java.net.URLEncoder.encode("""{"id":"x1","title":"Alpha","artists":["One"]}""", "UTF-8")
+        assertEquals(303, post("/syncs/j2/review/r1/resolve", "track=a&chosen=$chosen", *origin).statusCode())
+        assertTrue(File(data, "csv/Out.csv").readText().contains("Alpha"))
+        // Ignore Beta; keep Gamma's match.
+        assertEquals(303, post("/syncs/j2/review/r1/ignore", "track=b", *origin).statusCode())
+        assertEquals(303, post("/syncs/j2/review/r1/confirm", "track=c", *origin).statusCode())
+        val rep = env.store.data.reports.first { it.id == "r1" }
+        assertTrue(rep.unmatchedTracks.isEmpty() && rep.reviewTracks.isEmpty())
+        assertTrue("b" in env.store.job("j2")!!.ignoredSourceIds)
+        assertTrue(get("/syncs/j2/review/r1").body().contains("Nothing left to review"))
+        // Another sync's run is not reachable through this one.
+        assertEquals(404, get("/syncs/j1/review/r1").statusCode())
+    }
 }

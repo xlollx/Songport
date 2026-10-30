@@ -44,7 +44,7 @@ internal fun sameOrigin(header: (String) -> String?, baseUrl: String): Boolean {
  * JDK's own HTTP server; with SONGPORT_PASSWORD every page asks for it (HTTP basic auth).
  */
 class Web(
-    private val env: ServerEnv,
+    internal val env: ServerEnv,
     private val runner: Runner,
     private val auth: Auth,
     private val password: String?,
@@ -84,7 +84,7 @@ class Web(
 
     // ------------------------------------------------------------------ plumbing
 
-    private class Req(val ex: HttpExchange, val method: String, val path: List<String>, val query: Map<String, String>, val form: Map<String, String>)
+    internal class Req(val ex: HttpExchange, val method: String, val path: List<String>, val query: Map<String, String>, val form: Map<String, String>)
 
     private fun handle(ex: HttpExchange) {
         val path = ex.requestURI.path.trim('/').split('/').filter { it.isNotEmpty() }.map { decode(it) }
@@ -131,7 +131,7 @@ class Web(
         decode(it.substringBefore('=')) to decode(it.substringAfter('=', ""))
     }
 
-    private fun send(ex: HttpExchange, code: Int, body: String, type: String = "text/html") {
+    internal fun send(ex: HttpExchange, code: Int, body: String, type: String = "text/html") {
         val bytes = body.toByteArray(StandardCharsets.UTF_8)
         ex.responseHeaders.set("Content-Type", "$type; charset=utf-8")
         ex.responseHeaders.set("Cache-Control", "no-store")
@@ -143,12 +143,12 @@ class Web(
         ex.responseBody.use { it.write(bytes) }
     }
 
-    private fun redirect(ex: HttpExchange, to: String) {
+    internal fun redirect(ex: HttpExchange, to: String) {
         ex.responseHeaders.set("Location", to)
         ex.sendResponseHeaders(303, -1)
     }
 
-    private fun page(title: String, body: String, refresh: Int? = null) = Html.page(title, body, version, refresh, edition)
+    internal fun page(title: String, body: String, refresh: Int? = null) = Html.page(title, body, version, refresh, edition)
 
     private fun quit(r: Req, stop: () -> Unit) {
         send(r.ex, 200, page("Trackhop has stopped", """<p>Scheduled syncs wait until you open Trackhop again. You can close this tab.</p>"""))
@@ -156,11 +156,11 @@ class Web(
         Thread { Thread.sleep(300); stop() }.apply { isDaemon = false }.start()
     }
 
-    private fun notice(r: Req): String =
+    internal fun notice(r: Req): String =
         (r.query["ok"]?.let { """<div class="card ok">${h(it)}</div>""" } ?: "") +
             (r.query["err"]?.let { """<div class="card err">${h(it)}</div>""" } ?: "")
 
-    private fun q(s: String) = java.net.URLEncoder.encode(s, StandardCharsets.UTF_8)
+    internal fun q(s: String) = java.net.URLEncoder.encode(s, StandardCharsets.UTF_8)
 
     // ------------------------------------------------------------------ home: the syncs
 
@@ -178,7 +178,7 @@ class Web(
         send(r.ex, 200, page("Syncs", body.toString(), refresh = if (running.isNotEmpty()) 5 else null))
     }
 
-    private fun label(id: String): String = Providers.byId(id)?.label(env) ?: id
+    internal fun label(id: String): String = Providers.byId(id)?.label(env) ?: id
 
     private fun jobCard(job: SyncJob, isRunning: Boolean): String {
         val last = job.lastReportId?.let { env.store.report(it) }
@@ -186,7 +186,9 @@ class Web(
             isRunning -> progressText(job.id)
             last == null -> """<span class="muted">Never run</span>"""
             last.error != null -> """<span class="err">${h(last.error)}</span>"""
-            else -> """<span class="ok">+${last.added} −${last.removed}</span>""" + (if (last.unmatched.isNotEmpty()) """ <span class="muted">· ${last.unmatched.size} not found</span>""" else "")
+            else -> """<span class="ok">+${last.added} −${last.removed}</span>""" +
+                (if (last.unmatched.isNotEmpty()) """ <span class="muted">· ${last.unmatched.size} not found</span>""" else "") +
+                (if (last.hasReview()) """ · <a href="/syncs/${q(job.id)}/review/${q(last.id)}">Review</a>""" else "")
         }
         val next = Runner.nextRun(job)?.let { " · next ${Html.date(it)}" } ?: ""
         // A playlist written to File: its CSV, a click away.
@@ -439,6 +441,7 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
             else -> {
                 val job = env.store.job(rest[0]) ?: return send(r.ex, 404, page("Unknown sync", "<p><a href=\"/\">Back</a></p>"))
                 val back = "/syncs/${q(job.id)}"
+                if (rest.getOrNull(1) == "review") return review(r, job, rest.drop(2))
                 if (r.method != "POST") return syncPage(r, job)
                 when (rest.getOrNull(1)) {
                     "run" -> { runner.start(job); redirect(r.ex, back) }
@@ -448,7 +451,8 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
                     "toggle" -> { env.store.upsertJob(job.copy(enabled = !job.enabled)); redirect(r.ex, back) }
                     "schedule" -> {
                         val s = runCatching { Schedule.valueOf(r.form["schedule"].orEmpty()) }.getOrDefault(job.schedule)
-                        env.store.upsertJob(job.copy(schedule = s, mirrorRemovals = r.form["mirror"] == "on"))
+                        val name = r.form["name"]?.trim()?.takeIf { it.isNotEmpty() } ?: job.name
+                        env.store.upsertJob(job.copy(name = name, schedule = s, mirrorRemovals = r.form["mirror"] == "on"))
                         redirect(r.ex, "$back?ok=${q("Saved.")}")
                     }
                     "delete" -> { env.store.deleteJob(job.id); redirect(r.ex, "/") }
@@ -551,7 +555,7 @@ ${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input 
         body.append("</div>")
         val schedules = Schedule.values().joinToString("") { """<option value="${it.name}"${if (it == job.schedule) " selected" else ""}>${h(scheduleName(it))}</option>""" }
         body.append(
-            """<form method="post" action="/syncs/$id/schedule" class="card"><label>Schedule</label><select name="schedule">$schedules</select>
+            """<form method="post" action="/syncs/$id/schedule" class="card"><label>Name</label><input type="text" name="name" value="${h(job.name)}"><label>Schedule</label><select name="schedule">$schedules</select>
 <label class="check"><input type="checkbox" name="mirror"${if (job.mirrorRemovals) " checked" else ""}> Mirror removals</label><p><button class="secondary">Save</button></p></form>""",
         )
         val reports = env.store.data.reports.filter { it.jobId == job.id }.take(10)
@@ -560,6 +564,14 @@ ${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input 
             body.append("""<div class="card"><div class="row"><b>${Html.date(rep.startedEpoch)}</b><span class="muted">${rep.durationMs / 1000} s · source ${rep.sourceCount} · destination ${rep.targetCount}</span></div>""")
             body.append(if (rep.error != null) """<p class="err">${h(rep.error)}</p>""" else """<p class="ok">+${rep.added} added · −${rep.removed} removed</p>""")
             rep.notes.forEach { body.append("""<p class="muted">${h(it)}</p>""") }
+            if (rep.hasReview()) {
+                val what = listOfNotNull(
+                    rep.unmatchedTracks.size.takeIf { it > 0 }?.let { "$it not found" },
+                    rep.reviewTracks.size.takeIf { it > 0 }?.let { "$it to check" },
+                    rep.removedTracks.size.takeIf { it > 0 }?.let { "$it removed" },
+                ).joinToString(", ")
+                body.append("""<p><a class="button" href="/syncs/${q(job.id)}/review/${q(rep.id)}">Review ($what)</a></p>""")
+            }
             if (rep.unmatched.isNotEmpty()) {
                 body.append("""<details><summary>${rep.unmatched.size} not found</summary><ul>""")
                 rep.unmatchedTracks.forEach { t -> body.append("<li>${h(t.artistLine)} — ${h(t.title)}</li>") }
