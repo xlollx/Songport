@@ -239,6 +239,7 @@ internal fun Web.api(ex: HttpExchange, method: String, path: List<String>, query
             val report = env.store.data.reports.firstOrNull { it.id == rest[1] } ?: return error(404, "No run with that id.")
             json(200, Api.run(report))
         }
+        rest.size >= 3 && rest[0] == "services" -> ApiPlaylists.handle(this, ex, method, rest, ::json, ::error)
         rest == listOf("services") && method == "GET" -> json(200, JsonArray(Providers.connectors().map { p ->
             buildJsonObject {
                 put("id", p.id); put("name", p.label(env))

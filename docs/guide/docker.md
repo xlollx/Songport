@@ -259,6 +259,12 @@ only the computer itself can reach it.
 | `GET /api/v1/tasks/<id>` | A background task (a backup): progress, done, error |
 | `GET /api/v1/config` (`?history=true`) | The whole set-up as a `.trackhop` file, as *Tools › Backup & restore* saves it |
 | `GET /api/v1/metrics` | Prometheus metrics: syncs, running, and per sync the last run's time, result, added, removed and not found |
+| `GET /api/v1/services/<service>/playlists` | A connected service's playlists (and its liked songs, saved albums… where it has them) |
+| `POST /api/v1/services/<service>/playlists` | Creates a playlist: `{"name": "…"}` (201, with its id) |
+| `GET /api/v1/services/<service>/playlists/<id>/tracks` | The playlist's tracks: id, title, artists, album, duration, ISRC |
+| `POST /api/v1/services/<service>/playlists/<id>/tracks` | Adds tracks, searched and matched as a sync does: `{"tracks": [{"title": "…", "artist": "…"}, {"link": "https://open.spotify.com/track/…"}, {"id": "…"}, "Artist - Title"]}`. Tracks already there are skipped (`"allowDuplicates": true` to add them anyway); the answer lists what was added, already there and not found |
+| `DELETE /api/v1/services/<service>/playlists/<id>/tracks` | Removes tracks named by id, or by title and artist matched against the playlist (`POST …/tracks/remove` does the same, for tools that cannot send a body with DELETE) |
+| `PATCH`, `DELETE /api/v1/services/<service>/playlists/<id>` | Renames (`{"name": "…"}`) or deletes a playlist, where the service allows it |
 | `GET /health` | `ok`, with no token: for Docker's health check, Uptime Kuma or a reverse proxy |
 
 ```sh
@@ -282,6 +288,16 @@ scrape_configs:
     bearer_token: th_your_token
     static_configs:
       - targets: ["trackhop:8080"]
+```
+
+**Playlists and tracks.** `<service>` is an id from `GET /api/v1/services` (`spotify`, `ytm`,
+`navidrome_1`…). A Home Assistant button that adds the song playing in the kitchen to a playlist,
+or a script that collects the songs a radio played:
+
+```sh
+curl -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"tracks": ["Daft Punk - Digital Love", {"link": "https://open.spotify.com/track/2VEZx7NWsZ1D0eJ4uv5Fym"}]}' \
+  http://127.0.0.1:8080/api/v1/services/ytm/playlists/PLxxxxxxxx/tracks
 ```
 
 **Scripts.** Push a playlist file and sync it, or save the set-up every night:

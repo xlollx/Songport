@@ -84,7 +84,8 @@ move. Trackhop is for keeping playlists in step over time, without handing your 
   [Docker guide](https://xlollx.github.io/Trackhop/guide/docker). To update: `docker pull ghcr.io/xlollx/trackhop`,
   then remove and start the container again (the data stays in its volume).
 - Desktop and Docker also have a **REST API and a webhook**, for Home Assistant, n8n, Node-RED or a
-  script: list and start syncs, read their results, get notified when a run ends. See
+  script: list and start syncs, read their results, add and remove tracks in any connected
+  service's playlists, get notified when a run ends. See
   [Automation: REST API and webhook](#automation-rest-api-and-webhook).
 - Desktop and Docker have their **own version** (now 0.4.1), separate from the app's.
 
@@ -286,8 +287,10 @@ has the web connectors built in and no ads. See
 
 ## Automation: REST API and webhook
 
-Trackhop Desktop and the Docker server expose a small REST API, so other tools (Home Assistant,
-n8n, Node-RED, a cron script) can list the syncs, start them and read how they went. The Android
+Trackhop Desktop and the Docker server expose a REST API, so other tools (Home Assistant, n8n,
+Node-RED, a cron script) can list the syncs, start them and read how they went, and work on the
+playlists of every connected service: create them, add tracks by title and artist or by a link
+from any service (matched as a sync matches them), remove tracks, rename and delete. The Android
 app has none: it has no server to answer.
 
 Turn it on in **Tools › API** on the web page: make a token (shown once, only its SHA-256 hash is
@@ -310,6 +313,12 @@ On Trackhop Desktop only the computer itself can reach it (loopback only).
 | `GET /api/v1/tasks/<id>` | A background task (a backup): progress, done, error |
 | `GET /api/v1/config` (`?history=true`) | The whole set-up as a `.trackhop` file, as *Tools › Backup & restore* saves it |
 | `GET /api/v1/metrics` | Prometheus metrics: syncs, running, and per sync the last run's time, result, added, removed and not found |
+| `GET /api/v1/services/<service>/playlists` | A connected service's playlists (and its liked songs, saved albums… where it has them) |
+| `POST /api/v1/services/<service>/playlists` | Creates a playlist: `{"name": "…"}` (201, with its id) |
+| `GET /api/v1/services/<service>/playlists/<id>/tracks` | The playlist's tracks: id, title, artists, album, duration, ISRC |
+| `POST /api/v1/services/<service>/playlists/<id>/tracks` | Adds tracks, searched and matched as a sync does: `{"tracks": [{"title": "…", "artist": "…"}, {"link": "https://open.spotify.com/track/…"}, {"id": "…"}, "Artist - Title"]}`. Tracks already there are skipped (`"allowDuplicates": true` to add them anyway); the answer lists what was added, already there and not found |
+| `DELETE /api/v1/services/<service>/playlists/<id>/tracks` | Removes tracks named by id, or by title and artist matched against the playlist (`POST …/tracks/remove` does the same, for tools that cannot send a body with DELETE) |
+| `PATCH`, `DELETE /api/v1/services/<service>/playlists/<id>` | Renames (`{"name": "…"}`) or deletes a playlist, where the service allows it |
 | `GET /health` | `ok`, with no token: for Docker's health check, Uptime Kuma or a reverse proxy |
 
 ```sh

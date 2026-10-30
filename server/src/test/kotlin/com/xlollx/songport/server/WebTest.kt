@@ -322,6 +322,28 @@ class WebTest {
         val taskId = Regex(""""task":"([^"]+)"""").find(backup.body())!!.groupValues[1]
         assertTrue(api("/api/v1/tasks/$taskId", token).body().contains("\"title\":\"Backup\""))
         assertEquals(200, api("/api/v1/backup", token).statusCode())
+        // Playlists and tracks on a service (File here): create, add by title/artist, list, remove, rename, delete.
+        fun send(path: String, method: String, body: String) = client.send(
+            HttpRequest.newBuilder(URI("$base$path")).header("Authorization", "Bearer $token").header("Content-Type", "application/json")
+                .method(method, HttpRequest.BodyPublishers.ofString(body)).build(),
+            HttpResponse.BodyHandlers.ofString(),
+        )
+        val created = send("/api/v1/services/csv/playlists", "POST", """{"name":"From API"}""")
+        assertEquals(created.body(), 201, created.statusCode())
+        val pid = Regex(""""id":"([^"]+)"""").find(created.body())!!.groupValues[1]
+        val added = send("/api/v1/services/csv/playlists/${java.net.URLEncoder.encode(pid, "UTF-8").replace("+", "%20")}/tracks", "POST",
+            """{"tracks":[{"title":"Song","artist":"Band"},"Other Band - Other Song"]}""")
+        assertEquals(added.body(), 200, added.statusCode())
+        assertTrue(added.body(), added.body().contains("\"title\":\"Song\"") && added.body().contains("Other Song"))
+        val enc = java.net.URLEncoder.encode(pid, "UTF-8").replace("+", "%20")
+        assertTrue(api("/api/v1/services/csv/playlists/$enc/tracks", token).body().contains("Other Song"))
+        // Adding it again: already there, not twice.
+        assertTrue(send("/api/v1/services/csv/playlists/$enc/tracks", "POST", """{"tracks":["Band - Song"]}""").body().contains("\"alreadyThere\":[\"Band - Song\"]"))
+        val removed = send("/api/v1/services/csv/playlists/$enc/tracks", "DELETE", """{"tracks":[{"title":"Song","artist":"Band"}]}""")
+        assertTrue(removed.body(), removed.body().contains("\"removed\":[{") && removed.body().contains("\"notFound\":[]"))
+        assertFalse(api("/api/v1/services/csv/playlists/$enc/tracks", token).body().contains("\"title\":\"Song\""))
+        assertEquals(200, send("/api/v1/services/csv/playlists/$enc", "DELETE", "").statusCode())
+        assertEquals(404, api("/api/v1/services/nope/playlists", token).statusCode())
         assertEquals(404, api("/api/v1/nope", token).statusCode())
         assertEquals(303, post("/tools/api", "action=revoke", *origin).statusCode())
         assertEquals(403, api("/api/v1/syncs", token).statusCode())

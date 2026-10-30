@@ -5,6 +5,13 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## 0.4.3
+
+- **Playlists and tracks through the API**: a connected service's playlists and their tracks;
+  create, rename and delete playlists; add tracks by title and artist, by a link from any service
+  or by id (searched and matched as a sync does, already-present ones skipped); remove tracks by id
+  or by title and artist.
+
 ## 0.4.2
 
 - **More API calls**: Prometheus metrics (`/api/v1/metrics`, for Grafana), turn a sync on or off,
