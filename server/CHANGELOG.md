@@ -5,6 +5,20 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## 0.2.0
+
+The app's Tools on the page.
+
+- **Full backup**: every playlist and the library of a service (or all of them) as dated File
+  playlists, the last 5 versions kept; by hand, or every day or week; optionally copied to a folder.
+- **Duplicates**: the tracks a playlist has more than once, and the extra copies removed.
+- **Unplayable tracks**: the entries a service no longer plays, replaced by a playable version or
+  removed, with an undo.
+- **AI playlist**: your own AI (free keys from OpenRouter, Groq or Gemini, or a local model with
+  Ollama, no key at all) writes a playlist from a description; Trackhop creates it on a service or
+  in File.
+- **Buy me a coffee** in the footer: optional, nothing is unlocked.
+
 ## 0.1.0
 
 The first release with its own version, and the first of Trackhop Desktop (alpha).

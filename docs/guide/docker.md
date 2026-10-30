@@ -171,9 +171,51 @@ for health checks.
 - The log is in the page, in `docker logs trackhop` (or the name you gave the container), and in
   `songport.log`.
 
+## Tools
+
+The page's **Tools** are the app's: Export a playlist, File playlists (upload any format, download
+CSV, M3U, XSPF, JSPF or text), **Full backup** (by hand, daily or weekly, optionally copied to a
+folder: mount one, for example `-v /mnt/nas/trackhop:/backups`, and enter `/backups`),
+**Duplicates**, **Unplayable tracks** and **AI playlists**. Long runs go on in the background: their
+page refreshes until the result, and you can leave it.
+
+## AI playlists
+
+Describe a playlist; your own AI writes it and Trackhop creates it on a service (or saves it into
+File). Trackhop has no AI of its own and sends the AI only your description. Free ways:
+
+- **A free key**: [OpenRouter](https://openrouter.ai/keys) with a model whose name ends in `:free`,
+  [Groq](https://console.groq.com/keys), or [Google Gemini](https://aistudio.google.com/apikey).
+- **A model on your own machine, no key at all**: [Ollama](https://ollama.com) next to Trackhop.
+  With Docker Compose:
+
+  ```yaml
+  services:
+    trackhop:
+      image: ghcr.io/xlollx/trackhop:latest
+      ports: ["8080:8080"]
+      volumes: ["./trackhop-data:/data"]
+      environment:
+        SONGPORT_PASSWORD: choose-one
+    ollama:
+      image: ollama/ollama
+      volumes: ["ollama:/root/.ollama"]
+  volumes:
+    ollama:
+  ```
+
+  Then `docker compose exec ollama ollama pull llama3.2` (about 2 GB; a bigger model knows more
+  music but needs more memory), and in **Tools › AI playlist** choose *OpenAI-compatible*, address
+  `http://ollama:11434/v1`, model `llama3.2`. With Trackhop Desktop, install Ollama on the computer
+  and use `http://localhost:11434/v1`.
+
+What the AI proposes is searched on the service like any sync, so a track it made up is simply not
+found.
+
 ## Not there yet
 
-The playlist tools beyond export (backups, duplicates, unplayable tracks, AI playlists) come in the
-next versions, then the web-player connectors (Amazon Music, Spotify and Apple Music without a key).
+The connectors that run a service's own web player (Amazon Music, Spotify and Apple Music without a
+key, Deezer web, SoundCloud with an account) need a browser inside Trackhop: they are the next step.
+The compatibility card and the playlist poster are not on the page yet either.
 
 [Back to the guide](./)
