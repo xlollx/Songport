@@ -1,6 +1,10 @@
 # GitHub Pages: the project site (landing page, guide, privacy policy) and the Deezer redirect page.
 title: Trackhop
 description: Playlist sync across music services, on your phone.
+url: https://xlollx.github.io
+baseurl: /Trackhop
+plugins:
+  - jekyll-sitemap
 defaults:
   - scope:
       path: ""

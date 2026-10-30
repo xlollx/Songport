@@ -16,6 +16,13 @@ description (architecture, matching, services and their limits) stays in the
 - [Trackhop Desktop (Windows, Linux; beta)](desktop): works for everyday use, still young. The engine as a program on your computer, no Docker needed.
 - [Trackhop on a server (Docker, beta)](docker): works for everyday use, still young. Scheduled syncs on a home server or a NAS, with a web page.
 
+**Step by step**
+- [Sync Spotify playlists to YouTube Music](spotify-to-youtube-music), and keep them in sync.
+- [Transfer Apple Music playlists to Spotify](apple-music-to-spotify), no Mac or iPhone needed.
+- [Move Spotify playlists to TIDAL](spotify-to-tidal), with exact ISRC matching.
+- [Sync Spotify playlists to Navidrome, Jellyfin or Plex](spotify-to-navidrome-jellyfin), from your own library.
+- [Export a playlist to CSV or M3U](export-playlist-csv), and back up all of them.
+
 **Maintaining it**
 - [Release process](release-process): version, changelogs, what CI does, F-Droid and Obtainium.
 - [Amazon Music capture](amazon-music-capture): what to do when Amazon changes its web player again.
