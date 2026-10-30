@@ -79,8 +79,8 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         env:
-          IDENTITY_NAME: ${{ vars.MSIX_IDENTITY_NAME || 'xlollx.Trackhop' }}
-          PUBLISHER: ${{ vars.MSIX_PUBLISHER || 'CN=xlollx' }}
+          IDENTITY_NAME: ${{ vars.MSIX_IDENTITY_NAME || 'xlollx.TrackhopDesktop' }}
+          PUBLISHER: ${{ vars.MSIX_PUBLISHER || 'CN=6C91EA3D-59AB-47BA-8ACB-5DF74CE63DDF' }}
           PUBLISHER_DISPLAY_NAME: ${{ vars.MSIX_PUBLISHER_DISPLAY_NAME || 'xlollx' }}
         run: >-
           ./packaging/msix/build.ps1 -IdentityName $env:IDENTITY_NAME -Publisher $env:PUBLISHER

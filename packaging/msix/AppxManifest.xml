@@ -13,7 +13,7 @@
   <Identity Name="@IDENTITY_NAME@" Publisher="@PUBLISHER@" Version="@VERSION@.0" ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>Trackhop</DisplayName>
+    <DisplayName>Trackhop Desktop</DisplayName>
     <PublisherDisplayName>@PUBLISHER_DISPLAY_NAME@</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
     <Description>Keeps playlists in sync between music services (beta)</Description>
@@ -30,7 +30,7 @@
   <Applications>
     <Application Id="Trackhop" Executable="Trackhop.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="Trackhop"
+        DisplayName="Trackhop Desktop"
         Description="Keeps playlists in sync between music services"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"

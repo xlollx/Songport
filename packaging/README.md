@@ -157,10 +157,12 @@ version, URL and hash and commits. `packaging/scoop/trackhop.json` here is only 
   notes say so); outside the Store, people use the MSI or the ZIP.
 - **Version.** The Store wants the first number above 0 and keeps the fourth: Trackhop `x.y.z` is
   package `(x+1).y.z.0` (0.5.1 is 1.5.1.0, 1.0.0 will be 2.0.0.0), always increasing.
-- **Identity.** Name, Publisher and Publisher display name must be exactly Partner Center's; they
-  come from the repository variables `MSIX_IDENTITY_NAME`, `MSIX_PUBLISHER`,
-  `MSIX_PUBLISHER_DISPLAY_NAME` (defaults `xlollx.Trackhop`, `CN=xlollx`, `xlollx`, which the
-  Store refuses: set the variables before building the package to upload).
+- **Identity.** Name, Publisher and Publisher display name must be exactly Partner Center's. The
+  reserved name is **Trackhop Desktop** ("Trackhop" was taken), so the package's display name is
+  that too; its identity is `xlollx.TrackhopDesktop`, publisher
+  `CN=6C91EA3D-59AB-47BA-8ACB-5DF74CE63DDF`, display name `xlollx`. These are the defaults in
+  `build.ps1` and `desktop.yml`; the repository variables `MSIX_IDENTITY_NAME`, `MSIX_PUBLISHER`,
+  `MSIX_PUBLISHER_DISPLAY_NAME` override them if the account ever changes.
 - **What changes under MSIX.** The app keeps working: it writes only under `%APPDATA%\Trackhop`,
   which Windows redirects for packaged apps into the package's own folder
   (`%LOCALAPPDATA%\Packages\<package>\LocalCache\Roaming\Trackhop`), removed when the app is
@@ -168,8 +170,8 @@ version, URL and hash and commits. `packaging/scoop/trackhop.json` here is only 
   does not work there**: it writes the Run key, which a packaged app only sees in its private copy
   of the registry. The manifest declares a startup task instead (off by default; the user turns it
   on in *Settings › Apps › Startup* or Task Manager), which starts `TrackhopStartup.exe`, the same
-  launcher with `--background`. Hiding the tray entry inside the MSIX (for example when
-  `jpackage.app-path` is under `\WindowsApps\`) is a small change in `Desktop.kt`, left for later.
+  launcher with `--background`. Inside the package (`jpackage.app-path` under `\WindowsApps\`) the
+  tray and the window do not offer their own "Start with the computer".
   Port 8642 on 127.0.0.1 and WebView2 work as with the MSI (full-trust apps are not sandboxed).
 
 **Once:**
@@ -177,10 +179,10 @@ version, URL and hash and commits. `packaging/scoop/trackhop.json` here is only 
 1. Open a developer account at [storedeveloper.microsoft.com](https://storedeveloper.microsoft.com)
    (*Get started for free*; no fee for individual or company accounts; identity check with an ID).
 2. In [Partner Center](https://partner.microsoft.com/dashboard/apps-and-games/overview): *New
-   product › MSIX or PWA app*, reserve the name **Trackhop**.
-3. *Product management › Product identity*: copy **Package/Identity/Name**,
-   **Package/Identity/Publisher** (`CN=…`) and **Package/Properties/PublisherDisplayName** into the
-   repository variables `MSIX_IDENTITY_NAME`, `MSIX_PUBLISHER`, `MSIX_PUBLISHER_DISPLAY_NAME`.
+   product › MSIX or PWA app*, reserve the name (done: **Trackhop Desktop**).
+3. *Product management › Product identity*: check **Package/Identity/Name**,
+   **Package/Identity/Publisher** (`CN=…`) and **Package/Properties/PublisherDisplayName** against
+   the defaults in `build.ps1` and `desktop.yml` (or the repository variables that override them).
 4. Build a package with them: *Actions › Desktop › Run workflow* on `main` (the `.msix` is in the
    *Trackhop-Desktop-Windows* artifact), or wait for the next release (it is a release file).
 5. Create the submission:

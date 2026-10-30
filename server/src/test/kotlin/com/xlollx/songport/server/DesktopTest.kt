@@ -23,6 +23,12 @@ class DesktopTest {
         assertEquals(File("/Users/me", "Library/Application Support/Trackhop"), DesktopApp.dataDir(emptyMap(), "Mac OS X", "/Users/me"))
     }
 
+    @Test fun theStorePackageLeavesStartingWithTheComputerToWindows() {
+        assertTrue(Autostart.storePackage("C:\\Program Files\\WindowsApps\\xlollx.TrackhopDesktop_1.5.2.0_x64__abc\\Trackhop.exe"))
+        assertFalse(Autostart.storePackage("C:\\Users\\me\\AppData\\Local\\Trackhop\\Trackhop.exe"))
+        assertFalse(Autostart.storePackage("/opt/trackhop/bin/Trackhop"))
+    }
+
     @Test fun signInsComeBackToTheLoopbackAddressAndThereIsNoPassword() {
         val c = DesktopApp.config(mapOf("SONGPORT_PASSWORD" to "x", "SONGPORT_LOCALE" to "it"))
         assertEquals("http://127.0.0.1:${DesktopApp.PORT}", c.baseUrl)

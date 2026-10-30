@@ -9,8 +9,8 @@
 param(
   [string] $AppImage = 'server/build/desktop/out/Trackhop',
   [string] $OutDir = 'dist',
-  [string] $IdentityName = 'xlollx.Trackhop',
-  [string] $Publisher = 'CN=xlollx',
+  [string] $IdentityName = 'xlollx.TrackhopDesktop',
+  [string] $Publisher = 'CN=6C91EA3D-59AB-47BA-8ACB-5DF74CE63DDF',
   [string] $PublisherDisplayName = 'xlollx'
 )
 $ErrorActionPreference = 'Stop'

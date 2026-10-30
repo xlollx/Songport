@@ -91,7 +91,9 @@ object DesktopApp {
 /**
  * Starting with the computer: the launcher that jpackage made (its path is in `jpackage.app-path`),
  * registered in the user's Run key on Windows or as an XDG autostart entry on Linux. Not offered
- * when running from a plain build (no launcher to register).
+ * when running from a plain build (no launcher to register), nor from the Microsoft Store's package
+ * (under WindowsApps), which only sees its own copy of the Run key: there Windows' own switch for
+ * the package's startup task does it (Settings › Apps › Startup).
  */
 object Autostart {
     private val launcher: String? get() = System.getProperty("jpackage.app-path")?.takeIf { File(it).exists() }
@@ -100,7 +102,10 @@ object Autostart {
     private const val RUN_KEY = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
     private val desktopFile get() = File(System.getenv("XDG_CONFIG_HOME")?.takeIf { it.isNotBlank() } ?: (System.getProperty("user.home") + "/.config"), "autostart/trackhop.desktop")
 
-    val available: Boolean get() = launcher != null && (windows || linux)
+    val available: Boolean get() = launcher.let { it != null && !storePackage(it) } && (windows || linux)
+
+    /** The launcher's path is inside an installed MSIX package (`…\WindowsApps\<package>\…`). */
+    internal fun storePackage(path: String): Boolean = path.replace('/', '\\').contains("\\WindowsApps\\", ignoreCase = true)
 
     fun enabled(): Boolean = when {
         windows -> run("reg", "query", RUN_KEY, "/v", "Trackhop") == 0
