@@ -1,0 +1,1 @@
+Bakım sürümü: GitHub'daki APK artık F-Droid'in derlediği şekilde birebir derleniyor, böylece F-Droid güncellemeyi yayınlayabilir. Gizlilik politikası bağlantısı Trackhop sitesine gidiyor.

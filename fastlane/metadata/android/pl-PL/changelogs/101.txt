@@ -1,0 +1,1 @@
+Wersja serwisowa: APK na GitHubie jest teraz budowany dokładnie tak jak w F-Droid, więc F-Droid może opublikować aktualizację. Link do polityki prywatności prowadzi do strony Trackhop.

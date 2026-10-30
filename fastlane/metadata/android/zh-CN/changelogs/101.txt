@@ -1,0 +1,1 @@
+维护版本：GitHub 上的 APK 现在与 F-Droid 的构建方式完全相同，因此 F-Droid 可以发布此更新。隐私政策链接指向 Trackhop 网站。

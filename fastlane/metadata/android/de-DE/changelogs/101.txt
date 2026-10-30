@@ -1,0 +1,1 @@
+Wartungsversion: Das APK auf GitHub wird jetzt genau so gebaut wie bei F-Droid, damit F-Droid das Update veröffentlichen kann. Der Link zur Datenschutzerklärung zeigt auf die Trackhop-Website.

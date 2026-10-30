@@ -1,0 +1,1 @@
+Maintenance release: the APK on GitHub is now built exactly as F-Droid builds it, so F-Droid can publish the update. The privacy policy link points to the Trackhop site.

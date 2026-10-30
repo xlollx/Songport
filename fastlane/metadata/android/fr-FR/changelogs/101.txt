@@ -1,0 +1,1 @@
+Version de maintenance : l'APK sur GitHub est désormais compilé exactement comme F-Droid le compile, pour que F-Droid puisse publier la mise à jour. Le lien vers la politique de confidentialité pointe vers le site de Trackhop.
