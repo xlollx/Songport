@@ -12,6 +12,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
+import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermission
 
@@ -23,8 +24,11 @@ class StorageTest {
         JsonTokenVault(file).set("spotify", Tokens(accessToken = "a", refreshToken = "r", userName = "me"))
         val again = JsonTokenVault(file)
         assertEquals("me", again.get("spotify")?.userName)
-        val perms = Files.getPosixFilePermissions(file.toPath())
-        assertFalse(PosixFilePermission.GROUP_READ in perms || PosixFilePermission.OTHERS_READ in perms)
+        // Owner-only where the file system has POSIX permissions (Windows: the user's own folder decides).
+        if ("posix" in FileSystems.getDefault().supportedFileAttributeViews()) {
+            val perms = Files.getPosixFilePermissions(file.toPath())
+            assertFalse(PosixFilePermission.GROUP_READ in perms || PosixFilePermission.OTHERS_READ in perms)
+        }
         again.clear("spotify")
         assertNull(JsonTokenVault(file).get("spotify"))
     }
