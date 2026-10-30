@@ -107,9 +107,16 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
-        # The AAB for Google Play is the "play" flavor (no plugin references); the APK for direct
-        # download is the "full" flavor.
-        run: gradle bundlePlayRelease assembleFullRelease --no-daemon --stacktrace
+        # The AAB for Google Play is the "play" flavor (no plugin references), built with the
+        # repository's variables. The APK for direct download is the "full" flavor, built with none of
+        # them: F-Droid rebuilds it from source with the defaults in app/build.gradle and publishes it
+        # only if it comes out identical (1.3.6 did not: a stale PRIVACY_POLICY_URL variable).
+        run: |
+          gradle bundlePlayRelease --no-daemon --stacktrace
+          env -u SPOTIFY_CLIENT_ID -u TIDAL_CLIENT_ID -u DEEZER_APP_ID -u DEEZER_REDIRECT_URL \
+              -u GOOGLE_CLIENT_ID -u APPLE_DEVELOPER_TOKEN -u LASTFM_API_KEY -u ADMOB_APP_ID \
+              -u ADMOB_BANNER_ID -u ADMOB_TEST_DEVICES -u ADMOB_LIVE -u PRIVACY_POLICY_URL -u KOFI_URL -u SPONSORS_URL \
+            gradle assembleFullRelease --no-daemon --stacktrace
 
       - name: Carica l'AAB come artifact
         if: steps.key.outputs.present == 'true'
