@@ -13,6 +13,9 @@ the Docker image carried the app's version.
   nothing to set up (a key Trackhop leaves in its data folder, accepted from this machine only),
   or to a server elsewhere with its API token. Desktop: `trackhop-cli` (`trackhop` with Scoop and
   Chocolatey); Docker: `docker exec trackhop trackhop …`. [The guide](https://xlollx.github.io/Trackhop/guide/cli).
+- **macOS**: Trackhop Desktop for Apple silicon and Intel Macs, as a `.dmg`. Not signed by Apple:
+  the first time, *System Settings › Privacy & Security › Open Anyway*. On the Mac its pages open in
+  the browser, with its icon in the menu bar.
 - **Linux: a Flatpak** among the release's files (`Trackhop-Desktop-v<version>-linux.flatpak`),
   built from source as Flathub would: `flatpak install --user` it. Its data lives in
   `~/.var/app/io.github.xlollx.Trackhop/data/trackhop`, apart from the .deb's and the tar.gz's.

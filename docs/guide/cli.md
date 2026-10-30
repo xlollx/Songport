@@ -25,6 +25,7 @@ trackhop add spotify "Focus" "Bonobo - Kerala" https://music.youtube.com/watch?v
 | Windows, installed with Scoop | `trackhop …` |
 | Windows, installer (.msi) | `"%LOCALAPPDATA%\Trackhop\trackhop-cli.exe" …` |
 | Windows, portable (.zip) | `trackhop-cli.exe` in the `Trackhop` folder |
+| macOS | `/Applications/Trackhop.app/Contents/MacOS/trackhop-cli …` |
 | Linux, .deb | `/opt/trackhop/bin/trackhop-cli …` |
 | Linux, .tar.gz | `Trackhop/bin/trackhop-cli` where you unpacked it |
 

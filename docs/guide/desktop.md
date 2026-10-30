@@ -1,4 +1,4 @@
-# Trackhop Desktop (Windows, Linux; beta)
+# Trackhop Desktop (Windows, macOS, Linux; beta)
 
 > **Beta.** Trackhop Desktop works for everyday use but is still young: pages and settings can change
 > between releases. Keep a copy of the data folder (or save the set-up from *Tools › Backup &
@@ -39,6 +39,24 @@ signed with a paid certificate, as is usual for open-source projects. Choose *Mo
 [Desktop workflow](https://github.com/xlollx/Trackhop/actions/workflows/desktop.yml).
 
 To update, install the newer file over the old one: your syncs and sign-ins stay.
+
+### macOS
+
+From 0.5.4, each release has two disk images: `-macos-arm64.dmg` for Apple silicon (M1 and later)
+and `-macos-x64.dmg` for Intel Macs (*Apple menu › About This Mac* says which). Open the `.dmg` and
+drag **Trackhop** into *Applications*.
+
+**macOS refuses to open it the first time**: Trackhop is not signed with Apple's paid developer
+certificate, as is usual for free open-source apps. Once, after that first refusal: *System
+Settings › Privacy & Security*, scroll down to "Trackhop was blocked…" and choose **Open Anyway**,
+then confirm. From then on it opens normally. (In Terminal, `xattr -dr com.apple.quarantine
+/Applications/Trackhop.app` does the same.)
+
+On the Mac, Trackhop shows its pages in your browser (no window of its own yet) and puts its icon
+in the menu bar, with **Open Trackhop** and **Quit Trackhop**; it has no *Start with the computer*
+yet: add it in *System Settings › General › Login Items* if you want it. Its data is in
+`~/Library/Application Support/Trackhop`. The command line is
+`/Applications/Trackhop.app/Contents/MacOS/trackhop-cli` ([the trackhop command](cli)).
 
 ## Use it
 

@@ -37,7 +37,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
+        # macOS twice: Apple silicon (macos-latest) and Intel, one .dmg each.
+        os: [ ubuntu-latest, windows-latest, macos-latest, macos-15-intel ]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -87,16 +88,24 @@ jobs:
           -PublisherDisplayName $env:PUBLISHER_DISPLAY_NAME
 
       - name: Starts and answers
-        # The packed app on its own runtime: it serves its pages on 127.0.0.1 and stops from the page.
+        # The packed app on its own runtime: it serves its pages on 127.0.0.1, its command line finds
+        # it with nothing set up, and it stops from the page.
         env:
           APPDATA: ${{ runner.temp }}/appdata
           XDG_DATA_HOME: ${{ runner.temp }}/appdata
         run: |
-          if [ "$RUNNER_OS" = Windows ]; then app=server/build/desktop/out/Trackhop/Trackhop.exe; else app=server/build/desktop/out/Trackhop/bin/Trackhop; fi
+          out=server/build/desktop/out
+          case "$RUNNER_OS" in
+            Windows) app=$out/Trackhop/Trackhop.exe; cli=$out/Trackhop/trackhop-cli.exe ;;
+            macOS) app=$out/Trackhop.app/Contents/MacOS/Trackhop; cli=$out/Trackhop.app/Contents/MacOS/trackhop-cli ;;
+            *) app=$out/Trackhop/bin/Trackhop; cli=$out/Trackhop/bin/trackhop-cli ;;
+          esac
           "$app" --background &
           for i in $(seq 1 60); do curl -sf http://127.0.0.1:8642/health && break; sleep 1; done
           curl -sf http://127.0.0.1:8642/ | grep -q "Trackhop Desktop"
           test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: evil.example' http://127.0.0.1:8642/)" = 403
+          "$cli" status | tee cli.txt
+          grep -q "0 syncs" cli.txt
           curl -sf -X POST -H "Origin: http://127.0.0.1:8642" http://127.0.0.1:8642/quit > /dev/null
           sleep 3
           ! curl -sf -m 3 http://127.0.0.1:8642/health
@@ -105,7 +114,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
-          name: Trackhop-Desktop-${{ runner.os }}
+          name: Trackhop-Desktop-${{ runner.os }}${{ runner.os == 'macOS' && format('-{0}', runner.arch) || '' }}
           path: dist/*
           if-no-files-found: error
           retention-days: 7
@@ -160,6 +169,8 @@ jobs:
           **Docker:** \`docker pull ghcr.io/xlollx/trackhop:$v\` (or \`:latest\`). [Docker guide](https://xlollx.github.io/Trackhop/guide/docker) · [Desktop guide](https://xlollx.github.io/Trackhop/guide/desktop)
 
           The \`.msix\` is the package for the Microsoft Store, unsigned: it does not install by itself; use the \`.msi\` or the \`.zip\`.
+
+          **macOS:** \`-macos-arm64.dmg\` for Apple silicon (M1 and later), \`-macos-x64.dmg\` for Intel Macs. Not signed by Apple: the first time, macOS refuses to open it; then *System Settings › Privacy & Security › Open Anyway* ([how](https://xlollx.github.io/Trackhop/guide/desktop#macos)).
 
           **Flatpak (Linux):** \`flatpak install --user Trackhop-Desktop-v$v-linux.flatpak\`, then *Trackhop* in the menu (needs Flathub's GNOME runtime, which Flatpak offers to install).
           EOF
