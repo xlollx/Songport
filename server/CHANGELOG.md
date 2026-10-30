@@ -5,7 +5,7 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
-## Next
+## 0.5.4
 
 - **The `trackhop` command**: run syncs (`trackhop run --all --wait`), read their results, list
   playlists, add and remove tracks, import playlist files, back up, from a terminal, cron or Task

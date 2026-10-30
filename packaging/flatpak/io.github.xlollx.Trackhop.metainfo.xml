@@ -99,6 +99,12 @@
   </requires>
 
   <releases>
+    <release version="0.5.4" date="2026-10-31">
+      <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.4</url>
+      <description>
+        <p>The trackhop command: run syncs, read their results and add or remove tracks from a terminal or a script. On Linux, a Flatpak among the release's files.</p>
+      </description>
+    </release>
     <release version="0.5.3" date="2026-10-30">
       <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.3</url>
       <description>
