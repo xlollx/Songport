@@ -15,12 +15,12 @@ whether or not your phone is on.
 docker run -d --name trackhop \
   -p 8080:8080 \
   -v trackhop-data:/data \
-  -e SONGPORT_URL=http://localhost:8080 \
+  -e SONGPORT_URL=http://127.0.0.1:8080 \
   -e SONGPORT_PASSWORD=choose-one \
   ghcr.io/xlollx/trackhop:latest
 ```
 
-Then open `http://localhost:8080` (any user name, the password you chose).
+Then open `http://127.0.0.1:8080` (any user name, the password you chose).
 
 With Docker Compose:
 
@@ -35,7 +35,7 @@ services:
     volumes:
       - ./trackhop-data:/data
     environment:
-      SONGPORT_URL: http://localhost:8080
+      SONGPORT_URL: http://127.0.0.1:8080
       SONGPORT_PASSWORD: choose-one
       # SONGPORT_LOCALE: it
 ```
@@ -69,7 +69,7 @@ version running, and the app version whose engine it uses.
 
 | Variable | Default | What it does |
 |---|---|---|
-| `SONGPORT_URL` | `http://localhost:8080` | The address your browser uses to reach Trackhop. Sign-ins come back to `<SONGPORT_URL>/callback`. |
+| `SONGPORT_URL` | `http://127.0.0.1:8080` | The address your browser uses to reach Trackhop. Sign-ins come back to `<SONGPORT_URL>/callback`. |
 | `SONGPORT_PASSWORD` | none | Asks for this password on every page. **Set it** whenever anyone else can reach the port. |
 | `SONGPORT_LOCALE` | English | Language of the texts that come from the engine: `it`, `de`, `fr`, `es`, `pt-BR`, `pl`, `ru`, `tr`, `zh`, `ja`, `ko`. |
 | `SONGPORT_PORT` | `8080` | Port inside the container. |
@@ -151,7 +151,10 @@ the steps and shows the exact redirect address to paste. The rules each service 
   behind a reverse proxy with https.
 - **Google (YouTube)**: create a *Web application* OAuth client, add `<SONGPORT_URL>/callback` as an
   authorized redirect URI, and paste both the client ID and the client secret. Google accepts `http`
-  only for `localhost`.
+  only for `127.0.0.1` and `localhost`.
+
+Open the page at the same address as `SONGPORT_URL` (`127.0.0.1`, not `localhost`): the service
+sends you back there after the sign-in. Spotify no longer accepts `localhost` at all.
 - **Deezer** wants an `https` redirect.
 - **TIDAL** takes the redirect you register.
 
@@ -252,8 +255,8 @@ only the computer itself can reach it.
 | `GET /api/v1/files`, `GET /api/v1/files/<name>.csv?format=m3u` | The File playlists, in any export format |
 
 ```sh
-curl -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/v1/syncs
-curl -X POST -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/v1/syncs/run-all
+curl -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/syncs
+curl -X POST -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/syncs/run-all
 ```
 
 **Webhook.** With an address set in Tools › API, every finished run is POSTed there as JSON

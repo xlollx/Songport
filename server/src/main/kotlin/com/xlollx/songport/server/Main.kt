@@ -47,7 +47,7 @@ class Config(
     env: Map<String, String>,
     defaultDataDir: String = "/data",
     defaultPort: Int = 8080,
-    defaultHost: String = "localhost",
+    defaultHost: String = "127.0.0.1",
 ) {
     val dataDir = File(env["SONGPORT_DATA"]?.takeIf { it.isNotBlank() } ?: defaultDataDir)
     val port = env["SONGPORT_PORT"]?.toIntOrNull() ?: defaultPort
