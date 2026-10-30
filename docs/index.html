@@ -107,6 +107,20 @@ main_class: home
   </div>
 </section>
 
+<section class="section" id="docker">
+  <div class="wrap">
+    <h2>Also on a computer or a NAS</h2>
+    <p class="intro">Want to try it without a phone, or keep syncs running on a machine that is always on? The same engine runs in Docker, on Linux, Windows, macOS, a Raspberry Pi or a NAS, with a web page to connect services and create syncs. It is an early test version (alpha): expect rough edges, and tell us what breaks.</p>
+    <div class="data server">
+      <pre><code>docker run -d -p 8080:8080 \
+  -v trackhop-data:/data \
+  -e SONGPORT_PASSWORD=choose-one \
+  ghcr.io/xlollx/trackhop</code></pre>
+      <p>Then open <code>http://localhost:8080</code>. Settings, Docker Compose and what works there: <a href="guide/docker"><strong>the Docker guide</strong></a>.</p>
+    </div>
+  </div>
+</section>
+
 <section class="section">
   <div class="wrap">
     <h2>How Trackhop uses your data</h2>
@@ -126,6 +140,7 @@ main_class: home
       <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Trackhop"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium"></a>
       <a href="https://github.com/xlollx/Trackhop/releases/latest">or the APK from GitHub</a>
     </div>
+    <p class="intro">No Android phone at hand? <a href="#docker">Try the Docker version</a> on your computer.</p>
     <p class="intro">Using the Google Play version? <a href="https://github.com/xlollx/Trackhop-Bridge/releases/latest"><strong>Download Trackhop Bridge</strong></a>, the plugin that adds YouTube Music, Amazon Music, and Spotify and Apple Music without developer keys (unofficial web interfaces: read its notes first).</p>
   </div>
 </section>
