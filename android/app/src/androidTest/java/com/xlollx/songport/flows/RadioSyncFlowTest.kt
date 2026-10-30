@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performScrollToNode
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.xlollx.songport.MainActivity
 import com.xlollx.songport.R
@@ -53,7 +54,7 @@ class RadioSyncFlowTest : FlowTest() {
         waitText(s(R.string.empty_syncs_title))
         click(s(R.string.new_sync))
         waitText(s(R.string.editor_title_new))
-        click(s(R.string.editor_source_radio))
+        clickRadioTile()
         waitText(s(R.string.radio_stream_label))
 
         field(R.string.radio_stream_address).performTextInput(STREAM)
@@ -102,7 +103,7 @@ class RadioSyncFlowTest : FlowTest() {
         waitText(s(R.string.empty_syncs_title))
         click(s(R.string.new_sync))
         waitText(s(R.string.editor_title_new))
-        click(s(R.string.editor_source_radio))
+        clickRadioTile()
         waitText(s(R.string.radio_stream_label))
         field(R.string.radio_stream_address).performTextInput("not a stream")
         click(s(R.string.radio_use_stream))
@@ -111,5 +112,14 @@ class RadioSyncFlowTest : FlowTest() {
         click(s(R.string.save))
         waitText(s(R.string.editor_error_incomplete))
         assertTrue(store.data.jobs.isEmpty())
+    }
+
+    /** The Radio tile is last in the source row, off screen on a phone: the row scrolls to it first. */
+    private fun clickRadioTile() {
+        val tile = hasText(s(R.string.editor_source_radio))
+        compose.onAllNodes(androidx.compose.ui.test.hasScrollToNodeAction()).fetchSemanticsNodes().indices.forEach { i ->
+            runCatching { compose.onAllNodes(androidx.compose.ui.test.hasScrollToNodeAction())[i].performScrollToNode(tile) }
+        }
+        click(s(R.string.editor_source_radio))
     }
 }
