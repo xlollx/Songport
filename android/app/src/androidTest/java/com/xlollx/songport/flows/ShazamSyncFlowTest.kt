@@ -49,6 +49,7 @@ class ShazamSyncFlowTest : FlowTest() {
         waitNode("the preview's back arrow", hasClickAction() and hasContentDescription(s(R.string.nav_back)), ms = 30_000)
         back()
         waitNode("Shazam's mark on the card", hasContentDescription(s(R.string.shazam_badge_desc)))
+        snapshot("shazam-card")
 
         // Edited, it opens on Shazam again.
         clickDesc(s(R.string.more_actions))

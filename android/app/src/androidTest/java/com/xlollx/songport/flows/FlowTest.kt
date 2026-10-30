@@ -279,6 +279,14 @@ abstract class FlowTest {
         runCatching { compose.waitForIdle() }
     }
 
+    /** The screen as it is now, kept with the failure screenshots (ui-out/failures): a preview for review. */
+    protected fun snapshot(name: String) {
+        runCatching {
+            shell("mkdir -p /sdcard/ui-test-failures")
+            shell("screencap -p /sdcard/ui-test-failures/preview-$name.png")
+        }
+    }
+
     /** On failure: the screen to a PNG and the semantics tree to the log. Always: rotation and locale put back. */
     private inner class FailureAndCleanup : TestRule {
         override fun apply(base: Statement, description: Description): Statement = object : Statement() {
