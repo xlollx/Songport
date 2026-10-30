@@ -51,6 +51,22 @@ object Html {
     /** The style attribute that gives a card a sync's colour, or "" for the default look. */
     fun jobStyle(key: String?): String = JOB_COLORS[key]?.let { (light, dark) -> """ style="--job:$light;--job-dark:$dark"""" } ?: ""
 
+    /**
+     * Where "Back" leads from [path] (no leading slash): the level above, by the page's own address
+     * (not the browser's history, which holds the forms' redirects); null on the tabs themselves.
+     */
+    fun backTo(path: String): String? {
+        val parts = path.split('/').filter { it.isNotEmpty() }
+        if (parts.size <= 1 && parts.firstOrNull() != "syncs") return null
+        return when {
+            parts[0] == "syncs" && parts.size <= 2 -> "/"
+            parts[0] == "syncs" && parts.size == 4 && parts[2] == "review" -> "/syncs/" + java.net.URLEncoder.encode(parts[1], Charsets.UTF_8)
+            parts[0] == "tools" && parts.getOrNull(1) == "task" -> "/tools"
+            parts[0] == "files" -> "/connectors/csv"
+            else -> "/" + parts.dropLast(1).joinToString("/") { java.net.URLEncoder.encode(it, Charsets.UTF_8).replace("+", "%20") }
+        }
+    }
+
     fun page(title: String, body: String, version: String, refreshSeconds: Int? = null, edition: Edition = Edition.SERVER, path: String = ""): String = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -63,6 +79,7 @@ ${refreshSeconds?.let { """<meta http-equiv="refresh" content="$it">""" } ?: ""}
 <nav>${NAV.joinToString("") { (href, label) -> val on = if (href == "/") path.isEmpty() || path.startsWith("syncs") else path.startsWith(href.drop(1)); """<a href="$href"${if (on) " class=\"on\" aria-current=\"page\"" else ""}>$label</a>""" }}</nav></header>
 <p class="alpha-note"><strong>Alpha.</strong> ${h(edition.product)} is an early test version: things can break or change between releases. Keep a copy of the data folder and <a href="https://xlollx.github.io/Trackhop/guide/reporting-a-problem">report what goes wrong</a>.</p>
 <main>
+${backTo(path)?.let { """<a class="back" href="${h(it)}">‹ Back</a>""" } ?: ""}
 <h1>${h(title)}</h1>
 $body
 </main>
@@ -94,6 +111,8 @@ a{color:var(--link)}
 .top nav a.on{background:rgba(255,255,255,.92);color:#1c1b22}
 main{max-width:920px;margin:0 auto;padding:16px;overflow-wrap:anywhere}
 h1{font-size:26px;margin:8px 0 16px;letter-spacing:-.01em}
+.back{display:inline-block;margin:4px 0 0;padding:4px 12px 4px 8px;border-radius:999px;background:var(--surface-2);color:var(--ink);text-decoration:none;font-weight:600;font-size:14px}
+.back:hover{background:var(--accent-2);color:var(--accent-2-ink)}
 h2{font-size:18px;margin:24px 0 8px}
 h3{margin:0 0 4px;font-size:16px}
 .card{background:var(--surface);border-radius:var(--radius);padding:16px 18px;margin:0 0 12px}

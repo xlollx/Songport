@@ -253,4 +253,16 @@ class WebTest {
         assertEquals(303, post("/playlists/csv/Road", "action=delete", *origin).statusCode())
         assertFalse(File(data, "csv/Road.csv").exists())
     }
+
+    @Test fun backLeadsOneLevelUp() {
+        assertEquals(null, Html.backTo(""))
+        assertEquals(null, Html.backTo("tools"))
+        assertEquals("/", Html.backTo("syncs/new"))
+        assertEquals("/syncs/j1", Html.backTo("syncs/j1/review/r1"))
+        assertEquals("/tools", Html.backTo("tools/backup"))
+        assertEquals("/tools", Html.backTo("tools/task/abc"))
+        assertEquals("/playlists/csv", Html.backTo("playlists/csv/Road trip"))
+        assertTrue(get("/tools/backup").body().contains("""class="back" href="/tools""""))
+        assertFalse(get("/").body().contains("class=\"back\""))
+    }
 }
