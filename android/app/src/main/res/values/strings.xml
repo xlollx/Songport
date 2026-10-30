@@ -1272,4 +1272,8 @@
     <string name="radio_notif_blocked_title">Tap to listen to %1$s</string>
     <string name="radio_notif_blocked_text">Android did not let Trackhop start listening in the background. Open the app to start it, or allow alarms and reminders for Trackhop.</string>
     <string name="radio_listen_again">Listen again</string>
+    <string name="whats_new_15_radio_title">Songs from a radio</string>
+    <string name="whats_new_15_radio_body">Pick a radio and the hours: Trackhop notes the songs it plays and adds them to a playlist on any service. Look for the radio on the card.</string>
+    <string name="whats_new_15_light_title">Light on battery and data</string>
+    <string name="whats_new_15_light_body">On the phone it checks the song on air every 2 minutes, on Wi-Fi by default, with a small notification while listening.</string>
 </resources>

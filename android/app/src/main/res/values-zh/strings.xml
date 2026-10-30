@@ -1250,4 +1250,8 @@
     <string name="radio_notif_blocked_title">点按以收听 %1$s</string>
     <string name="radio_notif_blocked_text">Android 不允许 Trackhop 在后台开始收听。打开应用即可开始，或允许 Trackhop 设置闹钟和提醒。</string>
     <string name="radio_listen_again">重新收听</string>
+    <string name="whats_new_15_radio_title">收录电台歌曲</string>
+    <string name="whats_new_15_radio_body">选择电台和时段：Trackhop 记录播放的歌曲，并添加到任意服务上的播放列表。</string>
+    <string name="whats_new_15_light_title">省电又省流量</string>
+    <string name="whats_new_15_light_body">在手机上每 2 分钟查看一次正在播放的歌曲，默认仅在 Wi-Fi 下，并显示一条小通知。</string>
 </resources>

@@ -1,0 +1,1 @@
+Synchros radio : choisissez une radio et des horaires, Trackhop enregistre les titres diffusés dans une playlist sur n'importe quel service. Sur le téléphone, le titre à l'antenne est relevé toutes les 2 minutes, en Wi-Fi par défaut, avec une petite notification.

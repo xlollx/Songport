@@ -20,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.SettingsBackupRestore
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -81,6 +83,13 @@ object WhatsNew {
      */
     val releases: List<Release> by lazy {
         listOf(
+            Release(
+                "1.5",
+                listOf(
+                    Item(Icons.Filled.Radio, JobColor.PINK, R.string.whats_new_15_radio_title, R.string.whats_new_15_radio_body),
+                    Item(Icons.Filled.Wifi, JobColor.GREEN, R.string.whats_new_15_light_title, R.string.whats_new_15_light_body),
+                ),
+            ),
             Release(
                 "1.4",
                 listOf(

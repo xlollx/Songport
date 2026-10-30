@@ -1318,4 +1318,8 @@
     <string name="radio_notif_blocked_title">Dotknij, aby słuchać: %1$s</string>
     <string name="radio_notif_blocked_text">Android nie pozwolił Trackhop zacząć słuchania w tle. Otwórz aplikację, aby je uruchomić, albo zezwól Trackhop na alarmy i przypomnienia.</string>
     <string name="radio_listen_again">Słuchaj dalej</string>
+    <string name="whats_new_15_radio_title">Piosenki z radia</string>
+    <string name="whats_new_15_radio_body">Wybierz stację i godziny: Trackhop zapisuje grane utwory i dodaje je do playlisty w dowolnym serwisie.</string>
+    <string name="whats_new_15_light_title">Oszczędza baterię i dane</string>
+    <string name="whats_new_15_light_body">Na telefonie co 2 minuty sprawdza bieżący utwór, domyślnie tylko przez Wi-Fi, z małym powiadomieniem.</string>
 </resources>

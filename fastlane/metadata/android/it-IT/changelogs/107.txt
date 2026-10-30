@@ -1,0 +1,1 @@
+Sync radio: scegli una radio e gli orari, e Trackhop salva i brani che trasmette in una playlist su qualsiasi servizio. Sul telefono controlla il brano in onda ogni 2 minuti, in Wi-Fi di default, con una piccola notifica mentre ascolta. Le sync radio hanno una radiolina sulla scheda.

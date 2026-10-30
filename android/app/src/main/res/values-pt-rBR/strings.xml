@@ -1280,4 +1280,8 @@
     <string name="radio_notif_blocked_title">Toque para ouvir %1$s</string>
     <string name="radio_notif_blocked_text">O Android não deixou o Trackhop começar a ouvir em segundo plano. Abra o app para iniciar ou permita alarmes e lembretes para o Trackhop.</string>
     <string name="radio_listen_again">Ouvir de novo</string>
+    <string name="whats_new_15_radio_title">Músicas de uma rádio</string>
+    <string name="whats_new_15_radio_body">Escolha uma rádio e os horários: o Trackhop anota as músicas tocadas e as adiciona a uma playlist em qualquer serviço.</string>
+    <string name="whats_new_15_light_title">Leve na bateria e nos dados</string>
+    <string name="whats_new_15_light_body">No celular, confere a música no ar a cada 2 minutos, só no Wi-Fi por padrão, com uma pequena notificação.</string>
 </resources>
