@@ -23,23 +23,26 @@ import java.io.File
  * connectors (Amazon Music, Apple Music without a key) run the service's own web player in an
  * Android WebView, and Apple Music's official route signs in with MusicKit JS in one too: none of
  * them exists without a phone.
+ *
+ * [officialOnly] (the Microsoft Store's package, like the app's Play build) leaves the unofficial
+ * ones out: the official APIs, the personal servers, Last.fm, ListenBrainz and files remain.
  */
-fun installServerConnectors() = Providers.install(
-    listOf(
+fun installServerConnectors(officialOnly: Boolean = false) = Providers.install(
+    listOfNotNull(
         Factory(SpotifyProvider.SERVICE) { SpotifyProvider(it) },
-        Factory(SpotifyWebServerProvider.SERVICE) { SpotifyWebServerProvider(it) },
+        Factory(SpotifyWebServerProvider.SERVICE) { SpotifyWebServerProvider(it) }.takeUnless { officialOnly },
         Factory(YouTubeProvider.SERVICE) { YouTubeProvider(it) },
-        Factory(YtmServerProvider.SERVICE) { YtmServerProvider(it) },
+        Factory(YtmServerProvider.SERVICE) { YtmServerProvider(it) }.takeUnless { officialOnly },
         Factory(TidalProvider.SERVICE) { TidalProvider(it) },
         Factory(DeezerProvider.SERVICE) { DeezerProvider(it) },
-        Factory(DeezerWebServerProvider.SERVICE) { DeezerWebServerProvider(it) },
+        Factory(DeezerWebServerProvider.SERVICE) { DeezerWebServerProvider(it) }.takeUnless { officialOnly },
         Factory(SubsonicProvider.SERVICE) { SubsonicProvider(it) },
         Factory(JellyfinProvider.SERVICE) { JellyfinProvider(it) },
         Factory(PlexProvider.SERVICE) { PlexProvider(it) },
         Factory(LastFmProvider.SERVICE) { LastFmProvider(it) },
         Factory(ListenBrainzProvider.SERVICE) { ListenBrainzProvider(it) },
     ),
-    singletons = listOf(LocalFilesProvider, SoundCloudProvider),
+    singletons = listOfNotNull(LocalFilesProvider, SoundCloudProvider.takeUnless { officialOnly }),
 )
 
 /** The settings, from the environment (what `docker run -e` sets). */
@@ -83,7 +86,7 @@ class Launched(val env: ServerEnv, val runner: Runner, val web: Web, val version
     }
 }
 
-fun launch(config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null, onShow: (() -> Unit)? = null): Launched {
+fun launch(config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null, onShow: (() -> Unit)? = null, officialOnly: Boolean = false): Launched {
     config.dataDir.mkdirs()
     Log.init(config.dataDir)
     fun resource(name: String) = Config::class.java.getResourceAsStream(name)?.use { String(it.readBytes()).trim() }
@@ -91,7 +94,7 @@ fun launch(config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null, 
     val version = (resource("/songport-version.txt") ?: "dev") + (resource("/engine-version.txt")?.let { " (engine $it)" } ?: "")
 
     BuildDefaults.values = config.buildDefaults
-    installServerConnectors()
+    installServerConnectors(officialOnly)
     val env = ServerEnv(config.dataDir, Strings.load(config.locale), config.baseUrl)
     // A first start: the services the server offers are not listed until the user adds them, as in the app.
     if (!env.store.data.settings.connectorsInit) env.store.updateSettings { it.copy(connectorsInit = true) }

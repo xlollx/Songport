@@ -63,6 +63,10 @@ links; CSV files; YouTube Music with pasted cookies (unofficial, alpha). Deezer 
 the desktop (it wants an `https` redirect). Amazon Music, Spotify without a key and Apple Music
 are not there yet either: they need a browser inside the app, which is the next step.
 
+The **Microsoft Store** version offers only the official connections, the personal servers,
+Last.fm, ListenBrainz and files (store rules, as for the app on Google Play): for the unofficial ones
+(YouTube Music, Spotify and Deezer with cookies, SoundCloud links) use the installer or the ZIP.
+
 **Your own key.** Register this redirect with the service: `http://127.0.0.1:8642/callback`
 (Spotify and Google both accept plain `http` for `127.0.0.1`). The service's page in Trackhop
 shows the exact address and the steps.

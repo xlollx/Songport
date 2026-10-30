@@ -29,6 +29,15 @@ class DesktopTest {
         assertFalse(Autostart.storePackage("/opt/trackhop/bin/Trackhop"))
     }
 
+    @Test fun theStorePackageOffersOnlyTheOfficialConnections() {
+        installServerConnectors(officialOnly = true)
+        val ids = com.xlollx.songport.providers.Providers.services().map { it.id }
+        assertTrue(ids.containsAll(listOf("spotify", "tidal", "subsonic", "jellyfin", "plex", "csv")))
+        assertTrue(com.xlollx.songport.providers.Providers.services().none { it is CookieConnector || it.linkOnly })
+        installServerConnectors()
+        assertTrue(com.xlollx.songport.providers.Providers.services().any { it is CookieConnector })
+    }
+
     @Test fun signInsComeBackToTheLoopbackAddressAndThereIsNoPassword() {
         val c = DesktopApp.config(mapOf("SONGPORT_PASSWORD" to "x", "SONGPORT_LOCALE" to "it"))
         assertEquals("http://127.0.0.1:${DesktopApp.PORT}", c.baseUrl)

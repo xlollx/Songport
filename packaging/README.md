@@ -173,6 +173,9 @@ version, URL and hash and commits. `packaging/scoop/trackhop.json` here is only 
   launcher with `--background`. Inside the package (`jpackage.app-path` under `\WindowsApps\`) the
   tray and the window do not offer their own "Start with the computer".
   Port 8642 on 127.0.0.1 and WebView2 work as with the MSI (full-trust apps are not sandboxed).
+- **Official connections only.** Inside the package Desktop leaves out the unofficial connectors
+  (YouTube Music, Spotify and Deezer with cookies, SoundCloud links), as the app's Play build does:
+  `installServerConnectors(officialOnly = true)`, decided by the same `\WindowsApps\` check.
 
 **Once:**
 
