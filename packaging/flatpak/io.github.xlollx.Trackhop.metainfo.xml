@@ -99,6 +99,12 @@
   </requires>
 
   <releases>
+    <release version="0.5.5" date="2026-10-31">
+      <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.5</url>
+      <description>
+        <p>The server's page can be added to a phone's home screen and opens like an app.</p>
+      </description>
+    </release>
     <release version="0.5.4" date="2026-10-31">
       <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.4</url>
       <description>

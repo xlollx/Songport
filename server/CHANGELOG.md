@@ -5,7 +5,7 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
-## Next
+## 0.5.5
 
 - **On the phone, as an app**: the server's page can be added to the home screen and opens full
   screen, like an app (a PWA: manifest, icons, a service worker that keeps nothing and says so when
