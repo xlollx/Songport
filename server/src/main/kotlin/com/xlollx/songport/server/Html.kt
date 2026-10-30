@@ -24,7 +24,7 @@ object Html {
     /** The Trackhop mark (the app's ic_brand_mark), white, for the header's tile. */
     private const val MARK = """<svg viewBox="0 0 66 66" aria-hidden="true"><g transform="translate(-21 -21)" fill="#fff" stroke="#fff" stroke-linecap="round"><path d="M30.6,40.5 A27,27 0 0 1 77.4,40.5" fill="none" stroke-width="5.5"/><path d="M77.4,67.5 A27,27 0 0 1 30.6,67.5" fill="none" stroke-width="5.5"/><path d="M81.85,36.2 L71.45,42.2 L81.4,47.4 Z" stroke="none"/><path d="M26.15,71.8 L36.55,65.8 L26.6,60.6 Z" stroke="none"/><g transform="translate(2.1 1.5)"><path d="M54.08,61.11 A7,5.6 -20 1 1 40.92,65.89 A7,5.6 -20 1 1 54.08,61.11 Z" stroke="none"/><path d="M52.6,62.5 L52.6,37.5" fill="none" stroke-width="3.6"/><path d="M52.6,37.2 C58.5,38.6 63.4,42.4 63.2,49.6 C61.6,45.2 58,42.9 52.6,42.6 Z" stroke="none"/></g></g></svg>"""
 
-    private val NAV = listOf("/" to "Syncs", "/connectors" to "Services", "/tools" to "Tools", "/log" to "Log")
+    private val NAV = listOf("/" to "Syncs", "/playlists" to "Playlists", "/connectors" to "Services", "/tools" to "Tools", "/log" to "Log")
 
     /**
      * A service's mark as the app draws it: its glyph (ServiceMarks) white on a circle in its brand

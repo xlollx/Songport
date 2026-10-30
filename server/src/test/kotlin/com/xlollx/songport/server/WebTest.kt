@@ -236,4 +236,21 @@ class WebTest {
             ai.stop(0)
         }
     }
+
+    @Test fun playlistsCanBeSeenRenamedAndTrimmed() {
+        File(data, "csv").mkdirs()
+        File(data, "csv/Mix.csv").writeText("title,artist\nSong,Band\nOther,Band\n")
+        assertEquals(303, post("/connectors/add", "service=csv", *origin).statusCode())
+        assertTrue(get("/playlists").body().contains("/playlists/csv"))
+        assertTrue(get("/playlists/csv").body().contains("Mix"))
+        val page = get("/playlists/csv/Mix").body()
+        assertTrue(page, page.contains("Other") && page.contains("Rename"))
+        val id = Regex("""name="t_([^"]+)"[^>]*> Band — <b>Other""").find(page)?.groupValues?.get(1) ?: error(page)
+        assertEquals(303, post("/playlists/csv/Mix", "action=remove&t_${java.net.URLEncoder.encode(id, "UTF-8")}=on", *origin).statusCode())
+        assertFalse(File(data, "csv/Mix.csv").readText().contains("Other"))
+        assertEquals(303, post("/playlists/csv/Mix", "action=rename&name=Road", *origin).statusCode())
+        assertTrue(File(data, "csv/Road.csv").exists())
+        assertEquals(303, post("/playlists/csv/Road", "action=delete", *origin).statusCode())
+        assertFalse(File(data, "csv/Road.csv").exists())
+    }
 }

@@ -48,7 +48,7 @@ internal fun sameOrigin(header: (String) -> String?, baseUrl: String): Boolean {
  */
 class Web(
     internal val env: ServerEnv,
-    private val runner: Runner,
+    internal val runner: Runner,
     private val auth: Auth,
     private val password: String?,
     private val version: String,
@@ -91,6 +91,8 @@ class Web(
         val ex: HttpExchange, val method: String, val path: List<String>, val query: Map<String, String>, val form: Map<String, String>,
         /** Uploaded files (multipart forms): field name to file name and content. */
         val files: Map<String, Multipart.File> = emptyMap(),
+        /** The urlencoded form as sent, with repeated names (several ticked checkboxes). */
+        val rawForm: List<Pair<String, String>> = emptyList(),
     )
 
     private fun handle(ex: HttpExchange) {
@@ -111,8 +113,9 @@ class Web(
         val bytes = if (method == "POST") ex.requestBody.readNBytes(MAX_BODY + 1) else ByteArray(0)
         if (bytes.size > MAX_BODY) return send(ex, 413, page("Too large", "<p>Files up to ${MAX_BODY / 1_000_000} MB.</p>"))
         val parts = if (type.startsWith("multipart/form-data")) Multipart.parse(type, bytes) else null
-        val form = parts?.fields ?: if (method == "POST") parseForm(String(bytes, StandardCharsets.UTF_8)) else emptyMap()
-        val r = Req(ex, method, path, parseForm(ex.requestURI.rawQuery ?: ""), form, parts?.files.orEmpty())
+        val raw = if (method == "POST" && parts == null) parsePairs(String(bytes, StandardCharsets.UTF_8)) else emptyList()
+        val form = parts?.fields ?: raw.toMap()
+        val r = Req(ex, method, path, parseForm(ex.requestURI.rawQuery ?: ""), form, parts?.files.orEmpty(), raw)
         currentPath.set(path.joinToString("/"))
         when {
             path.isEmpty() -> home(r)
@@ -125,6 +128,7 @@ class Web(
             path.size == 2 && path[0] == "files" && method == "POST" -> fileAction(r, path[1])
             path == listOf("files") && method == "POST" -> upload(r)
             path[0] == "tools" -> tools(r, path.drop(1))
+            path[0] == "playlists" -> playlists(r, path.drop(1))
             path[0] == "syncs" -> syncs(r, path.drop(1))
             else -> send(ex, 404, page("Not found", "<p><a href=\"/\">Back</a></p>"))
         }
@@ -142,9 +146,11 @@ class Web(
 
     private fun decode(s: String) = URLDecoder.decode(s, StandardCharsets.UTF_8)
 
-    private fun parseForm(body: String): Map<String, String> = body.split('&').filter { it.isNotEmpty() }.associate {
+    private fun parsePairs(body: String): List<Pair<String, String>> = body.split('&').filter { it.isNotEmpty() }.map {
         decode(it.substringBefore('=')) to decode(it.substringAfter('=', ""))
     }
+
+    private fun parseForm(body: String): Map<String, String> = parsePairs(body).toMap()
 
     internal fun send(ex: HttpExchange, code: Int, body: String, type: String = "text/html") {
         val bytes = body.toByteArray(StandardCharsets.UTF_8)
