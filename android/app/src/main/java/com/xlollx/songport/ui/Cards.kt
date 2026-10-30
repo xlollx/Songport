@@ -51,7 +51,7 @@ object Cards {
     private const val INK = 0xFF14121A.toInt()
     private const val PANEL = 0x2EFFFFFF
     private const val PANEL_LINE = 0x40FFFFFF
-    private const val SITE = "xlollx.github.io/Songport"
+    private const val SITE = "xlollx.github.io/Trackhop"
 
     /** What the compatibility card shows: names, score, the common tracks with covers. */
     class CompatibilityCard(val nameA: String, val nameB: String, val result: Compatibility.Result, val covers: Map<String, Bitmap?>)
@@ -63,7 +63,7 @@ object Cards {
     class Mark(val name: String, val color: Int, val serviceId: String?)
 
     /**
-     * "Songport in numbers": the headline figure with its label and period, up to three more
+     * "Trackhop in numbers": the headline figure with its label and period, up to three more
      * figures (value, label), and the route used most with its caption. Everything is already
      * formatted and translated: the renderer only lays it out.
      */
@@ -140,6 +140,13 @@ object Cards {
         // A soft dark wash so white text reads on the brightest corner too.
         c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), Paint().apply { color = INK; alpha = 70 })
     }
+
+    /**
+     * The brand beam ([Brand.BeamStops], as the Syncs header and the icon): the band's edge
+     * through the right border at [edgeY] of the height, so it crosses the top of the mark's tile
+     * and all the text stays on the dark side.
+     */
+    private fun beam(c: Canvas, w: Int, h: Int, edgeY: Float) = paintBeam(c, w, h, edgeY)
 
     private fun panel(c: Canvas, r: RectF, radius: Float = 36f) {
         c.drawRoundRect(r, radius, radius, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = PANEL })
@@ -312,12 +319,23 @@ object Cards {
         return p
     }
 
-    /** The Songport mark (the app's own vector), in white, centred on [cx]. */
-    private fun brandMark(ctx: Context, c: Canvas, cx: Float, top: Float, side: Float) {
-        val d = ContextCompat.getDrawable(ctx, R.drawable.ic_brand_mark)?.mutate() ?: return
+    /**
+     * The Trackhop mark (the app's own vector), in white, [side] wide, centred on [cx] on the
+     * glass tile of the icon (white at 18 %, a faint lighter edge, corners at 0.24 of the side);
+     * the tile is side / 0.8 wide and its top is [top]. Returns the tile's height.
+     */
+    private fun brandMark(ctx: Context, c: Canvas, cx: Float, top: Float, side: Float): Float {
+        val tile = side / 0.8f
+        val r = RectF(cx - tile / 2, top, cx + tile / 2, top + tile)
+        val radius = tile * 0.24f
+        c.drawRoundRect(r, radius, radius, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = PANEL })
+        c.drawRoundRect(r, radius, radius, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x59FFFFFF; style = Paint.Style.STROKE; strokeWidth = 3f })
+        val d = ContextCompat.getDrawable(ctx, R.drawable.ic_brand_mark)?.mutate() ?: return tile
         d.setTint(Color.WHITE)
-        d.setBounds((cx - side / 2).toInt(), top.toInt(), (cx + side / 2).toInt(), (top + side).toInt())
+        val markTop = top + (tile - side) / 2
+        d.setBounds((cx - side / 2).toInt(), markTop.toInt(), (cx + side / 2).toInt(), (markTop + side).toInt())
         d.draw(c)
+        return tile
     }
 
     /** A service's mark as the app draws it ([ServiceLogo]): the glyph, or the initial, on a disc of its colour. */
@@ -346,16 +364,16 @@ object Cards {
         val w = format.width; val h = format.height
         val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val c = Canvas(bmp)
-        background(c, w, h)
         val story = format == Format.STORY
+        beam(c, w, h, if (story) 0.14f else 0.15f)
         val margin = 72f
         val inner = w - 2 * margin
         val cx = w / 2f
-        // The mark and the title.
+        // The mark on its tile, and the title.
         val markSide = if (story) 124f else 84f
-        val markTop = if (story) 150f else 60f
-        brandMark(ctx, c, cx, markTop, markSide)
-        var y = markTop + markSide + (if (story) 72f else 54f)
+        val markTop = if (story) 130f else 50f
+        val tile = brandMark(ctx, c, cx, markTop, markSide)
+        var y = markTop + tile + (if (story) 72f else 54f)
         val eyebrow = paint(Color.WHITE, if (story) 38f else 32f, bold = true, alpha = 225).apply { letterSpacing = 0.08f }
         line(c, card.title.uppercase(), cx, y, eyebrow, inner, Paint.Align.CENTER)
         // The headline figure, as big as it fits.

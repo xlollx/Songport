@@ -1,0 +1,1 @@
+Dal menu di ogni sincronizzazione ora puoi disattivarla o riattivarla. "Apri in Navidrome" e "Apri in Jellyfin" aprono la ricerca sul tuo server. Il pulsante Sincronizza tutto non copre più la prima scheda. Il mirror verso i Mi piace dice chiaramente che toglie i mi piace, nell'editor e nell'anteprima.

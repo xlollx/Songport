@@ -1,0 +1,1 @@
+SoundCloud: SoundCloud'un mobil sitesinde yapılan giriş artık tanınıyor ve giriş yapınca ekran kendiliğinden kapanıyor. "Listen in app" düğmesi artık sizi girişten çıkarmıyor.

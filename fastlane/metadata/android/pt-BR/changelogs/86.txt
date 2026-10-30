@@ -1,0 +1,1 @@
+Uma só tela de abertura em vez de duas: o app vai direto do ícone para as suas sincronizações.

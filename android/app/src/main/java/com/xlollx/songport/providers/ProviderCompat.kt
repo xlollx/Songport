@@ -32,6 +32,9 @@ suspend fun MusicProvider.renamePlaylist(ctx: Context, playlistId: String, name:
 suspend fun MusicProvider.deletePlaylist(ctx: Context, playlistId: String) = deletePlaylist(ctx.env, playlistId)
 suspend fun MusicProvider.setPlaylistVisibility(ctx: Context, playlistId: String, public: Boolean) = setPlaylistVisibility(ctx.env, playlistId, public)
 fun MusicProvider.webSearchUrl(ctx: Context, query: String): String? = webSearchUrl(ctx.env, query)
+/** The service's web search for MatchSearch's "Open in" button, or null when it has none (the button is hidden). */
+fun MusicProvider.webSearch(ctx: Context): ((String) -> String?)? =
+    if (hasWebSearch(ctx.env)) { q -> webSearchUrl(ctx.env, q) } else null
 fun MusicProvider.trackUrl(ctx: Context, trackId: String): String? = trackUrl(ctx.env, trackId)
 suspend fun MusicProvider.searchWide(ctx: Context, track: Track): List<Track> = searchWide(ctx.env, track)
 suspend fun MusicProvider.track(ctx: Context, trackId: String): Track? = track(ctx.env, trackId)

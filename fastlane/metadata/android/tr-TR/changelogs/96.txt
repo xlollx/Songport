@@ -1,0 +1,1 @@
+Her eşitleme artık kendi menüsünden devre dışı bırakılabilir veya etkinleştirilebilir. "Navidrome'da aç" ve "Jellyfin'de aç" sunucunuzda aramayı açar. Tümünü eşitle düğmesi artık ilk kartı kapatmıyor. Beğenilenlere aynalama, düzenleyicide ve önizlemede beğenileri kaldırdığını açıkça söylüyor.

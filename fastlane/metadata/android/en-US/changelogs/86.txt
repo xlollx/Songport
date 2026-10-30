@@ -1,0 +1,1 @@
+One opening screen instead of two: the app goes straight from the icon to your syncs.

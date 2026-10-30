@@ -56,7 +56,7 @@ object PlaylistLinks {
             "apple", "apple_bridge" -> "https://music.apple.com/${region?.lowercase()?.takeIf { it.length == 2 } ?: "us"}/playlist/$playlistId"
             "ytm" -> "https://music.youtube.com/playlist?list=$playlistId"
             "youtube" -> "https://www.youtube.com/playlist?list=$playlistId"
-            "deezer" -> "https://www.deezer.com/playlist/$playlistId"
+            "deezer", "deezer_bridge" -> "https://www.deezer.com/playlist/$playlistId"
             "tidal" -> "https://tidal.com/browse/playlist/$playlistId"
             "soundcloud" -> "https://soundcloud.com/$playlistId"
             "amazon" -> "https://music.amazon.${region?.lowercase()?.takeIf { it.isNotBlank() } ?: "com"}/user-playlists/$playlistId"

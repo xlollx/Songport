@@ -59,7 +59,7 @@ object TrackLinks {
             "apple", "apple_bridge" -> "appleMusic"
             "youtube", "ytm" -> "youtubeMusic"
             "tidal" -> "tidal"
-            "deezer" -> "deezer"
+            "deezer", "deezer_bridge" -> "deezer"
             "amazon" -> "amazonMusic"
             else -> return null
         }
@@ -86,7 +86,7 @@ object TrackLinks {
         "youtube" -> "https://www.youtube.com/watch?v=$trackId"
         "ytm" -> "https://music.youtube.com/watch?v=$trackId"
         "amazon" -> "https://music.amazon.com/tracks/$trackId"
-        "deezer" -> "https://www.deezer.com/track/$trackId"
+        "deezer", "deezer_bridge" -> "https://www.deezer.com/track/$trackId"
         "tidal" -> "https://tidal.com/browse/track/$trackId"
         ShazamShare.SERVICE -> "https://www.shazam.com/track/$trackId"
         else -> null
@@ -99,6 +99,7 @@ object TrackLinks {
         "spotify" -> serviceId == "spotify" || serviceId == "spotify_bridge"
         "apple" -> serviceId == "apple" || serviceId == "apple_bridge"
         "youtube" -> serviceId == "youtube" || serviceId == "ytm"
+        "deezer" -> serviceId == "deezer" || serviceId == "deezer_bridge"
         else -> serviceId == service
     }
 }

@@ -41,6 +41,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.clickable
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.ui.semantics.Role
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -51,6 +53,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.foundation.rememberScrollState
@@ -94,6 +97,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -107,6 +114,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.xlollx.songport.Notifications
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.PauseCircle
+import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.Delete
 import com.xlollx.songport.R
 import com.xlollx.songport.data.StoreData
 import androidx.compose.material.icons.filled.Favorite
@@ -146,19 +160,30 @@ fun SyncsScreen(
     onReview: (String) -> Unit = {},
     onOpenTarget: (SyncJob) -> Unit = {},
     onStats: () -> Unit = {},
+    onOpenLog: () -> Unit = {},
+    onTour: (() -> Unit)? = null,
+    onToggleEnabled: (SyncJob) -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val running by SyncState.running.collectAsState()
+    // Pause asked for, pause reached (the engine waiting), stop asked for: what each running card shows.
+    val pausedSet by SyncState.paused.collectAsState()
+    val parkedSet by SyncState.parked.collectAsState()
+    val stoppingSet by SyncState.stopping.collectAsState()
     // Find and filter: kept across rotation; only in use from FIND_MIN_SYNCS syncs on.
     var filter by rememberSaveable(stateSaver = SyncFilterSaver) { mutableStateOf(SyncFilter()) }
     if (data.jobs.isEmpty()) {
         val anyConnected = remember { Providers.connectors().any { it.requiresAuth && it.isConnected(ctx) } }
         if (anyConnected) {
-            EmptyState(Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body_connected))
+            EmptyState(
+                Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body_connected),
+                secondaryLabel = stringResource(R.string.tour_offer), onSecondary = onTour,
+            )
         } else {
             EmptyState(
                 Icons.Filled.Sync, stringResource(R.string.empty_syncs_title), stringResource(R.string.empty_syncs_body),
                 stringResource(R.string.empty_syncs_cta_accounts), onGoToAccounts,
+                secondaryLabel = stringResource(R.string.tour_offer), onSecondary = onTour,
             )
         }
         return
@@ -187,6 +212,13 @@ fun SyncsScreen(
         starting = false
     }
     val pullOff = running.isNotEmpty() && !starting
+    // The pill's place in the list (after the hero and, when shown, the finder) and its height once laid out.
+    val runAllIndex = if (finder) 2 else 1
+    var pillHeight by remember { mutableIntStateOf(0) }
+    // Pinned once the list has scrolled past its place: the cards are then passing beneath it.
+    val pillPinned by remember(runAllIndex) {
+        derivedStateOf { listState.firstVisibleItemIndex > runAllIndex || (listState.firstVisibleItemIndex == runAllIndex && listState.firstVisibleItemScrollOffset > 0) }
+    }
     val pullGuard = remember { PullGuard() }
     SideEffect { pullGuard.blocked = pullOff }
     PullToRefreshBox(
@@ -218,18 +250,25 @@ fun SyncsScreen(
             // While syncs run it says how many, and a tap brings the first running card into view.
             if (data.jobs.size >= 2) stickyHeader(key = "runall") {
                 // Index of the first card: hero, finder, pill, then the support card when there is one.
-                val firstCard = 2 + (if (finder) 1 else 0) + (if (support != null || nudge) 1 else 0)
-                RunAllPill(running.size) {
+                val firstCard = runAllIndex + 1 + (if (support != null || nudge) 1 else 0)
+                // A card brought into view lands just under the pinned pill, not beneath it.
+                val tally = SyncState.tally(running.keys, pausedSet, parkedSet, stoppingSet)
+                RunAllPill(tally, pinned = pillPinned, modifier = Modifier.onSizeChanged { pillHeight = it.height }) {
+                    // Every running sync paused: the pill is the way to resume them all.
+                    if (tally.allPaused) {
+                        running.keys.forEach { SyncState.resume(it) }
+                        return@RunAllPill
+                    }
                     val firstShown = shown.indexOfFirst { running.containsKey(it.id) }
                     val firstAll = data.jobs.indexOfFirst { running.containsKey(it.id) }
                     when {
-                        firstShown >= 0 -> scope.launch { listState.animateScrollToItem(firstCard + firstShown) }
+                        firstShown >= 0 -> scope.launch { listState.animateScrollToItem(firstCard + firstShown, -pillHeight) }
                         // Running, but hidden by the filter: show every card again, then go to it.
                         firstAll >= 0 -> {
                             filter = SyncFilter()
                             scope.launch {
                                 withTimeoutOrNull(1000) { snapshotFlow { listState.layoutInfo.totalItemsCount }.first { it > firstCard + firstAll } }
-                                listState.animateScrollToItem(firstCard + firstAll)
+                                listState.animateScrollToItem(firstCard + firstAll, -pillHeight)
                             }
                         }
                         else -> onRunAll()
@@ -242,11 +281,34 @@ fun SyncsScreen(
             if (shown.isEmpty()) item(key = "nomatch") { SyncFinderEmpty { filter = SyncFilter() } }
             items(shown, key = { it.id }) { job ->
                 Box(Modifier.animateItem()) {
-                    JobCard(job, data, running[job.id], running.containsKey(job.id), onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget)
+                    val run = if (running.containsKey(job.id)) SyncState.runOf(job.id, pausedSet, parkedSet, stoppingSet) else null
+                    JobCard(job, data, running[job.id], run, onEdit, onPreview, onRun, onDelete, onReview, onOpenTarget, onOpenLog, onToggleEnabled)
                 }
             }
         }
     }
+}
+
+/** What a sync card's pill says. */
+internal enum class CardStatus { RUNNING, PAUSING, PAUSED, DISABLED, NEVER, ERROR, HELD_BACK, INCOMPLETE, NOT_FOUND, OK }
+
+/**
+ * The pill for a card, the most important first. Removals on hold come before "Not found: N": a few
+ * songs to look up by hand matter less than a target the sync would empty, which waits for the user.
+ * A running sync says where it stands ([run]): "Pausing" while its step finishes, "Paused" once the
+ * engine waits; a stop in progress still reads as running, the card's text says it is stopping.
+ */
+internal fun cardStatus(isRunning: Boolean, enabled: Boolean, report: SyncReport?, run: SyncState.Run? = null): CardStatus = when {
+    isRunning && run == SyncState.Run.PAUSED -> CardStatus.PAUSED
+    isRunning && run == SyncState.Run.PAUSING -> CardStatus.PAUSING
+    isRunning -> CardStatus.RUNNING
+    !enabled -> CardStatus.DISABLED
+    report == null -> CardStatus.NEVER
+    !report.ok -> CardStatus.ERROR
+    report.heldBack > 0 -> CardStatus.HELD_BACK
+    report.searchInterrupted -> CardStatus.INCOMPLETE
+    report.unmatchedTracks.isNotEmpty() -> CardStatus.NOT_FOUND
+    else -> CardStatus.OK
 }
 
 /**
@@ -259,45 +321,79 @@ private class PullGuard : NestedScrollConnection {
         if (blocked && source == NestedScrollSource.UserInput && available.y > 0f) Offset(0f, available.y) else Offset.Zero
 }
 
-/** The "sync all" pill: filled and inviting when idle, a quiet progress state while syncs run. */
+/**
+ * The "sync all" pill: filled and inviting when idle, a quiet progress state while syncs run.
+ *
+ * It sits on an opaque band of the screen's background, edge to edge (over the list's side padding
+ * too) and as tall as the pill with its shadow: pinned, the cards scroll beneath the band and none of
+ * them shows around the pill or its "?". Until 1.3.1 the band faded to transparent, and the first
+ * card's title, status and figures read through under the pill. Once cards are beneath it, a hairline
+ * marks its edge, as under a scrolled top bar.
+ */
 @Composable
-private fun RunAllPill(runningCount: Int, onClick: () -> Unit) {
+private fun RunAllPill(tally: SyncState.Tally, pinned: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val haptic = rememberConfirmHaptic()
+    val runningCount = tally.total
     val busy = runningCount > 0
-    // When pinned, cards scroll under a fade instead of meeting the pill's edge.
     val bg = MaterialTheme.colorScheme.background
+    val line = MaterialTheme.colorScheme.outlineVariant
+    val lineAlpha by animateFloatAsState(if (pinned) 0.6f else 0f, label = "runall-edge")
     Box(
-        Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(bg, bg.copy(alpha = 0.85f), bg.copy(alpha = 0f))))
+        modifier.fillMaxWidth()
+            .drawBehind {
+                // The list pads its items by 16dp on each side: the band covers that gutter as well.
+                val gutter = 16.dp.toPx()
+                drawRect(bg, topLeft = Offset(-gutter, 0f), size = Size(size.width + 2 * gutter, size.height))
+                if (lineAlpha > 0f) drawRect(
+                    line.copy(alpha = lineAlpha), topLeft = Offset(-gutter, size.height - 1f), size = Size(size.width + 2 * gutter, 1f),
+                )
+            }
             .padding(top = 4.dp, bottom = 12.dp),
         contentAlignment = Alignment.Center,
     ) {
-        androidx.compose.material3.Surface(
-            onClick = { if (!busy) haptic(); onClick() },
-            shape = RoundedCornerShape(50),
-            color = if (busy) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary,
-            contentColor = if (busy) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimary,
-            shadowElevation = 6.dp,
-        ) {
-            Row(Modifier.heightIn(min = 48.dp).padding(horizontal = 22.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onSecondaryContainer)
-                else Icon(Icons.Filled.PlayArrow, null, Modifier.size(20.dp))
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    if (busy) pluralStringResource(R.plurals.syncs_running, runningCount, runningCount) else stringResource(R.string.sync_all),
-                    style = MaterialTheme.typography.labelLarge,
-                )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // Balances the "?" on the other side, so the pill stays centred.
+            Spacer(Modifier.width(48.dp))
+            androidx.compose.material3.Surface(
+                onClick = { if (!busy || tally.allPaused) haptic(); onClick() },
+                shape = RoundedCornerShape(50),
+                color = if (busy) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary,
+                contentColor = if (busy) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimary,
+                shadowElevation = 6.dp,
+            ) {
+                Row(Modifier.heightIn(min = 48.dp).padding(horizontal = 22.dp), verticalAlignment = Alignment.CenterVertically) {
+                    // All of them paused: nothing moves, so no spinner; a still pause sign, and a tap resumes them.
+                    when {
+                        tally.allPaused -> Icon(Icons.Filled.Pause, null, Modifier.size(20.dp))
+                        busy -> CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                        else -> Icon(Icons.Filled.PlayArrow, null, Modifier.size(20.dp))
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        when {
+                            tally.allPaused -> pluralStringResource(R.plurals.syncs_paused, runningCount, runningCount)
+                            tally.somePaused -> stringResource(R.string.syncs_running_paused, tally.running, tally.paused)
+                            busy -> pluralStringResource(R.plurals.syncs_running, runningCount, runningCount)
+                            else -> stringResource(R.string.sync_all)
+                        },
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
             }
+            HelpButton(Helps.syncAll)
         }
     }
 }
 
 @Composable
 private fun JobCard(
-    job: SyncJob, data: StoreData, progress: Progress?, isRunning: Boolean,
+    job: SyncJob, data: StoreData, progress: Progress?, run: SyncState.Run?,
     onEdit: (SyncJob) -> Unit, onPreview: (SyncJob) -> Unit, onRun: (SyncJob) -> Unit, onDelete: (SyncJob) -> Unit,
-    onReview: (String) -> Unit = {}, onOpenTarget: (SyncJob) -> Unit = {},
+    onReview: (String) -> Unit = {}, onOpenTarget: (SyncJob) -> Unit = {}, onOpenLog: () -> Unit = {},
+    onToggleEnabled: (SyncJob) -> Unit = {},
 ) {
     val ctx = LocalContext.current
+    val isRunning = run != null
     var colorOpen by remember { mutableStateOf(false) }
     if (colorOpen) JobColorDialog(job.color, onDismiss = { colorOpen = false }) { c ->
         // A two-way sync is one sync to the user: both halves take the colour.
@@ -362,34 +458,45 @@ private fun JobCard(
                     )
                 }
                 Spacer(Modifier.width(8.dp))
-                when {
-                    isRunning -> StatusPill(stringResource(R.string.pill_running), Tone.Accent, Icons.Filled.Sync)
-                    !job.enabled -> StatusPill(stringResource(R.string.disabled), Tone.Neutral)
-                    report == null -> StatusPill(stringResource(R.string.pill_never), Tone.Neutral)
-                    report.ok -> StatusPill(stringResource(R.string.pill_ok), Tone.Ok, Icons.Filled.CheckCircle)
-                    else -> StatusPill(stringResource(R.string.pill_error), Tone.Error, Icons.Filled.Warning)
+                // A run without errors can still leave something for the user: the pill says what,
+                // and a tap leads where it is handled.
+                when (cardStatus(isRunning, job.enabled, report, run)) {
+                    CardStatus.RUNNING -> StatusPill(stringResource(R.string.pill_running), Tone.Accent, Icons.Filled.Sync)
+                    CardStatus.PAUSING -> StatusPill(stringResource(R.string.pill_pausing), Tone.Accent, Icons.Filled.Pause)
+                    CardStatus.PAUSED -> StatusPill(stringResource(R.string.sync_paused), Tone.Warning, Icons.Filled.Pause)
+                    CardStatus.DISABLED -> StatusPill(stringResource(R.string.disabled), Tone.Neutral)
+                    CardStatus.NEVER -> StatusPill(stringResource(R.string.pill_never), Tone.Neutral)
+                    CardStatus.ERROR -> StatusPill(stringResource(R.string.pill_error), Tone.Error, Icons.Filled.Warning)
+                    CardStatus.HELD_BACK -> ActionPill(stringResource(R.string.pill_held_back), Tone.Warning) { onPreview(job) }
+                    CardStatus.INCOMPLETE -> ActionPill(stringResource(R.string.pill_incomplete), Tone.Warning, onOpenLog)
+                    CardStatus.NOT_FOUND -> ActionPill(stringResource(R.string.pill_not_found, report!!.unmatchedTracks.size), Tone.Warning) { onReview(report!!.id) }
+                    CardStatus.OK -> StatusPill(stringResource(R.string.pill_ok), Tone.Ok, Icons.Filled.CheckCircle)
                 }
             }
-            if (isRunning) {
-                val pausedSet by SyncState.paused.collectAsState()
-                val paused = job.id in pausedSet
-                val stoppingSet by SyncState.stopping.collectAsState()
-                val stopping = job.id in stoppingSet
-                // Pause and stop act between steps: while one long step runs (reading a playlist,
-                // starting a web player) the card says the request is taken, instead of seeming idle.
-                val betweenSteps = progress?.step in setOf(Progress.Step.MATCHING, Progress.Step.ADDING, Progress.Step.REMOVING, Progress.Step.WAITING)
+            if (run != null) {
+                // Pause and stop act between steps (see SyncState.checkpoint): while a step finishes
+                // the card says the request is taken ("Pausing after this step…"), and only once the
+                // engine waits does it read "Paused", with a bar that stands still.
+                val paused = run == SyncState.Run.PAUSED || run == SyncState.Run.PAUSING
+                val stopping = run == SyncState.Run.STOPPING
                 Spacer(Modifier.height(12.dp))
                 val pct = progress?.percent
-                if (pct != null) LinearProgressIndicator(progress = { pct / 100f }, modifier = Modifier.fillMaxWidth())
+                if (run == SyncState.Run.PAUSED) LinearProgressIndicator(
+                    // Frozen where the sync stopped, greyed: determinate, never the moving bar.
+                    progress = { (pct ?: 0) / 100f }, modifier = Modifier.fillMaxWidth().testTag(PAUSED_BAR_TAG),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f),
+                    trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                )
+                else if (pct != null) LinearProgressIndicator(progress = { pct / 100f }, modifier = Modifier.fillMaxWidth())
                 else LinearProgressIndicator(Modifier.fillMaxWidth())
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        when {
-                            stopping -> stringResource(R.string.sync_stopping) + " · "
-                            paused && !betweenSteps -> stringResource(R.string.sync_pause_pending) + " · "
-                            paused -> stringResource(R.string.sync_paused) + " · "
-                            else -> ""
+                        when (run) {
+                            SyncState.Run.STOPPING -> stringResource(R.string.sync_stopping) + " · "
+                            SyncState.Run.PAUSING -> stringResource(R.string.sync_pausing) + " · "
+                            SyncState.Run.PAUSED -> stringResource(R.string.sync_paused) + " · "
+                            SyncState.Run.RUNNING -> ""
                         } + progressText(progress) + (pct?.let { " · $it%" } ?: ""),
                         style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f),
                     )
@@ -439,7 +546,8 @@ private fun JobCard(
                 Spacer(Modifier.width(6.dp))
                 val last = if (job.lastRunEpoch > 0) formatDate(job.lastRunEpoch) else stringResource(R.string.last_run_never)
                 Text(
-                    scheduleLabel(job.schedule) + (if (job.mirrorRemovals) " · " + stringResource(R.string.editor_mirror) else "") + " · " + last,
+                    // A two-way pair never removes, whatever an older version saved.
+                    scheduleLabel(job.schedule) + (if (job.mirrorRemovals && job.linkedJobId == null) " · " + stringResource(R.string.editor_mirror) else "") + " · " + last,
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
                 )
@@ -453,15 +561,21 @@ private fun JobCard(
                 ) {
                     Icon(Icons.Filled.PlayArrow, stringResource(R.string.run_now))
                 }
+                // The menu wears the card's colour: a teal card opens a teal-tinted menu.
                 OverflowMenu(
                     listOfNotNull(
-                        if (job.aiPrompt != null) MenuAction(stringResource(R.string.ai_extend), { extendOpen = true }) else null,
-                        MenuAction(stringResource(R.string.preview), { onPreview(job) }),
-                        MenuAction(stringResource(R.string.edit), { onEdit(job) }),
-                        MenuAction(stringResource(R.string.job_color), { colorOpen = true }),
-                        MenuAction(stringResource(R.string.delete), { confirmDelete = true }, destructive = true),
+                        if (job.aiPrompt != null) MenuAction(stringResource(R.string.ai_extend), { extendOpen = true }, icon = Icons.Outlined.AutoAwesome) else null,
+                        MenuAction(stringResource(R.string.preview), { onPreview(job) }, icon = Icons.Outlined.Visibility),
+                        MenuAction(stringResource(R.string.edit), { onEdit(job) }, icon = Icons.Outlined.Edit),
+                        if (job.enabled) MenuAction(stringResource(R.string.sync_menu_disable), { onToggleEnabled(job) }, icon = Icons.Outlined.PauseCircle)
+                        else MenuAction(stringResource(R.string.sync_menu_enable), { onToggleEnabled(job) }, icon = Icons.Outlined.PlayCircle),
+                        MenuAction(stringResource(R.string.job_color), { colorOpen = true }, icon = Icons.Outlined.Palette),
+                        MenuAction(stringResource(R.string.delete), { confirmDelete = true }, destructive = true, icon = Icons.Outlined.Delete),
                     ),
                     enabled = !isRunning,
+                    container = jobMenuContainer(job.color),
+                    iconTint = ink ?: MaterialTheme.colorScheme.onSurfaceVariant,
+                    title = job.name.ifBlank { job.source.playlistName },
                 )
             }
         }
@@ -477,6 +591,28 @@ private fun JobCard(
     }
 }
 
+/** The still, greyed bar of a paused card (for the UI tests). */
+internal const val PAUSED_BAR_TAG = "paused-bar"
+
+/** A status pill that leads somewhere: the warning icon, and a tap target as tall as a button. */
+@Composable
+private fun ActionPill(text: String, tone: Tone, onClick: () -> Unit) {
+    StatusPill(
+        text, tone, Icons.Filled.Warning,
+        Modifier.minimumInteractiveComponentSize().clip(RoundedCornerShape(50)).clickable(role = Role.Button, onClick = onClick),
+    )
+}
+
+/**
+ * The original sync of [job]'s two-way pair when [job] is the "↔" half the editor made, else null.
+ * Pairs saved before the [SyncJob.twin] flag are told apart by the name the editor gave the twin.
+ */
+fun twinOriginal(job: SyncJob, jobs: List<SyncJob>): SyncJob? {
+    val other = job.linkedJobId?.let { id -> jobs.firstOrNull { it.id == id } } ?: return null
+    if (other.twin) return null
+    return other.takeIf { job.twin || job.name == other.name + " ↔" }
+}
+
 /** Live view of a running sync: what was searched, found, taken from the cache or not found. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -487,7 +623,10 @@ private fun LiveSheet(job: SyncJob, onDismiss: () -> Unit) {
     val progress = running[job.id]
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(horizontal = 16.dp).padding(bottom = 24.dp)) {
-            Text(stringResource(R.string.live_title), style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.live_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
+                HelpButton(Helps.cached)
+            }
             Text(progressText(progress), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(12.dp))
             if (items.isEmpty()) Text(stringResource(R.string.live_empty), style = MaterialTheme.typography.bodyMedium)
@@ -565,7 +704,7 @@ private val PolicySaver = androidx.compose.runtime.saveable.Saver<com.xlollx.son
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () -> Unit = {}, onSave: (SyncJob, SyncJob?) -> Unit) {
+fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () -> Unit = {}, twinName: String? = null, onSave: (SyncJob, SyncJob?) -> Unit) {
     val ctx = LocalContext.current
     ScreenBackHandler(onCancel)
     val saveHaptic = rememberConfirmHaptic()
@@ -657,14 +796,32 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
             schedule = schedule, mirrorRemovals = mirror, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
             keepOrder = keepOrder, color = color,
         )
-        val reverse = if (bidirectional && !createNew && dp != null) SyncJob(
-            id = job.linkedJobId ?: UUID.randomUUID().toString(),
-            name = "${main.name} ↔",
-            source = target,
-            target = source,
-            schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
-            linkedJobId = job.id, color = color,
-        ) else null
+        // The other half of the pair takes only what the two share (schedule, rules, the two playlists
+        // swapped); its name, ignore list, reports and order setting stay its own. A pair never removes.
+        val partner = job.linkedJobId?.let { Store.get(ctx).job(it) }
+        val reverse = if (bidirectional && !createNew && dp != null) {
+            if (partner != null) {
+                val moved = partner.source != target || partner.target != source
+                partner.copy(
+                    // Renamed with this sync only when it carries the name the editor gave it.
+                    name = if (partner.name == "${job.name} ↔") "${main.name} ↔" else partner.name,
+                    // Pairs saved before the flag existed get it here.
+                    twin = partner.twin || partner.name == "${job.name} ↔",
+                    source = target, target = source,
+                    schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
+                    linkedJobId = job.id, color = color,
+                    sourceVersion = if (moved) null else partner.sourceVersion,
+                    targetVersion = if (moved) null else partner.targetVersion,
+                )
+            } else SyncJob(
+                id = UUID.randomUUID().toString(),
+                name = "${main.name} ↔",
+                source = target,
+                target = source,
+                schedule = schedule, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
+                linkedJobId = job.id, color = color, twin = true,
+            )
+        } else null
         saveHaptic()
         onSave(main.copy(linkedJobId = reverse?.id), reverse)
     }
@@ -683,20 +840,29 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                     error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium) }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                         OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f).height(52.dp)) { Text(stringResource(R.string.cancel)) }
-                        Button(onClick = { save() }, modifier = Modifier.weight(1f).height(52.dp)) { Text(stringResource(R.string.save)) }
+                        Button(onClick = { save() }, modifier = Modifier.weight(1f).height(52.dp).tourTarget(TourTarget.EDITOR_SAVE)) { Text(stringResource(R.string.save)) }
                     }
                 }
             }
         },
     ) { padding ->
         Column(Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            // Opened from the "↔" card: its settings follow this sync, so this is where they change.
+            if (twinName != null) {
+                Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+                    Text(
+                        stringResource(R.string.editor_twin_note, twinName), style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.padding(16.dp),
+                    )
+                }
+            }
             // Nothing to sync from yet, or only one service to sync between: say so, with the way to connect one.
             if (loginServices == 0) {
                 ConnectServiceCard(stringResource(R.string.no_connected_providers), onConnectService)
             } else if (loginServices == 1) {
-                ConnectServiceCard(stringResource(R.string.editor_one_service_hint), onConnectService)
+                ConnectServiceCard(stringResource(R.string.editor_one_service_hint), onConnectService, help = Helps.oneService)
             }
-            EditorStep(1, stringResource(R.string.editor_source)) {
+            EditorStep(1, stringResource(R.string.editor_source), Modifier.tourTarget(TourTarget.EDITOR_SOURCE), help = { HelpButton(Helps.library, Helps.link, label = stringResource(R.string.editor_source)) }) {
                 if (aiSource) {
                     Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
                         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.Top) {
@@ -738,12 +904,12 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                 }
             }
 
-            EditorStep(2, stringResource(R.string.editor_target)) {
+            EditorStep(2, stringResource(R.string.editor_target), Modifier.tourTarget(TourTarget.EDITOR_TARGET), help = { HelpButton(Helps.target, Helps.liked, label = stringResource(R.string.editor_target)) }) {
                 ProviderPicker(writable, dstProvider) { dstProvider = it; dstPlaylist = null }
                 val dstObj = Providers.byId(dstProvider)
                 val canCreate = dstObj?.canCreatePlaylists != false
                 if (!canCreate && createNew) createNew = false
-                SwitchRow(stringResource(R.string.editor_new_playlist), null, createNew, enabled = canCreate) { createNew = it }
+                SwitchRow(stringResource(R.string.editor_new_playlist), null, createNew, enabled = canCreate, help = { HelpButton(Helps.newPlaylist) }) { createNew = it }
                 if (!canCreate && dstObj != null) {
                     Text(stringResource(R.string.error_create_unsupported, dstObj.displayName), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
@@ -763,14 +929,38 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                     placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
                 Text(stringResource(R.string.job_color), style = MaterialTheme.typography.labelLarge)
                 JobColorPicker(color) { color = it }
-                Text(stringResource(R.string.editor_schedule), style = MaterialTheme.typography.labelLarge)
-                // I chip vanno a capo da soli, quante righe servono per lo schermo.
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
-                    Schedule.entries.forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
+                Column(Modifier.tourTarget(TourTarget.EDITOR_SCHEDULE), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    HelpLabel(stringResource(R.string.editor_schedule)) { HelpButton(Helps.schedule) }
+                    // I chip vanno a capo da soli, quante righe servono per lo schermo.
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+                        Schedule.entries.forEach { s -> FilterChip(selected = schedule == s, onClick = { schedule = s }, label = { Text(scheduleLabel(s)) }) }
+                    }
+                    if (schedule != Schedule.MANUAL) {
+                        Text(stringResource(R.string.editor_schedule_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
-                SwitchRow(stringResource(R.string.editor_mirror), stringResource(R.string.editor_mirror_desc), mirror) { mirror = it }
+                // Two-way and Mirror removals don't go together: a track added on the target could be
+                // removed by this sync before the reverse one copies it back.
+                if (bidirectional && mirror) mirror = false
+                SwitchRow(
+                    stringResource(R.string.editor_mirror),
+                    stringResource(if (bidirectional) R.string.editor_mirror_two_way else R.string.editor_mirror_desc),
+                    mirror, enabled = !bidirectional,
+                    modifier = Modifier.tourTarget(TourTarget.EDITOR_MIRROR),
+                    // Towards Liked songs, mirroring means unliking: said where the switch is.
+                    help = { if (MusicProvider.isLibrary(dstPlaylist?.id) && !createNew) HelpButton(Helps.mirror, Helps.liked, label = stringResource(R.string.editor_mirror)) else HelpButton(Helps.mirror) },
+                ) { mirror = it }
+                // Into Liked songs a removal is an unlike, of everything liked there that the source lacks:
+                // said in plain words under the switch, not only behind the "?".
+                if (mirror && !createNew && dstPlaylist?.id == MusicProvider.LIKED_ID) {
+                    Text(
+                        stringResource(R.string.editor_mirror_liked_warning),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
                 if (Providers.byId(dstProvider)?.canReorder == true) {
-                    SwitchRow(stringResource(R.string.editor_keep_order), stringResource(R.string.editor_keep_order_desc), keepOrder) { keepOrder = it }
+                    SwitchRow(stringResource(R.string.editor_keep_order), stringResource(R.string.editor_keep_order_desc), keepOrder, help = { HelpButton(Helps.keepOrder) }) { keepOrder = it }
                 }
                 val dstProviderObj = Providers.byId(dstProvider)
                 if (mirror && dstProviderObj != null && !dstProviderObj.canRemoveTracks) {
@@ -802,10 +992,11 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
+                    HelpButton(Helps.twoWay)
                     Switch(checked = bidirectional, enabled = biAllowed, onCheckedChange = { bidirectional = it })
                 }
-                SwitchRow(stringResource(R.string.editor_wifi_only), null, wifiOnly) { wifiOnly = it }
-                SwitchRow(stringResource(R.string.editor_enabled), null, enabled) { enabled = it }
+                SwitchRow(stringResource(R.string.editor_wifi_only), stringResource(R.string.editor_wifi_only_desc), wifiOnly) { wifiOnly = it }
+                SwitchRow(stringResource(R.string.editor_enabled), null, enabled, help = { HelpButton(Helps.enabled) }) { enabled = it }
 
                 // How candidates are chosen: folded, because the defaults suit most syncs.
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { matchingOpen = !matchingOpen }) {
@@ -816,7 +1007,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                     Icon(if (matchingOpen) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 if (matchingOpen) {
-                    Text(stringResource(R.string.policy_strictness), style = MaterialTheme.typography.labelLarge)
+                    HelpLabel(stringResource(R.string.policy_strictness)) { HelpButton(Helps.strictness) }
                     // I chip vanno a capo: in alcune lingue tre etichette non stanno su una riga.
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         listOf(-1 to R.string.policy_loose, 0 to R.string.policy_normal, 1 to R.string.policy_strict).forEach { (v, res) ->
@@ -824,14 +1015,14 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                         }
                     }
                     Text(stringResource(R.string.policy_strictness_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(stringResource(R.string.policy_explicit), style = MaterialTheme.typography.labelLarge)
+                    HelpLabel(stringResource(R.string.policy_explicit)) { HelpButton(Helps.explicit) }
                     // I chip vanno a capo: in alcune lingue tre etichette non stanno su una riga.
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         listOf(0 to R.string.policy_explicit_any, 1 to R.string.policy_explicit_yes, -1 to R.string.policy_explicit_clean).forEach { (v, res) ->
                             FilterChip(selected = policy.explicit == v, onClick = { policy = policy.copy(explicit = v) }, label = { Text(stringResource(res)) })
                         }
                     }
-                    SwitchRow(stringResource(R.string.policy_same_album), stringResource(R.string.policy_same_album_desc), policy.sameAlbum) { policy = policy.copy(sameAlbum = it) }
+                    SwitchRow(stringResource(R.string.policy_same_album), stringResource(R.string.policy_same_album_desc), policy.sameAlbum, help = { HelpButton(Helps.sameAlbum) }) { policy = policy.copy(sameAlbum = it) }
                     SwitchRow(stringResource(R.string.policy_studio), stringResource(R.string.policy_studio_desc), policy.studioOnly) { policy = policy.copy(studioOnly = it) }
                 }
             }
@@ -842,20 +1033,26 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
 
 /** A note at the top of the editor with the way to connect a service. */
 @Composable
-private fun ConnectServiceCard(text: String, onConnect: () -> Unit) {
+private fun ConnectServiceCard(text: String, onConnect: () -> Unit, help: HelpTopic? = null) {
     Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
-            FilledTonalButton(onClick = onConnect, modifier = Modifier.align(Alignment.End)) { Text(stringResource(R.string.empty_syncs_cta_accounts)) }
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.align(Alignment.End)) {
+                if (help != null) HelpButton(help, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                FilledTonalButton(onClick = onConnect) { Text(stringResource(R.string.empty_syncs_cta_accounts)) }
+            }
         }
     }
 }
 
 /** One of the editor's three steps: a numbered card (source, target, options). */
 @Composable
-private fun EditorStep(number: Int, title: String, content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit) {
+private fun EditorStep(
+    number: Int, title: String, modifier: Modifier = Modifier, help: (@Composable () -> Unit)? = null,
+    content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit,
+) {
     androidx.compose.material3.Card(
-        Modifier.fillMaxWidth(),
+        modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
@@ -865,10 +1062,20 @@ private fun EditorStep(number: Int, title: String, content: @Composable androidx
                     Text(number.toString(), color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge)
                 }
                 Spacer(Modifier.width(12.dp))
-                Text(title, style = MaterialTheme.typography.titleMedium)
+                Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                if (help != null) help()
             }
             content()
         }
+    }
+}
+
+/** An editor label with its "?" at the end of the line. */
+@Composable
+private fun HelpLabel(text: String, help: @Composable () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+        Text(text, style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
+        help()
     }
 }
 
@@ -986,7 +1193,7 @@ private fun LinkImportField(initial: String = "", keep: Boolean = false, onResol
                         val ref = com.xlollx.songport.sync.LinkResolver.resolve(ctx, text)
                         // A Spotify link opens with whichever Spotify route is connected, web or official.
                         val provider = ref?.let { r ->
-                            val named = Providers.byId(r.providerId)
+                            val named = com.xlollx.songport.providers.linkProvider(ctx, r.providerId)
                             named?.takeIf { it.canRead(ctx, r.playlistId) }
                                 ?: Providers.connectors().firstOrNull { it.familyName == named?.familyName && it.canRead(ctx, r.playlistId) }
                                 ?: named
@@ -999,7 +1206,7 @@ private fun LinkImportField(initial: String = "", keep: Boolean = false, onResol
                             // No name when the service will not say yet: the run fills it in. A
                             // link-only source has nothing else to go on: its error (a private set) shows here.
                             val got = runCatching { provider.playlistInfo(ctx, ref.playlistId) }
-                            val failed = got.exceptionOrNull()?.takeIf { provider.linkOnly && it !is kotlinx.coroutines.CancellationException }
+                            val failed = got.exceptionOrNull()?.takeIf { provider.reportsLinkErrors(ref.playlistId) && it !is kotlinx.coroutines.CancellationException }
                             if (failed != null) {
                                 error = failed.message ?: ctx.getString(R.string.error_generic)
                             } else {

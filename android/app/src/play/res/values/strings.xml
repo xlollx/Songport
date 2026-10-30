@@ -10,5 +10,6 @@
     <string name="provider_note_spotify_bridge">Spotify through a connector plugin that holds the Spotify sign-in; an alternative to the official route with your own developer key, which stays available as \"Spotify\".</string>
     <string name="provider_note_apple_bridge">Apple Music through a connector plugin that holds the Apple ID sign-in; an alternative to the official route with your own developer token, which stays available as \"Apple Music\".</string>
     <string name="bridge_needed_hint">This service needs a connector plugin app that is not installed. Trackhop does not include or download plugins.</string>
-    <string name="plugins_more">More services can be added through connector plugins, separate apps that implement Trackhop\'s open connector interface. Details in the project documentation.</string>
+    <string name="provider_note_deezer_bridge">Deezer through a connector plugin that holds the Deezer sign-in; an alternative to the official route with your own app ID, which stays available as \"Deezer\".</string>
+    <string name="provider_note_soundcloud_account">SoundCloud through a connector plugin that holds the SoundCloud sign-in: your sets and liked tracks as sources and destinations.</string>
 </resources>

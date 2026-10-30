@@ -1,36 +1,47 @@
 <p align="center"><img src="docs/store/icon512.png" width="96" alt=""></p>
 
-<h1 align="center">Songport</h1>
+<h1 align="center">Trackhop</h1>
 
 <p align="center"><b>Your playlists, in sync across music services.</b><br>
 On your phone, on a schedule. No account, no server, no subscription.</p>
 
 <p align="center">
-  <a href="https://github.com/xlollx/Songport/releases/latest"><img src="https://img.shields.io/github/v/release/xlollx/Songport?label=release" alt="Latest release"></a>
-  <a href="https://github.com/xlollx/Songport/releases"><img src="https://img.shields.io/github/downloads/xlollx/Songport/total" alt="Downloads"></a>
+  <a href="https://github.com/xlollx/Trackhop/releases/latest"><img src="https://img.shields.io/github/v/release/xlollx/Trackhop?label=release" alt="Latest release"></a>
+  <a href="https://github.com/xlollx/Trackhop/releases"><img src="https://img.shields.io/github/downloads/xlollx/Trackhop/total" alt="Downloads"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0--only-blue" alt="License: GPL-3.0-only"></a>
   <img src="https://img.shields.io/badge/Android-8.0%2B-3ddc84" alt="Android 8.0+">
 </p>
 
+> **Songport is now Trackhop.** Same app, same code, same updates. The name changed because an
+> unrelated service called "SongPort", a music link converter, works in the same space, and two apps
+> with one name confuse people. Your installed app updates normally and keeps all its data; only the
+> name and the web addresses changed (github.com/xlollx/Trackhop, xlollx.github.io/Trackhop), and old
+> links keep working.
+
 <p align="center">
   <a href="https://f-droid.org/packages/com.xlollx.songport/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" height="64" alt="Get it on F-Droid"></a>
-  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="64" alt="Get it on Obtainium"></a>
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Trackhop"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="64" alt="Get it on Obtainium"></a>
 </p>
 
-<p align="center"><img src="docs/store/demo.gif" width="200" alt="A tour of Songport: syncs, a new sync, accounts, tools, a shared track, the compatibility and poster cards, unplayable tracks, settings"></p>
+<p align="center">
+  <b>Installed Trackhop from Google Play?</b> Add the plugin for YouTube Music, Amazon Music, and Spotify and Apple Music without developer keys:<br><br>
+  <a href="https://github.com/xlollx/Trackhop-Bridge/releases/latest"><img src="docs/store/get-trackhop-bridge.png" width="480" alt="Get Trackhop Bridge, the plugin for the Google Play version"></a>
+</p>
+
+<p align="center"><img src="docs/store/demo.gif" width="200" alt="A tour of Trackhop: syncs, a new sync, accounts, tools, a shared track, the compatibility and poster cards, unplayable tracks, settings"></p>
 
 <p align="center"><img src="docs/store/screenshots.png" width="100%" alt="Syncs with their numbers, a new sync, a shared track going into a playlist, how compatible two playlists are, a playlist poster, unplayable tracks and their replacements"></p>
 
-Songport keeps playlists identical across Spotify, Apple Music, YouTube Music, Amazon Music, TIDAL,
+Trackhop keeps playlists identical across Spotify, Apple Music, YouTube Music, Amazon Music, TIDAL,
 Deezer, Subsonic/Navidrome, Jellyfin and Plex, with Last.fm, ListenBrainz and public SoundCloud links
 as sources and playlist files (CSV, TSV, M3U, iTunes XML, JSON, pasted text) as a bridge to everything else. Everything runs
-on the phone: there is no Songport server, and access tokens never leave the device. Free, no ads in
+on the phone: there is no Trackhop server, and access tokens never leave the device. Free, no ads in
 this build: development lives on voluntary donations.
 
 **Why not an online transfer service?** Soundiiz, TuneMyMusic and FreeYourMusic are good at a one-off
-move. Songport is for keeping playlists in step over time, without handing your accounts to anyone:
+move. Trackhop is for keeping playlists in step over time, without handing your accounts to anyone:
 
-| | Songport | Online transfer services |
+| | Trackhop | Online transfer services |
 |---|---|---|
 | Where it runs | On your phone | On their servers |
 | Who holds your service logins | Only your phone, encrypted | The service |
@@ -43,24 +54,31 @@ move. Songport is for keeping playlists in step over time, without handing your 
 
 - **[F-Droid](https://f-droid.org/packages/com.xlollx.songport/)**: built from source, signed with the
   same key as the GitHub APK, so the two update each other.
-- **[Obtainium](https://github.com/ImranR98/Obtainium)**: add `https://github.com/xlollx/Songport` and
+- **[Obtainium](https://github.com/ImranR98/Obtainium)**: add `https://github.com/xlollx/Trackhop` and
   each release reaches the phone by itself.
-- **[Releases](https://github.com/xlollx/Songport/releases/latest)**: the signed APK of every version.
+- **[Releases](https://github.com/xlollx/Trackhop/releases/latest)**: the signed APK of every version.
+- **Google Play version**: the same app limited to official APIs (store rules), with a small ad.
+  Using it and want YouTube Music, Amazon Music, or Spotify and Apple Music without developer keys?
+  Install the companion plugin **[Trackhop Bridge](https://github.com/xlollx/Trackhop-Bridge)**
+  (GitHub only, read its notes first), or switch to the F-Droid/GitHub build above, which has them
+  built in. [Which Trackhop?](https://xlollx.github.io/Trackhop/guide/versions) compares the two.
 - **Server (Docker, ⚠️ alpha)**: an early test version, expect rough edges. The same engine on a home server or a NAS, with a web page and
-  scheduled syncs: `docker run -p 8080:8080 -v songport-data:/data ghcr.io/xlollx/songport`. Official
+  scheduled syncs: `docker run -p 8080:8080 -v trackhop-data:/data ghcr.io/xlollx/trackhop`. Official
   APIs, personal servers and YouTube Music with pasted cookies (unofficial); see the
-  [Docker guide](https://xlollx.github.io/Songport/guide/docker).
+  [Docker guide](https://xlollx.github.io/Trackhop/guide/docker).
 
 Android 8.0 or newer. Languages: English, Italian, French, German, Spanish, Portuguese (Brazil), Polish,
 Russian, Turkish, Chinese, Japanese, Korean.
-New here? The **[guide](https://xlollx.github.io/Songport/guide/)** covers getting started and the
+New here? The **[guide](https://xlollx.github.io/Trackhop/guide/)** covers getting started and the
 common errors.
 
 ### Good to know
 
-- Apple Music, TIDAL, Deezer, the personal servers, Last.fm and ListenBrainz are marked **beta** in
+- Apple Music, TIDAL, Deezer, SoundCloud, the personal servers, Last.fm and ListenBrainz are marked **beta** in
   the app: written against each service's documented API and working, but with far less real-world
   use than the rest, so a report about them is especially welcome.
+- Deezer (web) is marked **alpha**: covered by offline tests but not yet tried on real accounts. Try
+  it on a test playlist first and report what goes wrong. SoundCloud with your account is **beta**.
 - The app ships without service credentials of its own: on the services that require one (Spotify,
   YouTube Music, TIDAL, Deezer, Last.fm) each user creates a free developer key, and the app walks
   them through it in about two minutes. Or use the quick route: sign in on the service's own page.
@@ -71,17 +89,17 @@ common errors.
 
 ## Public beta
 
-Songport is in **open beta**: the features are complete and used daily by the developer, and now
+Trackhop is in **open beta**: the features are complete and used daily by the developer, and now
 they need other libraries, phones and habits. Everything you meet is meant to work; if it does not,
 that is exactly what to report.
 
-- **Install**: the signed APK from the [Releases](https://github.com/xlollx/Songport/releases/latest)
+- **Install**: the signed APK from the [Releases](https://github.com/xlollx/Trackhop/releases/latest)
   page (updates install over it), or F-Droid once listed there. This build includes YouTube Music,
   Amazon Music and the Spotify/Apple Music web sign-in; no second app is needed.
 - **What helps most**: the connectors marked *beta* in Accounts, a sync of a big playlist (a thousand tracks and more), the review of the tracks
   that were not found (one-tap proposals, the "likeliest" list, pasting a track link), scheduled syncs
   surviving the night, and backups of a whole account.
-- **How to report**: open an [issue](https://github.com/xlollx/Songport/issues/new/choose) and attach
+- **How to report**: open an [issue](https://github.com/xlollx/Trackhop/issues/new/choose) and attach
   the **technical details report** (Settings → *Sync log* → *Share technical details*): versions, connectors, the
   last sync steps and plugin statistics, never tokens or track lists. Italian is welcome.
 - **Known rough edges**: see [Known limits](#known-limits). Matching depends on each catalogue's search:
@@ -131,7 +149,7 @@ that is exactly what to report.
 | Restore | Put back tracks removed by a mirror sync | From the log. |
 | YouTube quota | Ring with the units used today | Search 100, write 50 out of 10,000 per day; the app shows what is left and what a sync will cost. |
 | Multiple accounts | Several accounts of the same service | Also for migrating between two accounts. |
-| Tools | Playlist generator (beta) | Describe a playlist; your own AI (OpenAI, Anthropic, Gemini or any OpenAI-compatible server, even local) proposes the tracks, Songport finds them on the chosen service through a normal sync. The proposal is reviewed before anything is created, the sync is marked with a spark and can be extended later with more AI picks. No AI of Songport's: your key, stored encrypted; only the text you type is sent. |
+| Tools | Playlist generator (beta) | Describe a playlist; your own AI (OpenAI, Anthropic, Gemini or any OpenAI-compatible server, even local) proposes the tracks, Trackhop finds them on the chosen service through a normal sync. The proposal is reviewed before anything is created, the sync is marked with a spark and can be extended later with more AI picks. No AI of Trackhop's: your key, stored encrypted; only the text you type is sent. |
 | | Manage playlists | Your playlists on a service in one list: rename, delete, make public or private (where the API allows it), search the tracks and remove them by track, artist or album, extend with AI, export. |
 | | Batch transfer | Pick many playlists of one service and send them all to another: one sync each, run one after the other, kept in Syncs. |
 | | Playlist tools | Copy, merge (skipping duplicates), split into parts, sort by artist/title/album/year/date added/duration, shuffle; always into a new playlist, the originals untouched. |
@@ -144,7 +162,7 @@ that is exactly what to report.
 | | Unplayable tracks | The tracks a service lists but can no longer play (greyed out: pulled from the catalogue, not licensed in your country): found across your playlists, each with a playable version proposed by the same matching the sync uses (ISRC, then title, artist, duration), to accept, change, remove or skip; put back in the dead entry's spot where the service can move tracks; undoable. Spotify, Deezer, TIDAL, Apple Music library, YouTube, YouTube Music. An optional weekly check notifies, never changes anything. |
 | Links | Paste or share a public playlist link | Spotify, Apple Music, YouTube, Deezer, TIDAL; short share links too. "From link" is a source of its own in the editor. |
 | | Share a single track or a text list | A track link from any music app goes into one of your playlists on **any** connected service, Navidrome, Jellyfin and Plex included: the same recording is found with the sync's matching, shown with its score before adding, with "Open in…" and "Copy link" next to it. Several "Artist - Title" lines become a file playlist and a new sync. |
-| | Music links open with Songport (optional) | Settings › "Offer Songport for music links": Android then lists Songport among the apps for a Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link. Off by default; Songport never takes a link by itself. |
+| | Music links open with Trackhop (optional) | Settings › "Offer Trackhop for music links": Android then lists Trackhop among the apps for a Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link. Off by default; Trackhop never takes a link by itself. |
 | Files | Import/export | Reads CSV, TSV, M3U/M3U8, XSPF, JSPF, OPML (podcasts), Apple Music/iTunes XML, JSON, Shazam exports, plain text lists; writes CSV, M3U, XSPF, JSPF and plain text. |
 | | setlist.fm | Share or paste a setlist.fm link: the concert becomes a playlist to sync anywhere. |
 | | Shazam | Share a song from the Shazam app: title and artist are read from the shared text (nothing is asked of Shazam) and the song goes into a playlist on any connected service. To have every Shazam everywhere, connect Spotify or Apple Music in Shazam's settings and sync its "My Shazam Tracks" playlist: the editor suggests it. |
@@ -152,7 +170,7 @@ that is exactly what to report.
 | Diagnostics | "Share technical details" in the log | Version, device, services, last runs, error log; no tokens. |
 | | "Test the connection" per account | Account, playlist list and one search, with the service's answer on failure. |
 | Appearance | Theme and Material You | Settings › Appearance: system, light or dark; "Dynamic colours" takes the phone's wallpaper palette (Android 12+) instead of the brand's, off by default. |
-| Security | Connections log | Settings › Developer options lists every host the app has contacted and how often, so "no Songport server" is something to check, not to believe. |
+| Security | Connections log | Settings › Developer options lists every host the app has contacted and how often, so "no Trackhop server" is something to check, not to believe. |
 | | Info sheet before every login, encrypted tokens, fingerprint or PIN lock | See [How logins are protected](#how-logins-are-protected). |
 
 ## Supported services and their limits
@@ -161,11 +179,11 @@ that is exactly what to report.
 |---------|--------|-------|----------------------|--------|
 | Spotify | complete | OAuth PKCE on Spotify's sign-in page, shown inside the app (a browser tab handed "Continue with Facebook" to the Facebook app, which then failed) | `SPOTIFY_CLIENT_ID`, redirect `songport://callback` | An app in *Development Mode* accepts 5 users and its owner needs Spotify Premium (February 2026 rules). *Extended Quota Mode* requires a registered company and 250,000 monthly active users. Since July 2026 the quota is counted per developer account, not per client ID. That is why the app walks each user through creating their own client ID: on Spotify this is the normal path. |
 | Apple Music | read and add, beta | MusicKit JS in an in-app WebView | `APPLE_DEVELOPER_TOKEN` (ES256 JWT, Apple Developer Program) | The API cannot remove tracks from a playlist: mirror syncs towards Apple Music only add and say so in the report. The developer token expires after at most 6 months. An Apple Music subscription is required. Library tracks do not expose an ISRC. |
-| YouTube Music | built into the GitHub/F-Droid build; in the Play build via the [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Google sign-in on Google's page | nothing: the Bridge is installed separately, outside Google Play | Uses the web player's internal interface: not an official API, against the YouTube Terms of Service, may break without notice. No quota. The Bridge shows the notice before sign-in. |
+| YouTube Music | built into the GitHub/F-Droid build; in the Play build via the [Trackhop Bridge](https://github.com/xlollx/Trackhop-Bridge) | Google sign-in on Google's page | nothing: the Bridge is installed separately, outside Google Play | Uses the web player's internal interface: not an official API, against the YouTube Terms of Service, may break without notice. No quota. The Bridge shows the notice before sign-in. |
 | YouTube Music (Google API) | via YouTube Data API v3 | Google OAuth | `GOOGLE_CLIENT_ID` (Android OAuth client: package + SHA-1), YouTube Data API enabled, OAuth verification for the `youtube` scope | 10,000 units per day per project (search 100, insert 50), shared by every user of the same build. With own credentials the quota is the user's. No ISRC. |
-| Spotify (web) | complete, built in (GitHub/F-Droid) or via the [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Spotify sign-in on Spotify's page | nothing, and no Premium | Talks to the web player's own backend (the GraphQL gateway and the playlist store open.spotify.com uses), with the player's session token and client token; the query hashes are read from the player's own code. Since December 2025 Spotify refuses first-party tokens on the public Web API, which is why this route no longer touches it. No ISRC on this route: matching is by title, artist and duration. Not an official route, against Spotify's terms, may break without notice. |
-| Apple Music (web) | read and add, built in (GitHub/F-Droid) or via the Songport Bridge | Apple ID sign-in on Apple's page | nothing | The Bridge reads the web player's developer token and the music user token cookie; Songport then runs the same Apple Music code as above. Not an official route, against Apple's terms, may break without notice. |
-| Amazon Music | complete, built in (GitHub/F-Droid) or via the [Songport Bridge](https://github.com/xlollx/Songport-YTM-Bridge) | Amazon sign-in on Amazon's page | nothing | Amazon's official Web API is a closed beta for approved partners, so the Bridge uses the web player's interface (library playlists, playlist rows with their entry ids, search, create, add, remove, rename, delete). Not an official API, may break without notice. |
+| Spotify (web) | complete, built in (GitHub/F-Droid) or via the [Trackhop Bridge](https://github.com/xlollx/Trackhop-Bridge) | Spotify sign-in on Spotify's page | nothing, and no Premium | Talks to the web player's own backend (the GraphQL gateway and the playlist store open.spotify.com uses), with the player's session token and client token; the query hashes are read from the player's own code. Since December 2025 Spotify refuses first-party tokens on the public Web API, which is why this route no longer touches it. No ISRC on this route: matching is by title, artist and duration. Not an official route, against Spotify's terms, may break without notice. |
+| Apple Music (web) | read and add, built in (GitHub/F-Droid) or via the Trackhop Bridge | Apple ID sign-in on Apple's page | nothing | The Bridge reads the web player's developer token and the music user token cookie; Trackhop then runs the same Apple Music code as above. Not an official route, against Apple's terms, may break without notice. |
+| Amazon Music | complete, built in (GitHub/F-Droid) or via the [Trackhop Bridge](https://github.com/xlollx/Trackhop-Bridge) | Amazon sign-in on Amazon's page | nothing | Amazon's official Web API is a closed beta for approved partners, so the Bridge uses the web player's interface (library playlists, playlist rows with their entry ids, search, create, add, remove, rename, delete). Not an official API, may break without notice. |
 | TIDAL | beta | OAuth PKCE | `TIDAL_CLIENT_ID` | API v2 (JSON:API) still evolving; endpoints isolated in `TidalProvider.kt`. Beta: limited real-world use. |
 | Deezer | beta | OAuth implicit | `DEEZER_APP_ID` and an https redirect page (`docs/deezer-redirect.html`) | Registration of new apps may be closed. Playlists read from Deezer carry no ISRC. Beta: limited real-world use. |
 | Subsonic / Navidrome (Airsonic, Gonic, Ampache, LMS, Funkwhale) | complete, beta | server URL, user, password (md5+salt token) | nothing | Starred tracks = likes. Ampache checks the token against the separate *Subsonic password* (or the API key) from *Preferences → Account*, not the account password; the app says so when Ampache refuses the login. |
@@ -193,9 +211,9 @@ why it is offered through a connector plugin.
 ## Connector plugins
 
 Some services have no open API, and on others the official route is heavy for a single user: a
-developer account to register, a paid program, a daily quota to share. For those, Songport defines an
+developer account to register, a paid program, a daily quota to share. For those, Trackhop defines an
 **open connector interface**: a separate app, a *plugin*, holds the sign-in to a service and answers
-Songport's requests for playlists and tracks.
+Trackhop's requests for playlists and tracks.
 
 The Google Play build never includes, downloads or installs a plugin. It discovers one that the user
 has already installed and then offers its services in the account picker, next to the official
@@ -206,17 +224,17 @@ plugin's connectors inside instead (see below), so it needs no second app.
 
 A plugin declares an activity handling the intent action `com.xlollx.songport.action.CONNECTOR`, with
 a `<meta-data>` entry named `com.xlollx.songport.connector.authority` holding the authority of its
-`ContentProvider`. Songport queries that action (`providers/BridgePlugin.kt`), then calls the provider
+`ContentProvider`. Trackhop queries that action (`providers/BridgePlugin.kt`), then calls the provider
 with `ContentResolver.call()`; each provider in `providers/*BridgeProvider.kt` maps those calls onto
 the usual `MusicProvider` interface, so the sync engine treats a plugin service like any other. The
 plugin must verify the caller's package name and signing certificate before answering.
 
-### Songport Bridge and the built-in web connectors
+### Trackhop Bridge and the built-in web connectors
 
-[**Songport Bridge**](https://github.com/xlollx/Songport-YTM-Bridge) is the reference plugin, by the
+[**Trackhop Bridge**](https://github.com/xlollx/Trackhop-Bridge) is the reference plugin, by the
 same author, free and open source (GPL-3.0-only), distributed on GitHub only and never on Google Play.
-Its connectors are also built into Songport's GitHub and F-Droid build, as the `:bridge` library module
-(`android/bridge`, included with `fullImplementation`): the same code runs inside Songport, called
+Its connectors are also built into Trackhop's GitHub and F-Droid build, as the `:bridge` library module
+(`android/bridge`, included with `fullImplementation`): the same code runs inside Trackhop, called
 in-process through `BridgeCore` instead of a ContentProvider (`providers/BuiltIn.kt` in `src/full`,
 an empty twin in `src/play`). The separate Bridge app stays for the Play build. The connectors add:
 
@@ -234,9 +252,9 @@ first sign-in, in the Bridge and in the built-in connectors alike. Passwords are
 services' own pages and are never seen or stored; the session cookies stay encrypted on the phone,
 and the sync engine gets only data or short-lived tokens.
 
-User-facing page: [xlollx.github.io/Songport/plugins](https://xlollx.github.io/Songport/plugins).
+User-facing page: [xlollx.github.io/Trackhop/plugins](https://xlollx.github.io/Trackhop/plugins).
 
-### Two distributions of Songport
+### Two distributions of Trackhop
 
 The `play` flavor, the one for Google Play, never names, links to or describes any plugin; plugin
 services appear only when a plugin is already installed, with generic wording, and it contains no
@@ -291,7 +309,7 @@ AuthFlow (PKCE, loopback) · AppleAuthActivity (MusicKit JS) · ServerLoginActiv
 ## Project layout
 
 ```
-Songport/
+Trackhop/
 ├── README.md, LICENSE, SECURITY.md
 ├── docs/
 │   ├── privacy-policy.md          # privacy policy (EN + IT) to publish and link in the Play listing
@@ -300,7 +318,7 @@ Songport/
 │   ├── google-shared-client.md    # shipping a shared Google client: verification and quota
 │   ├── guide/                     # the guide on the site (getting started, troubleshooting, Docker…)
 │   └── store/                     # 512×512 icon and 1024×500 feature graphic (en/it)
-├── server/                        # Songport on a server: JVM build on android/core and android/ytm, web page, Dockerfile
+├── server/                        # Trackhop on a server: JVM build on android/core and android/ytm, web page, Dockerfile
 └── android/
     ├── build.gradle, settings.gradle, gradle.properties
     ├── core/                      # the engine without Android (model, matching, connectors, sync), shared with server/
@@ -412,7 +430,7 @@ PY
   the main screen. No interstitials, videos or full-screen ads.
 - Before loading ads the app asks for consent through Google UMP; without consent no ads are
   requested. *Settings* shows "Ad privacy options" where regulations require it.
-- Release builds carry Songport's own AdMob ids (defaults in `app/build.gradle`; a fork sets its own
+- Release builds carry Trackhop's own AdMob ids (defaults in `app/build.gradle`; a fork sets its own
   through the `ADMOB_APP_ID` and `ADMOB_BANNER_ID` variables). Debug builds always use Google's test
   ids, whatever the variables say. Never test with real ids: list the developer's phones in
   `ADMOB_TEST_DEVICES` (comma-separated hashed ids, printed by the SDK in logcat on the first request,
@@ -440,10 +458,10 @@ PY
 The app has two product flavors of the same code:
 
 - **`play`** is what goes to Google Play. It never names, links to or describes any companion app.
-  Services that rely on a *connector plugin* (an app installed separately that implements Songport's
+  Services that rely on a *connector plugin* (an app installed separately that implements Trackhop's
   open connector interface, discovered through the intent action `com.xlollx.songport.action.CONNECTOR`)
   are offered only when such a plugin is already installed, with generic wording, and are otherwise
-  absent from the service picker. Songport itself only ever calls official APIs and local files, so the
+  absent from the service picker. Trackhop itself only ever calls official APIs and local files, so the
   Play review sees exactly that. The AAB in the CI artifacts and in every release (`Songport-vX-play.aab`)
   is this flavor: upload only that to the Play Console.
 - **`full`** is the direct-download build on GitHub Releases (`Songport-vX.apk`). It can point to where a
@@ -452,11 +470,14 @@ The app has two product flavors of the same code:
 Keep the Play listing consistent with the `play` flavor: describe official-API services and file
 import/export only; do not mention plugins or companion apps there.
 
-On Google Play the app is called **Trackhop** (the name "SongPort" is taken by an unrelated link
-converter); the package id stays `com.xlollx.songport`. The `play` flavor gets that name from
-`android/app/src/play/res/values*/strings_brand.xml`, generated by `scripts/play_strings.py` from
-every main string that names the app (CI fails if they are stale: run the script after editing
-`strings.xml`).
+Both flavors are called **Trackhop**, as are this repository, the site and the Docker image. Up to
+version 1.1 the app was called Songport outside Google Play; the name changed because "SongPort" is
+also an unrelated, active service in the same niche (songport.link). What existing installs and
+setups depend on keeps the old name: the package id `com.xlollx.songport`, the `songport://callback`
+redirect, the release asset names (`Songport-vX.apk`, which F-Droid's metadata matches), the Deezer
+redirect page at `https://xlollx.github.io/Songport/deezer-redirect.html`, the server's `SONGPORT_*`
+variables and the `ghcr.io/xlollx/songport` image, which is still published next to
+`ghcr.io/xlollx/trackhop`.
 
 1. Upload key (never in the repository):
    ```bash
@@ -486,7 +507,7 @@ issue.
 
 ## License, copyright and trademark
 
-Songport is free software: you can redistribute it and/or modify it under the terms of the GNU
+Trackhop is free software: you can redistribute it and/or modify it under the terms of the GNU
 General Public License, version 3 only (SPDX `GPL-3.0-only`, see [LICENSE](LICENSE)). Copyright (C) 2026 xlollx and
 contributors. Any distributed build of this code or of a modified version must ship its complete
 source code under the same license, as the GPL requires.
@@ -499,7 +520,7 @@ graphics (`fastlane/metadata/android/*/images/featureGraphic.png`, `docs/store/f
 licence, so that repositories such as F-Droid can ship them as they are. Unmodified rebuilds of this
 project may keep them.
 
-The name "Songport" (and "Trackhop", the Google Play name) is not licensed: it identifies this
+The name "Trackhop" (and "Songport", its former name) is not licensed: it identifies this
 project's official releases. A fork that changes the app and distributes it should use a name of its
 own, as GPLv3 section 7(c) permits to require, so users can tell the two apart. Names of the music
 services mentioned in this project are trademarks of their respective owners.

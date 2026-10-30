@@ -7,7 +7,7 @@
 #
 #   scripts/play_screenshots.sh fastlane/metadata/android/en-US/images/phoneScreenshots/*.jpg
 #
-# Take the screenshots from the play build (the app is "Trackhop" there), on a phone without the
+# Take the screenshots from the play build, on a phone without the
 # connector plugins installed, so that nothing in the picture names a plugin.
 set -euo pipefail
 command -v convert >/dev/null || { echo "ImageMagick (convert) is required" >&2; exit 1; }

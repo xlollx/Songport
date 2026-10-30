@@ -1,0 +1,1 @@
+La pause se voit : « Pause après cette étape » pendant que l'étape en cours se termine, puis « En pause » avec une barre figée et grise sur la carte, le bouton du haut et la notification ; un appui reprend. Plusieurs synchronisations en pause ne se bloquent plus entre elles.

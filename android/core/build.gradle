@@ -1,4 +1,4 @@
-// Songport's engine, free of Android: the data model, track matching, playlist file formats,
+// Trackhop's engine, free of Android: the data model, track matching, playlist file formats,
 // reordering and the other pure logic. The Android app depends on it, and so will the server
 // (Docker) build. Nothing here may import android.* or androidx.*.
 plugins {

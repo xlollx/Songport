@@ -1,5 +1,5 @@
-// The web connectors of Songport Bridge (YouTube Music, Amazon Music, Spotify and Apple Music web
-// sign-in), built into the GitHub and F-Droid build of Songport as a library. The Play build does not
+// The web connectors of Trackhop Bridge (YouTube Music, Amazon Music, Spotify and Apple Music web
+// sign-in), built into the GitHub and F-Droid build of Trackhop as a library. The Play build does not
 // include it and keeps talking to the separate Bridge app.
 plugins {
     id 'com.android.library'

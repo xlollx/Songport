@@ -27,7 +27,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlaylistAdd
@@ -36,6 +38,7 @@ import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,7 +49,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -56,20 +58,22 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import android.content.Intent
+import android.net.Uri
 import com.xlollx.songport.BuildConfig
 import com.xlollx.songport.R
 import com.xlollx.songport.ads.Ads
 import kotlinx.coroutines.launch
 
-private const val PAGES = 3
+private const val PAGES = 4
 
 /**
- * Primo avvio, in tre pagine: what Songport does (the services it joins), the three moves, and how
- * logins are kept and why the app is free (or has ads). Skip goes straight to the app; the last
- * page's button starts it.
+ * Primo avvio, in quattro pagine: what Trackhop does (the services it joins), the three moves, how
+ * logins are kept and why the app is free (or has ads), and where the documentation and the code
+ * are. Skip goes straight to the app; the last page's button starts it.
  */
 @Composable
-fun OnboardingScreen(onDone: () -> Unit) {
+fun OnboardingScreen(onDone: () -> Unit, onTour: () -> Unit = onDone) {
     val pager = rememberPagerState { PAGES }
     val scope = rememberCoroutineScope()
     val last = pager.currentPage == PAGES - 1
@@ -79,7 +83,8 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 when (page) {
                     0 -> WelcomePage()
                     1 -> StepsPage()
-                    else -> TrustPage()
+                    2 -> TrustPage()
+                    else -> DocsPage()
                 }
             }
             // Skip, the dots and Next stay in the same place on every page.
@@ -89,6 +94,8 @@ fun OnboardingScreen(onDone: () -> Unit) {
             ) {
                 Box(Modifier.weight(1f)) {
                     if (!last) TextButton(onClick = onDone, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.onboarding_skip)) }
+                    // The end of the welcome offers the guided first sync, once; Start goes straight in.
+                    else TextButton(onClick = onTour, modifier = Modifier.heightIn(min = 48.dp)) { Text(stringResource(R.string.tour_offer)) }
                 }
                 Dots(pager.currentPage)
                 Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
@@ -120,12 +127,12 @@ private fun Dots(current: Int) {
     }
 }
 
-/** The page's art on the brand gradient, under the status bar. */
+/** The page's art on the brand beam, under the status bar. */
 @Composable
 private fun Hero(content: @Composable ColumnScope.() -> Unit) {
     Column(
         Modifier.fillMaxWidth()
-            .background(Brush.linearGradient(listOf(Brand.Indigo, Brand.Violet, Brand.MagentaDeep)))
+            .brandBeam(edgeY = 0.3f)
             .statusBarsPadding()
             .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -139,12 +146,15 @@ private fun Hero(content: @Composable ColumnScope.() -> Unit) {
 @Composable
 private fun WelcomePage() {
     val logos = remember {
+        // Amazon Music only where the build carries its connector: the Play build reaches it through
+        // a separately installed plugin, so it does not show it as a service of its own.
         listOf("spotify", "apple", "ytm", "amazon", "tidal", "deezer", "subsonic", "jellyfin", "plex")
+            .filter { it != "amazon" || com.xlollx.songport.providers.BridgePlugin.builtIn }
             .mapNotNull { id -> Providers.services().firstOrNull { it.serviceId == id } }
     }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         Hero {
-            BrandMark(72.dp, tint = Color.White)
+            BrandTile(88.dp)
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -201,6 +211,27 @@ private fun TrustPage() {
                     Spacer(Modifier.width(8.dp))
                     Text(stringResource(R.string.support_button))
                 }
+            }
+        }
+    }
+}
+
+/** Page 4: the documentation and the source code, on the project's page; the link is optional. */
+@Composable
+private fun DocsPage() {
+    val ctx = LocalContext.current
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        Hero { HeroIcon(Icons.Filled.Code, 72.dp) }
+        Column(Modifier.padding(horizontal = 24.dp, vertical = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(stringResource(R.string.onboarding_docs_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.onboarding_docs_body), style = MaterialTheme.typography.bodyLarge)
+            OutlinedButton(
+                onClick = { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(SOURCE_URL))) } },
+                modifier = Modifier.heightIn(min = 48.dp),
+            ) {
+                Text(stringResource(R.string.onboarding_docs_open))
+                Spacer(Modifier.width(8.dp))
+                Icon(Icons.AutoMirrored.Filled.OpenInNew, null, Modifier.size(18.dp))
             }
         }
     }

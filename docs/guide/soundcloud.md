@@ -1,6 +1,6 @@
 # SoundCloud: public links as a source
 
-SoundCloud has no public API for new apps, and nothing on it to sign in to from Songport. What does
+SoundCloud has no public API for new apps, and nothing on it to sign in to from Trackhop. What does
 work is a **public link**: a set (playlist, album or EP) or a user's likes page becomes the source of
 a sync towards any other service, with no account.
 
@@ -14,7 +14,7 @@ Only in the GitHub/F-Droid build and on the server. The Google Play build does n
    - `https://soundcloud.com/user/likes`;
    - the app's short share links (`https://on.soundcloud.com/…`), followed to the set;
    - the same addresses on `m.soundcloud.com`.
-2. In Songport, start a new sync and paste the link as the source (or share it to Songport from the
+2. In Trackhop, start a new sync and paste the link as the source (or share it to Trackhop from the
    SoundCloud app: the editor opens with it). Pick the destination as usual.
 3. The sync runs like any other, by hand or on a schedule.
 
@@ -38,8 +38,8 @@ and paste the link in the next step.
 - *"This SoundCloud playlist is private or doesn't exist: only public links work"*: the set is
   private, was deleted, or the link is mistyped. A private set can be read through its secret
   link, if its owner shares it (SoundCloud's "Share" on a private set).
-- *"SoundCloud changed its web player; Songport needs an update"*: Songport reads the link the way
+- *"SoundCloud changed its web player; Trackhop needs an update"*: Trackhop reads the link the way
   soundcloud.com's own player does, not through an official interface, and SoundCloud changed
-  something. Update Songport when a new version is out, or [report it](reporting-a-problem).
+  something. Update Trackhop when a new version is out, or [report it](reporting-a-problem).
 
 [Back to the guide](./)

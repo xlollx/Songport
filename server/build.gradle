@@ -1,4 +1,4 @@
-// Songport without a phone: the engine of :core behind a small web page and a scheduler, for a
+// Trackhop without a phone: the engine of :core behind a small web page and a scheduler, for a
 // server or a NAS (see docs/guide/docker.md). Same Kotlin as the app (android/build.gradle).
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.1.21'

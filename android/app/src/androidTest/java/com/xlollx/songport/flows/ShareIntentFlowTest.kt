@@ -21,7 +21,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * "Share with Songport": a playlist link from Spotify, YouTube, Deezer or SoundCloud opens a new
+ * "Share with Trackhop": a playlist link from Spotify, YouTube, Deezer or SoundCloud opens a new
  * sync from it towards the user's own service; a track link opens the share sheet, which finds the
  * song on the user's service and opens it there or adds it to a playlist. Links that leave the app
  * are caught (Espresso-Intents) and never reach a browser.

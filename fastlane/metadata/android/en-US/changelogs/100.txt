@@ -1,0 +1,1 @@
+SoundCloud with your account leaves alpha and becomes beta: tried on a real account, sign-in, session renewal and liked songs work.

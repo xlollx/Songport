@@ -45,6 +45,9 @@ class TrackLinksTest {
     @Test fun services() {
         assertTrue(TrackLinks.matches("youtube", "ytm"))
         assertTrue(TrackLinks.matches("spotify", "spotify_bridge"))
+        assertTrue(TrackLinks.matches("deezer", "deezer_bridge"))
+        // Deezer's ids are the same on both routes: one match cache for the two.
+        assertEquals("deezer", com.xlollx.songport.data.FileStore.family("deezer_bridge@2"))
         assertTrue(TrackLinks.matches("amazon", "amazon"))
         assertFalse(TrackLinks.matches("spotify", "apple"))
     }
@@ -53,6 +56,7 @@ class TrackLinksTest {
         assertEquals("https://open.spotify.com/track/abc", TrackLinks.url("spotify_bridge", "abc"))
         assertEquals("https://music.youtube.com/watch?v=dQw4w9WgXcQ", TrackLinks.url("ytm", "dQw4w9WgXcQ"))
         assertEquals("https://tidal.com/browse/track/12", TrackLinks.url("tidal", "12"))
+        assertEquals("https://www.deezer.com/track/3135556", TrackLinks.url("deezer_bridge", "3135556"))
         assertNull(TrackLinks.url("subsonic", "12"))
         // Every address this gives is one parse() reads back to the same id.
         for (s in TrackLinks.SERVICES) assertEquals(s, TrackLinks.parse(TrackLinks.url(s, if (s == "youtube") "dQw4w9WgXcQ" else if (s == "amazon") "B0CXYZ1234" else "123")!!)!!.service)

@@ -2,6 +2,7 @@ package com.xlollx.songport.ui
 
 import com.xlollx.songport.providers.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.selection.toggleable
@@ -50,7 +51,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -62,6 +62,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.ui.semantics.heading
 import com.xlollx.songport.R
 import com.xlollx.songport.model.Schedule
 import com.xlollx.songport.providers.MusicProvider
@@ -107,7 +111,16 @@ fun ProviderBadge(p: MusicProvider?, size: Dp = 36.dp) = ServiceLogo(p, size)
 // Blocchi di interfaccia condivisi
 // ---------------------------------------------------------------------------------------------
 
-enum class Tone { Ok, Error, Neutral, Accent }
+/**
+ * Runs [block] on the main thread. Compose state and snackbars are touched only there: after an IO
+ * hop a coroutine can resume on the worker thread (the UI tests' effect dispatcher does), and a
+ * state write from there may never reach the screen.
+ */
+suspend fun <T> onMain(block: suspend kotlinx.coroutines.CoroutineScope.() -> T): T =
+    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main.immediate, block)
+
+/** Warning: nothing failed, but something waits for the user (held-back removals, tracks not found). */
+enum class Tone { Ok, Error, Neutral, Accent, Warning }
 
 /** Etichetta di stato: colore + icona + testo, mai solo il colore. */
 @Composable
@@ -117,12 +130,14 @@ fun StatusPill(text: String, tone: Tone, icon: ImageVector? = null, modifier: Mo
         Tone.Error -> MaterialTheme.colorScheme.errorContainer
         Tone.Accent -> MaterialTheme.colorScheme.primaryContainer
         Tone.Neutral -> MaterialTheme.colorScheme.surfaceContainerHighest
+        Tone.Warning -> MaterialTheme.colorScheme.tertiaryContainer
     }
     val fg = when (tone) {
         Tone.Ok -> Tones.onSuccessContainer()
         Tone.Error -> MaterialTheme.colorScheme.onErrorContainer
         Tone.Accent -> MaterialTheme.colorScheme.onPrimaryContainer
         Tone.Neutral -> MaterialTheme.colorScheme.onSurfaceVariant
+        Tone.Warning -> MaterialTheme.colorScheme.onTertiaryContainer
     }
     Row(
         modifier.clip(RoundedCornerShape(50)).background(bg).padding(horizontal = 10.dp, vertical = 4.dp),
@@ -144,6 +159,8 @@ fun EmptyState(
     body: String,
     ctaLabel: String? = null,
     onCta: (() -> Unit)? = null,
+    secondaryLabel: String? = null,
+    onSecondary: (() -> Unit)? = null,
 ) {
     Column(
         Modifier.fillMaxSize().padding(32.dp),
@@ -163,6 +180,10 @@ fun EmptyState(
         if (ctaLabel != null && onCta != null) {
             Spacer(Modifier.height(20.dp))
             Button(onClick = onCta) { Text(ctaLabel) }
+        }
+        if (secondaryLabel != null && onSecondary != null) {
+            Spacer(Modifier.height(if (ctaLabel != null) 4.dp else 20.dp))
+            androidx.compose.material3.TextButton(onClick = onSecondary, modifier = Modifier.heightIn(min = 48.dp)) { Text(secondaryLabel) }
         }
     }
 }
@@ -192,7 +213,7 @@ fun SectionCard(title: String? = null, modifier: Modifier = Modifier, content: @
 @Composable
 fun SwitchRow(
     title: String, subtitle: String?, checked: Boolean, enabled: Boolean = true,
-    modifier: Modifier = Modifier, onChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier, help: (@Composable () -> Unit)? = null, onChange: (Boolean) -> Unit,
 ) {
     val haptics = LocalHapticFeedback.current
     Row(
@@ -208,7 +229,8 @@ fun SwitchRow(
             Text(title, style = MaterialTheme.typography.bodyLarge)
             if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Spacer(Modifier.width(16.dp))
+        // A "?" sits between the words and the switch: its own target, outside the toggle.
+        if (help != null) help() else Spacer(Modifier.width(16.dp))
         // The row owns the toggle; the switch only shows the state.
         Switch(checked = checked, onCheckedChange = null, enabled = enabled)
     }
@@ -242,33 +264,92 @@ fun rememberConfirmHaptic(): () -> Unit {
     return { haptics.performHapticFeedback(HapticFeedbackType.Confirm) }
 }
 
-class MenuAction(val label: String, val onClick: () -> Unit, val destructive: Boolean = false, val enabled: Boolean = true)
+class MenuAction(
+    val label: String, val onClick: () -> Unit, val destructive: Boolean = false, val enabled: Boolean = true,
+    /** A leading icon; decorative, the label names the action. */
+    val icon: ImageVector? = null,
+)
 
-/** Le azioni secondarie stanno dietro un solo pulsante "Altro": la scheda resta pulita. */
+/**
+ * Le azioni secondarie stanno dietro un solo pulsante "Altro": la scheda resta pulita.
+ *
+ * The menu is a rounded sheet with an icon before each entry; the destructive ones (delete,
+ * remove) come last, in the error colour, below a divider. [container] tints it (a sync card
+ * passes its colour, see [jobMenuContainer]), [iconTint] colours the icons, and [title] puts a
+ * small header on top that says what the menu is about. Plain colours only: no blend mode.
+ */
 @Composable
-fun OverflowMenu(actions: List<MenuAction>, enabled: Boolean = true) {
+fun OverflowMenu(
+    actions: List<MenuAction>, enabled: Boolean = true,
+    container: Color = MaterialTheme.colorScheme.surfaceContainer,
+    iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    title: String? = null,
+) {
     if (actions.isEmpty()) return
     var open by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { open = true }, enabled = enabled) {
             Icon(Icons.Filled.MoreVert, stringResource(R.string.more_actions))
         }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            actions.forEach { a ->
-                DropdownMenuItem(
-                    text = { Text(a.label, color = if (a.destructive) MaterialTheme.colorScheme.error else Color.Unspecified) },
-                    enabled = a.enabled,
-                    onClick = { open = false; a.onClick() },
+        DropdownMenu(
+            expanded = open, onDismissRequest = { open = false },
+            shape = RoundedCornerShape(18.dp),
+            containerColor = container,
+            tonalElevation = 0.dp,
+            shadowElevation = 6.dp,
+            modifier = Modifier.widthIn(min = 200.dp),
+        ) {
+            if (title != null) {
+                Text(
+                    title, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.widthIn(max = 260.dp).padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 6.dp).semantics { heading() },
                 )
+            }
+            val (plain, destructive) = actions.partition { !it.destructive }
+            plain.forEach { a -> OverflowItem(a, iconTint) { open = false; a.onClick() } }
+            if (destructive.isNotEmpty()) {
+                if (plain.isNotEmpty() || title != null) HorizontalDivider(Modifier.padding(horizontal = 12.dp, vertical = 4.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                destructive.forEach { a -> OverflowItem(a, iconTint) { open = false; a.onClick() } }
             }
         }
     }
 }
 
-/** Il marchio Songport (nota nell'anello), tinto con il colore che serve. */
+@Composable
+private fun OverflowItem(a: MenuAction, iconTint: Color, onClick: () -> Unit) {
+    val error = MaterialTheme.colorScheme.error
+    DropdownMenuItem(
+        text = { Text(a.label, style = MaterialTheme.typography.bodyLarge, color = if (a.destructive) error else Color.Unspecified) },
+        leadingIcon = a.icon?.let { icon -> { Icon(icon, contentDescription = null, tint = if (a.destructive) error else iconTint) } },
+        enabled = a.enabled,
+        onClick = onClick,
+        // Rounded highlight inside the rounded sheet; 48 dp tall at least, as every touch target.
+        modifier = Modifier.heightIn(min = 48.dp).padding(horizontal = 6.dp).clip(RoundedCornerShape(12.dp)),
+        contentPadding = PaddingValues(horizontal = 12.dp),
+    )
+}
+
+/** Il marchio Trackhop (nota nell'anello), tinto con il colore che serve. */
 @Composable
 fun BrandMark(size: Dp = 28.dp, tint: Color = MaterialTheme.colorScheme.primary) {
     Icon(painterResource(R.drawable.ic_brand_mark), contentDescription = null, tint = tint, modifier = Modifier.size(size))
+}
+
+/**
+ * The mark in white on the glass tile of the icon and the store graphics: white at 18 % with a
+ * faint lighter edge, corners at 0.24 of the side, the mark filling two thirds of it. For the
+ * brand surfaces ([HeroHeader], onboarding, the stats card), on the beam.
+ */
+@Composable
+fun BrandTile(size: Dp = 40.dp) {
+    val shape = RoundedCornerShape(size * 0.24f)
+    Box(
+        Modifier.size(size).clip(shape).background(Color.White.copy(alpha = 0.18f)).border(1.dp, Color.White.copy(alpha = 0.35f), shape),
+        contentAlignment = Alignment.Center,
+    ) {
+        BrandMark(size * 0.8f, tint = Color.White)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -290,22 +371,23 @@ fun AppTopBar(title: String, showBrand: Boolean = true, actions: @Composable Row
 }
 
 /**
- * Intestazione con la sfumatura del brand: titolo, sottotitolo e una riga di azioni. The gradient
- * is the brand's whatever the colour scheme (Material You too): it is the one place the identity
- * lives. White text at full alpha, and the gradient ends on a deep magenta, so it reads at AA.
+ * Intestazione sul fascio del brand: titolo, sottotitolo e una riga di azioni. The beam
+ * ([brandBeam]) is the brand's whatever the colour scheme (Material You too): it is the one place
+ * the identity lives. The band crosses the top-right corner; the text, white at full alpha, sits
+ * on the dark side, where it reads above 7:1.
  */
 @Composable
 fun HeroHeader(title: String, subtitle: String, link: String? = null, onLink: (() -> Unit)? = null, content: (@Composable RowScope.() -> Unit)? = null) {
     Box(
         Modifier.fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
-            .background(Brush.linearGradient(listOf(Brand.Indigo, Brand.Violet, Brand.MagentaDeep)))
+            .brandBeam()
             .padding(20.dp),
     ) {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                BrandMark(30.dp, tint = Color.White)
-                Spacer(Modifier.width(10.dp))
+                BrandTile(40.dp)
+                Spacer(Modifier.width(12.dp))
                 Text(title, color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.height(4.dp))

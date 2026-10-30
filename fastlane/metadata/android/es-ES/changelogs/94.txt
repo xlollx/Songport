@@ -1,0 +1,1 @@
+El inicio de sesión de SoundCloud se presenta como un navegador móvil normal, así que su protección anti-bots ya no lo bloquea; si aún ocurre, un mensaje claro dice qué hacer. Las pantallas de inicio de sesión ya no quedan bajo la barra de estado o el teclado.

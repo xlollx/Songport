@@ -1,0 +1,1 @@
+Duraklatma artık belli oluyor: geçerli adım biterken "Bu adımdan sonra duraklatılıyor", ardından kartta, üstteki düğmede ve bildirimde sabit, gri çubukla "Duraklatıldı"; dokununca devam eder. Duraklatılmış birkaç eşitleme artık birbirini engellemiyor.

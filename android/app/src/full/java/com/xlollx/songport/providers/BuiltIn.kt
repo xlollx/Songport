@@ -13,8 +13,8 @@ import com.xlollx.songport.ytmbridge.YtmClient
 import com.xlollx.songport.ytmbridge.pending
 
 /**
- * GitHub and F-Droid build: the web connectors (YouTube Music, Amazon Music, Spotify and Apple Music
- * web sign-in) run inside Songport, from the :bridge module. They answer the same methods the Songport
+ * GitHub and F-Droid build: the web connectors (YouTube Music, Amazon Music, the Spotify, Apple Music
+ * and Deezer web sign-in, SoundCloud) run inside Trackhop, from the :bridge module. They answer the same methods the Trackhop
  * Bridge app answers through its ContentProvider, called in-process: no second app, no signature check.
  */
 object BuiltIn {
@@ -35,6 +35,8 @@ object BuiltIn {
         AmazonBridgeProvider.LOGIN_ACTION -> Intent(ctx, AmazonLoginActivity::class.java)
         SpotifyBridgeProvider.LOGIN_ACTION -> WebLoginActivity.intent(ctx, WebLoginActivity.SPOTIFY)
         AppleBridgeProvider.LOGIN_ACTION -> WebLoginActivity.intent(ctx, WebLoginActivity.APPLE)
+        DeezerBridgeProvider.LOGIN_ACTION -> WebLoginActivity.intent(ctx, WebLoginActivity.DEEZER)
+        SoundCloudBridgeProvider.LOGIN_ACTION -> WebLoginActivity.intent(ctx, WebLoginActivity.SOUNDCLOUD)
         else -> null
     }
 

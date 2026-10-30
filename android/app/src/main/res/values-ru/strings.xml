@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Songport</string>
+    <string name="app_name">Trackhop</string>
 
     <string name="tab_syncs">Синхронизации</string>
     <string name="tab_accounts">Аккаунты</string>
@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">Оставьте пустым, чтобы использовать название исходного плейлиста.</string>
     <string name="editor_schedule">Расписание</string>
     <string name="editor_mirror">Зеркалировать удаления</string>
-    <string name="editor_mirror_desc">Также удалять из цели треки, которых больше нет в источнике. Выкл. = только добавлять.</string>
+    <string name="editor_mirror_desc">Удалять из цели каждый трек, которого нет в источнике, включая добавленные туда вручную. Выкл. = только добавлять.</string>
     <string name="editor_keep_order">Сохранять порядок источника</string>
     <string name="editor_keep_order_desc">После добавления треки в цели выстраиваются в порядке источника. Поддерживают Spotify, YouTube Music и Deezer.</string>
     <string name="note_order_aligned">Порядок приведён к источнику.</string>
@@ -91,7 +91,7 @@
     <string name="connected_as">Подключено как %1$s</string>
     <string name="not_connected">Не подключено</string>
     <string name="not_configured">Требуется настройка</string>
-    <string name="not_configured_hint">Songport поставляется без ключей сервисов. Создайте свой бесплатный ключ на странице сервиса для разработчиков: это занимает около двух минут, и приложение проведёт вас по шагам.</string>
+    <string name="not_configured_hint">Trackhop поставляется без ключей сервисов. Создайте свой бесплатный ключ на странице сервиса для разработчиков: это занимает около двух минут, и приложение проведёт вас по шагам.</string>
     <string name="setup_now">Настроить</string>
     <string name="connect">Подключить</string>
     <string name="disconnect">Отключить</string>
@@ -100,11 +100,11 @@
 
     <string name="provider_note_spotify">Требуется аккаунт Spotify. Плейлисты и любимые треки.</string>
     <string name="provider_note_ytm">Плейлисты и лайки YouTube Music через собственный интерфейс веб-плеера, встроенный в эту версию: войдите с аккаунтом Google, без проекта Google Cloud и без квот. Это не официальный API Google: прочтите уведомление, показанное перед входом.</string>
-    <string name="ytm_not_installed_hint">Установите приложение-компаньон «Songport YTM Bridge» с GitHub, затем вернитесь сюда и нажмите «Подключить». Предпочитаете официальный путь? Используйте карточку «YouTube Music (Google API)» ниже.</string>
-    <string name="ytm_not_installed">Songport YTM Bridge не установлен.</string>
+    <string name="ytm_not_installed_hint">Установите приложение-компаньон «Trackhop Bridge» с GitHub, затем вернитесь сюда и нажмите «Подключить». Предпочитаете официальный путь? Используйте карточку «YouTube Music (Google API)» ниже.</string>
+    <string name="ytm_not_installed">Trackhop Bridge не установлен.</string>
     <string name="ytm_install">Получить Bridge</string>
     <string name="report_issue">Сообщить на GitHub</string>
-    <string name="provider_note_youtube">Официальный YouTube Data API с вашим собственным проектом Google Cloud. Необязательно: карточка «YouTube Music» выше работает и без него. Дневная квота ограничена: большие синхронизации могут занять несколько дней.</string>
+    <string name="provider_note_youtube">Официальный YouTube Data API с вашим собственным проектом Google Cloud. Дневная квота ограничена: большие синхронизации могут занять несколько дней.</string>
     <string name="provider_note_tidal">Плейлисты TIDAL (бета).</string>
     <string name="provider_note_deezer">Плейлисты и избранное Deezer (бета).</string>
 
@@ -113,15 +113,15 @@
     <string name="log_duration">%1$d с</string>
 
     <string name="settings_notifications">Уведомлять после каждой синхронизации</string>
-    <string name="settings_notifications_desc">Показывать уведомление, когда синхронизация по расписанию добавляет или удаляет треки либо завершается ошибкой.</string>
+    <string name="settings_notifications_desc">Показывать уведомление, когда синхронизация по расписанию добавляет или удаляет треки, а также когда любая синхронизация завершается ошибкой.</string>
     <string name="settings_isrc">Точная запись через Deezer</string>
-    <string name="settings_isrc_desc">Если у трека нет ISRC (веб-пути, файлы), Songport один раз ищет его в открытом каталоге Deezer, чтобы Spotify, Apple Music и TIDAL вернули именно ту запись, а не похожую. Анонимный запрос, без аккаунта.</string>
+    <string name="settings_isrc_desc">Если у трека нет ISRC (веб-пути, файлы), Trackhop один раз ищет его в открытом каталоге Deezer, чтобы Spotify, Apple Music и TIDAL вернули именно ту запись, а не похожую. Анонимный запрос, без аккаунта.</string>
     <string name="settings_language">Язык</string>
-    <string name="settings_language_desc">Songport использует язык системы: английский, итальянский, французский, немецкий, испанский, португальский, польский, русский, турецкий, китайский, японский, корейский.</string>
+    <string name="settings_language_desc">Trackhop использует язык системы: английский, итальянский, французский, немецкий, испанский, португальский, польский, русский, турецкий, китайский, японский, корейский.</string>
     <string name="settings_language_open">Изменить</string>
     <string name="settings_language_system">Язык системы</string>
     <string name="settings_advanced">Ключи сервисов</string>
-    <string name="settings_advanced_desc">Songport поставляется без собственных ключей: Spotify, YouTube Music, TIDAL, Deezer, Last.fm и Apple Music подключаются через бесплатный ключ, созданный на ваше имя, поэтому их лимиты и квоты принадлежат только вам. Здесь их можно посмотреть и изменить.</string>
+    <string name="settings_advanced_desc">Trackhop поставляется без собственных ключей: официальные способы Spotify, YouTube, TIDAL, Deezer, Last.fm и Apple Music используют бесплатный ключ, созданный на ваше имя, поэтому их лимиты и квоты принадлежат только вам. Здесь их можно посмотреть и изменить.</string>
     <string name="settings_privacy_options">Настройки конфиденциальности рекламы</string>
     <string name="settings_privacy_policy">Политика конфиденциальности</string>
     <string name="settings_about">О приложении</string>
@@ -129,7 +129,7 @@
     <string name="settings_developer_switch">Показывать инструменты разработчика</string>
     <string name="settings_developer_desc">Журнал соединений, технический отчёт для отправки, запись трафика веб-коннекторов. В выключенном состоянии они не мешают.</string>
     <string name="settings_version">Версия %1$s</string>
-    <string name="settings_ads_note">Songport бесплатен и без подписок. Его поддерживает один небольшой баннер; данные не продаются, и с телефона уходят только запросы к подключённым музыкальным сервисам.</string>
+    <string name="settings_ads_note">Trackhop бесплатен и без подписок. Его поддерживает один небольшой баннер; данные не продаются, и, кроме рекламы, с телефона уходят только запросы к подключённым музыкальным сервисам.</string>
     <string name="settings_csv">Файлы</string>
     <string name="csv_import">Импортировать файл</string>
     <string name="csv_export">Экспорт</string>
@@ -138,7 +138,7 @@
     <string name="csv_imported">Импортировано треков: %1$d</string>
     <string name="csv_exported">Файл экспортирован</string>
     <string name="log_save_file">Сохранить как файл…</string>
-    <string name="note_file_target">Сохранено внутри Songport: нажмите «Сохранить как файл» здесь или откройте Настройки → Файлы, чтобы получить CSV или M3U.</string>
+    <string name="note_file_target">Сохранено внутри Trackhop: нажмите «Сохранить как файл» здесь или откройте «Инструменты › Файловые плейлисты», чтобы получить CSV или M3U.</string>
 
     <string name="auth_done">Подключено к %1$s</string>
     <string name="auth_failed">Ошибка входа: %1$s</string>
@@ -151,7 +151,7 @@
     <string name="notif_sync_title">Синхронизация: %1$s</string>
 
     <string name="delete_confirm_title">Удалить эту синхронизацию?</string>
-    <string name="delete_confirm_text">Плейлисты на сервисах не затрагиваются.</string>
+    <string name="delete_confirm_text">Плейлисты на сервисах не затрагиваются. У двусторонней синхронизации удаляются обе половины, а пропущенные вами треки так и остаются пропущенными.</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="ok">ОК</string>
@@ -164,7 +164,7 @@
     <string name="provider_note_files">Локальные файлы: импортируйте плейлист, экспортированный из любого сервиса (CSV, M3U, Apple Music/iTunes XML, JSON или простой список), и синхронизируйте его куда угодно. Мост для сервисов без открытого API: Amazon Music, Qobuz, SoundCloud.</string>
     <string name="apple_token_missing">Токен разработчика Apple Music ещё не задан. Введите его в разделе Аккаунты → Apple Music → Настроить.</string>
     <string name="apple_subscription_needed">%1$s: для медиатеки нужна активная подписка Apple Music; Apple отказал (403: %2$s).</string>
-    <string name="link_paste">Или вставьте ссылку на публичный плейлист</string>
+    <string name="link_paste">Вставьте ссылку на публичный плейлист</string>
     <string name="link_use">Использовать ссылку</string>
     <string name="link_invalid">Ссылка не распознана. Поддерживаются: Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL.</string>
     <string name="editor_source_link">По ссылке</string>
@@ -175,10 +175,10 @@
     <string name="link_resolving">Чтение плейлиста…</string>
     <string name="note_no_removals">%1$s не позволяет удалять треки из плейлиста через свой API: %2$d треков оставлено на месте.</string>
     <string name="note_removals_deferred">Удаления отложены: поиск не был завершён, поэтому %1$d треков в цели, пока ничему не соответствующих, оставлены на месте. Они будут проверены, когда запуск завершится.</string>
-    <string name="note_removals_capped">Удаления сдержаны: этот запуск удалил бы %1$d из %2$d треков в цели. Откройте предпросмотр, чтобы увидеть их и подтвердить; если источник на самом деле их не терял, сервис выдал неполный список, и удалять ничего не нужно.</string>
+    <string name="note_removals_capped">Удаления сдержаны: этот запуск удалил бы %1$d из %2$d треков в цели. Нажмите на статус синхронизации, чтобы открыть предпросмотр и увидеть их; если их действительно нужно удалить, отметьте там «Удалить эти треки» и запустите. Если источник на самом деле их не терял, сервис выдал неполный список, и удалять ничего не нужно.</string>
     <string name="note_unchanged">С последнего запуска ничего не изменилось ни с одной стороны: пропущено.</string>
     <string name="review_share">Поделиться списком</string>
-    <string name="note_search_interrupted">Проверено %1$d из %2$d треков, затем сервис потребовал более долгую паузу (%3$s). Это ограничение сервиса, а не ошибка Songport: найденное применено и запомнено. Запустите синхронизацию снова через несколько минут, чтобы продолжить с этого места.</string>
+    <string name="note_search_interrupted">Проверено %1$d из %2$d треков, затем сервис потребовал более долгую паузу (%3$s). Это ограничение сервиса, а не ошибка Trackhop: найденное применено и запомнено. Запустите синхронизацию снова через несколько минут, чтобы продолжить с этого места.</string>
     <string name="error_no_removals">%1$s не может удалять треки из плейлиста</string>
     <string name="log_notes_title">Примечания</string>
     <string name="editor_mirror_unsupported">%1$s может только добавлять треки: удаления будут пропущены.</string>
@@ -206,7 +206,7 @@
     <string name="setup_why_deezer">Deezer требует приложение, зарегистрированное на ваше имя. Страницу https-редиректа предоставляет проект.</string>
     <string name="setup_why_apple">Токен разработчика принадлежит вашему аккаунту Apple Developer и истекает не позднее чем через шесть месяцев.</string>
     <string name="error_dev_mode_limit">%1$s допускает лишь несколько пользователей на приложение. Настройте собственные учётные данные: это бесплатно и занимает около двух минут.</string>
-    <string name="error_network">телефон не смог связаться с сервисом (ошибка DNS). Проверьте подключение, VPN или частный DNS, а также разрешена ли Songport передача данных в фоне, затем попробуйте снова.</string>
+    <string name="error_network">телефон не смог связаться с сервисом (ошибка DNS). Проверьте подключение, VPN или частный DNS, а также разрешена ли Trackhop передача данных в фоне, затем попробуйте снова.</string>
     <string name="auth_timeout">нет ответа от браузера, время вышло</string>
 
     <string name="tab_tools">Инструменты</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">Уже в цели: %1$d</string>
     <string name="preview_add">К добавлению: %1$d</string>
     <string name="preview_remove">К удалению: %1$d</string>
-    <string name="preview_remove_warning">Будет удалено %1$d из %2$d треков в цели. Перед подтверждением убедитесь, что в источнике действительно так мало треков: неполный список от сервиса выглядит точно так же.</string>
+    <string name="preview_remove_warning">Будет удалено %1$d из %2$d треков в цели. Убедитесь, что в источнике действительно так мало треков: неполный список от сервиса выглядит точно так же. Без отметки ниже запуск добавит треки и оставит эти.</string>
     <string name="preview_unmatched">Не найдено: %1$d</string>
     <string name="preview_ignored">Пропущено: %1$d</string>
     <string name="preview_target_new">Целевой плейлист будет создан.</string>
@@ -260,7 +260,7 @@
     <string name="result_ignored">Пропущено: %1$d</string>
     <string name="tools_pick_service">Сервис</string>
     <string name="files_row_desc">Импортированные списки и плейлисты, записанные синхронизацией в «Файл»: импорт, вставка, экспорт.</string>
-    <string name="ai_row_desc">Опишите плейлист; ваш ИИ его составит, а Songport найдёт треки.</string>
+    <string name="ai_row_desc">Опишите плейлист; ваш ИИ его составит, а Trackhop найдёт треки.</string>
     <string name="tools_backup_row_desc">Все плейлисты, любимые треки, альбомы и исполнители этого сервиса, сохранённые как файлы с датой.</string>
     <string name="tools_none">Сначала подключите сервис.</string>
     <string name="spotify_forbidden">Spotify отклонил запрос (%1$s). Приложения в режиме Development Mode не могут читать плейлисты, созданные самим Spotify (Discover Weekly, Release Radar, редакционные миксы), и обслуживают только аккаунты из списка User Management приложения. Выберите плейлист, созданный вами или другим пользователем, или добавьте аккаунт на developer.spotify.com.</string>
@@ -351,7 +351,7 @@
     </plurals>
     <string name="transfer_started">Создано и запущено синхронизаций: %1$d. Следите за ними в «Синхронизациях».</string>
     <string name="ai_title">Генератор плейлистов</string>
-    <string name="ai_desc">Опишите нужный плейлист, и ваш ИИ его составит; затем Songport найдёт треки на выбранном сервисе, как при обычной синхронизации, так что всё, в чём ИИ ошибся, попадёт в список на проверку. У Songport нет собственного ИИ: вы подключаете свой (OpenAI, Anthropic, Google Gemini или любой сервер, совместимый с OpenAI, даже локальный) с ключом из вашего аккаунта, и ему отправляется только введённый здесь текст.</string>
+    <string name="ai_desc">Опишите нужный плейлист, и ваш ИИ его составит; затем Trackhop найдёт треки на выбранном сервисе, как при обычной синхронизации, так что всё, в чём ИИ ошибся, попадёт в список на проверку. У Trackhop нет собственного ИИ: вы подключаете свой (OpenAI, Anthropic, Google Gemini или любой сервер, совместимый с OpenAI, даже локальный) с ключом из вашего аккаунта, и ему отправляется только введённый здесь текст.</string>
     <string name="ai_setup">Подключить ИИ</string>
     <string name="ai_setup_change">Изменить</string>
     <string name="ai_setup_title">Ваш ИИ</string>
@@ -390,7 +390,7 @@
     <string name="ai_check">Проверить</string>
     <string name="ai_checking">Проверка модели…</string>
     <string name="ai_check_ok">Модель готова</string>
-    <string name="ai_free_hint">Попробовать бесплатно: у Google Gemini и Groq есть бесплатный тариф, у OpenRouter — бесплатные модели (с окончанием «:free»). Ключ создаётся за минуту на сайте провайдера. Songport не может поставлять общий ключ: он был бы виден в открытом исходном коде и исчерпан за день.</string>
+    <string name="ai_free_hint">Попробовать бесплатно: у Google Gemini и Groq есть бесплатный тариф, у OpenRouter — бесплатные модели (с окончанием «:free»). Ключ создаётся за минуту на сайте провайдера. Trackhop не может поставлять общий ключ: он был бы виден в открытом исходном коде и исчерпан за день.</string>
     <string name="ai_badge_desc">Составлен вашим ИИ</string>
     <string name="ai_extend">Добавить треки с помощью ИИ</string>
     <string name="ai_extend_title">Дополнить плейлист</string>
@@ -466,16 +466,16 @@
     </plurals>
     <string name="settings_battery">Синхронизации по расписанию не запускаются?</string>
     <string name="backup_folder_title">Резервная копия в папку</string>
-    <string name="backup_folder_desc">Songport уже хранит резервные копии ваших плейлистов с датами внутри приложения. Выберите папку (SD-карта, Nextcloud, Drive, любое приложение, которое её предоставляет), и новые версии будут копироваться и туда, чтобы пережить телефон. Для восстановления импортируйте файл из этой папки в «Файлах».</string>
+    <string name="backup_folder_desc">Выберите папку (SD-карта, Nextcloud, Drive, любое приложение, которое её предоставляет), и Trackhop будет сохранять туда резервные копии плейлистов с датами, чтобы они пережили телефон. Там ничего нет, пока не пройдёт резервное копирование: по расписанию ниже или по кнопке «Скопировать сейчас». Для восстановления импортируйте файл из этой папки в «Файлах».</string>
     <string name="backup_folder_none">Папка не выбрана</string>
-    <string name="backup_folder_hint">Копируются только файлы, которых ещё нет в папке.</string>
+    <string name="backup_folder_hint">«Скопировать сейчас» сначала делает резервную копию каждого подключённого сервиса, затем копирует файлы, которых ещё нет в папке.</string>
     <string name="backup_folder_pick">Выбрать папку</string>
     <string name="backup_folder_now">Скопировать сейчас</string>
     <string name="backup_folder_done">Сервисов скопировано: %1$d, новых файлов: %2$d</string>
     <string name="backup_folder_forget">Остановить</string>
     <string name="backup_folder_missing">Папка резервных копий больше недоступна: она удалена, карта извлечена или приложение потеряло к ней доступ. Выберите папку заново.</string>
     <string name="backup_last_ok">Последняя копия: %1$s</string>
-    <string name="settings_battery_desc">Некоторые телефоны (Xiaomi, Huawei, Oppo, Samsung) останавливают фоновые приложения. Исключите Songport из оптимизации батареи, чтобы расписание соблюдалось.</string>
+    <string name="settings_battery_desc">Некоторые телефоны (Xiaomi, Huawei, Oppo, Samsung) останавливают фоновые приложения. Исключите Trackhop из оптимизации батареи, чтобы расписание соблюдалось.</string>
     <string name="settings_battery_button">Открыть настройки батареи</string>
     <string name="share_received">Ссылка получена: выберите, куда её синхронизировать.</string>
     <string name="share_invalid">В переданном тексте нет распознаваемой ссылки на плейлист.</string>
@@ -495,7 +495,7 @@
     <string name="login_token">Токен</string>
     <string name="login_submit">Проверить и сохранить</string>
     <string name="login_checking">Проверка…</string>
-    <string name="login_trust_server">Ваши учётные данные хранятся на этом телефоне в зашифрованном виде. Songport обращается только к серверу, который вы здесь укажете.</string>
+    <string name="login_trust_server">Ваши учётные данные хранятся на этом телефоне в зашифрованном виде. Trackhop обращается только к серверу, который вы здесь укажете.</string>
     <string name="login_hint_subsonic">Введите адрес вашего сервера Navidrome, Airsonic или другого Subsonic-совместимого (например, https://music.example.com), имя пользователя и пароль. Пароль никогда не передаётся как есть: в каждом запросе используется хеш с солью. Ampache: используйте пароль Subsonic или ключ API из «Настройки» → «Учётная запись», а не пароль от учётной записи.</string>
     <string name="login_hint_jellyfin">Введите адрес вашего сервера Jellyfin (например, https://jellyfin.example.com), имя пользователя и пароль.</string>
     <string name="login_hint_plex">Введите адрес вашего Plex Media Server (например, http://192.168.1.10:32400) и ваш X-Plex-Token. Как найти токен, Plex объясняет на страницах поддержки («Finding an authentication token»).</string>
@@ -509,12 +509,12 @@
     <string name="error_read_only">%1$s доступен только для чтения: может быть только источником.</string>
     <string name="error_create_unsupported">%1$s не может создавать плейлисты из приложения: создайте его в %1$s и выберите здесь.</string>
     <string name="connect_title">Подключение %1$s</string>
-    <string name="connect_where_oauth">Вы войдёте на %1$s в браузере. Songport никогда не видит ваш пароль.</string>
-    <string name="connect_where_web">Вы войдёте на собственной странице %1$s, показанной внутри приложения. Songport никогда не видит ваш пароль, только оставшуюся после входа сессию.</string>
-    <string name="connect_where_apple">Вы войдёте с Apple ID в собственном окне Apple. Songport никогда не видит ваш пароль.</string>
-    <string name="connect_where_server">Данные вашего сервера хранятся на этом телефоне в зашифрованном виде. Songport обращается только к вашему серверу.</string>
-    <string name="connect_token">Songport получает лишь ограниченное отзываемое разрешение, хранящееся на этом телефоне в зашифрованном виде (Android Keystore).</string>
-    <string name="connect_noserver">У Songport нет сервера: данные передаются только между этим телефоном и %1$s.</string>
+    <string name="connect_where_oauth">Вы войдёте на %1$s в браузере. Trackhop никогда не видит ваш пароль.</string>
+    <string name="connect_where_web">Вы войдёте на собственной странице %1$s, показанной внутри приложения. Trackhop никогда не видит ваш пароль, только оставшуюся после входа сессию.</string>
+    <string name="connect_where_apple">Вы войдёте с Apple ID в собственном окне Apple. Trackhop никогда не видит ваш пароль.</string>
+    <string name="connect_where_server">Данные вашего сервера хранятся на этом телефоне в зашифрованном виде. Trackhop обращается только к вашему серверу.</string>
+    <string name="connect_token">Trackhop получает лишь ограниченное отзываемое разрешение, хранящееся на этом телефоне в зашифрованном виде (Android Keystore).</string>
+    <string name="connect_noserver">У Trackhop нет сервера: данные передаются только между этим телефоном и %1$s.</string>
     <string name="connect_revoke">Отозвать можно в любой момент: здесь кнопкой «Отключить» или из вашего аккаунта %1$s.</string>
     <string name="connect_continue">Продолжить</string>
     <string name="connect_continue_browser">Продолжить в браузере</string>
@@ -544,8 +544,8 @@
     <string name="connector_pick_hint">К некоторым сервисам есть два пути. Простой: вход на сайте, ничего создавать не нужно. Официальный: собственный API сервиса с вашим бесплатным ключом, стабильнее.</string>
     <string name="route_easy">Быстрый путь</string>
     <string name="route_official">Официальный путь</string>
-    <string name="route_note_web">Вы входите на собственной странице сервиса, как в браузере: Songport никогда не видит ваш пароль, а хранит только сессию, зашифрованную на этом телефоне. Ничего создавать не нужно. Неофициальный интерфейс: может перестать работать при изменении сайта.</string>
-    <string name="route_note_web_only">Вы входите на собственной странице сервиса, как в браузере: Songport никогда не видит ваш пароль, только сессию, зашифрованную на этом телефоне. Официального API нет: может перестать работать при изменении сайта.</string>
+    <string name="route_note_web">Вы входите на собственной странице сервиса, как в браузере: Trackhop никогда не видит ваш пароль, а хранит только сессию, зашифрованную на этом телефоне. Ничего создавать не нужно. Неофициальный интерфейс: может перестать работать при изменении сайта.</string>
+    <string name="route_note_web_only">Вы входите на собственной странице сервиса, как в браузере: Trackhop никогда не видит ваш пароль, только сессию, зашифрованную на этом телефоне. Официального API нет: может перестать работать при изменении сайта.</string>
     <string name="route_note_api">Ваш собственный бесплатный ключ API, создаваемый на странице сервиса для разработчиков примерно за две минуты. Официально и стабильно.</string>
     <string name="route_note_spotify_api">Ваш собственный бесплатный ключ API, создаваемый на developer.spotify.com примерно за две минуты. Официально и стабильно. Spotify позволяет создать его только аккаунтам с Premium (правило Spotify с февраля 2026 года): без Premium пункт «Web API» там остаётся неактивным.</string>
     <string name="route_note_apple_api">Токен разработчика из аккаунта Apple Developer (платного). Официально.</string>
@@ -555,8 +555,8 @@
     <string name="connector_name_label">Название коннектора</string>
     <string name="connector_rename">Переименовать</string>
     <string name="connect_switch_account">В браузере может быть уже выполнен вход в другой аккаунт %1$s. На странице входа выберите «Не вы?» или смените аккаунт, затем продолжите с аккаунтом для этого коннектора.</string>
-    <string name="provider_note_amazon">У Amazon нет открытого API: Songport использует интерфейс веб-плеера, поэтому может перестать работать, когда Amazon его изменит. Поддерживаются плейлисты, поиск, создание, добавление и удаление.</string>
-    <string name="amazon_not_installed_hint">Установите или обновите приложение-компаньон «Songport Bridge» (1.3.1 или новее) с GitHub, затем вернитесь сюда и нажмите «Подключить».</string>
+    <string name="provider_note_amazon">У Amazon нет открытого API: Trackhop использует интерфейс веб-плеера, поэтому может перестать работать, когда Amazon его изменит. Поддерживаются плейлисты, поиск, создание, добавление и удаление.</string>
+    <string name="amazon_not_installed_hint">Установите или обновите приложение-компаньон «Trackhop Bridge» (1.3.1 или новее) с GitHub, затем вернитесь сюда и нажмите «Подключить».</string>
     <string name="sync_pause">Пауза</string>
     <string name="sync_resume">Продолжить</string>
     <string name="sync_stop">Остановить</string>
@@ -574,18 +574,17 @@
     <string name="live_removed">Удалено из цели</string>
     <string name="provider_note_spotify_bridge">Вход на собственной странице Spotify, без создания приложения разработчика. Использует сессию веб-плеера: неофициальный путь, противоречит условиям Spotify, может перестать работать. Официальный путь с вашим ключом остаётся доступен как «Spotify».</string>
     <string name="provider_note_apple_bridge">Вход с Apple ID, без Apple Developer Program. Использует токены веб-плеера: неофициальный путь, противоречит условиям Apple, может перестать работать. Официальный путь с вашим токеном разработчика остаётся доступен как «Apple Music».</string>
-    <string name="bridge_needed_hint">Установите или обновите приложение-компаньон «Songport Bridge» (1.2 или новее) с GitHub, затем вернитесь сюда и нажмите «Подключить».</string>
+    <string name="bridge_needed_hint">Установите или обновите приложение-компаньон «Trackhop Bridge» (1.2 или новее) с GitHub, затем вернитесь сюда и нажмите «Подключить».</string>
     <string name="settings_source_code">Исходный код и документация</string>
-    <string name="plugins_more">Другие сервисы можно добавить плагинами-коннекторами: как это работает.</string>
     <string name="security_title">Как защищены ваши входы</string>
-    <string name="security_fact_1">Пароли вводятся на собственных страницах сервисов, никогда в Songport.</string>
-    <string name="security_fact_2">Songport хранит только отзываемые токены доступа, зашифрованные с помощью Android Keystore.</string>
-    <string name="security_fact_3">У Songport нет сервера и не нужно создавать аккаунт: с телефона уходят только запросы к подключённым сервисам.</string>
+    <string name="security_fact_1">Пароли вводятся на собственных страницах сервисов, никогда в Trackhop.</string>
+    <string name="security_fact_2">Trackhop хранит только отзываемые токены доступа, зашифрованные с помощью Android Keystore.</string>
+    <string name="security_fact_3">У Trackhop нет сервера и не нужно создавать аккаунт: с телефона уходят только запросы к подключённым сервисам.</string>
     <string name="security_fact_4">Отключение удаляет токен с телефона; каждый сервис также позволяет отозвать его на странице аккаунта.</string>
     <string name="ai_trust_title">Куда уходит ключ?</string>
     <string name="ai_trust_1">Он хранится только на этом телефоне, зашифрованный с помощью Android Keystore, как и токены ваших музыкальных сервисов.</string>
-    <string name="ai_trust_2">Он покидает телефон только в сторону %1$s, с каждым вашим запросом. У Songport нет собственного сервера: Настройки → Безопасность → Соединения показывает все хосты, к которым это приложение когда-либо обращалось, так что вы можете проверить.</string>
-    <string name="ai_trust_3">«Забыть ключ» удаляет его сразу. Ещё безопаснее: создайте ключ только для Songport с лимитом расходов и отзывайте его, когда захотите.</string>
+    <string name="ai_trust_2">Он покидает телефон только в сторону %1$s, с каждым вашим запросом. У Trackhop нет собственного сервера: «Настройки › Дополнительно › Показывать инструменты разработчика › Показать соединения» показывает все хосты, к которым это приложение когда-либо обращалось, так что вы можете проверить.</string>
+    <string name="ai_trust_3">«Забыть ключ» удаляет его сразу. Ещё безопаснее: создайте ключ только для Trackhop с лимитом расходов и отзывайте его, когда захотите.</string>
     <string name="ai_limits">Задать лимит расходов</string>
     <string name="security_connections">Показать соединения</string>
     <string name="security_connections_desc">Все хосты, к которым это приложение обращалось с момента установки, и как часто. Записывается только имя хоста, никогда содержимое запросов.</string>
@@ -594,9 +593,9 @@
     <string name="security_connections_clear">Очистить список</string>
     <string name="security_connections_count">Запросов: %1$d · последний %2$s</string>
     <string name="security_lock">Требовать разблокировку при открытии</string>
-    <string name="security_lock_desc">Отпечаток, лицо или PIN-код телефона перед открытием Songport.</string>
+    <string name="security_lock_desc">Отпечаток, лицо или PIN-код телефона перед открытием Trackhop.</string>
     <string name="security_lock_unavailable">На этом телефоне не настроена блокировка экрана.</string>
-    <string name="lock_title">Songport заблокирован</string>
+    <string name="lock_title">Trackhop заблокирован</string>
     <string name="lock_subtitle">Разблокируйте отпечатком, лицом или PIN-кодом</string>
     <string name="lock_unlock">Разблокировать</string>
     <string name="review_title">На проверку: %1$s</string>
@@ -612,24 +611,24 @@
     <string name="restored_done">Восстановлено треков: %1$d</string>
     <string name="restored_note">Удалённых треков восстановлено вручную: %1$d.</string>
     <string name="quota_used">Использовано %1$s / %2$s единиц YouTube сегодня</string>
-    <string name="quota_note">Дневной лимит задаёт YouTube (Google), а не Songport. Сбрасывается в полночь по тихоокеанскому времени. Поиск стоит 100 единиц, добавление трека — 50.</string>
-    <string name="quota_note_shared">Дневной лимит задаёт YouTube (Google), а не Songport; он общий для всех, кто использует встроенный ключ: расход других пользователей здесь не учитывается. Собственные учётные данные дают вам отдельную квоту.</string>
+    <string name="quota_note">Дневной лимит задаёт YouTube (Google), а не Trackhop. Сбрасывается в полночь по тихоокеанскому времени. Поиск стоит 100 единиц, добавление трека — 50.</string>
+    <string name="quota_note_shared">Дневной лимит задаёт YouTube (Google), а не Trackhop; он общий для всех, кто использует встроенный ключ: расход других пользователей здесь не учитывается. Собственные учётные данные дают вам отдельную квоту.</string>
     <string name="quota_estimate">Эта синхронизация использует около %1$s единиц.</string>
     <string name="quota_estimate_over">Этой синхронизации нужно около %1$s единиц, но на сегодня осталось только %2$s: она завершится в ближайшие дни.</string>
     <string name="editor_bidirectional">Двусторонняя</string>
-    <string name="editor_bidirectional_desc">Также создаёт зеркальную синхронизацию в обратном направлении, без удалений, чтобы оба плейлиста оставались полными.</string>
+    <string name="editor_bidirectional_desc">Также создаёт обратную синхронизацию (отмечена ↔), чтобы треки, добавленные с одной стороны, попадали на другую. Ни одна из них не удаляет треки. Обе настраиваются здесь.</string>
     <string name="editor_bidirectional_unavailable">Доступно с существующим целевым плейлистом и источником, доступным для записи.</string>
     <string name="editor_bidirectional_not_owned">Недоступно с публичной ссылкой или чужим плейлистом в качестве источника: его можно читать, но не записывать.</string>
-    <string name="onboarding_title">Добро пожаловать в Songport</string>
-    <string name="onboarding_intro">Держите плейлисты одинаковыми на разных музыкальных сервисах, вручную или по расписанию. Бесплатно, без подписки и без создания аккаунта.</string>
+    <string name="onboarding_title">Добро пожаловать в Trackhop</string>
+    <string name="onboarding_intro">Копируйте плейлисты с одного музыкального сервиса на другой и держите их актуальными, вручную или по расписанию. Бесплатно, без подписки и без создания аккаунта.</string>
     <string name="onboarding_step1_title">1. Подключите сервисы</string>
     <string name="onboarding_step1_desc">Spotify, Apple Music, YouTube Music, TIDAL, Deezer, ваш собственный сервер или файл.</string>
     <string name="onboarding_step2_title">2. Создайте синхронизацию</string>
     <string name="onboarding_step2_desc">Выберите исходный плейлист и цель. Предпросмотр показывает, что именно изменится, прежде чем что-то произойдёт.</string>
     <string name="onboarding_step3_title">3. Пусть работает</string>
     <string name="onboarding_step3_desc">Каждый час, день или неделю. Треки, которые не удалось сопоставить, выводятся списком, чтобы вы могли исправить их сами.</string>
-    <string name="onboarding_security">Вы входите на собственной странице каждого сервиса. Songport хранит только зашифрованный отзываемый токен на этом телефоне, и у него нет собственного сервера.</string>
-    <string name="onboarding_credentials">Songport поставляется без собственных ключей сервисов: для Spotify, YouTube Music, TIDAL и Deezer вы создаёте бесплатный ключ на странице сервиса для разработчиков, и приложение проведёт вас по шагам примерно за две минуты. Ваши данные затем передаются только между телефоном и вашим ключом.</string>
+    <string name="onboarding_security">Вы входите на собственной странице каждого сервиса. Trackhop хранит только зашифрованный отзываемый токен на этом телефоне, и у него нет собственного сервера.</string>
+    <string name="onboarding_credentials">Trackhop поставляется без собственных ключей сервисов. Если официальный способ сервиса требует ключ, вы создаёте бесплатный ключ на его странице для разработчиков, и приложение проведёт вас по шагам примерно за две минуты. Ваши данные затем передаются только между телефоном и сервисом.</string>
     <string name="onboarding_start">Начать</string>
     <string name="settings_show_onboarding">Показать введение снова</string>
     <string name="paste_list">Вставить список</string>
@@ -660,16 +659,16 @@
     </plurals>
     <string-array name="setup_steps_spotify">
         <item>Войдите на developer.spotify.com с аккаунтом Spotify, которым пользуетесь каждый день. Spotify требует, чтобы у этого аккаунта был Premium; если попросят принять условия для разработчиков, примите их. Если на этой странице «Web API» неактивен, у аккаунта нет Premium: Spotify не выдаёт ключ, используйте другой путь.</item>
-        <item>Нажмите «Create app». Название и описание на ваше усмотрение (например, «Songport»). «Website» оставьте пустым.</item>
+        <item>Нажмите «Create app». Название и описание на ваше усмотрение (например, «Trackhop»). «Website» оставьте пустым.</item>
         <item>В «Redirect URIs» вставьте в точности адрес, показанный ниже, и нажмите «Add». Без него вход не сможет вернуться в приложение.</item>
         <item>В «Which API/SDKs are you planning to use?» отметьте «Web API», примите условия и нажмите «Save».</item>
         <item>Откройте созданное приложение, нажмите «Settings» (справа вверху) и скопируйте сюда «Client ID». Client secret не нужен.</item>
         <item>Необязательно: «User Management» позволяет добавить до 5 других аккаунтов Spotify (имя и e-mail), которые могут использовать ваш ключ, например членов семьи.</item>
     </string-array>
     <string-array name="setup_steps_youtube">
-        <item>Войдите на console.cloud.google.com с аккаунтом Google и создайте проект. Подойдёт любое название, например «Songport». Дождитесь уведомления о создании, затем выберите его.</item>
+        <item>Войдите на console.cloud.google.com с аккаунтом Google и создайте проект. Подойдёт любое название, например «Trackhop». Дождитесь уведомления о создании, затем выберите его.</item>
         <item>Включите YouTube Data API v3: ссылка открывает его страницу в библиотеке, нажмите «Enable».</item>
-        <item>Google Auth Platform, «Overview», нажмите «Get started»: название приложения «Songport», ваш e-mail как адрес поддержки, аудитория «External», ваш e-mail как контакт. Примите условия и нажмите «Create».</item>
+        <item>Google Auth Platform, «Overview», нажмите «Get started»: название приложения «Trackhop», ваш e-mail как адрес поддержки, аудитория «External», ваш e-mail как контакт. Примите условия и нажмите «Create».</item>
         <item>Google Auth Platform, «Audience»: в «Test users» нажмите «Add users» и добавьте свой адрес Gmail, затем сохраните. Без этого шага Google отклоняет вход с сообщением «access blocked».</item>
         <item>Google Auth Platform, «Clients», «Create client»: тип приложения «Desktop app», любое название. Скопируйте сюда Client ID и Client secret. Больше ничего регистрировать не нужно: приложение принимает вход на 127.0.0.1.</item>
     </string-array>
@@ -723,26 +722,26 @@
     <string name="settings_log">Журнал синхронизаций</string>
     <string name="settings_log_desc">Итоги последних синхронизаций и технические детали для отчёта об ошибке.</string>
     <string name="settings_open">Открыть</string>
-    <string name="accounts_intro">Вы входите на официальной странице каждого сервиса. Songport никогда не видит ваш пароль.</string>
-    <string name="web_auth_hint">Войдите на собственной странице %1$s. Songport получает только подтверждение, которое приходит в конце.</string>
+    <string name="accounts_intro">Вы входите на официальной странице каждого сервиса. Trackhop никогда не видит ваш пароль.</string>
+    <string name="web_auth_hint">Войдите на собственной странице %1$s. Trackhop получает только подтверждение, которое приходит в конце.</string>
     <string name="show_details">Подробности</string>
     <string name="hide_details">Скрыть подробности</string>
     <string name="ads_why_title">Почему реклама?</string>
-    <string name="ads_why_body">Songport бесплатен, без подписок и закрытых функций. Один небольшой баннер, никогда не на весь экран, оплачивает разработчику кофе и часы, потраченные на поддержку работы каждого сервиса. Если он вам мешает, откройте issue на GitHub.</string>
-    <string name="settings_free_note">Songport бесплатен, без рекламы и подписок. С телефона уходят только запросы к подключённым музыкальным сервисам.</string>
+    <string name="ads_why_body">Trackhop бесплатен, без подписок и закрытых функций. Один небольшой баннер, никогда не на весь экран, оплачивает разработчику кофе и часы, потраченные на поддержку работы каждого сервиса. Если он вам мешает, откройте issue на GitHub.</string>
+    <string name="settings_free_note">Trackhop бесплатен, без рекламы и подписок. С телефона уходят только запросы к подключённым музыкальным сервисам.</string>
     <string name="free_why_title">Бесплатно, без рекламы</string>
-    <string name="free_why_body">В Songport нет рекламы, подписок и закрытых функций. Он живёт на добровольные взносы: если он экономит вам время, можете угостить разработчика кофе.</string>
-    <string name="support_title">Нравится Songport?</string>
+    <string name="free_why_body">В Trackhop нет рекламы, подписок и закрытых функций. Он живёт на добровольные взносы: если он экономит вам время, можете угостить разработчика кофе.</string>
+    <string name="support_title">Нравится Trackhop?</string>
     <string name="support_body">Если хотите, угостите разработчика кофе на Ko-fi. Совершенно необязательно: ничего не открывается, приложение остаётся полным для всех.</string>
     <string name="support_button">Угостить кофе</string>
     <string name="support_sponsors">GitHub Sponsors</string>
     <string name="support_prompt_title">Вы только что перенесли %1$s треков</string>
-    <string name="support_prompt_body">С помощью синхронизации «%1$s». Songport бесплатен и без рекламы, он живёт на добровольные взносы: если он сэкономил вам время, можете угостить разработчика кофе.</string>
+    <string name="support_prompt_body">С помощью синхронизации «%1$s». Trackhop бесплатен и без рекламы, он живёт на добровольные взносы: если он сэкономил вам время, можете угостить разработчика кофе.</string>
     <string name="support_prompt_later">Не сейчас</string>
     <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
     <string name="share_sheet_title">Добавить в…</string>
     <string name="share_sheet_from">Отправлено из %1$s</string>
-    <string name="share_sheet_unknown">Songport не смог прочитать название этого трека. Найдите его вручную ниже.</string>
+    <string name="share_sheet_unknown">Trackhop не смог прочитать название этого трека. Найдите его вручную ниже.</string>
     <string name="share_sheet_open">Открыть в %1$s</string>
     <string name="share_sheet_copy">Копировать ссылку</string>
     <string name="share_sheet_copied">Ссылка скопирована</string>
@@ -754,8 +753,8 @@
     <string name="share_sheet_no_match">Не найдено в %1$s. Найдите вручную или выберите другой сервис.</string>
     <string name="share_sheet_add">Добавить в плейлист…</string>
     <string name="share_sheet_change">Изменить</string>
-    <string name="settings_music_links">Предлагать Songport для музыкальных ссылок</string>
-    <string name="settings_music_links_desc">Ссылка Spotify, Apple Music, YouTube Music, Amazon Music, Deezer или TIDAL сможет открываться в Songport, который добавит трек в плейлист в любом из ваших сервисов. Android по-прежнему спрашивает, какое приложение использовать, или использует заданное в настройках ссылок: Songport никогда не перехватывает ссылку сам.</string>
+    <string name="settings_music_links">Предлагать Trackhop для музыкальных ссылок</string>
+    <string name="settings_music_links_desc">Ссылка Spotify, Apple Music, YouTube Music, Amazon Music, Deezer или TIDAL сможет открываться в Trackhop, который добавит трек в плейлист в любом из ваших сервисов. Android по-прежнему спрашивает, какое приложение использовать, или использует заданное в настройках ссылок: Trackhop никогда не перехватывает ссылку сам.</string>
     <!-- Cards: "how compatible are we?" and the playlist poster. -->
     <string name="tools_compat_title">Насколько мы совпадаем?</string>
     <string name="tools_compat_desc">Сравнивает два плейлиста, даже из разных сервисов: общие треки, общие исполнители, оценка и карточка, которой можно поделиться.</string>
@@ -795,18 +794,18 @@
     <string name="settings_theme_light">Светлая</string>
     <string name="settings_theme_dark">Тёмная</string>
     <string name="settings_dynamic_color">Динамические цвета (Material You)</string>
-    <string name="settings_dynamic_color_desc">Цвета ваших обоев вместо цветов Songport. Заголовок сохраняет фирменные цвета.</string>
+    <string name="settings_dynamic_color_desc">Цвета ваших обоев вместо цветов Trackhop. Заголовок сохраняет фирменные цвета.</string>
     <string name="settings_dynamic_color_unavailable">Нужен Android 12 или новее.</string>
 
     <!-- Unplayable tracks tool -->
     <string name="tools_unplayable_title">Недоступные треки</string>
     <string name="tools_unplayable_desc">Находит треки, которые сервис показывает, но больше не воспроизводит (серые), и заменяет их версией, которая играет.</string>
     <string name="unplayable_title">Недоступные треки: %1$s</string>
-    <string name="unplayable_unsupported">%1$s не сообщает, какие треки больше не воспроизводит, поэтому Songport не может проверить здесь.</string>
+    <string name="unplayable_unsupported">%1$s не сообщает, какие треки больше не воспроизводит, поэтому Trackhop не может проверить здесь.</string>
     <string name="unplayable_all_playlists">Все мои плейлисты</string>
     <string name="unplayable_scan">Проверить</string>
     <string name="unplayable_scanning">Проверяю %1$s…</string>
-    <string name="unplayable_hint">Для каждого Songport предлагает версию, которая играет. Примите её, найдите другую, удалите запись или пропустите. Ничего не меняется, пока вы не примените.</string>
+    <string name="unplayable_hint">Для каждого Trackhop предлагает версию, которая играет. Примите её, найдите другую, удалите запись или пропустите. Ничего не меняется, пока вы не примените.</string>
     <string name="unplayable_searching">Ищу версию, которая играет…</string>
     <string name="unplayable_no_proposal">Убедительной версии нет: откройте запись, чтобы поискать вручную, или удалите её.</string>
     <string name="unplayable_proposal">Замена: %1$s (совпадение %2$d%%)</string>
@@ -819,7 +818,7 @@
     <string name="unplayable_apply">Применить изменения: %1$d</string>
     <string name="unplayable_applying">Применяю %1$d/%2$d…</string>
     <string name="unplayable_confirm_title">Применить изменения?</string>
-    <string name="unplayable_confirm_body">%1$d треков получат играющую версию, %2$d записей будут удалены. Оригиналы остаются в журнале Songport, так что это можно отменить.</string>
+    <string name="unplayable_confirm_body">%1$d треков получат играющую версию, %2$d записей будут удалены. Оригиналы остаются в журнале Trackhop, так что это можно отменить.</string>
     <string name="unplayable_no_removal">%1$s не позволяет приложениям удалять треки: играющая версия добавляется, а недоступная запись остаётся.</string>
     <string name="unplayable_done">Заменено %1$d, удалено %2$d</string>
     <string name="unplayable_undo">Отменить</string>
@@ -832,7 +831,7 @@
     <string name="unplayable_reason_deleted">Удалено</string>
     <string name="unplayable_reason_unknown">Не воспроизводится</string>
     <string name="settings_unplayable">Еженедельная проверка недоступных треков</string>
-    <string name="settings_unplayable_desc">Раз в неделю Songport просматривает ваши плейлисты и сообщает, если трек больше нельзя воспроизвести. Сам ничего не меняет.</string>
+    <string name="settings_unplayable_desc">Раз в неделю Trackhop просматривает ваши плейлисты и сообщает, если трек больше нельзя воспроизвести. Сам ничего не меняет.</string>
     <string name="notif_unplayable_title">Недоступные треки</string>
     <plurals name="notif_unplayable_text">
         <item quantity="one">%1$d трек в ваших плейлистах больше не воспроизводится. Нажмите, чтобы заменить.</item>
@@ -893,7 +892,7 @@
     <string name="soundcloud_label">SoundCloud (публичные ссылки, неофициально)</string>
     <string name="provider_note_soundcloud">Публичные сеты и страницы лайков SoundCloud, только чтение и без входа: вставьте ссылку как источник синхронизации. Это неофициальный интерфейс: он может перестать работать, когда SoundCloud изменит свой сайт.</string>
     <string name="soundcloud_not_public">Этот плейлист SoundCloud приватный или не существует: работают только публичные ссылки</string>
-    <string name="soundcloud_player_changed">SoundCloud изменил свой веб-плеер; Songport нужно обновить</string>
+    <string name="soundcloud_player_changed">SoundCloud изменил свой веб-плеер; Trackhop нужно обновить</string>
     <string name="job_color">Цвет</string>
     <string name="job_color_default">По умолчанию</string>
     <string name="color_red">Красный</string>
@@ -916,7 +915,7 @@
         <item quantity="other">%d синхронизации выполняется</item>
     </plurals>
     <string name="error_ampache_subsonic_password">Ampache отклонил пароль. Для приложений Subsonic Ampache не принимает пароль от учётной записи: в Ampache откройте «Настройки» → «Учётная запись», задайте пароль Subsonic (или скопируйте ключ API) и введите его здесь как пароль.</string>
-    <string name="shazam_share_hint">Часто пользуетесь Shazam? В настройках Shazam подключите Spotify или Apple Music: каждый распознанный трек попадёт в плейлист «My Shazam Tracks». Songport будет синхронизировать его с любым вашим сервисом.</string>
+    <string name="shazam_share_hint">Часто пользуетесь Shazam? В настройках Shazam подключите Spotify или Apple Music: каждый распознанный трек попадёт в плейлист «My Shazam Tracks». Trackhop будет синхронизировать его с любым вашим сервисом.</string>
     <string name="shazam_share_hint_button">Синхронизировать мои Shazam</string>
     <string name="shazam_editor_suggest">Ваши Shazam: %1$s</string>
     <string name="syncs_find_hint">Найти синхронизацию</string>
@@ -934,7 +933,7 @@
         <item quantity="many">%1$d из %2$d синхронизаций</item>
         <item quantity="other">%1$d из %2$d синхронизации</item>
     </plurals>
-    <string name="stats_title">Songport в цифрах</string>
+    <string name="stats_title">Trackhop в цифрах</string>
     <string name="stats_row_desc">Что ваши синхронизации уже сделали — в карточке, которой можно поделиться</string>
     <string name="stats_hero_link">Ваши цифры</string>
     <string name="stats_tracks_moved">Перенесённые треки</string>
@@ -981,7 +980,7 @@
         <item quantity="many">На этом телефоне хранятся только %1$d последних синхронизаций: более старые сюда не входят.</item>
         <item quantity="other">На этом телефоне хранятся только %1$d последних синхронизаций: более старые сюда не входят.</item>
     </plurals>
-    <string name="stats_local_note">Подсчитано на этом телефоне по истории синхронизаций, которую Songport уже хранит. Ничего не отправляется, если вы сами не поделитесь карточкой.</string>
+    <string name="stats_local_note">Подсчитано на этом телефоне по истории синхронизаций, которую Trackhop уже хранит. Ничего не отправляется, если вы сами не поделитесь карточкой.</string>
     <string name="stats_empty_title">Цифр пока нет</string>
     <string name="stats_empty_body">Они появятся после первой завершённой синхронизации и будут подсчитаны по истории на этом телефоне.</string>
     <string name="stats_share_title">Поделитесь своими цифрами</string>
@@ -994,16 +993,16 @@
     <string name="settings_section_backups">Резервные копии</string>
     <string name="settings_section_advanced">Дополнительно</string>
     <string name="settings_isrc_summary">Ищет недостающие коды ISRC в Deezer для точных совпадений.</string>
-    <string name="settings_music_links_summary">Открывайте музыкальные ссылки в Songport, чтобы добавить трек в плейлист.</string>
+    <string name="settings_music_links_summary">Открывайте музыкальные ссылки в Trackhop, чтобы добавить трек в плейлист.</string>
     <string name="settings_unplayable_summary">Сообщает о треках, которые перестали играть. Ничего не меняет.</string>
     <string name="settings_notifications_system">Системные настройки уведомлений</string>
     <string name="settings_notifications_system_desc">Звук, вибрация и какие уведомления показывает Android.</string>
-    <string name="settings_security_summary">Зашифрованные, отзываемые входы на этом телефоне; никакого сервера Songport.</string>
+    <string name="settings_security_summary">Зашифрованные, отзываемые входы на этом телефоне; никакого сервера Trackhop.</string>
     <string name="settings_keys_summary">Ваши собственные ключи разработчика для сервисов, которым они нужны.</string>
     <string name="backup_folder_stop">Больше не копировать в эту папку</string>
     <string name="nav_back">Назад</string>
     <string name="tools_service_title">Сервис для инструментов</string>
-    <string name="tools_service_hint">Инструменты с его логотипом работают с этим сервисом.</string>
+    <string name="tools_service_hint">Инструменты ниже работают с этим сервисом; то, что он не поддерживает, выделено серым.</string>
     <string name="tools_go_accounts">Перейти к аккаунтам</string>
     <string name="tools_unavailable_on">Недоступно в %1$s</string>
     <string name="tools_section_music">Ваша музыка</string>
@@ -1026,9 +1025,9 @@
     <string name="tools_row_compat">Сравните два плейлиста и получите оценку, которой можно поделиться.</string>
     <string name="tools_row_poster">Карточка с обложками и QR-кодом, чтобы поделиться.</string>
     <string name="tools_row_unplayable">Найдите серые треки и замените их версиями, которые играют.</string>
-    <string name="settings_battery_summary">Некоторые телефоны останавливают фоновые приложения: исключите Songport из оптимизации батареи.</string>
-    <string name="settings_dynamic_color_summary">Цвета ваших обоев вместо цветов Songport.</string>
-    <string name="settings_notifications_summary">Когда синхронизация по расписанию меняет треки или завершается ошибкой.</string>
+    <string name="settings_battery_summary">Некоторые телефоны останавливают фоновые приложения: исключите Trackhop из оптимизации батареи.</string>
+    <string name="settings_dynamic_color_summary">Цвета ваших обоев вместо цветов Trackhop.</string>
+    <string name="settings_notifications_summary">Когда синхронизация по расписанию меняет треки или любая завершается ошибкой.</string>
     <string name="settings_developer_summary">Журнал подключений, технический отчёт, запись трафика.</string>
     <string name="settings_new_look_summary">Карточки синхронизаций с цифрами и недавней историей.</string>
     <string name="settings_log_summary">Последние результаты синхронизаций и технические детали.</string>
@@ -1039,4 +1038,197 @@
     <string name="first_sync_ready_body">%1$s подключён. Выберите один из его плейлистов и куда его отправить.</string>
     <string name="first_sync_create">Создать синхронизацию</string>
     <string name="editor_one_service_hint">Добавьте второй сервис, чтобы синхронизировать между двумя сервисами. А пока синхронизация может сохранять в файл на этом телефоне.</string>
+    <string name="plugins_title">Плагины</string>
+    <string name="plugins_desc">У Trackhop открытый интерфейс коннекторов: отдельные приложения от любых разработчиков могут добавлять сервисы. Trackhop не включает, не загружает и не рекомендует плагины. Установленные отображаются здесь, а их сервисы — в разделе «Аккаунты».</string>
+    <string name="plugins_none">Плагины не установлены</string>
+    <string name="plugins_services">Сервисы: %1$s</string>
+    <string name="services_group_unavailable">Недоступно в этой версии</string>
+    <string name="preview_remove_confirm">Удалить эти треки из цели (%1$d)</string>
+    <string name="note_two_way_no_removals">Удаления пропущены: это двусторонняя синхронизация, поэтому треки в цели, которых нет в источнике (%1$d), сохранены — обратная синхронизация копирует их назад. Выключите «Двусторонняя», чтобы зеркалировать удаления.</string>
+    <string name="editor_mirror_two_way">Не с двусторонней: трек, добавленный с другой стороны, может быть удалён до того, как его скопируют обратно.</string>
+    <string name="editor_twin_note">«%1$s» — обратная половина этой двусторонней синхронизации. Она следует этим настройкам, поэтому обе настраиваются здесь.</string>
+    <string name="editor_schedule_desc">Первый запуск начнётся через несколько минут после сохранения, затем примерно раз в интервал; точное время выбирает Android.</string>
+    <string name="editor_wifi_only_desc">Запуски по расписанию ждут безлимитную сеть, обычно Wi‑Fi. «Запустить» и «Синхронизировать всё» это не учитывают.</string>
+    <string name="pill_held_back">Удаления ждут</string>
+    <string name="pill_not_found">Не найдено: %1$d</string>
+    <string name="pill_incomplete">Не завершено</string>
+    <string name="onboarding_docs_title">Документация и код</string>
+    <string name="onboarding_docs_body">Хотите прочитать о каждой функции или посмотреть код? Документация и исходный код — на GitHub.</string>
+    <string name="onboarding_docs_open">Открыть на GitHub</string>
+    <!-- Contextual help: the "?" sheets -->
+    <string name="help_cd">Справка: %1$s</string>
+    <string name="help_example">Пример:</string>
+    <string name="help_cards_title">Карточки синхронизаций</string>
+    <string name="help_status_title">Статус</string>
+    <string name="help_status_body">Метка показывает, как прошёл последний запуск. Актуально: он завершился, и ничего не ждёт вашего решения. «Удаления ждут», «Не завершено» и «Не найдено: N» значат, что что-то стоит посмотреть, а нажатие на метку ведёт туда. «Требует внимания»: запуск завершился ошибкой.</string>
+    <string name="help_status_example">«Не найдено: 12» открывает проверку, где эти 12 треков можно выбрать вручную.</string>
+    <string name="help_route_title">→ и ↔</string>
+    <string name="help_route_body">→ — синхронизация в одну сторону, из источника в цель. ↔ отмечает двустороннюю пару: две синхронизации, по одной в каждую сторону, в виде двух карточек. Изменение карточки ↔ открывает исходную синхронизацию, а удаление любой из них удаляет обе.</string>
+    <string name="help_figures_title">Цифры</string>
+    <string name="help_figures_body">Добавлено, удалено и не найдено — итоги последнего запуска: нажмите на число, чтобы увидеть треки. Треков — размер источника без пропущенных вами треков; нажатие открывает целевой плейлист. Чёрточки ниже — последние запуски: бледные, если ничего не изменилось, красные, если запуск завершился ошибкой.</string>
+    <string name="help_to_fix_title">К исправлению</string>
+    <string name="help_to_fix_body">Треки, которые последний запуск не нашёл, и совпадения, в которых он не был уверен. Исправлять можно, пока синхронизация ещё добавляет треки, и каждый выбор запоминается для следующих запусков.</string>
+    <string name="help_run_now_body">▶ запускает эту синхронизацию сразу, даже если она отключена или настроена «Только по Wi‑Fi». Удобно после изменения плейлиста, чтобы не ждать расписания. Крупные удаления всё равно ждут, если вы заранее не подтвердили их в предпросмотре.</string>
+    <string name="help_sync_all_body">Запускает все включённые синхронизации одну за другой, не учитывая «Только по Wi‑Fi»; отключённые пропускаются. Потянуть список вниз — то же самое. Пока синхронизации идут, нажатие на кнопку прокручивает к первой работающей карточке.</string>
+    <string name="help_sync_all_example">Из 5 синхронизаций, одна из которых отключена, запустятся 4.</string>
+    <string name="help_cached_title">Из прошлого совпадения</string>
+    <string name="help_cached_body">Трек был сопоставлен в одном из прошлых запусков и используется снова без поиска. Если совпадение неверное, измените его в проверке: ваш выбор заменит его во всех следующих запусках.</string>
+    <string name="help_one_service_title">Подключён один сервис</string>
+    <string name="help_one_service_body">Когда подключён только один сервис, синхронизация может идти лишь в файл (File) внутри Trackhop, поэтому на шаге 2 выбран File. Подключите второй сервис, чтобы синхронизировать между двумя сервисами.</string>
+    <string name="help_one_service_example">Если подключён только Spotify, на шаге 2 есть Spotify и File, и выбран File.</string>
+    <string name="help_library_title">Плейлисты и Библиотека</string>
+    <string name="help_library_body">В разделе «Плейлисты» — ваши плейлисты и Любимые треки. В «Библиотеке» — сохранённые альбомы, исполнители, на которых вы подписаны, подкасты и, только как источник, недавно прослушанное. В качестве цели показываются только ваши собственные плейлисты.</string>
+    <string name="help_link_body">Вставьте ссылку на публичный плейлист: короткие ссылки раскрываются, название считывается. Плейлист только читается и никогда не изменяется, поэтому не может быть двусторонним. Некоторые сервисы нужно подключить, даже чтобы прочитать публичную ссылку.</string>
+    <string name="help_target_body">Куда попадают треки. Trackhop заранее выбирает сервис: проверьте его перед сохранением. Если выбрать другой сервис, выбранный плейлист сбрасывается.</string>
+    <string name="help_liked_body">Если источник — Любимые треки, а сервис-цель поддерживает лайки, целью становятся любимые треки этого сервиса, и каждый синхронизированный трек получает там лайк. При включённом «Зеркалировать удаления» треки, которых нет среди любимых в источнике, теряют лайк в цели.</string>
+    <string name="help_liked_example">Любимые треки Spotify → Deezer: каждый трек попадает в ваше избранное Deezer.</string>
+    <string name="help_new_playlist_body">Плейлист создаётся при первом запуске, а не при сохранении, и называется как источник, если вы не ввели другое имя. Если потом удалить его в сервисе, синхронизация остановится и попросит создать его заново или выбрать другой.</string>
+    <string name="help_schedule_body">Запускает синхронизацию в фоне примерно раз в час, раз в 6 часов, раз в день или раз в неделю. Точное время выбирает Android и может его сдвинуть, особенно в режиме энергосбережения. Первый запуск начинается через несколько минут после сохранения. Запуск по расписанию, который видит оба плейлиста без изменений, сразу завершается.</string>
+    <string name="help_schedule_example">Ежедневно, сохранено в 18:00: первый запуск будет через несколько минут, следующий — примерно через сутки.</string>
+    <string name="help_mirror_body">Цель становится копией источника: каждый трек в цели, которому ничего не соответствует в источнике, удаляется, в том числе добавленные туда вами. Включайте, только если источник — ваш главный список. Если запуск удалил бы больше 10 треков и больше четверти цели, удаления ждут, пока вы не подтвердите их в предпросмотре. Удалённые треки можно восстановить из Журнала синхронизаций.</string>
+    <string name="help_mirror_example">Удалите песню из плейлиста в Spotify — при следующем запуске она исчезнет и из копии.</string>
+    <string name="help_keep_order_body">После добавления цель выстраивается в порядке источника; треки, которые есть только в цели, уходят в конец. Не применяется к Любимым трекам и плейлистам больше 1500 треков. Если сервис откажет, запуск всё равно пройдёт успешно, а Журнал синхронизаций это отметит.</string>
+    <string name="help_two_way_body">Добавляет вторую синхронизацию в обратную сторону (карточка ↔), чтобы треки, добавленные с одной стороны, появлялись и на другой. Ни одна из половин не удаляет треки, поэтому «Зеркалировать удаления» выключено: трек, удалённый с одной стороны, обычно возвращается с другой. У обеих половин общее расписание и правила, и обе редактируются здесь, в исходной синхронизации.</string>
+    <string name="help_enabled_body">Если выключить, расписание приостанавливается, а синхронизация не участвует в «Синхронизировать всё», виджете и плитке. Запустить её всё равно можно кнопкой ▶ Запустить.</string>
+    <string name="help_strictness_body">Насколько уверен должен быть Trackhop, чтобы добавить трек сам. Строгая добавляет меньше автоматически и чаще спрашивает вас; Мягкая добавляет больше, но выше риск неверной версии.</string>
+    <string name="help_strictness_example">В плейлисте из ремиксов Строгая не выберет радиоверсию.</string>
+    <string name="help_explicit_body">Если сервис сообщает, есть ли у трека пометка Explicit, Trackhop предпочитает выбранную вами версию. Это предпочтение, а не фильтр: если есть только другая версия, будет использована она.</string>
+    <string name="help_same_album_body">Сильно предпочитает тот же альбом, что и в источнике. Включите, если версия с сингла или сборника не подходит.</string>
+    <string name="help_same_album_example">Трек с концертного альбома останется концертным и не заменится студийным синглом.</string>
+    <string name="help_preview_body">Показывает, что сделал бы запуск, ничего не меняя. Для этого он ищет в цели каждый недостающий трек, поэтому может занять время, а на YouTube расходует квоту. «Пропущено» — треки, которые вы решили пропускать.</string>
+    <string name="help_preview_run_body">Запускает синхронизацию сразу. Она пересчитывает всё заново, но использует найденные здесь совпадения, поэтому работает намного быстрее. Неуверенные совпадения, которые вы здесь не решили, будут снова предложены в проверке после запуска.</string>
+    <string name="help_removals_title">Крупные удаления</string>
+    <string name="help_removals_body">Этот запуск удалил бы большую часть цели. Сначала проверьте источник: сервис, отдающий плейлист лишь частично, выглядит именно так. Если треки действительно нужно убрать, отметьте флажок и нажмите «Запустить». Флажок действует только на этот запуск, начатый вручную, и только на перечисленные здесь треки; запуски по расписанию продолжают их удерживать.</string>
+    <string name="help_uncertain_title">Неуверенные совпадения</string>
+    <string name="help_uncertain_body">Совпадения, в которых Trackhop не уверен. Нажмите «Верно», чтобы оставить совпадение, или «Изменить», чтобы выбрать другой трек: в обоих случаях это запомнится. Оставленные здесь будут снова предложены в проверке после запуска.</string>
+    <string name="help_quota_title">Единицы YouTube</string>
+    <string name="help_quota_body">YouTube выделяет фиксированное число единиц в день: поиск стоит 100, добавление трека — 50. Счётчик обнуляется в полночь по тихоокеанскому времени. Большая первая синхронизация может занять несколько дней и продолжится сама.</string>
+    <string name="help_review_title">Исправление треков</string>
+    <string name="help_change_body">Заменяет трек, выбранный Trackhop, на указанный вами: неверный удаляется из цели, если сервис это позволяет, а ваш выбор запоминается для следующих запусков.</string>
+    <string name="help_proposal_body">Ближайший найденный трек, но недостаточно близкий, чтобы добавить его автоматически: нажмите «Добавить», если он подходит. Ненайденные треки ищутся снова через неделю; откройте трек, чтобы поискать сейчас.</string>
+    <string name="help_proposal_example">«Song (Remastered 2011)» предложен для «Song».</string>
+    <string name="help_ignore_body">Прекращает искать этот трек и сообщать о нём во всех синхронизациях в этот сервис. Отменить это пока нельзя, поэтому используйте для треков, которых там нет, например домашней записи.</string>
+    <string name="help_results_title">Результаты поиска</string>
+    <string name="help_results_body">«Наиболее вероятные» — самые близкие совпадения. Ниже, в свёрнутом виде: треки альбома источника в цели, остальные результаты и, для YouTube Music, видео из более широкого каталога YouTube.</string>
+    <string name="help_ask_ai_body">Просит ИИ, настроенный в «Настройки › Дополнительно › Ваш ИИ», поискать лучше. Трек и найденные пока результаты отправляются вашему поставщику ИИ, и больше никуда.</string>
+    <string name="help_notes_body">Что запуск сознательно не сделал и почему: удержанные удаления, поиск, прерванный сервисом, порядок, который не удалось применить. Если поиск не завершился, карточка синхронизации ведёт сюда.</string>
+    <string name="help_restore_title">Восстановить удалённые</string>
+    <string name="help_restore_body">Возвращает треки, которые этот запуск удалил с помощью «Зеркалировать удаления». Хранятся только последние 200 отчётов, так что не откладывайте.</string>
+    <string name="help_connectors_title">Коннекторы</string>
+    <string name="help_connectors_body">Коннектор — это один аккаунт в одном сервисе. Добавьте два коннектора Spotify, чтобы синхронизировать между двумя аккаунтами Spotify; имя нужно только для подписи карточки.</string>
+    <string name="help_tags_title">Пометки</string>
+    <string name="help_tags_body">Только чтение: сервис может быть только источником. Бета: работает, но использовался меньше. Требуется настройка: сначала создайте свой ключ.</string>
+    <string name="help_disconnect_body">Удаляет вход с этого телефона. Синхронизации с этим аккаунтом будут завершаться ошибкой, пока вы снова не подключитесь; чтобы приостановить синхронизацию, лучше отключите её.</string>
+    <string name="help_remove_account_body">Отключает аккаунт и убирает карточку. Недоступно, пока аккаунт используется синхронизацией: сначала удалите или измените эти синхронизации.</string>
+    <string name="help_test_body">Проверяет вход, чтение плейлистов и один пробный поиск, по одному запросу на каждый шаг. Если что-то не так, приложите этот результат к сообщению о проблеме.</string>
+    <string name="help_extra_actions_title">Ещё в меню</string>
+    <string name="help_extra_actions_body">«Страница проверки Google» открывает собственную страницу Google, когда он блокирует вход в YouTube Music. При включённых инструментах разработчика перехват трафика помогает починить Amazon Music после изменений сайта.</string>
+    <string name="help_routes_title">Быстрый и официальный способ</string>
+    <string name="help_routes_body">Быстрый: вы входите на странице самого сервиса, ничего не создавая, но это может перестать работать при изменении сайта. Официальный: API сервиса с бесплатным ключом на ваше имя; надёжнее, настройка занимает несколько минут.</string>
+    <string name="help_unavailable_body">Эта версия Trackhop не может сама подключиться к этим сервисам.</string>
+    <string name="help_connector_name">Подпись для этой карточки, удобно при нескольких аккаунтах в одном сервисе.</string>
+    <string name="help_redirect_title">URI перенаправления</string>
+    <string name="help_redirect_body">Адрес, на который сервис возвращает вас после входа. Скопируйте его точно на страницу сервиса для разработчиков, иначе вход не сможет вернуться в Trackhop.</string>
+    <string name="help_keys_title">Ваш ключ</string>
+    <string name="help_fields_title">Client ID и другие поля</string>
+    <string name="help_fields_body">Идентификаторы бесплатного приложения, которое вы создаёте на странице сервиса для разработчиков. Вставьте их ровно так, как они указаны; они хранятся в зашифрованном виде на этом телефоне.</string>
+    <string name="help_clear_key_body">Удаляет ваш ключ с этого телефона. Перед подключением его придётся настроить заново.</string>
+    <string name="help_files_body">Списки внутри Trackhop: импортированные файлы, вставленные списки, резервные копии и плейлисты, которые синхронизация записала в File. Каждая копия добавляет версию с датой; хранятся 5 последних, свёрнутые под самой новой.</string>
+    <string name="help_export_title">Форматы экспорта</string>
+    <string name="help_export_body">CSV открывается в таблицах, M3U — в большинстве плееров, XSPF и JSPF — в плеерах с их поддержкой, а в Тексте по одному треку на строку.</string>
+    <string name="help_make_body">Создаёт новый плейлист в том же сервисе из существующих. Это не синхронизация: результат потом не обновляется.</string>
+    <string name="help_make_example">Объединить два плейлиста в один или разбить длинный на части по 50.</string>
+    <string name="help_transfer_body">Каждая создаёт новый плейлист в цели и только добавляет треки; плейлист, у которого уже есть синхронизация, использует её. Все получают расписание, выбранное здесь.</string>
+    <string name="help_transfer_example">Перенос 20 плейлистов с расписанием «Ежедневно» создаёт 20 ежедневных синхронизаций.</string>
+    <string name="help_dedupe_body">Сразу удаляет повторы, без дополнительных вопросов: один и тот же трек дважды, даже из другого издания, оставляя первую копию. Концертные версии и ремиксы считаются другими песнями. В сервисах, которые удаляют трек вместе со всеми копиями, например Spotify и Deezer, оставленная копия переходит в конец.</string>
+    <string name="help_unplayable_body">Для каждого серого трека Trackhop предлагает версию, которая воспроизводится. Ничего не меняется, пока вы не примените изменения, а «Отменить последнее исправление» возвращает оригиналы. Причины вроде «Нет в вашем тарифе» сообщает сервис.</string>
+    <string name="help_backup_body">Trackhop сохраняет датированные копии всех ваших плейлистов в выбранную папку, чтобы они пережили телефон. Каждый запуск читает все подключённые сервисы, сохраняет изменения и копирует новые файлы; на YouTube это расходует квоту. По расписанию он запускается сам, «Скопировать сейчас» — сразу.</string>
+    <string name="help_backup_example">Чтобы восстановить плейлист, импортируйте его файл из этой папки в «Инструменты › Файловые плейлисты», а затем синхронизируйте файл с любым сервисом.</string>
+    <string name="help_plugins_body">Установленный плагин появляется здесь вместе с сервисами, которые он даёт, а сами сервисы — в разделе «Аккаунты». Если удалить плагин, они отключатся, и синхронизации с ними перестанут работать.</string>
+    <string name="help_ai_body">Ваш собственный аккаунт ИИ — для генератора плейлистов, «Спросить ИИ» в проверке и обложек постеров. Ключ хранится в зашифрованном виде на этом телефоне и отправляется только выбранному вами поставщику.</string>
+    <!-- How to: the offline guides -->
+    <string name="howto_title">Как пользоваться</string>
+    <string name="howto_summary">Короткие руководства по всем разделам Trackhop, доступны и без сети.</string>
+    <string name="howto_intro">Короткие руководства по всем разделам Trackhop. Они встроены в приложение, поэтому работают и без сети.</string>
+    <string name="help_more">Подробнее: Как пользоваться › %1$s</string>
+    <string name="settings_section_help">Справка</string>
+    <string name="howto_first_sync_title">Первая синхронизация</string>
+    <string name="howto_first_sync_summary">Подключить сервис, выбрать, посмотреть предпросмотр, запустить.</string>
+    <string name="howto_first_sync_body">Синхронизация копирует плейлист в другой сервис и поддерживает его в актуальном состоянии. Четыре шага:\n# 1. Подключите\nВ разделе «Аккаунты» нажмите «Добавить коннектор» и войдите в сервис, где лежит ваша музыка. Вход выполняется на странице самого сервиса; Trackhop хранит на этом телефоне только зашифрованный токен.\n# 2. Выберите\n• Источник: плейлист, Любимые треки, раздел Библиотеки (альбомы, исполнители) или публичная ссылка.\n• Цель: сервис и новый или существующий плейлист. Если подключён только один сервис, целью будет файл (File) внутри Trackhop.\n• Параметры: название, цвет, расписание, «Зеркалировать удаления», «Двусторонняя» и правила сопоставления. Для первой синхронизации подойдут значения по умолчанию.\n# 3. Предпросмотр\n«Сохранить» открывает предпросмотр: что будет добавлено, что не найдено и какие совпадения стоит проверить. Решите их кнопками «Верно» или «Изменить»; пропущенные будут предложены снова после запуска.\n# 4. Запустите\nНажмите «Запустить», затем карточку, чтобы следить за каждым треком. «Пауза» и «Остановить» срабатывают между шагами. В конце карточка показывает цифры и метку, если что-то ждёт вас: «Не найдено», «Удаления ждут» или «Не завершено».</string>
+    <string name="howto_modes_title">Только добавление, зеркалирование удалений, двусторонняя</string>
+    <string name="howto_modes_summary">Что синхронизация добавляет, удаляет или возвращает.</string>
+    <string name="howto_modes_body"># Только добавление (по умолчанию)\nСинхронизация только добавляет. В цели могут быть лишние треки, и там ничего не удаляется.\n# Зеркалировать удаления\nЦель повторяет источник, включая удаления. Каждый трек в цели, которому ничего не соответствует в источнике, удаляется, даже добавленный туда вами, поэтому включайте это, только если источник — ваш главный список.\n• Ничего не удаляется, если источник пуст, поиск был прерван или сервис не умеет удалять треки; Журнал синхронизаций объяснит причину.\n• Если запуск удалил бы больше 10 треков и больше четверти цели, на карточке появится «Удаления ждут». Нажмите на метку, чтобы открыть предпросмотр, проверьте список, отметьте «Удалить эти треки из цели» и нажмите «Запустить». Отметка действует на этот запуск; запуски по расписанию продолжают удерживать удаления.\n• Удалённые треки возвращаются в «Настройки › Дополнительно › Журнал синхронизаций › Восстановить».\n# Двусторонняя\nДобавляет вторую синхронизацию в обратную сторону, в виде карточки ↔, чтобы треки, добавленные с одной стороны, попадали на другую. Ни одна половина ничего не удаляет, поэтому «Зеркалировать удаления» выключено: трек, удалённый с одной стороны, обычно возвращается с другой. У обеих половин общее расписание и правила; изменение карточки ↔ открывает исходную синхронизацию, а удаление любой из них удаляет обе.\n# Любимые треки\nЕсли цель — Любимые треки, добавить трек значит поставить ему лайк, а «Зеркалировать удаления» значит снять лайк с треков, которых нет среди любимых в источнике.</string>
+    <string name="howto_schedules_title">Расписания</string>
+    <string name="howto_schedules_summary">Когда синхронизации запускаются сами.</string>
+    <string name="howto_schedules_body"># Выбор расписания\nТолько вручную, Каждый час, Каждые 6 часов, Ежедневно или Еженедельно. Точное время выбирает Android и может отложить запуск, особенно в режиме энергосбережения.\n• Первый запуск начинается через несколько минут после сохранения, потом примерно раз за интервал.\n• Запуск по расписанию, который видит оба плейлиста без изменений, сразу завершается, если сервис сообщает об изменениях.\n• «Только по Wi‑Fi» заставляет запуски по расписанию ждать сеть без ограничения трафика, обычно Wi‑Fi. «Запустить» и «Синхронизировать всё» это не учитывают.\n• Если «Включена» выключено, расписание приостановлено; ▶ Запустить по-прежнему работает.\n# Если запуски не происходят</string>
+    <string name="howto_schedules_body2">В «Настройки › Синхронизация» пункт «Синхронизации по расписанию не запускаются?» открывает список, где можно исключить Trackhop.\n# Уведомления\nВы получите уведомление, когда синхронизация по расписанию добавит или удалит треки, и когда любая синхронизация завершится ошибкой. Отключить можно в «Настройки › Уведомления».</string>
+    <string name="howto_preview_title">Предпросмотр и крупные удаления</string>
+    <string name="howto_preview_summary">Посмотреть, что сделает запуск, и подтвердить удаления.</string>
+    <string name="howto_preview_body">Предпросмотр показывает, что сделал бы запуск, ничего не меняя. Он открывается после создания синхронизации или из меню ⋮ карточки › Предпросмотр.\n# Что в нём\n• Уже в цели, к добавлению, к удалению (только с «Зеркалировать удаления»), не найдено и пропущено.\n• Совпадения для проверки: нажмите «Верно» или «Изменить». Решённое запоминается; остальное будет предложено снова в проверке после запуска.\n• Для YouTube — сколько единиц израсходует запуск.\nДля этого предпросмотр ищет в цели каждый недостающий трек, поэтому большой плейлист обрабатывается не сразу. Найденное затем использует запуск.\n# Крупные удаления\nЕсли запуск удалил бы больше 10 треков и больше четверти цели, появляется красное примечание. Сначала проверьте источник: сервис, отдающий плейлист лишь частично, выглядит именно так. Если треки действительно нужно убрать, отметьте «Удалить эти треки из цели» и нажмите «Запустить». Отметка действует только на этот запуск, начатый вручную, и только на треки, которые вы видели; запуски по расписанию продолжают их удерживать.\n# Запустить\nСразу запускает синхронизацию, используя найденное в предпросмотре, поэтому это намного быстрее самого предпросмотра.</string>
+    <string name="howto_review_title">Ненайденные треки</string>
+    <string name="howto_review_summary">Найти недостающее и проверить неуверенные совпадения.</string>
+    <string name="howto_review_body"># Где их найти\n• Метка «Не найдено» или кнопка «К исправлению» на карточке синхронизации.\n• Число ненайденных на карточке.\n• «Настройки › Дополнительно › Журнал синхронизаций › Проверить».\n# Исправление трека\n• Предложение: ближайший найденный трек, но недостаточно близкий, чтобы добавить его автоматически. Нажмите «Добавить», если он подходит.\n• Ищите по названию, по «исполнитель - название» или вставьте ссылку на трек из любого сервиса. «Открыть в» открывает приложение сервиса.\n• «Наиболее вероятные» идут первыми; альбом источника, остальные результаты и, для YouTube Music, видео свёрнуты ниже.\n• «Спросить ИИ» просит ваш собственный ИИ («Настройки › Дополнительно › Ваш ИИ») поискать лучше.\n• «Пропустить» прекращает поиск трека в этом сервисе для всех синхронизаций в него. Отменить это пока нельзя.\nКаждый выбор запоминается для следующих запусков. Ненайденные треки ищутся снова через неделю.\n# Неуверенные совпадения\nСовпадения, в которых Trackhop не был уверен. «Верно» оставляет совпадение; «Изменить» заменяет его и удаляет неверный трек из цели, если сервис это позволяет.\n# Правила сопоставления\nВ редакторе правила сопоставления задают, как выбирается трек: Строгость, Версии с пометкой Explicit, Тот же альбом и Только студийные версии. «Точная запись через Deezer» («Настройки › Синхронизация») ищет код, который однозначно определяет запись, чтобы Spotify, Apple Music и TIDAL выдавали точную версию.</string>
+    <string name="howto_backups_title">Резервные копии и восстановление</string>
+    <string name="howto_backups_summary">Хранить копии плейлистов и возвращать их.</string>
+    <string name="howto_backups_body"># Полная резервная копия\n«Инструменты › Полная резервная копия» сохраняет все плейлисты и любимые треки одного сервиса как датированные файлы в «Файловых плейлистах». Хранятся 5 последних версий каждого плейлиста, а неизменённый плейлист повторно не записывается. В самом сервисе ничего не меняется.\n# Резервная копия в папку\nВ «Настройки › Резервные копии» выберите папку (SD-карту, облачное приложение, любое приложение, которое её предлагает). Каждый запуск читает все подключённые сервисы, сохраняет изменения и копирует туда новые файлы, чтобы они пережили телефон. Выберите «Только вручную», «Ежедневно» или «Еженедельно» либо нажмите «Скопировать сейчас». На YouTube чтение расходует квоту.\n# Восстановление\n• Плейлист: «Инструменты › Файловые плейлисты › Импортировать файл», выберите его в папке, затем создайте синхронизацию из этого файла в любой сервис.\n• Треки, удалённые «Зеркалировать удаления»: «Настройки › Дополнительно › Журнал синхронизаций › Восстановить».\n• Исправление недоступных треков: «Инструменты › Недоступные треки › Отменить последнее исправление».\n# Экспорт одного плейлиста\n«Инструменты › Экспортировать плейлист» сохраняет его в CSV, M3U, XSPF, JSPF или обычный текст.</string>
+    <string name="howto_tools_title">Вкладка «Инструменты»</string>
+    <string name="howto_tools_summary">Что делает каждый инструмент.</string>
+    <string name="howto_tools_body">Вверху выберите сервис, с которым работают инструменты. То, что он не поддерживает, выделено серым.\n# Ваша музыка\n• Trackhop в цифрах: что уже сделали ваши синхронизации.\n• Управление плейлистами: переименовать, удалить, сделать публичным или приватным, посмотреть треки.\n• Повторы в разных плейлистах: треки, которые есть в нескольких плейлистах, и любимые треки, которых нет ни в одном.\n# Перенос и копирование\n• Перенести несколько плейлистов: по синхронизации на плейлист, создаются и запускаются по очереди. Они остаются в «Синхронизациях».\n• Экспортировать плейлист: один плейлист в виде файла.\n• Новый плейлист из…: скопировать, объединить, разделить, отсортировать или перемешать в новый плейлист в том же сервисе. Разовое действие, а не синхронизация.\n• Файловые плейлисты: импортированные и вставленные списки, резервные копии и то, что синхронизации записали в File.\n# Уборка\n• Удалить дубликаты: найти, а затем удалить за один раз, оставив первую копию.\n• Недоступные треки: заменить серые треки версиями, которые воспроизводятся, с возможностью отмены. В настройках можно включить еженедельную проверку.\n# Делиться и открывать\n«Насколько мы совпадаем?», «Постер плейлиста» и «Генератор плейлистов», который использует ваш собственный ИИ.</string>
+    <string name="howto_accounts_title">Аккаунты и собственные ключи</string>
+    <string name="howto_accounts_summary">Коннекторы, способы подключения, ключи и безопасность.</string>
+    <string name="howto_accounts_body"># Коннекторы\nКоннектор — это один аккаунт в одном сервисе. Если сервис позволяет, можно добавить несколько, например два аккаунта Spotify, каждый со своим именем.\n# Способы подключения\nК некоторым сервисам можно подключиться двумя способами. Быстрый: вы входите на странице самого сервиса, ничего не создавая, но это может перестать работать при изменении сайта. Официальный: API сервиса с бесплатным ключом на ваше имя; надёжнее, настройка занимает несколько минут.</string>
+    <string name="howto_accounts_full">В этой версии быстрые способы для Spotify, YouTube Music, Amazon Music, Apple Music и Deezer встроены, как и SoundCloud с вашим аккаунтом. Deezer (web) — в альфа-версии, SoundCloud — в бета-версии.</string>
+    <string name="howto_accounts_body2"># Ваш собственный ключ\nTrackhop поставляется без собственных ключей. Мастер настройки проведёт вас по странице сервиса для разработчиков: скопируйте туда URI перенаправления в точности, затем вставьте сюда Client ID (и secret, если он нужен).\n• Spotify разрешает создавать ключ только аккаунтам Premium.\n• Токен разработчика Apple действует не дольше шести месяцев: вставьте новый в «Настройки › Дополнительно › Ключи сервисов».\n• При официальном способе YouTube дневная квота ваша, она считается в единицах.\nСобственному серверу (Jellyfin, Plex, Navidrome…) нужны его адрес, ваше имя пользователя и пароль или токен.\n# Безопасность аккаунтов\nПароли вводятся на страницах сервисов, никогда не в Trackhop. Токены зашифрованы на телефоне, а сервера Trackhop не существует. «Проверить соединение» проверяет коннектор; «Отключить» удаляет вход, а «Удалить этот аккаунт» убирает и карточку. «Настройки › Дополнительно › Показывать инструменты разработчика › Показать соединения» перечисляет все хосты, к которым обращалось приложение.</string>
+    <string name="howto_plugins_title">Плагины</string>
+    <string name="howto_plugins_summary">Как отдельные приложения могут добавлять сервисы.</string>
+    <string name="howto_plugins_body">У Trackhop открытый интерфейс коннекторов: отдельные приложения, созданные кем угодно, могут добавлять в него сервисы.</string>
+    <string name="howto_plugins_play">Trackhop не содержит, не загружает и не рекомендует никаких плагинов.\n• Установленный плагин появляется в «Настройки › Плагины» вместе с сервисами, которые он даёт.\n• Эти сервисы затем появляются в «Аккаунты › Добавить коннектор», как и все остальные.\n• Сервисы, к которым эта версия не может подключиться сама, перечислены в разделе «Недоступно в этой версии».\n• Если удалить плагин, его сервисы отключатся, а синхронизации, которые их используют, перестанут работать.</string>
+    <string name="howto_plugins_full">В этой версии веб-коннекторы встроены, поэтому плагин не нужен: каждый запрос и каждый вход остаются внутри Trackhop, а установленный плагин не используется.</string>
+    <string name="howto_guides">Руководства</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">Краткий тур</string>
+    <string name="tour_offer_summary">Первая синхронизация с подсказками на настоящих экранах, в 8 шагов.</string>
+    <string name="tour_progress">%1$d из %2$d</string>
+    <string name="tour_done">Готово</string>
+    <string name="tour_new_sync">Синхронизация копирует плейлист в другой сервис и держит его актуальным — всё начинается с кнопки «Новая синхронизация».</string>
+    <string name="tour_accounts">Подключите сервисы в разделе «Аккаунты»: вход выполняется на странице каждого сервиса, а на телефоне остаётся только зашифрованный токен.</string>
+    <string name="tour_source">Выберите, что копировать: плейлист, Любимые треки или альбомы и исполнителей в «Библиотеке».</string>
+    <string name="tour_target">Выберите, куда копировать, и проверьте предложенный сервис: File — это список на этом телефоне.</string>
+    <string name="tour_schedule">Для первой синхронизации оставьте «Только вручную»; расписание, добавленное позже, сработает через несколько минут после сохранения.</string>
+    <string name="tour_mirror">Когда «Зеркалировать удаления» выключено, Trackhop только добавляет — безопасный выбор для первой синхронизации.</string>
+    <string name="tour_save">«Сохранить» открывает предпросмотр: он показывает, что изменится, и спрашивает о неуверенных совпадениях, пока ничего не произошло.</string>
+    <string name="tour_results">После запуска карточка показывает цифры, а метка вроде «Не найдено» ведёт к тому, что стоит посмотреть. Подробнее: «Настройки › Как пользоваться».</string>
+    <string name="plugins_where">Плагины публикуют их авторы, а не это приложение: на GitHub у них тема «trackhop-plugin».</string>
+    <string name="provider_note_deezer_bridge">Вход на собственной странице Deezer: создавать приложение разработчика не нужно (Deezer больше не регистрирует новые). Используется сессия веб-плеера: это не официальный путь, он нарушает условия Deezer и может перестать работать. Альфа. Официальный путь с вашим собственным ID приложения остаётся доступным как «Deezer».</string>
+    <string name="provider_note_soundcloud_account">Вход на собственной странице SoundCloud: ваши плейлисты и понравившиеся треки становятся источниками и получателями. Используется сессия веб-приложения: это не официальный интерфейс, он нарушает условия SoundCloud и может перестать работать. Бета. Немногие треки на SoundCloud имеют ISRC, поэтому сопоставление идёт по названию, исполнителю и длительности.</string>
+    <string name="alpha">альфа</string>
+    <string name="alpha_note">Альфа: ещё не проверено на настоящих аккаунтах. Сначала попробуйте на тестовом плейлисте и сообщайте о проблемах.</string>
+    <string name="editor_mirror_liked_warning">Зеркалирование в «Любимые треки» снимет отметку «нравится» со всего, чего нет в источнике.</string>
+    <string name="preview_unlike">Снять «нравится»: %1$d</string>
+    <string name="preview_unlike_warning">Будет снята отметка «нравится» с %1$d из %2$d треков в «Любимых треках». Проверьте, что в источнике их действительно так мало: неполный список от сервиса выглядит именно так. Если не отметить флажок ниже, синхронизация добавит треки и оставит эти отмеченными.</string>
+    <string name="preview_unlike_confirm">Снять «нравится» с этих треков (%1$d)</string>
+    <string name="note_unlikes_capped">Снятие отметок «нравится» отложено: эта синхронизация сняла бы отметку с %1$d из %2$d треков в «Любимых треках». Нажмите на статус синхронизации, чтобы открыть предпросмотр и увидеть их; если их действительно нужно убрать, отметьте там флажок и запустите. Если источник на самом деле их не терял, сервис выдал неполный список, и ничего убирать не нужно.</string>
+    <string name="sync_menu_disable">Отключить</string>
+    <string name="sync_menu_enable">Включить</string>
+    <string name="sync_disabled_snack">Синхронизация отключена: по расписанию она запускаться не будет</string>
+    <string name="sync_enabled_snack">Синхронизация включена</string>
+    <string name="sync_pause_all">Приостановить все</string>
+    <string name="sync_resume_all">Возобновить все</string>
+    <string name="sync_stop_all">Остановить все</string>
+    <plurals name="service_tiles_scroll">
+        <item quantity="one">%d сервис, прокрутите, чтобы увидеть больше</item>
+        <item quantity="few">%d сервиса, прокрутите, чтобы увидеть больше</item>
+        <item quantity="many">%d сервисов, прокрутите, чтобы увидеть больше</item>
+        <item quantity="other">%d сервиса, прокрутите, чтобы увидеть больше</item>
+    </plurals>
+    <string name="pill_pausing">Приостановка</string>
+    <string name="sync_pausing">Пауза после этого шага…</string>
+    <string name="sync_pausing_short">Приостановка…</string>
+    <plurals name="syncs_paused">
+        <item quantity="one">%d синхронизация на паузе</item>
+        <item quantity="few">%d синхронизации на паузе</item>
+        <item quantity="many">%d синхронизаций на паузе</item>
+        <item quantity="other">%d синхронизации на паузе</item>
+    </plurals>
+    <string name="syncs_running_paused">%1$d выполняется · %2$d на паузе</string>
 </resources>

@@ -1,0 +1,1 @@
+Eşitlemeler sürerken tek bildirim: her eşitleme için bir satır ve Tümünü duraklat / Tümünü durdur; biten eşitlemeler gruplanır. Kart menüsünde simgeler ve eşitlemenin rengi var. Hizmet satırları kaydırılacak başka hizmet olduğunu gösteriyor.

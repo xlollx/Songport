@@ -248,6 +248,19 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                             }
                         }
                     }
+                    // Play build: the services this version cannot reach on its own, greyed out under
+                    // a plain fact. Nothing to tap, no name of anything else, no link.
+                    val offered = services.map { it.serviceId }.toSet()
+                    val unavailable = if (BridgePlugin.builtIn) emptyList() else UNAVAILABLE_ON_PLAY.filter { it.first !in offered }
+                    if (unavailable.isNotEmpty()) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
+                            Text(stringResource(R.string.services_group_unavailable), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+                            HelpButton(Helps.unavailable)
+                        }
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                            unavailable.forEach { (id, color, name) -> UnavailableServiceTile(id, color, name) }
+                        }
+                    }
                 } else {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(onClick = { family = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) }
@@ -255,7 +268,10 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                         Spacer(Modifier.width(12.dp))
                         Text(family!!, style = MaterialTheme.typography.titleMedium)
                     }
-                    Text(stringResource(R.string.connector_pick_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 6.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(R.string.connector_pick_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f).padding(vertical = 6.dp))
+                        HelpButton(Helps.routes)
+                    }
                     // The easiest route first, so a first-timer's eye lands on it.
                     chosen.sortedBy { if (it.route == MusicProvider.Route.EASY) 0 else 1 }.forEach { s ->
                         val taken = !s.supportsMultipleAccounts && connectors.any { Providers.byId(it)?.serviceId == s.serviceId }
@@ -270,7 +286,7 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                                         StatusPill(stringResource(if (r == MusicProvider.Route.EASY) R.string.route_easy else R.string.route_official), if (r == MusicProvider.Route.EASY) Tone.Ok else Tone.Accent, Icons.Filled.Lock)
                                     } ?: Text(s.displayName, style = MaterialTheme.typography.bodyLarge)
                                     if (!s.canWrite) Text(stringResource(R.string.read_only), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                    if (s.beta) Text(stringResource(R.string.beta), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    if (s.alpha || s.beta) Text(stringResource(if (s.alpha) R.string.alpha else R.string.beta), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     if (taken) Text(stringResource(R.string.connected), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                                 s.routeNoteRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
@@ -281,15 +297,8 @@ private fun PickServiceDialog(connectors: List<String>, onDismiss: () -> Unit, o
                 }
             }
         },
-        // Where to learn about connector plugins: the project documentation (Play build) or the
-        // reference plugin's page (direct-download build).
-        confirmButton = {
-            // With the web connectors built in (GitHub/F-Droid) there is no plugin to talk about.
-            if (!BridgePlugin.builtIn) TextButton(onClick = {
-                val url = if (BuildConfig.PLUGIN_LINKS) BridgePlugin.installUrl ?: ctx.getString(R.string.plugins_more_url) else ctx.getString(R.string.plugins_more_url)
-                runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
-            }) { Text(stringResource(R.string.plugins_more), style = MaterialTheme.typography.bodySmall) }
-        },
+        // No link out: what plugins are is explained, neutrally, in Settings › Plugins (Play build).
+        confirmButton = {},
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     )
 }
@@ -304,6 +313,7 @@ private fun NameDialog(title: String, initial: String, onDismiss: () -> Unit, on
             OutlinedTextField(
                 value = name, onValueChange = { name = it }, singleLine = true,
                 label = { Text(stringResource(R.string.connector_name_label)) }, modifier = Modifier.fillMaxWidth(),
+                supportingText = { Text(stringResource(R.string.help_connector_name)) },
             )
         },
         confirmButton = { TextButton(enabled = name.isNotBlank(), onClick = { onConfirm(name.trim()) }) { Text(stringResource(R.string.ok)) } },
@@ -354,7 +364,7 @@ private fun ProviderCard(
                 Column(Modifier.weight(1f)) {
                     Text(
                         label + (if (!p.canWrite) " · " + stringResource(R.string.read_only) else "") +
-                            (if (p.beta) " · " + stringResource(R.string.beta) else ""),
+                            (if (p.alpha) " · " + stringResource(R.string.alpha) else if (p.beta) " · " + stringResource(R.string.beta) else ""),
                         style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     )
                     Text(
@@ -373,9 +383,9 @@ private fun ProviderCard(
             }
             if (connected && quotaUsed != null) QuotaCard(used = quotaUsed, sharedCredentials = !p.usesOwnCredentials(ctx))
             // Detto una volta, dove si sceglie di usarlo: meglio qui che come sorpresa a sync finita.
-            if (p.beta) {
+            if (p.alpha || p.beta) {
                 Spacer(Modifier.height(6.dp))
-                Text(stringResource(R.string.beta_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary)
+                Text(stringResource(if (p.alpha) R.string.alpha_note else R.string.beta_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary)
             }
             if (p.usesOwnCredentials(ctx)) {
                 Spacer(Modifier.height(6.dp))
@@ -449,8 +459,10 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
                     LocalFilesProvider.importFile(ctx, displayName(ctx, uri), text)
                 }
             }
-            result.onSuccess { n -> version++; snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n)) }
-                .onFailure { snackbar.showSnackbar(it.message ?: ctx.getString(R.string.error_generic)) }
+            onMain {
+                result.onSuccess { n -> version++; snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n)) }
+                    .onFailure { snackbar.showSnackbar(it.message ?: ctx.getString(R.string.error_generic)) }
+            }
         }
     }
 
@@ -467,10 +479,12 @@ internal fun FilesCard(snackbar: SnackbarHostState, onRemove: (() -> Unit)? = nu
                         withContext(Dispatchers.IO) { LocalFilesProvider.importTracks(ctx, if (name.isBlank()) s.name else name, s.tracks) }
                         s.tracks.size
                     } else withContext(Dispatchers.IO) { LocalFilesProvider.importFile(ctx, "$name.txt", text) }
-                    snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n))
-                    version++
+                    onMain {
+                        version++
+                        snackbar.showSnackbar(ctx.getString(R.string.csv_imported, n))
+                    }
                 } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) {
-                    snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic))
+                    onMain { snackbar.showSnackbar(e.message ?: ctx.getString(R.string.error_generic)) }
                 }
             }
         },
@@ -561,6 +575,28 @@ private fun serviceGroups(names: List<String>, families: Map<String, List<MusicP
         R.string.services_group_servers to names.filter { kind(it) == 1 },
         R.string.services_group_other to names.filter { kind(it) == 2 },
     )
+}
+
+/** Services with no official API this version can use: id, brand colour, name. */
+private val UNAVAILABLE_ON_PLAY = listOf(
+    Triple("amazon", 0xFF1AB0D6, "Amazon Music"),
+    Triple("soundcloud", 0xFFFF5500, "SoundCloud"),
+)
+
+/** A greyed-out tile for a service this version cannot reach: the mark and the name, nothing to tap. */
+@Composable
+private fun UnavailableServiceTile(serviceId: String, brandColor: Long, name: String) {
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        modifier = Modifier.width(84.dp).heightIn(min = 96.dp).alpha(0.45f),
+    ) {
+        Column(Modifier.padding(horizontal = 6.dp, vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
+            ServiceLogo(serviceId, brandColor, name, 40.dp)
+            Spacer(Modifier.height(6.dp))
+            Text(name, style = MaterialTheme.typography.labelMedium, minLines = 2, maxLines = 2, textAlign = TextAlign.Center, overflow = TextOverflow.Ellipsis)
+        }
+    }
 }
 
 /** A service in the "add a service" grid: its mark, large, and its name. */

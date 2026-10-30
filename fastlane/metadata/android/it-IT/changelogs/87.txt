@@ -1,0 +1,1 @@
+Quando una sessione web di YouTube Music, Amazon Music o Spotify va rinnovata, il messaggio ora dice semplicemente cosa fare: esci e accedi di nuovo. I plugin di connessione che lo supportano ottengono album, artisti, cronologia, rinomina, eliminazione e riordino.

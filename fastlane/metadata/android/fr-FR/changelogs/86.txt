@@ -1,0 +1,1 @@
+Un seul écran de démarrage au lieu de deux : l'app passe directement de l'icône à vos synchronisations.

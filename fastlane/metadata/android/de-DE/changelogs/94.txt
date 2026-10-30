@@ -1,0 +1,1 @@
+Die SoundCloud-Anmeldung wirkt wie ein normaler Handy-Browser, damit der Bot-Schutz sie nicht mehr blockiert; falls doch, sagt eine klare Meldung, was zu tun ist. Anmeldebildschirme rutschen nicht mehr unter Statusleiste oder Tastatur.

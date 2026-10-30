@@ -6,14 +6,14 @@ body:
     attributes:
       value: |
         Thanks for testing the beta. The **technical details report** is what makes a report actionable:
-        in Songport open **Settings** → **Sync log** → **Share technical details** and paste it below. It contains
+        in Trackhop open **Settings** → **Sync log** → **Share technical details** and paste it below. It contains
         versions, connectors, the last sync steps and the plugin statistics; it never contains tokens,
         passwords or track lists.
   - type: input
     id: version
     attributes:
-      label: Songport version (and Bridge version, if installed)
-      placeholder: "Songport 1.0.35 (Play or GitHub APK?), Bridge 1.3.21"
+      label: Trackhop version (and Bridge version, if installed)
+      placeholder: "Trackhop 1.0.35 (Play or GitHub APK?), Bridge 1.3.21"
     validations:
       required: true
   - type: dropdown

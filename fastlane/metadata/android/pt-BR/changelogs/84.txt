@@ -1,0 +1,1 @@
+Novo visual para o Trackhop: novo ícone do app (também temático no Android 13), novos gráficos da loja e o mesmo estilo de feixe de luz no cabeçalho das sincronizações, na introdução e no cartão de estatísticas para compartilhar.

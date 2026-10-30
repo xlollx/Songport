@@ -1,0 +1,1 @@
+Gdy sesja webowa YouTube Music, Amazon Music lub Spotify wymaga odnowienia, komunikat mówi teraz po prostu, co zrobić: wyloguj się i zaloguj ponownie. Wtyczki połączeń, które to obsługują, dostają albumy, wykonawców, historię, zmianę nazwy, usuwanie i zmianę kolejności.

@@ -16,7 +16,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 /**
  * Public SoundCloud sets and likes, read the way soundcloud.com's own web player reads them: no
  * account and no key of ours, only the client id the site ships in its scripts. Not an official
- * interface: when SoundCloud changes its player this stops working until Songport is updated, and
+ * interface: when SoundCloud changes its player this stops working until Trackhop is updated, and
  * it says so ([PlayerChanged]) instead of failing vaguely.
  *
  * A playlist id here is the path of the page on soundcloud.com ("user/sets/slug", with the secret

@@ -33,6 +33,8 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
     override val supportsArtists = true
     override val loginForm = LoginForm(needsUrl = true, needsUser = true, needsSecret = true, hintName = "login_hint_jellyfin")
 
+    // Client and DeviceId stay "Songport" after the rename to Trackhop: they are identifiers, not a
+    // name the user reads, and Jellyfin files existing sign-ins under them in its Devices list.
     private fun authHeader(token: String?) =
         "MediaBrowser Client=\"Songport\", Device=\"Android\", DeviceId=\"songport-android\", Version=\"1.0\"" +
             (token?.let { ", Token=\"$it\"" } ?: "")
@@ -62,6 +64,10 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
     }
 
     private fun uid(ctx: Env) = creds(ctx).userId
+
+    /** The search page of the server's own web client, where the user finds the track and copies its link. */
+    override fun webSearchUrl(ctx: Env, query: String): String? =
+        ctx.tokens.get(id)?.extra?.get("url")?.let { searchUrl(it, query) }
 
     private fun toTrack(i: JsonElement?): Track? {
         val id = i["Id"].str ?: return null
@@ -181,6 +187,13 @@ class JellyfinProvider(override val slot: String = "") : CredentialsProvider() {
 
     companion object {
         const val SERVICE = "jellyfin"
+
+        /**
+         * jellyfin-web's search page with [query] filled in. The web client lives under /web with hash
+         * routing; since 10.9 its routes drop ".html" (#/search; "search.html" only redirects, deprecated),
+         * and 10.8 is past its end of life.
+         */
+        internal fun searchUrl(base: String, query: String): String = "$base/web/#/search?query=" + Http.enc(query)
 
         /**
          * The entries left once [gone] (entry ids, one per copy to remove) are removed, or null when

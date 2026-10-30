@@ -1,0 +1,1 @@
+SoundCloud girişi sıradan bir mobil tarayıcı gibi görünüyor, bu yüzden bot koruması artık onu engellemiyor; yine de olursa net bir mesaj ne yapılacağını söylüyor. Giriş ekranları artık durum çubuğunun veya klavyenin altına kaymıyor.

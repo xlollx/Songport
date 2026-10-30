@@ -43,11 +43,11 @@ Use the quick route for big playlists.
 
 ## Personal servers
 
-**Ampache: "Ampache refused the password".** Songport connects to Ampache through its Subsonic
+**Ampache: "Ampache refused the password".** Trackhop connects to Ampache through its Subsonic
 API, with *Subsonic / Navidrome*. Ampache checks those sign-ins against a separate **Subsonic
 password**, never against the password you use on its web page. In Ampache open *Preferences →
 Account*, set a *Subsonic Password* (or copy your *API key*), save with *Update Account*, and enter
-that in Songport as the password. The username stays the same.
+that in Trackhop as the password. The username stays the same.
 
 **Plex: where does a new playlist go?** A sync to "create a new playlist" makes a music playlist on
 the server, as Plex's own apps do; it shows up under *Playlists* in Plex.
@@ -55,14 +55,16 @@ the server, as Plex's own apps do; it shows up under *Playlists* in Plex.
 ## Scheduled syncs do not run
 
 Some phones (Samsung, Xiaomi, Huawei, Oppo) stop background apps. *Settings → Battery* excludes
-Songport from battery optimisation. A scheduled run the system interrupts resumes by itself
+Trackhop from battery optimisation. A scheduled run the system interrupts resumes by itself
 ("paused by the system … will resume" in the log is normal).
 
 ## A sync wants to remove many tracks
 
-With *mirror removals* on, a run that would remove a quarter of the target or more is held back
-("Removals held back"). Open the **preview**: if the source really lost those tracks, apply it; if
-not, the service listed the source incompletely and nothing should be removed. Duplicates in the
+With *mirror removals* on, a run that would remove more than 10 tracks and a quarter of the target
+or more is held back ("Removals held back"; the sync's status reads "Removals on hold"). Tap the
+status to open the **preview**: if the source really lost those tracks, tick *Remove these tracks*
+and run it from there; if not, the service listed the source incompletely and nothing should be
+removed. Scheduled runs never remove that many on their own. Duplicates in the
 target (the same song twice, in two versions) also show up here.
 
 ## A pasted link is not recognised

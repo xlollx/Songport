@@ -1,0 +1,1 @@
+As sincronizações não adicionam nem removem mais as mesmas faixas a cada execução quando um serviço aceita a mudança mas não a mostra (visto com curtidas do YouTube Music e remoções no Amazon Music); o registro nomeia essas faixas. O SoundCloud renova a sessão sozinho em vez de pedir login a cada hora.

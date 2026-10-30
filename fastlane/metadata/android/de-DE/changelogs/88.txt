@@ -1,0 +1,1 @@
+Neu in den Einstellungen: Plugins. Erklärt Connector-Plugins und listet die installierten samt der Dienste, die sie hinzufügen.

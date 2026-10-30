@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BatteryAlert
@@ -30,6 +31,7 @@ import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.EditNotifications
 import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Folder
@@ -57,7 +59,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -93,7 +97,7 @@ private fun openUrl(ctx: android.content.Context, url: String) {
     runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }
 
-private const val SOURCE_URL = "https://github.com/xlollx/Songport"
+internal const val SOURCE_URL = "https://github.com/xlollx/Trackhop"
 
 /** The little arrow of a row that leaves the app (browser, system settings). */
 @Composable
@@ -115,6 +119,7 @@ fun SettingsScreen(
     snackbar: SnackbarHostState,
     onSetup: (MusicProvider) -> Unit,
     onOpenLog: () -> Unit = {},
+    onHowTo: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val privacyRequired by Ads.privacyOptionsRequired.collectAsState()
@@ -157,33 +162,33 @@ fun SettingsScreen(
                 langOpen = false
                 if (tag != currentTag) (ctx as? Activity)?.let { AppLocale.set(it, tag) }
             }
-            PrefSwitch(Icons.Filled.Dashboard, stringResource(R.string.settings_new_look), stringResource(R.string.settings_new_look_summary), settings.newLook) { v ->
+            PrefSwitch(Icons.Filled.Dashboard, stringResource(R.string.settings_new_look), stringResource(R.string.settings_new_look_summary), settings.newLook, help = { HelpButton(Helps.newLook) }) { v ->
                 store.updateSettings { it.copy(newLook = v) }
             }
         }
 
         // ---------------------------------------------------------------- Syncing
         PrefSection(stringResource(R.string.settings_section_syncing)) {
-            PrefSwitch(Icons.Filled.Verified, stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_summary), settings.isrcLookup) { v ->
+            PrefSwitch(Icons.Filled.Verified, stringResource(R.string.settings_isrc), stringResource(R.string.settings_isrc_summary), settings.isrcLookup, help = { HelpButton(Helps.isrc) }) { v ->
                 store.updateSettings { it.copy(isrcLookup = v) }
             }
             // The link alias lives in the package manager, not in the store: read it from there.
             var musicLinks by remember { mutableStateOf(MusicLinks.enabled(ctx)) }
-            PrefSwitch(Icons.Filled.Link, stringResource(R.string.settings_music_links), stringResource(R.string.settings_music_links_summary), musicLinks) { v ->
+            PrefSwitch(Icons.Filled.Link, stringResource(R.string.settings_music_links), stringResource(R.string.settings_music_links_summary), musicLinks, help = { HelpButton(Helps.musicLinks) }) { v ->
                 MusicLinks.set(ctx, v); musicLinks = v
             }
             PrefRow(
                 Icons.Filled.BatteryAlert, stringResource(R.string.settings_battery), stringResource(R.string.settings_battery_summary),
                 trailing = { ExternalMark() },
             ) {
-                // Apre l'elenco di sistema (nessun permesso speciale): l'utente sceglie Songport e lo esclude.
+                // Apre l'elenco di sistema (nessun permesso speciale): l'utente sceglie Trackhop e lo esclude.
                 runCatching { ctx.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) }
             }
         }
 
         // ---------------------------------------------------------------- Notifications
         PrefSection(stringResource(R.string.settings_section_notifications)) {
-            PrefSwitch(Icons.Filled.Notifications, stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_summary), settings.notifyOnSync) { v ->
+            PrefSwitch(Icons.Filled.Notifications, stringResource(R.string.settings_notifications), stringResource(R.string.settings_notifications_summary), settings.notifyOnSync, help = { HelpButton(Helps.notifications) }) { v ->
                 store.updateSettings { it.copy(notifyOnSync = v) }
             }
             PrefSwitch(Icons.Filled.MusicOff, stringResource(R.string.settings_unplayable), stringResource(R.string.settings_unplayable_summary), settings.unplayableCheck) { v ->
@@ -202,7 +207,10 @@ fun SettingsScreen(
         // ---------------------------------------------------------------- Backups
         // Where the dated backups also go, outside the phone: SD card, Nextcloud, Drive, any folder app.
         val folder = settings.backupFolder
-        PrefSection(stringResource(R.string.settings_section_backups), footer = if (folder.isBlank()) stringResource(R.string.backup_folder_desc) else null) {
+        PrefSection(
+            stringResource(R.string.settings_section_backups), footer = if (folder.isBlank()) stringResource(R.string.backup_folder_desc) else null,
+            help = { HelpButton(Helps.backups) },
+        ) {
             val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
                 if (uri != null) {
                     runCatching { ctx.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION) }
@@ -235,23 +243,24 @@ fun SettingsScreen(
                     scheduleOpen = false
                     store.updateSettings { it.copy(backupSchedule = s) }; Scheduler.applyBackup(ctx)
                 }
-                var exporting by remember { mutableStateOf(false) }
-                var exportStep by remember { mutableStateOf("") }
+                val exporting by BackupExport.running.collectAsState()
+                val exportStep by BackupExport.step.collectAsState()
+                // The copy runs in the app's scope (see BackupExport.start): its outcome arrives here
+                // whenever the screen is showing, once.
+                val done by BackupExport.finished.collectAsState()
+                LaunchedEffect(done) {
+                    val r = done ?: return@LaunchedEffect
+                    BackupExport.finished.value = null
+                    stateVersion++
+                    snackbar.showSnackbar(if (r.folderMissing) r.failed.first() else ctx.getString(R.string.backup_folder_done, r.services, r.copied) + (if (r.failed.isNotEmpty()) " · " + r.failed.first() else ""))
+                }
                 PrefRow(
                     Icons.Filled.CloudUpload, stringResource(R.string.backup_folder_now),
                     if (exporting && exportStep.isNotBlank()) exportStep else stringResource(R.string.backup_folder_hint),
                     enabled = !exporting,
                     chevron = false,
                     trailing = if (exporting) { { CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) } } else null,
-                ) {
-                    exporting = true
-                    scope.launch {
-                        val r = BackupExport.run(ctx) { exportStep = it }
-                        exporting = false
-                        stateVersion++
-                        snackbar.showSnackbar(if (r.folderMissing) r.failed.first() else ctx.getString(R.string.backup_folder_done, r.services, r.copied) + (if (r.failed.isNotEmpty()) " · " + r.failed.first() else ""))
-                    }
-                }
+                ) { BackupExport.start(ctx) }
                 PrefRow(Icons.Filled.LinkOff, stringResource(R.string.backup_folder_stop), null, enabled = !exporting, danger = true, chevron = false) {
                     store.updateSettings { it.copy(backupFolder = "", backupSchedule = Schedule.MANUAL) }; Scheduler.applyBackup(ctx)
                 }
@@ -296,6 +305,36 @@ fun SettingsScreen(
             }
         }
 
+        // ---------------------------------------------------------------- Plugins
+        // Play build only: the GitHub/F-Droid build carries the connectors inside. Neutral on
+        // purpose: what a plugin is and which ones are installed, never a name, a link or a hint.
+        if (!BridgePlugin.builtIn) {
+            // Asking a plugin which services it serves is an IPC call: off the main thread.
+            val plugins by produceState<List<Pair<BridgePlugin.Installed, List<String>>>?>(null) {
+                value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    val active = BridgePlugin.packageName(ctx)
+                    val services = Providers.services().filter { it.pluginBased && runCatching { it.isConfigured(ctx) }.getOrDefault(false) }.map { it.displayName }
+                    BridgePlugin.installedPlugins(ctx).map { it to if (it.packageName == active) services else emptyList() }
+                }
+            }
+            // What a plugin is, above the list; nothing about where plugins come from.
+            PrefSection(stringResource(R.string.plugins_title), description = stringResource(R.string.plugins_desc), footer = stringResource(R.string.plugins_where), help = { HelpButton(Helps.plugins) }) {
+                val list = plugins
+                if (list != null && list.isEmpty()) PrefRow(Icons.Filled.Extension, stringResource(R.string.plugins_none))
+                list?.forEach { (p, services) ->
+                    val launch = ctx.packageManager.getLaunchIntentForPackage(p.packageName)
+                    PrefRow(
+                        Icons.Filled.Extension, p.label,
+                        listOfNotNull(
+                            p.version?.let { stringResource(R.string.settings_version, it) },
+                            services.takeIf { it.isNotEmpty() }?.let { stringResource(R.string.plugins_services, it.joinToString(", ")) },
+                        ).joinToString(" · "),
+                        onClick = launch?.let { i -> { runCatching { ctx.startActivity(i) } } },
+                    )
+                }
+            }
+        }
+
         // ---------------------------------------------------------------- Advanced
         PrefSection(stringResource(R.string.settings_section_advanced)) {
             PrefRow(Icons.Filled.History, stringResource(R.string.settings_log), stringResource(R.string.settings_log_summary), onClick = onOpenLog)
@@ -307,6 +346,7 @@ fun SettingsScreen(
             PrefRow(
                 Icons.Filled.AutoAwesome, stringResource(R.string.ai_setup_title),
                 if (ai != null) "${ai.vendor.label} · ${ai.model}" else stringResource(R.string.not_configured) + " · " + stringResource(R.string.settings_ai_desc),
+                trailing = { HelpButton(Helps.ai) },
             ) { aiOpen = true }
 
             var keysOpen by remember { mutableStateOf(false) }
@@ -351,6 +391,12 @@ fun SettingsScreen(
                     }
                 }
             }
+        }
+
+        // ---------------------------------------------------------------- Help
+        // The guides, written into the app: offline, and in the app's language.
+        PrefSection(stringResource(R.string.settings_section_help)) {
+            PrefRow(Icons.AutoMirrored.Filled.MenuBook, stringResource(R.string.howto_title), stringResource(R.string.howto_summary), onClick = onHowTo)
         }
 
         // ---------------------------------------------------------------- About

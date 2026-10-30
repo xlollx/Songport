@@ -19,16 +19,16 @@ object Html {
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 ${refreshSeconds?.let { """<meta http-equiv="refresh" content="$it">""" } ?: ""}
-<title>${h(title)} · Songport</title>
+<title>${h(title)} · Trackhop</title>
 <link rel="stylesheet" href="/style.css">
 </head><body>
-<header><a class="brand" href="/">Songport <span class="alpha">alpha</span></a><nav><a href="/">Syncs</a><a href="/connectors">Services</a><a href="/log">Log</a></nav></header>
-<p class="alpha-note"><strong>Alpha.</strong> The server is an early test version: things can break or change between releases. Keep a copy of the data folder and <a href="https://xlollx.github.io/Songport/guide/reporting-a-problem">report what goes wrong</a>.</p>
+<header><a class="brand" href="/">Trackhop <span class="alpha">alpha</span></a><nav><a href="/">Syncs</a><a href="/connectors">Services</a><a href="/log">Log</a></nav></header>
+<p class="alpha-note"><strong>Alpha.</strong> The server is an early test version: things can break or change between releases. Keep a copy of the data folder and <a href="https://xlollx.github.io/Trackhop/guide/reporting-a-problem">report what goes wrong</a>.</p>
 <main>
 <h1>${h(title)}</h1>
 $body
 </main>
-<footer>Songport server ${h(version)} (alpha) · <a href="https://xlollx.github.io/Songport/guide/docker">Guide</a> · <a href="https://github.com/xlollx/Songport">GitHub</a></footer>
+<footer>Trackhop server ${h(version)} (alpha) · <a href="https://xlollx.github.io/Trackhop/guide/docker">Guide</a> · <a href="https://github.com/xlollx/Trackhop">GitHub</a></footer>
 </body></html>"""
 
     const val CSS = """

@@ -1,0 +1,1 @@
+Amazon Music : les titres qu'Amazon a déjà mais n'affiche pas dans la liste de la playlist ne sont plus rajoutés à chaque synchronisation ni comptés comme ajoutés. Le journal les nomme, pour pouvoir le signaler facilement.

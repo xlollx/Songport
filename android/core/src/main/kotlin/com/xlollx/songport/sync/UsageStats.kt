@@ -9,7 +9,7 @@ import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 /**
- * "Songport in numbers": what the syncs have done, counted only from what the app already keeps
+ * "Trackhop in numbers": what the syncs have done, counted only from what the app already keeps
  * (the jobs and the run history in [StoreData]). Nothing is estimated except the time saved, which
  * is a stated rule ([SECONDS_PER_TRACK] per track moved), and a figure the history cannot back is
  * left out (null or empty) rather than guessed. The history keeps the latest

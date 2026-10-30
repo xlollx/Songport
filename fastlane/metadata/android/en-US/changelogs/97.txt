@@ -1,0 +1,1 @@
+Syncs no longer add or remove the same tracks at every run when a service accepts the change but doesn't show it (seen with YouTube Music likes and Amazon Music removals); the sync log names those tracks. SoundCloud renews its session by itself instead of asking you to sign in again every hour.

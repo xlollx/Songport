@@ -111,7 +111,7 @@ class YouTubeContractTest : ContractTest() {
         assertEquals("private", r.jsonBody()["status"]["privacyStatus"].str)
     }
 
-    private val current = """{"items":[{"kind":"youtube#playlist","id":"PL1","snippet":{"title":"Old","description":"Synced with Songport","defaultLanguage":"it",
+    private val current = """{"items":[{"kind":"youtube#playlist","id":"PL1","snippet":{"title":"Old","description":"Synced with Trackhop","defaultLanguage":"it",
         "tags":["a","b"],"channelId":"UCme","thumbnails":{}},"status":{"privacyStatus":"private"}}]}"""
 
     /**
@@ -130,7 +130,7 @@ class YouTubeContractTest : ContractTest() {
         assertEquals("snippet", p.query("part"))
         val s = p.jsonBody()["snippet"]
         assertEquals(UNICODE, s["title"].str)
-        assertEquals("Synced with Songport", s["description"].str)
+        assertEquals("Synced with Trackhop", s["description"].str)
         assertEquals("it", s["defaultLanguage"].str)
         assertEquals("PL1", p.jsonBody()["id"].str)
     }
@@ -142,7 +142,7 @@ class YouTubeContractTest : ContractTest() {
         val p = next()
         assertEquals("snippet,status", p.query("part"))
         assertEquals("Old", p.jsonBody()["snippet"]["title"].str)
-        assertEquals("Synced with Songport", p.jsonBody()["snippet"]["description"].str)
+        assertEquals("Synced with Trackhop", p.jsonBody()["snippet"]["description"].str)
         assertEquals("public", p.jsonBody()["status"]["privacyStatus"].str)
     }
 
@@ -156,7 +156,7 @@ class YouTubeContractTest : ContractTest() {
 
     @Test fun quotaExceededIsSaidPlainly() = runBlocking {
         json("""{"error":{"code":403,"message":"The request cannot be completed because you have exceeded your <a href=\"/youtube/v3/getting-started#quota\">quota</a>.","errors":[{"message":"x","domain":"youtube.quota","reason":"quotaExceeded"}]}}""", 403)
-        try { yt.playlists(env); fail() } catch (e: ProviderException) { assertEquals("YouTube Music (Google API) API 403: daily YouTube API quota exceeded, retry tomorrow", e.message) }
+        try { yt.playlists(env); fail() } catch (e: ProviderException) { assertEquals("YouTube Music (Google API) API 403: the daily YouTube API quota (a limit set by Google, not by Trackhop) is used up; it resets at midnight Pacific time", e.message) }
         assertEquals(1, server.requestCount)
     }
 

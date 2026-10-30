@@ -28,6 +28,8 @@ object FakeWorld {
     val connected: MutableSet<String> = ConcurrentHashMap.newKeySet()
     /** Titles each service's catalogue does not have (so a sync reports them "not found"). */
     val missing = ConcurrentHashMap<String, Set<String>>()
+    /** While set, reading a playlist's tracks waits for it (suspended, no thread held): syncs stay running until the test lets them go. */
+    @Volatile var hold: kotlinx.coroutines.CompletableDeferred<Unit>? = null
 
     // ---- the seed every test starts from
 
@@ -48,6 +50,7 @@ object FakeWorld {
 
     fun reset() {
         playlists.clear(); public.clear(); connected.clear(); missing.clear()
+        hold?.complete(Unit); hold = null
         playlists["spotify"] = mutableListOf(
             FakePlaylist(SPOTIFY_ROAD, "Road Trip", songs("spotify", 0 until 8)),
             FakePlaylist(SPOTIFY_CHILL, "Chill Evening", songs("spotify", 8 until 13)),
@@ -148,7 +151,10 @@ class FakeProvider(
 
     override suspend fun playlistInfo(ctx: Env, playlistId: String): Playlist = find(playlistId).let { Playlist(it.id, it.name, it.tracks.size, it.owned) }
 
-    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> = synchronized(FakeWorld) { find(playlistId).tracks.toList() }
+    override suspend fun tracks(ctx: Env, playlistId: String): List<Track> {
+        FakeWorld.hold?.await()
+        return synchronized(FakeWorld) { find(playlistId).tracks.toList() }
+    }
 
     private fun catalogue(): List<Track> {
         val gone = FakeWorld.missing[serviceId].orEmpty()

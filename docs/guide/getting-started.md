@@ -1,12 +1,14 @@
 # Getting started
 
+**Songport is now Trackhop**: the same app with a new name (an unrelated service called "SongPort" works in the same space); it updates normally, keeps all its data, and old links keep working.
+
 ## Install
 
 | Where | Notes |
 |---|---|
 | [F-Droid](https://f-droid.org/packages/com.xlollx.songport/) | Built by F-Droid from source, signed with the same key as the GitHub APK (reproducible build), so the two update each other. New versions arrive a few days after GitHub. |
-| [Obtainium](https://github.com/ImranR98/Obtainium) | Add `https://github.com/xlollx/Songport`: every GitHub release reaches the phone by itself. |
-| [GitHub Releases](https://github.com/xlollx/Songport/releases/latest) | The signed APK of every version. |
+| [Obtainium](https://github.com/ImranR98/Obtainium) | Add `https://github.com/xlollx/Trackhop`: every GitHub release reaches the phone by itself. |
+| [GitHub Releases](https://github.com/xlollx/Trackhop/releases/latest) | The signed APK of every version. |
 
 Android 8.0 or newer.
 

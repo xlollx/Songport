@@ -8,7 +8,7 @@ import java.time.ZoneId
 
 /**
  * Contatore della quota API di YouTube. E' un limite di Google (10.000 unita' al giorno per
- * progetto, azzerato a mezzanotte ora del Pacifico), non di Songport: qui lo stimiamo contando
+ * progetto, azzerato a mezzanotte ora del Pacifico), non di Trackhop: qui lo stimiamo contando
  * il costo di ogni chiamata fatta da questo telefono, cosi' l'utente vede quanto resta.
  * Con le credenziali integrate la quota e' condivisa con gli altri utenti della build: la stima
  * e' quindi per difetto e va presentata come tale.

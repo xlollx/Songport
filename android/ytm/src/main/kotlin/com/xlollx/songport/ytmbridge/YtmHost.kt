@@ -18,10 +18,12 @@ interface YtmHost {
     val web: YtmWebTransport?
     /** Where Google's block outlives the process. */
     val verification: YtmVerificationStore
-    /** How an error asks for a new session, e.g. "sign in again in Songport Bridge". */
+    /** How an error asks for a new session, e.g. "sign out of YouTube Music and sign in again". */
     val signInAgain: String
     /** Said after Google's block, when this place has a way out of it; null for nothing more. */
     val blockedHint: String?
+    /** The diagnostics log, where there is one: what happened, never a cookie or an id. */
+    fun log(message: String) {}
 }
 
 /** Calls made by a browser engine: Chrome's fingerprint, the browser's own cookies and headers. */

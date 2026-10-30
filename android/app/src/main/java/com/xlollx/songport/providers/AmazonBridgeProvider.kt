@@ -20,7 +20,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 
 /**
- * Amazon Music through the companion app "Songport Bridge", experimental.
+ * Amazon Music through the companion app "Trackhop Bridge", experimental.
  *
  * Amazon has no open API and its official one is reserved to approved partners, so the Bridge uses
  * the web player's interface, as it does for YouTube Music. Search and reading a playlist by id work;
@@ -31,7 +31,7 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
     // Renaming and deleting were mapped from the desktop player's own calls; an older plugin lacks them.
     // The GraphQL player (October 2026) has no rename or visibility call we have seen yet.
     override val canRenamePlaylists: Boolean get() = false
-    override val canDeletePlaylists: Boolean get() = BridgePlugin.builtIn
+    override val canDeletePlaylists: Boolean get() = BridgePlugin.full
     override val serviceId = SERVICE
     override val displayName = "Amazon Music"
     override val route: MusicProvider.Route? get() = MusicProvider.Route.EASY
@@ -112,25 +112,48 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
         }
 
     override suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
-        if (tracks.isEmpty()) return
-        withContext(Dispatchers.IO) {
+        addTracksReportingPresent(ctx, playlistId, tracks)
+    }
+
+    /**
+     * The tracks Amazon refused as already in the playlist (DUPLICATE_TRACK), from the Bridge's
+     * "duplicates": present, not added. A Bridge app older than this answer reports none.
+     */
+    override suspend fun addTracksReportingPresent(ctx: Env, playlistId: String, tracks: List<Track>): Set<String> {
+        if (tracks.isEmpty()) return emptySet()
+        return withContext(Dispatchers.IO) {
+            val present = HashSet<String>()
             // One web call per track: keep the batches small so a failure is reported precisely.
             tracks.chunked(25).forEach { chunk ->
-                call(ctx, "amazon.add", playlistId, Bundle().apply {
+                val b = call(ctx, "amazon.add", playlistId, Bundle().apply {
                     putStringArray("ids", chunk.map { it.id }.toTypedArray())
                     putStringArray("titles", chunk.map { it.title }.toTypedArray())
                 })
+                b.getStringArray("duplicates")?.let { present += it }
             }
+            present
         }
     }
 
+    /** Entries Amazon describes only in part come by id, without a title (see AmazonClient.playlistTracks). */
+    override val listsUntitledEntries: Boolean get() = true
+
     override suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>) {
-        if (tracks.isEmpty()) return
-        withContext(Dispatchers.IO) {
-            call(ctx, "amazon.remove", playlistId, Bundle().apply {
+        removeTracksReportingKept(ctx, playlistId, tracks)
+    }
+
+    /**
+     * The tracks the playlist still lists after Amazon answered their removal, from the Bridge's
+     * "kept" (it reads the playlist again): not removed. A Bridge app older than this answer reports none.
+     */
+    override suspend fun removeTracksReportingKept(ctx: Env, playlistId: String, tracks: List<Track>): Set<String> {
+        if (tracks.isEmpty()) return emptySet()
+        return withContext(Dispatchers.IO) {
+            val b = call(ctx, "amazon.remove", playlistId, Bundle().apply {
                 putStringArray("ids", tracks.map { it.id }.toTypedArray())
                 putStringArray("entryIds", tracks.map { it.itemId ?: "" }.toTypedArray())
             })
+            b.getStringArray("kept")?.toSet() ?: emptySet()
         }
     }
 
@@ -154,8 +177,8 @@ class AmazonBridgeProvider(override val slot: String = "") : MusicProvider {
         val b = try {
             BridgePlugin.call(ctx, method, arg, extras)
         } catch (e: Exception) {
-            throw ProviderException("Songport Bridge: ${e.message ?: e.javaClass.simpleName}")
-        } ?: throw ProviderException("Songport Bridge: no answer")
+            throw ProviderException("Connector plugin: ${e.message ?: e.javaClass.simpleName}")
+        } ?: throw ProviderException("Connector plugin: no answer")
         b.getString("error")?.let { throw ProviderException("Amazon Music: $it") }
         return b
     }

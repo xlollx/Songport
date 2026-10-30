@@ -1,0 +1,1 @@
+La lista de servicios muestra qué servicios no puede conectar esta versión, en vez de ocultarlos. Cuando se agota la cuota diaria de la API de YouTube, el mensaje dice de quién es el límite y cuándo se reinicia.

@@ -1,0 +1,1 @@
+Pausieren sieht wie Pausieren aus: „Pause nach diesem Schritt“, solange der aktuelle Schritt endet, dann „Pausiert“ mit stillem, grauem Balken auf der Karte, der oberen Schaltfläche und in der Benachrichtigung; ein Tippen setzt fort. Mehrere pausierte Synchronisierungen blockieren sich nicht mehr.

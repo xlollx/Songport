@@ -2,7 +2,6 @@ package com.xlollx.songport.ui
 
 import android.content.Context
 import android.graphics.Bitmap
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,7 +38,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -114,7 +112,7 @@ private fun statsCard(ctx: Context, t: StatsText): Cards.StatsCard {
 }
 
 /**
- * "Songport in numbers": what the syncs have done, counted from the history the app already keeps
+ * "Trackhop in numbers": what the syncs have done, counted from the history the app already keeps
  * ([UsageStats]), and a story or square card to share it. Nothing leaves the phone except the card
  * the user shares; a figure the history cannot back is not shown.
  */
@@ -206,7 +204,7 @@ fun StatsScreen(data: StoreData, onClose: () -> Unit) {
             Spacer(Modifier.height(4.dp))
             Text(stringResource(R.string.stats_share_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
             CardActions(
-                bitmaps, "songport-in-numbers", busy = bitmaps == null, onRender = null, renderLabel = "",
+                bitmaps, "trackhop-in-numbers", busy = bitmaps == null, onRender = null, renderLabel = "",
                 previewDescription = stringResource(R.string.stats_card_preview),
             )
 
@@ -221,19 +219,19 @@ fun StatsScreen(data: StoreData, onClose: () -> Unit) {
     }
 }
 
-/** The headline, on the brand gradient like the Syncs header: tracks moved, and over which period. */
+/** The headline, on the brand beam like the Syncs header: tracks moved, and over which period. */
 @Composable
 private fun StatsHero(t: StatsText) {
     val ctx = LocalContext.current
     Box(
         Modifier.fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
-            .background(Brush.linearGradient(listOf(Brand.Indigo, Brand.Violet, Brand.MagentaDeep)))
+            .brandBeam()
             .semantics(mergeDescendants = true) {}
             .padding(20.dp),
     ) {
         Column {
-            BrandMark(30.dp, tint = Color.White)
+            BrandTile(40.dp)
             Spacer(Modifier.height(12.dp))
             Text(t.n(t.s.added), color = Color.White, style = MaterialTheme.typography.displayMedium.merge(TabularNumbers))
             Text(stringResource(R.string.stats_tracks_moved), color = Color.White, style = MaterialTheme.typography.titleMedium)

@@ -1,0 +1,1 @@
+Une seule notification pendant les synchronisations, une ligne par synchronisation et Tout mettre en pause / Tout arrêter ; les terminées sont regroupées. Le menu des cartes a des icônes et la couleur de la synchronisation. Les rangées de services montrent qu'il y en a d'autres à faire défiler.

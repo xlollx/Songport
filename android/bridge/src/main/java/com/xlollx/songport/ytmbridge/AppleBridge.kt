@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
  * Two tokens are needed by the MusicKit API: a developer token and a music user token. The web
  * player at music.apple.com ships Apple's own developer token inside its JavaScript, and after the
  * user signs in it keeps the music user token in the `media-user-token` cookie. The Bridge reads
- * both and hands them to Songport, which then uses its normal Apple Music code.
+ * both and hands them to Trackhop, which then uses its normal Apple Music code.
  */
 object AppleBridge {
     val session = WebSession("apple", listOf("music.apple.com", "idmsa.apple.com", "apple.com"))

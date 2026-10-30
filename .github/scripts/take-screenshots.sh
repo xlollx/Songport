@@ -2,8 +2,10 @@
 # Runs inside the emulator job of .github/workflows/screenshots.yml: installs the app and its
 # screenshot test, puts the status bar in demo mode, takes the pictures and pulls them to ./shots.
 set -u
-APK=app/build/outputs/apk/full/debug/app-full-debug.apk
-TEST_APK=app/build/outputs/apk/androidTest/full/debug/app-full-debug-androidTest.apk
+# FLAVOR (full or play) picks the build: the same test runs on both.
+F=${FLAVOR:-full}
+APK=app/build/outputs/apk/$F/debug/app-$F-debug.apk
+TEST_APK=app/build/outputs/apk/androidTest/$F/debug/app-$F-debug-androidTest.apk
 adb install -r "$APK"
 adb install -r "$TEST_APK"
 adb shell pm grant com.xlollx.songport android.permission.POST_NOTIFICATIONS || true

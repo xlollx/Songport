@@ -1,0 +1,1 @@
+Bir hizmet değişikliği kabul edip göstermediğinde eşitlemeler artık her çalışmada aynı parçaları ekleyip kaldırmıyor (YouTube Music beğenileri ve Amazon Music kaldırmalarında görüldü); günlük bu parçaları adıyla gösterir. SoundCloud her saat yeniden giriş istemek yerine oturumu kendisi yeniliyor.

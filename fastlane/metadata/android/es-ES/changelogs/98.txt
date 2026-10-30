@@ -1,0 +1,1 @@
+Una sola notificación mientras se sincroniza, con una línea por sincronización y Pausar todo / Detener todo; las terminadas se agrupan. El menú de la tarjeta tiene iconos y el color de la sincronización. Las filas de servicios indican cuando hay más para desplazar.

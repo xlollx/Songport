@@ -61,6 +61,13 @@ interface MusicProvider {
     val beta: Boolean get() = false
 
     /**
+     * Alpha connector: written and covered by offline tests, but not yet tried against real
+     * accounts. The UI shows "alpha" where it would show "beta", with a note asking to try it on a
+     * test playlist first and to report problems. Takes the place of [beta] where both are set.
+     */
+    val alpha: Boolean get() = false
+
+    /**
      * Quale strada verso il servizio e' questa, quando ce n'e' piu' d'una: la piu' semplice (accesso
      * sul sito, nessuna chiave, interfaccia non ufficiale) o quella ufficiale (API con chiave propria).
      * Null = c'e' una strada sola e non serve dirlo.
@@ -172,7 +179,36 @@ interface MusicProvider {
     suspend fun search(ctx: Env, track: Track): List<Track>
     suspend fun createPlaylist(ctx: Env, name: String, description: String): Playlist
     suspend fun addTracks(ctx: Env, playlistId: String, tracks: List<Track>)
+
+    /**
+     * [addTracks], answering which of [tracks] the service did not add because, it says, the
+     * playlist already holds them. Amazon Music refuses such a track (DUPLICATE_TRACK) even when its
+     * playlist listing leaves the entry out: the sync then counts it as present, not added, and
+     * remembers it, instead of adding it again on every run. Default: every track added, none reported.
+     */
+    suspend fun addTracksReportingPresent(ctx: Env, playlistId: String, tracks: List<Track>): Set<String> {
+        addTracks(ctx, playlistId, tracks)
+        return emptySet()
+    }
+
+    /**
+     * True where [tracks] can list an entry by its id alone, with an empty title (Amazon Music, for
+     * a track it describes only in part). A Mirror sync matches such an entry by id and never
+     * removes it on a guess: what it is cannot be told.
+     */
+    val listsUntitledEntries: Boolean get() = false
     suspend fun removeTracks(ctx: Env, playlistId: String, tracks: List<Track>)
+
+    /**
+     * [removeTracks], answering which of [tracks] (by id) the playlist still lists after the
+     * removal the service said it made. Amazon Music answers a removal by cursor with the playlist's
+     * id whether or not the entry went: the sync then counts such a track as not removed and leaves
+     * it alone for a while, instead of "removing" it again on every run. Default: every track removed.
+     */
+    suspend fun removeTracksReportingKept(ctx: Env, playlistId: String, tracks: List<Track>): Set<String> {
+        removeTracks(ctx, playlistId, tracks)
+        return emptySet()
+    }
     suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
         throw com.xlollx.songport.model.ProviderException(ctx.text("error_manage_unsupported", displayName))
     }
@@ -189,6 +225,12 @@ interface MusicProvider {
      * lo incolla. Null per i servizi senza una ricerca pubblica (server personali, file).
      */
     fun webSearchUrl(ctx: Env, query: String): String? = null
+
+    /**
+     * Whether [webSearchUrl] leads anywhere for this account: screens decide up front whether to offer
+     * "Open in <service>", so a personal server without a web search shows no button that does nothing.
+     */
+    fun hasWebSearch(ctx: Env): Boolean = webSearchUrl(ctx, "x") != null
 
     /**
      * The public page of a track on this service, for "open it there": built from the id, no

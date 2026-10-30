@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 
 /**
- * The "open music links with Songport" switch: an activity alias in the manifest, off by default,
- * that the package manager turns on or off. On, Android lists Songport among the apps for a track
+ * The "open music links with Trackhop" switch: an activity alias in the manifest, off by default,
+ * that the package manager turns on or off. On, Android lists Trackhop among the apps for a track
  * or playlist link; the user still picks, in the chooser or in the system's link settings.
  */
 object MusicLinks {

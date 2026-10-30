@@ -124,7 +124,7 @@ object AiDraft {
 }
 
 /**
- * "Generatore di playlist" (beta): l'utente descrive, la SUA AI propone, Songport cerca. La lista
+ * "Generatore di playlist" (beta): l'utente descrive, la SUA AI propone, Trackhop cerca. La lista
  * proposta viene salvata come file (cosi' resta consultabile in File) e, se la destinazione e' un
  * servizio, diventa l'origine di una sync normale creata e avviata subito: ricerca, non trovati e
  * revisione sono quelli di sempre.

@@ -1,0 +1,54 @@
+# Which Trackhop? Versions, plugins and community
+
+Trackhop comes in two builds for phones, with the same code and the same look. What changes is
+which services they can reach, and how.
+
+| | GitHub and F-Droid | Google Play |
+|---|---|---|
+| Spotify, YouTube Music, Apple Music, Amazon Music through their web players | **built in**: sign in and go | through an optional connector plugin |
+| Spotify, YouTube Music, Apple Music, TIDAL, Deezer through their official APIs | yes | yes |
+| Navidrome/Subsonic, Jellyfin, Plex, Last.fm, ListenBrainz, files | yes | yes |
+| SoundCloud public links | yes | no |
+| Ads | none | a small banner |
+| Updates | F-Droid, Obtainium or the GitHub release page | Google Play |
+
+**Which one to choose.** If you want to move playlists between the big streaming services without
+setting anything up, take the [GitHub or F-Droid build](https://github.com/xlollx/Trackhop/releases/latest):
+everything is inside. The Play build suits people who sync with their own music server, with files,
+or through the services' official APIs, and who prefer installing from Google Play.
+
+The official APIs have limits that are not Trackhop's choice: Spotify accepts five users per
+developer app unless you register your own (the app guides you, and Spotify requires Premium for
+it), YouTube's daily quota is shared by everyone using the same key, Apple Music cannot remove
+tracks and needs a developer token, Amazon Music has no open API at all.
+
+## Switching from Play to the GitHub build
+
+The two builds are signed by different keys, so one cannot update the other. Before switching,
+export a backup (Settings › Backups), uninstall, install the other build and restore the backup.
+Syncs, settings and history come back; services have to be signed in again.
+
+## Connector plugins
+
+Trackhop has an open connector interface: a separate app can hold the sign-in to a service and
+answer Trackhop's requests for playlists and tracks. The Play build lists the plugins installed on
+the phone in Settings › Plugins and offers their services in Accounts; it never names, links or
+downloads one. How the interface works, and the plugins known so far, are on the
+[connector plugins](../plugins) page.
+
+The reference plugin is **[Trackhop Bridge](https://github.com/xlollx/Trackhop-Bridge)**, by the
+same author: it gives the Play build the same web connectors the GitHub build carries inside. It is
+distributed on GitHub only. Read its notes before installing: those web interfaces are not official
+APIs, they are against the services' terms, and they can stop working without notice.
+
+## Community
+
+- **Questions, ideas, problems:** [GitHub issues](https://github.com/xlollx/Trackhop/issues/new/choose).
+  The diagnostic report in the app makes a report useful; see
+  [Reporting a problem](reporting-a-problem).
+- **Bridge problems:** [Trackhop Bridge issues](https://github.com/xlollx/Trackhop-Bridge/issues/new/choose).
+- **Writing a plugin:** the [connector plugins](../plugins) page documents the interface; open an
+  issue to have yours listed there.
+- **Translations:** corrections to any of the twelve languages are welcome as issues or pull requests.
+
+[Back to the guide](./)

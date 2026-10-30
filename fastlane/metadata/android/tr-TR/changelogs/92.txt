@@ -1,0 +1,1 @@
+Amazon Music: Amazon'un zaten sahip olduğu ama çalma listesinde göstermediği parçalar artık her eşitlemede yeniden eklenmiyor ve eklenmiş sayılmıyor. Günlük bunları adıyla gösterir, böylece bildirmek kolaylaşır.

@@ -1,0 +1,1 @@
+SoundCloud z Twoim kontem wychodzi z wersji alfa i jest teraz w wersji beta: sprawdzone na prawdziwym koncie, logowanie, odnawianie sesji i polubienia działają.

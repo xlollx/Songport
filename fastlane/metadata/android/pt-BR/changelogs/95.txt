@@ -1,0 +1,1 @@
+SoundCloud: o login feito no site móvel do SoundCloud agora é reconhecido, e a tela fecha sozinha quando você entra. O botão "Listen in app" não tira mais você do login.

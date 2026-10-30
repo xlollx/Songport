@@ -1,0 +1,1 @@
+La pausa si vede: "In pausa dopo questo passaggio" mentre finisce il passaggio in corso, poi "In pausa" con la barra ferma e grigia sulla scheda, sul pulsante in alto e nella notifica; un tocco riprende. Più sincronizzazioni in pausa non si bloccano più a vicenda.

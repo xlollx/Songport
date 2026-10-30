@@ -1,0 +1,1 @@
+Amazon Music: tracks Amazon already holds but leaves out of a playlist's listing are no longer added again at every sync, nor counted as added. The sync log names them, so a listing that doesn't add up is easy to report.

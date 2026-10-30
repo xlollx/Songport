@@ -13,31 +13,39 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** First run: the three-page welcome, its page indicator, Skip, Start, and "show the welcome again". */
+/** First run: the four-page welcome, its page indicator, Skip, Start, and "show the welcome again". */
 @RunWith(AndroidJUnit4::class)
 class OnboardingFlowTest : FlowTest() {
     override val connectedAtStart = emptyList<String>()
     override fun baseSettings() = super.baseSettings().copy(onboardingDone = false)
 
     @Test
-    fun pagerWalksThroughThreePagesAndStartsTheApp() {
+    fun pagerWalksThroughFourPagesAndStartsTheApp() {
         launch()
         waitText(s(R.string.onboarding_title))
-        compose.onNodeWithContentDescription(s(R.string.onboarding_page, 1, 3)).assertIsDisplayed()
+        compose.onNodeWithContentDescription(s(R.string.onboarding_page, 1, 4)).assertIsDisplayed()
         compose.onNodeWithText(s(R.string.onboarding_skip)).assertIsDisplayed()
 
         click(s(R.string.onboarding_next))
-        waitNode("page 2 of 3", hasContentDescription(s(R.string.onboarding_page, 2, 3)))
+        waitNode("page 2 of 4", hasContentDescription(s(R.string.onboarding_page, 2, 4)))
         compose.onNodeWithText(s(R.string.onboarding_step1_title)).assertIsDisplayed()
 
         // The page survives a rotation.
         rotate(UiAutomation.ROTATION_FREEZE_90)
-        waitNode("page 2 of 3 after rotation", hasContentDescription(s(R.string.onboarding_page, 2, 3)))
+        waitNode("page 2 of 4 after rotation", hasContentDescription(s(R.string.onboarding_page, 2, 4)))
         rotate(UiAutomation.ROTATION_FREEZE_0)
 
         click(s(R.string.onboarding_next))
-        waitNode("page 3 of 3", hasContentDescription(s(R.string.onboarding_page, 3, 3)))
+        waitNode("page 3 of 4", hasContentDescription(s(R.string.onboarding_page, 3, 4)))
         compose.onNodeWithText(s(R.string.security_title)).assertIsDisplayed()
+        assertTrue("Skip still offered before the last page", exists(s(R.string.onboarding_skip)))
+
+        click(s(R.string.onboarding_next))
+        waitNode("page 4 of 4", hasContentDescription(s(R.string.onboarding_page, 4, 4)))
+        // Where the documentation and the code are: a link to open, or not.
+        compose.onNodeWithText(s(R.string.onboarding_docs_title)).assertIsDisplayed()
+        assertTrue(exists(s(R.string.onboarding_docs_open)))
+        assertFalse("not done until Start", store.data.settings.onboardingDone)
         // On the last page Skip gives way to Start.
         assertFalse("Skip still shown on the last page", exists(s(R.string.onboarding_skip)))
         click(s(R.string.onboarding_start))

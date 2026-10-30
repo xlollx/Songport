@@ -1,0 +1,1 @@
+Nuovo nelle Impostazioni: Plugin. Spiega cosa sono i plugin di connessione, elenca quelli installati sul telefono e i servizi che aggiungono.

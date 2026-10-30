@@ -7,15 +7,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -68,6 +72,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
     var plan by remember { mutableStateOf<SyncPlan?>(null) }
     var progress by remember { mutableStateOf<Progress?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
+    var confirmRemovals by remember { mutableStateOf(false) }
     ScreenBackHandler(onClose)
 
     LaunchedEffect(job.id) {
@@ -79,6 +84,8 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
     val dstName = dst?.displayName ?: job.target.provider
     val p = plan
     val hasWork = p != null && (p.toAdd.isNotEmpty() || p.toRemove.isNotEmpty() || job.target.playlistId == null)
+    // Into Liked songs a removal is an unlike: the counts and the confirmation say so.
+    val unlikes = job.target.playlistId == MusicProvider.LIKED_ID
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
@@ -86,6 +93,7 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
             TopAppBar(
                 title = { Text(stringResource(R.string.preview_title, job.name)) },
                 navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
+                actions = { HelpButton(Helps.preview, Helps.previewRun, label = stringResource(R.string.preview)) },
             )
         },
     ) { padding ->
@@ -103,10 +111,13 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                             if (job.target.playlistId == null) Text(stringResource(R.string.preview_target_new), style = MaterialTheme.typography.bodyMedium)
                             Text(stringResource(R.string.preview_present, p.alreadyPresent))
                             Text(stringResource(R.string.preview_add, p.toAdd.size))
-                            if (job.mirrorRemovals) Text(stringResource(R.string.preview_remove, p.toRemove.size))
-                            // A quarter of the target or more: the one case where "confirm" deserves a second look.
-                            if (p.toRemove.size > 10 && p.toRemove.size * 4 > p.targetCount) {
-                                Text(stringResource(R.string.preview_remove_warning, p.toRemove.size, p.targetCount), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                            if (job.mirrorRemovals) Text(stringResource(if (unlikes) R.string.preview_unlike else R.string.preview_remove, p.toRemove.size))
+                            // A large share of the target: a normal run holds these back unless the box below is ticked.
+                            if (p.removalsNeedConfirmation) {
+                                Text(
+                                    stringResource(if (unlikes) R.string.preview_unlike_warning else R.string.preview_remove_warning, p.toRemove.size, p.targetCount),
+                                    style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error,
+                                )
                             }
                             Text(stringResource(R.string.preview_unmatched, p.unmatched.size))
                             if (p.uncertain.isNotEmpty()) Text(stringResource(R.string.preview_uncertain, p.uncertain.size), color = MaterialTheme.colorScheme.tertiary)
@@ -123,19 +134,43 @@ fun PreviewScreen(job: SyncJob, onClose: () -> Unit, onRun: (SyncJob) -> Unit) {
                         }
                     }
                     if (hasWork) {
-                        Button(onClick = { onRun(job) }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.run_now)) }
+                        // The one place large removals are confirmed: a deliberate tick, then Run now.
+                        // Unticked, the run adds as usual and holds the removals back again.
+                        if (p.removalsNeedConfirmation) {
+                            Row(
+                                Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(value = confirmRemovals, role = Role.Checkbox, onValueChange = { confirmRemovals = it }),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Checkbox(checked = confirmRemovals, onCheckedChange = null)
+                                Spacer(Modifier.width(8.dp))
+                                Text(stringResource(if (unlikes) R.string.preview_unlike_confirm else R.string.preview_remove_confirm, p.toRemove.size), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                                HelpButton(Helps.removals)
+                            }
+                        }
+                        Button(onClick = {
+                            if (p.removalsNeedConfirmation && confirmRemovals) store.confirmRemovals(job.id, p.toRemove.map { it.id })
+                            onRun(job)
+                        }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.run_now)) }
                     }
                     if (p.uncertain.isNotEmpty()) {
-                        Text(stringResource(R.string.review_section_uncertain, p.uncertain.size), style = MaterialTheme.typography.titleMedium)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(stringResource(R.string.review_section_uncertain, p.uncertain.size), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                            HelpButton(Helps.uncertain)
+                        }
                         var openReview by remember { mutableStateOf<String?>(null) }
+                        val webSearch = remember(dst) { dst?.webSearch(ctx) }
                         p.uncertain.forEach { review ->
                             ReviewRow(
                                 review = review, dstName = dstName,
                                 expanded = openReview == review.source.id,
                                 onToggle = { openReview = if (openReview == review.source.id) null else review.source.id },
-                                onKeep = { plan = p.copy(uncertain = p.uncertain - review) },
+                                onKeep = {
+                                    // Settled here: remembered, so the run does not ask again.
+                                    engine.rematchInPlan(job, review, review.chosen)
+                                    plan = p.copy(uncertain = p.uncertain - review)
+                                },
                                 search = { q -> engine.searchOnTarget(job, q, review.source) },
-                                webSearchUrl = dst?.let { d -> { q: String -> d.webSearchUrl(ctx, q) } },
+                                webSearchUrl = webSearch,
                                 onReplace = { chosen ->
                                     engine.rematchInPlan(job, review, chosen)
                                     plan = p.copy(

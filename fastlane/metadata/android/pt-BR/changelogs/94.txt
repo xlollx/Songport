@@ -1,0 +1,1 @@
+O login no SoundCloud se apresenta como um navegador de celular comum, então a proteção anti-bot não o bloqueia mais; se ainda acontecer, uma mensagem clara diz o que fazer. As telas de login não ficam mais sob a barra de status ou o teclado.

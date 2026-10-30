@@ -1,6 +1,7 @@
 package com.xlollx.songport.ytmbridge
 
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -80,13 +81,13 @@ class YtmClient(private val host: YtmHost) {
             .header("User-Agent", host.userAgent)
             .build()
         // The web interface throttles bursts (403/429): pace the calls, slow down further after each
-        // refusal, and retry once after a short pause. Longer waits are Songport's job, which shows
+        // refusal, and retry once after a short pause. Longer waits are Trackhop's job, which shows
         // them to the user as a countdown. A 401 is a dead session, no point retrying.
         var attempt = 0
         val lane = if (auth) SESSION_LANE else ANON_LANE
         while (true) {
             // Google's block lifts only when the requests stop: while it lasts nothing goes out, and
-            // Songport is told exactly how long to wait.
+            // Trackhop is told exactly how long to wait.
             val blocked = Verification.remainingSeconds(host.verification)
             if (blocked > 0) throw Throttled(
                 "YouTube Music is blocked by Google's abuse page for this network address; it lifts only if requests stop. Retry in $blocked s" +
@@ -120,7 +121,7 @@ class YtmClient(private val host: YtmHost) {
                             val who = if (auth) "signed-in" else "anonymous"
                             val advice = if (Verification.pending(host.verification)) "Google blocked this network address; it lifts only if requests stop. Retry in ${Verification.remainingSeconds(host.verification)} s" +
                                     (host.blockedHint?.let { ". $it" } ?: "")
-                                else "Songport will wait and retry; if it persists, ${host.signInAgain}"
+                                else "Trackhop will wait and retry; if it persists, ${host.signInAgain}"
                             throw Throttled(
                                 "YouTube Music refused the $who request ($code): too many requests" +
                                     (reason?.let { " [$it]" } ?: "") + ". " + advice,
@@ -213,7 +214,7 @@ class YtmClient(private val host: YtmHost) {
         /**
          * Google's page says it plainly: "the block will expire shortly after those requests stop".
          * So every request during the block prolongs it. On each page seen, all YouTube Music calls
-         * stop for a window that doubles each time (3, 6, 12, 24 minutes) and Songport is told how
+         * stop for a window that doubles each time (3, 6, 12, 24 minutes) and Trackhop is told how
          * long; a quiet half hour resets the ladder.
          */
         fun noticed(store: YtmVerificationStore, html: String) {
@@ -297,7 +298,7 @@ class YtmClient(private val host: YtmHost) {
                 val browseId = item["navigationEndpoint"]["browseEndpoint"]["browseId"].str ?: continue
                 if (!browseId.startsWith("VL")) continue
                 val id = browseId.removePrefix("VL")
-                // "LM" is liked music (exposed separately by Songport), "SE" saved episodes.
+                // "LM" is liked music (exposed separately by Trackhop), "SE" saved episodes.
                 if (id == "LM" || id == "SE") continue
                 val name = item["title"].runsText() ?: continue
                 val count = item["subtitle"].runsText()?.let { parseCount(it) } ?: -1
@@ -525,10 +526,15 @@ class YtmClient(private val host: YtmHost) {
         checkStatus(resp)
     }
 
-    fun addTracks(playlistId: String, videoIds: List<String>) {
+    /**
+     * Adds to a playlist, or likes for [LIKED]. Returns the liked ids whose answer says they went
+     * somewhere other than Liked music (see [likeGoesElsewhere]): liked, but never listed there.
+     */
+    fun addTracks(playlistId: String, videoIds: List<String>): Set<String> {
         if (playlistId == LIKED) {
-            videoIds.forEach { call("like/like", mapOf("target" to mapOf("videoId" to it))) }
-            return
+            val elsewhere = LinkedHashSet<String>()
+            videoIds.forEach { if (likeGoesElsewhere(call("like/like", mapOf("target" to mapOf("videoId" to it))))) elsewhere += it }
+            return elsewhere
         }
         videoIds.chunked(50).forEach { chunk ->
             val resp = call(
@@ -537,6 +543,29 @@ class YtmClient(private val host: YtmHost) {
             )
             checkStatus(resp)
         }
+        return emptySet()
+    }
+
+    /**
+     * Whether the answer to a like says the item went to Liked videos rather than Liked music.
+     *
+     * As far as has been seen, like/like answers a song, a video and an already liked item alike: a
+     * success with no status and nothing about where the item went, which is why a sync towards
+     * Liked songs cannot tell, at the moment of liking, that Liked music will not list it (the
+     * engine finds out on the next run). Should an answer carry a message (a toast) that names Liked
+     * videos and not music, that is used. The fields and messages of each kind of answer are logged
+     * once (never an id), so a diagnostics report shows what YouTube says.
+     */
+    internal fun likeGoesElsewhere(resp: JsonElement): Boolean {
+        val texts = resp["actions"].findAll("text").flatMap { t -> listOfNotNull(t.str, t.runsText()) }.distinct()
+        val fields = (resp as? JsonObject)?.keys?.filter { it != "responseContext" }?.sorted().orEmpty()
+        val shape = fields.joinToString(",") + "|" + texts.joinToString("/")
+        if (likeShapes.size < 10 && likeShapes.add(shape)) {
+            host.log("like answered with ${if (fields.isEmpty()) "no fields besides responseContext" else "fields " + fields.joinToString(", ")}" +
+                if (texts.isEmpty()) "" else "; says: " + texts.joinToString(" / ").take(160))
+        }
+        val said = texts.joinToString(" ").lowercase()
+        return said.contains("liked videos") && !said.contains("music")
     }
 
     fun removeTracks(playlistId: String, items: List<RemoveItem>) {
@@ -544,7 +573,7 @@ class YtmClient(private val host: YtmHost) {
             items.forEach { call("like/removelike", mapOf("target" to mapOf("videoId" to it.videoId))) }
             return
         }
-        // Removal needs the set id of each entry; look it up when Songport only knows the video id.
+        // Removal needs the set id of each entry; look it up when Trackhop only knows the video id.
         val missing = items.filter { it.setVideoId == null }
         val resolved = if (missing.isEmpty()) items else {
             val current = tracks(playlistId).groupBy { it.id }
@@ -620,11 +649,13 @@ class YtmClient(private val host: YtmHost) {
     private fun enc(s: String) = URLEncoder.encode(s, "UTF-8")
 
     companion object {
-        /** Songport's id for "Liked songs"; maps to the LM playlist here. */
+        /** Trackhop's id for "Liked songs"; maps to the LM playlist here. */
         const val LIKED = "__liked__"
+        /** Kinds of like answers already logged, for this process. */
+        private val likeShapes: MutableSet<String> = java.util.concurrent.ConcurrentHashMap.newKeySet()
         /** Signed-in calls: what a person clicking around the player would produce. */
         private val SESSION_LANE = Lane(1_500, 6_000)
-        /** Anonymous searches: several a second are fine, Songport also runs a few in parallel. */
+        /** Anonymous searches: several a second are fine, Trackhop also runs a few in parallel. */
         private val ANON_LANE = Lane(1_000, 6_000)
         @Volatile private var anonRefusedAt = 0L
         private const val ANON_COOLDOWN_MS = 5 * 60_000L

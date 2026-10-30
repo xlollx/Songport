@@ -1,0 +1,1 @@
+Jedno powiadomienie podczas synchronizacji, z wierszem dla każdej i przyciskami Wstrzymaj wszystkie / Zatrzymaj wszystkie; zakończone są grupowane. Menu karty ma ikony i kolor synchronizacji. Rzędy usług pokazują, że można przewinąć do kolejnych.

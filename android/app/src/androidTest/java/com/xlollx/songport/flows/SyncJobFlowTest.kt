@@ -15,6 +15,7 @@ import com.xlollx.songport.Notifications
 import com.xlollx.songport.R
 import com.xlollx.songport.model.Schedule
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -82,9 +83,10 @@ class SyncJobFlowTest : FlowTest() {
         assertNotNull("the run created the playlist on Deezer", made)
         assertEquals(6, made!!.tracks.size)
 
-        // The card: done, the numbers, the two songs left to fix.
+        // The card: done, the numbers, the two songs left to fix, which its status names too.
         waitText("+6")
-        waitText(s(R.string.pill_ok))
+        waitText(s(R.string.pill_not_found, 2))
+        assertFalse("not \"up to date\" with songs missing", exists(s(R.string.pill_ok)))
         // The figure opens the list of what was added.
         click("+6")
         waitText(s(R.string.stat_list_added))

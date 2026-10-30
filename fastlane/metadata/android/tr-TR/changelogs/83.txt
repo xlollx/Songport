@@ -1,0 +1,1 @@
+Songport artık Trackhop. Aynı uygulama, aynı kod, aynı güncellemeler: eşitlemeleriniz ve ayarlarınız olduğu gibi kalır. Ad, aynı alanda çalışan ilgisiz bir SongPort hizmeti olduğu için değişti. Yeni adres: github.com/xlollx/Trackhop (eski bağlantılar çalışmaya devam ediyor).

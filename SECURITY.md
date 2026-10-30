@@ -1,6 +1,6 @@
 # Security policy
 
-Songport handles OAuth tokens and, for personal servers, passwords. Reports about anything that could
+Trackhop handles OAuth tokens and, for personal servers, passwords. Reports about anything that could
 expose them are welcome.
 
 ## Reporting a vulnerability

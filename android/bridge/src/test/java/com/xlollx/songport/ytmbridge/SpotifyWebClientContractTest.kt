@@ -138,7 +138,7 @@ class SpotifyWebClientContractTest {
         answer("""{"uri":"spotify:playlist:NEW1","revision":"AAAAAQ=="}""")
         answer(rootlist)
         answer("{}")
-        val p = web.createPlaylist(unicode, "Synced with Songport")
+        val p = web.createPlaylist(unicode, "Synced with Trackhop")
         assertEquals("NEW1", p.id)
         val c = call(0)
         assertEquals("POST", c.method)
@@ -146,7 +146,7 @@ class SpotifyWebClientContractTest {
         val attrs = c.json()["ops"][0]
         assertEquals(6L, attrs["kind"].long)
         assertEquals(unicode, attrs["updateListAttributes"]["newAttributes"]["values"]["name"].str)
-        assertEquals("Synced with Songport", attrs["updateListAttributes"]["newAttributes"]["values"]["description"].str)
+        assertEquals("Synced with Trackhop", attrs["updateListAttributes"]["newAttributes"]["values"]["description"].str)
         assertRootlistRead(call(1))
         val w = call(2)
         assertEquals("AAAAEQAAAAAbH6wrK8vY7Q==", w.json()["baseRevision"].str)

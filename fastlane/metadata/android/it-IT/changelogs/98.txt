@@ -1,0 +1,1 @@
+Una sola notifica mentre le sincronizzazioni lavorano, con una riga per ciascuna e Pausa tutte / Ferma tutte; quelle finite sono raggruppate. Il menu delle schede ha le icone e il colore della sincronizzazione. Le file dei servizi mostrano quando ce ne sono altri da scorrere.

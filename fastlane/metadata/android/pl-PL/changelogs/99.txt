@@ -1,0 +1,1 @@
+Pauza wygląda jak pauza: „Wstrzymanie po tym kroku”, gdy kończy się bieżący krok, potem „Wstrzymano” z nieruchomym, szarym paskiem na karcie, górnym przycisku i w powiadomieniu; dotknięcie wznawia. Kilka wstrzymanych synchronizacji już się nie blokuje.

@@ -22,7 +22,7 @@ import okhttp3.Request
 import java.util.concurrent.TimeUnit
 
 /**
- * Generatore di playlist con l'AI dell'utente. Songport non ha un'AI propria: l'utente porta la
+ * Generatore di playlist con l'AI dell'utente. Trackhop non ha un'AI propria: l'utente porta la
  * chiave del suo servizio (OpenAI, Anthropic, Google Gemini o qualunque endpoint compatibile con
  * l'API di OpenAI, anche locale) e l'app gli manda solo la descrizione scritta qui. La risposta
  * e' una lista "artista - titolo" che poi passa dalla normale ricerca sul servizio di destinazione,
@@ -302,7 +302,7 @@ object AiClient {
                     "messages" to jsonArr(listOf(jsonObj("role" to "system", "content" to system), jsonObj("role" to "user", "content" to user))),
                 )
                 // OpenRouter asks apps to say who they are; the others ignore the headers.
-                val headers = bearer(c) + mapOf("HTTP-Referer" to "https://github.com/xlollx/Songport", "X-Title" to "Songport")
+                val headers = bearer(c) + mapOf("HTTP-Referer" to "https://github.com/xlollx/Trackhop", "X-Title" to "Trackhop")
                 val resp = post("${c.base}/chat/completions", headers, body.toString())
                 parseJson(resp)["choices"][0]["message"]["content"].str ?: ""
             }

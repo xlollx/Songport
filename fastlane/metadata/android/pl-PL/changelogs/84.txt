@@ -1,0 +1,1 @@
+Nowy wygląd Trackhop: nowa ikona aplikacji (także tematyczna na Androidzie 13), nowe grafiki w sklepie i ten sam styl smugi światła w nagłówku synchronizacji, we wprowadzeniu i na karcie statystyk do udostępnienia.

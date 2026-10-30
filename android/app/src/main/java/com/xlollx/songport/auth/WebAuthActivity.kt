@@ -32,7 +32,7 @@ import com.xlollx.songport.ui.AppLocale
  * app's dialog often fails ("problems loading"), leaving the user with no way back to the service.
  * Here the service's own sign-in page runs in a WebView that keeps every link on the page (an app
  * scheme is ignored, a popup opens above the page) and only watches for the one address that ends
- * the flow, the redirect back to Songport, which it hands to [AuthCallbackActivity] as the browser
+ * the flow, the redirect back to Trackhop, which it hands to [AuthCallbackActivity] as the browser
  * would. Nothing typed on the page is read: the page is the service's, the WebView only shows it.
  *
  * Google's sign-in refuses embedded views, so YouTube keeps the browser tab.

@@ -1,0 +1,1 @@
+O SoundCloud com sua conta sai do alfa e passa a beta: testado numa conta real, login, renovação da sessão e curtidas funcionam.

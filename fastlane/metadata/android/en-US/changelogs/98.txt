@@ -1,0 +1,1 @@
+One notification while syncs run, with a line per sync and Pause all / Stop all; finished syncs are grouped. The sync card menu has icons and wears the sync's colour. Service rows show when there are more services to scroll to.

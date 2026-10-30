@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Songport</string>
+    <string name="app_name">Trackhop</string>
 
     <string name="tab_syncs">Syncs</string>
     <string name="tab_accounts">Accounts</string>
@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">Leave empty to use the source playlist’s name.</string>
     <string name="editor_schedule">Automatic schedule</string>
     <string name="editor_mirror">Mirror removals</string>
-    <string name="editor_mirror_desc">Also remove from the target the tracks no longer in the source. Off = only add.</string>
+    <string name="editor_mirror_desc">Remove from the target every track that is not in the source, including tracks added there by hand. Off = only add.</string>
     <string name="editor_keep_order">Keep the source order</string>
     <string name="editor_keep_order_desc">After adding, the target is put in the source’s order. Spotify, YouTube Music and Deezer can do it.</string>
     <string name="note_order_aligned">Order aligned to the source.</string>
@@ -91,7 +91,7 @@
     <string name="connected_as">Connected as %1$s</string>
     <string name="not_connected">Not connected</string>
     <string name="not_configured">Setup needed</string>
-    <string name="not_configured_hint">Songport ships without service keys. Create your own free key on the service\'s developer page: it takes about two minutes and the app guides you step by step.</string>
+    <string name="not_configured_hint">Trackhop ships without service keys. Create your own free key on the service\'s developer page: it takes about two minutes and the app guides you step by step.</string>
     <string name="setup_now">Set up</string>
     <string name="connect">Connect</string>
     <string name="disconnect">Disconnect</string>
@@ -100,11 +100,11 @@
 
     <string name="provider_note_spotify">Requires a Spotify account. Playlists and Liked Songs.</string>
     <string name="provider_note_ytm">YouTube Music playlists and likes through the web player\'s own interface, built into this version: sign in with your Google account, no Google Cloud project, no quota. Not an official Google API: read the notice shown before signing in.</string>
-    <string name="ytm_not_installed_hint">Install the companion app "Songport YTM Bridge" from GitHub, then come back here and press Connect. Prefer the official route? Use the "YouTube Music (Google API)" card below.</string>
-    <string name="ytm_not_installed">Songport YTM Bridge is not installed.</string>
+    <string name="ytm_not_installed_hint">Install the companion app "Trackhop Bridge" from GitHub, then come back here and press Connect. Prefer the official route? Use the "YouTube Music (Google API)" card below.</string>
+    <string name="ytm_not_installed">Trackhop Bridge is not installed.</string>
     <string name="ytm_install">Get the Bridge</string>
     <string name="report_issue">Report on GitHub</string>
-    <string name="provider_note_youtube">Official YouTube Data API with a Google Cloud project of your own. Optional: the plain "YouTube Music" card above works without it. Daily quota is limited: large syncs may take several days.</string>
+    <string name="provider_note_youtube">Official YouTube Data API with a Google Cloud project of your own. Daily quota is limited: large syncs may take several days.</string>
     <string name="provider_note_tidal">TIDAL playlists (beta).</string>
     <string name="provider_note_deezer">Deezer playlists and favourites (beta).</string>
 
@@ -113,15 +113,15 @@
     <string name="log_duration">%1$d s</string>
 
     <string name="settings_notifications">Notify after each sync</string>
-    <string name="settings_notifications_desc">Show a notification when a scheduled sync adds or removes tracks, or fails.</string>
+    <string name="settings_notifications_desc">Show a notification when a scheduled sync adds or removes tracks, and when any sync fails.</string>
     <string name="settings_isrc">Exact recording via Deezer</string>
-    <string name="settings_isrc_desc">When a track carries no ISRC (web routes, files), Songport looks it up once in Deezer\'s public catalogue, so Spotify, Apple Music and TIDAL answer with the exact recording instead of a look-alike. Anonymous request, no account involved.</string>
+    <string name="settings_isrc_desc">When a track carries no ISRC (web routes, files), Trackhop looks it up once in Deezer\'s public catalogue, so Spotify, Apple Music and TIDAL answer with the exact recording instead of a look-alike. Anonymous request, no account involved.</string>
     <string name="settings_language">Language</string>
-    <string name="settings_language_desc">Songport follows the system language: English, Italian, French, German, Spanish, Portuguese, Polish, Russian, Turkish, Chinese, Japanese, Korean.</string>
+    <string name="settings_language_desc">Trackhop follows the system language: English, Italian, French, German, Spanish, Portuguese, Polish, Russian, Turkish, Chinese, Japanese, Korean.</string>
     <string name="settings_language_open">Change</string>
     <string name="settings_language_system">System language</string>
     <string name="settings_advanced">Service keys</string>
-    <string name="settings_advanced_desc">Songport ships without keys of its own: Spotify, YouTube Music, TIDAL, Deezer, Last.fm and Apple Music connect through a free key created in your name, so their limits and quotas are yours alone. Here you can see and change them.</string>
+    <string name="settings_advanced_desc">Trackhop ships without keys of its own: the official routes of Spotify, YouTube, TIDAL, Deezer, Last.fm and Apple Music use a free key created in your name, so their limits and quotas are yours alone. Here you can see and change them.</string>
     <string name="settings_privacy_options">Ad privacy options</string>
     <string name="settings_privacy_policy">Privacy policy</string>
     <string name="settings_about">About</string>
@@ -129,7 +129,7 @@
     <string name="settings_developer_switch">Show developer tools</string>
     <string name="settings_developer_desc">Connections log, technical report to share, traffic capture for the web connectors. Off, they stay out of the way.</string>
     <string name="settings_version">Version %1$s</string>
-    <string name="settings_ads_note">Songport is free with no subscriptions. It is supported by a single small banner ad; no data is sold and nothing leaves your phone except the requests to the music services you connect.</string>
+    <string name="settings_ads_note">Trackhop is free with no subscriptions. It is supported by a single small banner ad; no data is sold, and apart from the ad, nothing leaves your phone except the requests to the music services you connect.</string>
     <string name="settings_csv">Files</string>
     <string name="csv_import">Import file</string>
     <string name="csv_export">Export</string>
@@ -138,7 +138,7 @@
     <string name="csv_imported">Imported %1$d tracks</string>
     <string name="csv_exported">File exported</string>
     <string name="log_save_file">Save as file…</string>
-    <string name="note_file_target">Saved inside Songport: use “Save as file” here, or Options → Files, to get a CSV or M3U.</string>
+    <string name="note_file_target">Saved inside Trackhop: use “Save as file” here, or Tools › File playlists, to get a CSV or M3U.</string>
 
     <string name="auth_done">Connected to %1$s</string>
     <string name="auth_failed">Login failed: %1$s</string>
@@ -151,7 +151,7 @@
     <string name="notif_sync_title">Sync: %1$s</string>
 
     <string name="delete_confirm_title">Delete this sync?</string>
-    <string name="delete_confirm_text">The playlists on the services are not touched.</string>
+    <string name="delete_confirm_text">The playlists on the services are not touched. Both halves of a two-way sync are deleted, and tracks you chose to ignore stay ignored.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok">OK</string>
@@ -164,7 +164,7 @@
     <string name="provider_note_files">Local files: import a playlist you exported from any service (CSV, M3U, Apple Music/iTunes XML, JSON, or a plain list) and sync it anywhere. The bridge for services with no open API: Amazon Music, Qobuz, SoundCloud.</string>
     <string name="apple_token_missing">No Apple Music developer token yet. Enter yours from Accounts, Apple Music, Set up.</string>
     <string name="apple_subscription_needed">%1$s: the library needs an active Apple Music subscription; Apple refused (403: %2$s).</string>
-    <string name="link_paste">Or paste a public playlist link</string>
+    <string name="link_paste">Paste a public playlist link</string>
     <string name="link_use">Use link</string>
     <string name="link_invalid">Link not recognised. Supported: Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL.</string>
     <string name="editor_source_link">From link</string>
@@ -175,10 +175,10 @@
     <string name="link_resolving">Reading the playlist…</string>
     <string name="note_no_removals">%1$s does not allow removing tracks from a playlist via its API: %2$d tracks were left in place.</string>
     <string name="note_removals_deferred">Removals postponed: the search was not completed, so %1$d tracks in the target that matched nothing yet were left in place. They will be reviewed when a run completes.</string>
-    <string name="note_removals_capped">Removals held back: this run would remove %1$d of the %2$d tracks in the target. Open the preview to see them and confirm; if the source has not really lost them, the service listed it incompletely and nothing should go.</string>
+    <string name="note_removals_capped">Removals held back: this run would remove %1$d of the %2$d tracks in the target. Tap the sync\'s status to open the preview and see them; if they really should go, tick “Remove these tracks” there and run it. If the source has not really lost them, the service listed it incompletely and nothing should go.</string>
     <string name="note_unchanged">Nothing changed on either side since the last run: skipped.</string>
     <string name="review_share">Share the list</string>
-    <string name="note_search_interrupted">%1$d of %2$d tracks searched, then the service asked for a longer pause (%3$s). This is a limit of the service, not a Songport error: what was found has been applied and remembered. Run the sync again in a few minutes to continue from there.</string>
+    <string name="note_search_interrupted">%1$d of %2$d tracks searched, then the service asked for a longer pause (%3$s). This is a limit of the service, not a Trackhop error: what was found has been applied and remembered. Run the sync again in a few minutes to continue from there.</string>
     <string name="error_no_removals">%1$s cannot remove tracks from a playlist</string>
     <string name="log_notes_title">Notes</string>
     <string name="editor_mirror_unsupported">%1$s can only add tracks: removals will be skipped.</string>
@@ -206,7 +206,7 @@
     <string name="setup_why_deezer">Deezer needs an app registered in your name. The https redirect page is provided by the project.</string>
     <string name="setup_why_apple">The developer token belongs to your Apple Developer account and expires after six months at most.</string>
     <string name="error_dev_mode_limit">%1$s only allows a handful of users per app. Set up your own credentials: it is free and takes about two minutes.</string>
-    <string name="error_network">the phone could not reach the service (DNS failed). Check the connection, any VPN or private DNS, and that Songport is allowed to use data in the background, then try again.</string>
+    <string name="error_network">the phone could not reach the service (DNS failed). Check the connection, any VPN or private DNS, and that Trackhop is allowed to use data in the background, then try again.</string>
     <string name="auth_timeout">no answer from the browser, time is up</string>
 
     <string name="tab_tools">Tools</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">%1$d already on the target</string>
     <string name="preview_add">%1$d to add</string>
     <string name="preview_remove">%1$d to remove</string>
-    <string name="preview_remove_warning">This would remove %1$d of the %2$d tracks in the target. Before confirming, check that the source really lists that few: an incomplete listing by the service looks exactly like this.</string>
+    <string name="preview_remove_warning">This would remove %1$d of the %2$d tracks in the target. Check that the source really lists that few: an incomplete listing by the service looks exactly like this. Unless you tick the box below, the run adds tracks and keeps these.</string>
     <string name="preview_unmatched">%1$d not found</string>
     <string name="preview_ignored">%1$d ignored</string>
     <string name="preview_target_new">The target playlist will be created.</string>
@@ -260,7 +260,7 @@
     <string name="result_ignored">%1$d ignored</string>
     <string name="tools_pick_service">Service</string>
     <string name="files_row_desc">Imported lists and playlists a sync wrote to “File”: import, paste, export.</string>
-    <string name="ai_row_desc">Describe a playlist; your own AI writes it, Songport finds the tracks.</string>
+    <string name="ai_row_desc">Describe a playlist; your own AI writes it, Trackhop finds the tracks.</string>
     <string name="tools_backup_row_desc">Every playlist, liked song, album and artist of this service saved as dated files.</string>
     <string name="tools_none">Connect a service first.</string>
     <string name="spotify_forbidden">Spotify refused the request (%1$s). Apps in Development Mode cannot read playlists made by Spotify itself (Discover Weekly, Release Radar, editorial mixes) and only serve accounts listed in the app\'s User Management. Pick a playlist you or another user created, or add the account on developer.spotify.com.</string>
@@ -345,7 +345,7 @@
     </plurals>
     <string name="transfer_started">%1$d syncs created and started: follow them in Syncs.</string>
     <string name="ai_title">Playlist generator</string>
-    <string name="ai_desc">Describe the playlist you want and your own AI writes it; Songport then looks the tracks up on the service you choose, like a normal sync, so anything the AI got wrong ends up among the tracks to review. Songport has no AI of its own: you connect yours (OpenAI, Anthropic, Google Gemini or any OpenAI-compatible server, even a local one) with a key from your account, and only the text you type here is sent to it.</string>
+    <string name="ai_desc">Describe the playlist you want and your own AI writes it; Trackhop then looks the tracks up on the service you choose, like a normal sync, so anything the AI got wrong ends up among the tracks to review. Trackhop has no AI of its own: you connect yours (OpenAI, Anthropic, Google Gemini or any OpenAI-compatible server, even a local one) with a key from your account, and only the text you type here is sent to it.</string>
     <string name="ai_setup">Connect an AI</string>
     <string name="ai_setup_change">Change</string>
     <string name="ai_setup_title">Your AI</string>
@@ -384,7 +384,7 @@
     <string name="ai_check">Test</string>
     <string name="ai_checking">Trying the model…</string>
     <string name="ai_check_ok">Model ready</string>
-    <string name="ai_free_hint">Free to try: Google Gemini and Groq have a free tier, OpenRouter has free models (the ones ending in “:free”). A key takes a minute on the provider\'s site. Songport cannot ship a shared key: it would be visible in the open source code and used up within a day.</string>
+    <string name="ai_free_hint">Free to try: Google Gemini and Groq have a free tier, OpenRouter has free models (the ones ending in “:free”). A key takes a minute on the provider\'s site. Trackhop cannot ship a shared key: it would be visible in the open source code and used up within a day.</string>
     <string name="ai_badge_desc">Written by your AI</string>
     <string name="ai_extend">Add tracks with AI</string>
     <string name="ai_extend_title">Extend the playlist</string>
@@ -454,16 +454,16 @@
     </plurals>
     <string name="settings_battery">Scheduled syncs not running?</string>
     <string name="backup_folder_title">Backup to a folder</string>
-    <string name="backup_folder_desc">Songport already keeps dated backups of your playlists inside the app. Pick a folder (SD card, Nextcloud, Drive, any app that offers one) and the new versions are copied there too, so they survive the phone. To restore, import a file from that folder in Files.</string>
+    <string name="backup_folder_desc">Pick a folder (SD card, Nextcloud, Drive, any app that offers one) and Trackhop saves dated backups of your playlists there, so they survive the phone. Nothing is saved until a backup runs: on the schedule below, or with Copy now. To restore, import a file from that folder in Files.</string>
     <string name="backup_folder_none">No folder chosen</string>
-    <string name="backup_folder_hint">Only files not yet in the folder are copied.</string>
+    <string name="backup_folder_hint">Copy now first backs up every connected service, then copies the files not yet in the folder.</string>
     <string name="backup_folder_pick">Choose a folder</string>
     <string name="backup_folder_now">Copy now</string>
     <string name="backup_folder_done">%1$d services backed up, %2$d new files copied</string>
     <string name="backup_folder_forget">Stop</string>
     <string name="backup_folder_missing">The backup folder can no longer be reached: it was deleted, the card was removed or the app lost access to it. Choose a folder again.</string>
     <string name="backup_last_ok">Last copy: %1$s</string>
-    <string name="settings_battery_desc">Some phones (Xiaomi, Huawei, Oppo, Samsung) stop background apps. Exclude Songport from battery optimisation so the schedule is respected.</string>
+    <string name="settings_battery_desc">Some phones (Xiaomi, Huawei, Oppo, Samsung) stop background apps. Exclude Trackhop from battery optimisation so the schedule is respected.</string>
     <string name="settings_battery_button">Open battery settings</string>
     <string name="share_received">Link received: choose where to sync it.</string>
     <string name="share_invalid">The shared text has no recognisable playlist link.</string>
@@ -483,7 +483,7 @@
     <string name="login_token">Token</string>
     <string name="login_submit">Check and save</string>
     <string name="login_checking">Checking…</string>
-    <string name="login_trust_server">Your credentials stay encrypted on this phone. Songport only talks to the server you enter here.</string>
+    <string name="login_trust_server">Your credentials stay encrypted on this phone. Trackhop only talks to the server you enter here.</string>
     <string name="login_hint_subsonic">Enter the address of your Navidrome, Airsonic or other Subsonic-compatible server (for example https://music.example.com), your username and password. The password is never sent as-is: each request uses a salted hash. Ampache: use the Subsonic password or API key set in Preferences → Account, not your account password.</string>
     <string name="login_hint_jellyfin">Enter the address of your Jellyfin server (for example https://jellyfin.example.com), your username and password.</string>
     <string name="login_hint_plex">Enter the address of your Plex Media Server (for example http://192.168.1.10:32400) and your X-Plex-Token. Plex explains how to find the token in its support pages ("Finding an authentication token").</string>
@@ -497,12 +497,12 @@
     <string name="error_read_only">%1$s is read-only: it can only be a source.</string>
     <string name="error_create_unsupported">%1$s cannot create playlists from the app: create it in %1$s and pick it here.</string>
     <string name="connect_title">Connecting %1$s</string>
-    <string name="connect_where_oauth">You will sign in on %1$s, in your browser. Songport never sees your password.</string>
-    <string name="connect_where_web">You will sign in on %1$s\'s own page, shown inside the app. Songport never sees your password, only the session it leaves.</string>
-    <string name="connect_where_apple">You will sign in with your Apple ID in Apple\'s own window. Songport never sees your password.</string>
-    <string name="connect_where_server">Your server details stay encrypted on this phone. Songport only talks to your server.</string>
-    <string name="connect_token">Songport only receives a limited, revocable permission, stored encrypted on this phone (Android Keystore).</string>
-    <string name="connect_noserver">There is no Songport server: data travels only between this phone and %1$s.</string>
+    <string name="connect_where_oauth">You will sign in on %1$s, in your browser. Trackhop never sees your password.</string>
+    <string name="connect_where_web">You will sign in on %1$s\'s own page, shown inside the app. Trackhop never sees your password, only the session it leaves.</string>
+    <string name="connect_where_apple">You will sign in with your Apple ID in Apple\'s own window. Trackhop never sees your password.</string>
+    <string name="connect_where_server">Your server details stay encrypted on this phone. Trackhop only talks to your server.</string>
+    <string name="connect_token">Trackhop only receives a limited, revocable permission, stored encrypted on this phone (Android Keystore).</string>
+    <string name="connect_noserver">There is no Trackhop server: data travels only between this phone and %1$s.</string>
     <string name="connect_revoke">You can revoke at any time: here with Disconnect, or from your %1$s account.</string>
     <string name="connect_continue">Continue</string>
     <string name="connect_continue_browser">Continue in the browser</string>
@@ -532,8 +532,8 @@
     <string name="connector_pick_hint">Some services can be reached two ways. Easiest: sign in on the site, nothing to create. Official: the service\'s own API with a free key of yours, more stable.</string>
     <string name="route_easy">Quick route</string>
     <string name="route_official">Official route</string>
-    <string name="route_note_web">You sign in on the service\'s own page, as you would in a browser: Songport never sees your password, it only keeps the session, encrypted on this phone. Nothing to create. Not an official interface: it can stop working when the site changes.</string>
-    <string name="route_note_web_only">You sign in on the service\'s own page, as in a browser: Songport never sees your password, only the session, encrypted on this phone. No official API exists: it can stop working when the site changes.</string>
+    <string name="route_note_web">You sign in on the service\'s own page, as you would in a browser: Trackhop never sees your password, it only keeps the session, encrypted on this phone. Nothing to create. Not an official interface: it can stop working when the site changes.</string>
+    <string name="route_note_web_only">You sign in on the service\'s own page, as in a browser: Trackhop never sees your password, only the session, encrypted on this phone. No official API exists: it can stop working when the site changes.</string>
     <string name="route_note_api">Your own free API key, created on the service\'s developer page in about two minutes. Official and stable.</string>
     <string name="route_note_spotify_api">Your own free API key, created on developer.spotify.com in about two minutes. Official and stable. Spotify only lets Premium accounts create it (a Spotify rule since February 2026): without Premium, "Web API" stays greyed out there.</string>
     <string name="route_note_apple_api">A developer token from an Apple Developer account (paid). Official.</string>
@@ -543,8 +543,8 @@
     <string name="connector_name_label">Connector name</string>
     <string name="connector_rename">Rename</string>
     <string name="connect_switch_account">The browser may already be signed in to another %1$s account. On the sign-in page choose “Not you?” or switch account, then continue with the account for this connector.</string>
-    <string name="provider_note_amazon">Amazon has no open API: Songport uses the web player\'s interface, so it can stop working when Amazon changes it. Playlists, search, create, add and remove are supported.</string>
-    <string name="amazon_not_installed_hint">Install or update the companion app \"Songport Bridge\" (1.3.1 or newer) from GitHub, then come back here and tap Connect.</string>
+    <string name="provider_note_amazon">Amazon has no open API: Trackhop uses the web player\'s interface, so it can stop working when Amazon changes it. Playlists, search, create, add and remove are supported.</string>
+    <string name="amazon_not_installed_hint">Install or update the companion app \"Trackhop Bridge\" (1.3.1 or newer) from GitHub, then come back here and tap Connect.</string>
     <string name="sync_pause">Pause</string>
     <string name="sync_resume">Resume</string>
     <string name="sync_stop">Stop</string>
@@ -556,25 +556,23 @@
     <string name="live_empty">No track processed yet.</string>
     <string name="live_found">Found: %1$s</string>
     <string name="live_cached">From a previous match: %1$s</string>
-    <string name="live_not_found">Not found on the destination</string>
-    <string name="live_added">Added to the destination</string>
+    <string name="live_not_found">Not found on the target</string>
+    <string name="live_added">Added to the target</string>
     <string name="live_add_failed">Not added: %1$s</string>
-    <string name="live_removed">Removed from the destination</string>
+    <string name="live_removed">Removed from the target</string>
     <string name="provider_note_spotify_bridge">Sign in on Spotify\'s own page, no developer app to create. Uses the web player\'s session: not an official route, against Spotify\'s terms, may stop working. The official route with your own key stays available as \"Spotify\".</string>
     <string name="provider_note_apple_bridge">Sign in with your Apple ID, no Apple Developer Program needed. Uses the web player\'s tokens: not an official route, against Apple\'s terms, may stop working. The official route with your own developer token stays available as \"Apple Music\".</string>
-    <string name="bridge_needed_hint">Install or update the companion app \"Songport Bridge\" (1.2 or newer) from GitHub, then come back here and tap Connect.</string>
+    <string name="bridge_needed_hint">Install or update the companion app \"Trackhop Bridge\" (1.2 or newer) from GitHub, then come back here and tap Connect.</string>
     <string name="settings_source_code">Source code and documentation</string>
-    <string name="plugins_more">Other services can be added by connector plugins: how it works.</string>
-    <string name="plugins_more_url" translatable="false">https://xlollx.github.io/Songport/plugins</string>
     <string name="security_title">How your logins are protected</string>
-    <string name="security_fact_1">Passwords are typed on the services\' own pages, never in Songport.</string>
-    <string name="security_fact_2">Songport keeps only revocable access tokens, encrypted with the Android Keystore.</string>
-    <string name="security_fact_3">There is no Songport server and no account to create: nothing leaves your phone except requests to the services you connect.</string>
+    <string name="security_fact_1">Passwords are typed on the services\' own pages, never in Trackhop.</string>
+    <string name="security_fact_2">Trackhop keeps only revocable access tokens, encrypted with the Android Keystore.</string>
+    <string name="security_fact_3">There is no Trackhop server and no account to create: nothing leaves your phone except requests to the services you connect.</string>
     <string name="security_fact_4">Disconnecting deletes the token from the phone; every service also lets you revoke it from your account page.</string>
     <string name="ai_trust_title">Where does the key go?</string>
     <string name="ai_trust_1">It is stored on this phone only, encrypted with the Android Keystore, like the tokens of your music services.</string>
-    <string name="ai_trust_2">It leaves the phone only towards %1$s, with each request you make. Songport has no server of its own: Options → Security → Connections lists every host this app has ever contacted, so you can check.</string>
-    <string name="ai_trust_3">“Forget the key” deletes it at once. Safer still: create a key just for Songport, with a spending limit, and revoke it whenever you like.</string>
+    <string name="ai_trust_2">It leaves the phone only towards %1$s, with each request you make. Trackhop has no server of its own: Settings › Advanced › Show developer tools › Show connections lists every host this app has ever contacted, so you can check.</string>
+    <string name="ai_trust_3">“Forget the key” deletes it at once. Safer still: create a key just for Trackhop, with a spending limit, and revoke it whenever you like.</string>
     <string name="ai_limits">Set a spending limit</string>
     <string name="security_connections">Show connections</string>
     <string name="security_connections_desc">Every host this app has contacted since it was installed, and how often. Only the host name is recorded, never what was sent.</string>
@@ -583,9 +581,9 @@
     <string name="security_connections_clear">Clear the list</string>
     <string name="security_connections_count">%1$d requests · last on %2$s</string>
     <string name="security_lock">Require unlock to open</string>
-    <string name="security_lock_desc">Fingerprint, face or phone PIN before Songport opens.</string>
+    <string name="security_lock_desc">Fingerprint, face or phone PIN before Trackhop opens.</string>
     <string name="security_lock_unavailable">No screen lock is set up on this phone.</string>
-    <string name="lock_title">Songport is locked</string>
+    <string name="lock_title">Trackhop is locked</string>
     <string name="lock_subtitle">Unlock with fingerprint, face or PIN</string>
     <string name="lock_unlock">Unlock</string>
     <string name="review_title">To review: %1$s</string>
@@ -601,24 +599,24 @@
     <string name="restored_done">%1$d tracks restored</string>
     <string name="restored_note">%1$d removed tracks were restored by hand.</string>
     <string name="quota_used">%1$s / %2$s YouTube units used today</string>
-    <string name="quota_note">Daily limit set by YouTube (Google), not by Songport. Resets at midnight Pacific time. A search costs 100 units, adding a track 50.</string>
-    <string name="quota_note_shared">Daily limit set by YouTube (Google), not by Songport, shared by everyone using the built-in key: what other users consume is not counted here. Your own credentials give you a quota of your own.</string>
+    <string name="quota_note">Daily limit set by YouTube (Google), not by Trackhop. Resets at midnight Pacific time. A search costs 100 units, adding a track 50.</string>
+    <string name="quota_note_shared">Daily limit set by YouTube (Google), not by Trackhop, shared by everyone using the built-in key: what other users consume is not counted here. Your own credentials give you a quota of your own.</string>
     <string name="quota_estimate">This sync will use about %1$s units.</string>
     <string name="quota_estimate_over">This sync needs about %1$s units, but only %2$s remain today: it will finish over the next days.</string>
     <string name="editor_bidirectional">Two-way</string>
-    <string name="editor_bidirectional_desc">Also creates the mirror sync in the opposite direction, without removals, so both playlists stay complete.</string>
+    <string name="editor_bidirectional_desc">Also creates the reverse sync (marked ↔), so tracks added on either side reach the other. Neither removes tracks. Both are edited here.</string>
     <string name="editor_bidirectional_unavailable">Available with an existing target playlist and a writable source.</string>
     <string name="editor_bidirectional_not_owned">Not with a public link or someone else\'s playlist as source: it can be read, not written.</string>
-    <string name="onboarding_title">Welcome to Songport</string>
-    <string name="onboarding_intro">Keep your playlists identical across music services, by hand or on a schedule. Free, no subscription, no account to create.</string>
+    <string name="onboarding_title">Welcome to Trackhop</string>
+    <string name="onboarding_intro">Copy your playlists from one music service to another and keep them up to date, by hand or on a schedule. Free, no subscription, no account to create.</string>
     <string name="onboarding_step1_title">1. Connect your services</string>
     <string name="onboarding_step1_desc">Spotify, Apple Music, YouTube Music, TIDAL, Deezer, your own server, or a file.</string>
     <string name="onboarding_step2_title">2. Create a sync</string>
     <string name="onboarding_step2_desc">Pick a source playlist and a target. Preview shows exactly what will change before anything happens.</string>
     <string name="onboarding_step3_title">3. Let it run</string>
     <string name="onboarding_step3_desc">Every hour, day or week. Tracks that cannot be matched are listed so you can fix them yourself.</string>
-    <string name="onboarding_security">You sign in on each service\'s own page. Songport keeps only an encrypted, revocable token on this phone and has no server of its own.</string>
-    <string name="onboarding_credentials">Songport ships without service keys of its own: for Spotify, YouTube Music, TIDAL and Deezer you create a free key on the service\'s developer page, and the app walks you through it in about two minutes. Your data then flows only between your phone and your own key.</string>
+    <string name="onboarding_security">You sign in on each service\'s own page. Trackhop keeps only an encrypted, revocable token on this phone and has no server of its own.</string>
+    <string name="onboarding_credentials">Trackhop ships without service keys of its own. Where a service\'s official route needs one, you create a free key on its developer page, and the app walks you through it in about two minutes. Your data then flows only between your phone and the service.</string>
     <string name="onboarding_start">Let\'s start</string>
     <string name="settings_show_onboarding">Show the introduction again</string>
     <string name="paste_list">Paste a list</string>
@@ -645,16 +643,16 @@
     </plurals>
     <string-array name="setup_steps_spotify">
         <item>Sign in at developer.spotify.com with the Spotify account you use every day. Spotify requires that account to have Premium; if you are asked to accept the developer terms, accept them. If "Web API" is greyed out on that page, the account has no Premium: Spotify does not allow the key, use the other route instead.</item>
-        <item>Press "Create app". Name and description are up to you (for example "Songport"). Leave "Website" empty.</item>
+        <item>Press "Create app". Name and description are up to you (for example "Trackhop"). Leave "Website" empty.</item>
         <item>In "Redirect URIs" paste exactly the address shown below and press "Add". Without it the login cannot come back to the app.</item>
         <item>Under "Which API/SDKs are you planning to use?" tick "Web API", accept the terms and press "Save".</item>
         <item>Open the app you created, press "Settings" (top right) and copy the "Client ID" here. You do not need the Client secret.</item>
         <item>Optional: "User Management" lets you add up to 5 other Spotify accounts (name and e-mail) that may use your key, for example family members.</item>
     </string-array>
     <string-array name="setup_steps_youtube">
-        <item>Sign in to console.cloud.google.com with your Google account and create a project. Any name works, for example "Songport". Wait for the notification that it has been created, then select it.</item>
+        <item>Sign in to console.cloud.google.com with your Google account and create a project. Any name works, for example "Trackhop". Wait for the notification that it has been created, then select it.</item>
         <item>Enable the YouTube Data API v3: the link opens its page in the library, press "Enable".</item>
-        <item>Google Auth Platform, "Overview", press "Get started": app name "Songport", your e-mail as support address, audience "External", your e-mail as contact. Accept and press "Create".</item>
+        <item>Google Auth Platform, "Overview", press "Get started": app name "Trackhop", your e-mail as support address, audience "External", your e-mail as contact. Accept and press "Create".</item>
         <item>Google Auth Platform, "Audience": under "Test users" press "Add users" and add your own Gmail address, then Save. Without this step Google refuses the login with "access blocked".</item>
         <item>Google Auth Platform, "Clients", "Create client": application type "Desktop app", any name. Copy the Client ID and the Client secret here. Nothing else to register: the app receives the login on 127.0.0.1.</item>
     </string-array>
@@ -671,7 +669,7 @@
         <item>Save, then copy the "Application ID" here.</item>
     </string-array>
     <string-array name="setup_steps_apple">
-        <item>Apple Music needs a paid Apple Developer Program membership (99 $ per year) and an Apple Music subscription. Without it, use public playlist links or files.</item>
+        <item>Apple Music needs a paid Apple Developer Program membership ($99 a year) and an Apple Music subscription. Without it, use public playlist links or files.</item>
         <item>In "Certificates, Identifiers &amp; Profiles", "Identifiers", create a Media ID with MusicKit enabled.</item>
         <item>In "Keys" create a key with "Media Services (MusicKit)" enabled and download the .p8 file (it can be downloaded once). Note the Key ID shown next to it and your Team ID (top right of the account page).</item>
         <item>Generate the ES256 developer token (JWT) from the .p8 key: the project README has a ready-made script. Paste the token here.</item>
@@ -682,7 +680,7 @@
         <item>Fill in the form: contact e-mail, application name and description are up to you. "Callback URL" and "Application homepage" can stay empty. Submit.</item>
         <item>Copy the "API key" here. The "Shared secret" is not needed.</item>
     </string-array>
-    <!-- Restyling: stati, schermate vuote, intestazione -->
+    <!-- Restyling: status pills, empty screens, header -->
     <string name="more_actions">More</string>
     <string name="pill_ok">Up to date</string>
     <string name="pill_error">Needs attention</string>
@@ -707,27 +705,27 @@
     <string name="settings_log">Sync log</string>
     <string name="settings_log_desc">Outcome of the last syncs, and the technical details to attach to a report.</string>
     <string name="settings_open">Open</string>
-    <string name="accounts_intro">You log in on each service\'s official page. Songport never sees your password.</string>
-    <string name="web_auth_hint">Sign in on %1$s\'s own page. Songport only receives the confirmation that comes back at the end.</string>
+    <string name="accounts_intro">You log in on each service\'s official page. Trackhop never sees your password.</string>
+    <string name="web_auth_hint">Sign in on %1$s\'s own page. Trackhop only receives the confirmation that comes back at the end.</string>
     <string name="show_details">Details</string>
     <string name="hide_details">Hide details</string>
-    <!-- Pubblicità e donazioni -->
+    <!-- Ads and donations -->
     <string name="ads_why_title">Why the ads?</string>
-    <string name="ads_why_body">Songport is free, with no subscriptions and no locked features. One small banner, never full-screen, pays for the developer\'s coffee and the hours spent keeping every service working. If it ever bothers you, open an issue on GitHub.</string>
-    <string name="settings_free_note">Songport is free, with no ads and no subscriptions. Nothing leaves the phone except the requests to the music services you connect.</string>
+    <string name="ads_why_body">Trackhop is free, with no subscriptions and no locked features. One small banner, never full-screen, pays for the developer\'s coffee and the hours spent keeping every service working. If it ever bothers you, open an issue on GitHub.</string>
+    <string name="settings_free_note">Trackhop is free, with no ads and no subscriptions. Nothing leaves the phone except the requests to the music services you connect.</string>
     <string name="free_why_title">Free, no ads</string>
-    <string name="free_why_body">Songport has no ads, no subscriptions and no locked features. It lives on voluntary contributions: if it saves you time, you can buy the developer a coffee.</string>
-    <string name="support_title">Like Songport?</string>
+    <string name="free_why_body">Trackhop has no ads, no subscriptions and no locked features. It lives on voluntary contributions: if it saves you time, you can buy the developer a coffee.</string>
+    <string name="support_title">Like Trackhop?</string>
     <string name="support_body">If you feel like it, buy the developer a coffee on Ko-fi. Totally optional: nothing is unlocked, the app stays complete for everyone.</string>
     <string name="support_button">Buy me a coffee</string>
     <string name="support_sponsors">GitHub Sponsors</string>
     <string name="support_prompt_title">You just moved %1$s tracks</string>
-    <string name="support_prompt_body">With the sync “%1$s”. Songport is free and ad-free, and it lives on voluntary contributions: if it saved you time, you can buy the developer a coffee.</string>
+    <string name="support_prompt_body">With the sync “%1$s”. Trackhop is free and ad-free, and it lives on voluntary contributions: if it saved you time, you can buy the developer a coffee.</string>
     <string name="support_prompt_later">Not now</string>
     <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
     <string name="share_sheet_title">Add to…</string>
     <string name="share_sheet_from">Shared from %1$s</string>
-    <string name="share_sheet_unknown">Songport could not read this track’s title. Search for it by hand below.</string>
+    <string name="share_sheet_unknown">Trackhop could not read this track’s title. Search for it by hand below.</string>
     <string name="share_sheet_open">Open in %1$s</string>
     <string name="share_sheet_copy">Copy link</string>
     <string name="share_sheet_copied">Link copied</string>
@@ -739,8 +737,8 @@
     <string name="share_sheet_no_match">Not found on %1$s. Search by hand, or pick another service.</string>
     <string name="share_sheet_add">Add to playlist…</string>
     <string name="share_sheet_change">Change</string>
-    <string name="settings_music_links">Offer Songport for music links</string>
-    <string name="settings_music_links_desc">A Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link can then open in Songport, which adds the track to a playlist on any of your services. Android still asks which app to use, or keeps the one set in its link settings: Songport never takes a link by itself.</string>
+    <string name="settings_music_links">Offer Trackhop for music links</string>
+    <string name="settings_music_links_desc">A Spotify, Apple Music, YouTube Music, Amazon Music, Deezer or TIDAL link can then open in Trackhop, which adds the track to a playlist on any of your services. Android still asks which app to use, or keeps the one set in its link settings: Trackhop never takes a link by itself.</string>
     <!-- Cards: "how compatible are we?" and the playlist poster. -->
     <string name="tools_compat_title">How compatible are we?</string>
     <string name="tools_compat_desc">Compare two playlists, from any services: tracks in common, shared artists, a score and a card to share.</string>
@@ -778,18 +776,18 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_dynamic_color">Dynamic colours (Material You)</string>
-    <string name="settings_dynamic_color_desc">The colours of your wallpaper instead of Songport\'s own. The title banner keeps the brand colours.</string>
+    <string name="settings_dynamic_color_desc">The colours of your wallpaper instead of Trackhop\'s own. The title banner keeps the brand colours.</string>
     <string name="settings_dynamic_color_unavailable">Needs Android 12 or newer.</string>
 
     <!-- Unplayable tracks tool -->
     <string name="tools_unplayable_title">Unplayable tracks</string>
     <string name="tools_unplayable_desc">Finds the tracks a service lists but can no longer play (greyed out) and replaces them with a version that plays.</string>
     <string name="unplayable_title">Unplayable tracks: %1$s</string>
-    <string name="unplayable_unsupported">%1$s does not say which tracks it can no longer play, so Songport cannot check here.</string>
+    <string name="unplayable_unsupported">%1$s does not say which tracks it can no longer play, so Trackhop cannot check here.</string>
     <string name="unplayable_all_playlists">All my playlists</string>
     <string name="unplayable_scan">Check</string>
     <string name="unplayable_scanning">Checking %1$s…</string>
-    <string name="unplayable_hint">For each one Songport proposes a version that plays. Accept it, search another, remove the entry or skip it. Nothing changes until you apply.</string>
+    <string name="unplayable_hint">For each one Trackhop proposes a version that plays. Accept it, search another, remove the entry or skip it. Nothing changes until you apply.</string>
     <string name="unplayable_searching">Looking for a version that plays…</string>
     <string name="unplayable_no_proposal">No convincing version found: open the entry to search by hand, or remove it.</string>
     <string name="unplayable_proposal">Replacement: %1$s (%2$d%% match)</string>
@@ -802,7 +800,7 @@
     <string name="unplayable_apply">Apply %1$d changes</string>
     <string name="unplayable_applying">Applying %1$d/%2$d…</string>
     <string name="unplayable_confirm_title">Apply the changes?</string>
-    <string name="unplayable_confirm_body">%1$d tracks get a playable version, %2$d entries are removed. The originals stay in Songport\'s log so you can undo.</string>
+    <string name="unplayable_confirm_body">%1$d tracks get a playable version, %2$d entries are removed. The originals stay in Trackhop\'s log so you can undo.</string>
     <string name="unplayable_no_removal">%1$s does not let apps remove tracks: the playable version is added and the unplayable entry stays.</string>
     <string name="unplayable_done">%1$d replaced, %2$d removed</string>
     <string name="unplayable_undo">Undo</string>
@@ -815,7 +813,7 @@
     <string name="unplayable_reason_deleted">Deleted</string>
     <string name="unplayable_reason_unknown">Unplayable</string>
     <string name="settings_unplayable">Weekly check for unplayable tracks</string>
-    <string name="settings_unplayable_desc">Once a week Songport looks through your playlists and tells you when a track can no longer be played. Nothing is changed by itself.</string>
+    <string name="settings_unplayable_desc">Once a week Trackhop looks through your playlists and tells you when a track can no longer be played. Nothing is changed by itself.</string>
     <string name="notif_unplayable_title">Unplayable tracks</string>
     <plurals name="notif_unplayable_text">
         <item quantity="one">%1$d track in your playlists can no longer be played. Tap to replace it.</item>
@@ -868,7 +866,7 @@
     <string name="soundcloud_label">SoundCloud (public links, unofficial)</string>
     <string name="provider_note_soundcloud">Public SoundCloud sets and likes pages, read-only and without signing in: paste the link as the source of a sync. Not an official interface: it can stop working when SoundCloud changes its site.</string>
     <string name="soundcloud_not_public">This SoundCloud playlist is private or doesn\'t exist: only public links work</string>
-    <string name="soundcloud_player_changed">SoundCloud changed its web player; Songport needs an update</string>
+    <string name="soundcloud_player_changed">SoundCloud changed its web player; Trackhop needs an update</string>
     <string name="job_color">Colour</string>
     <string name="job_color_default">Default</string>
     <string name="color_red">Red</string>
@@ -889,7 +887,7 @@
         <item quantity="other">%d syncs running</item>
     </plurals>
     <string name="error_ampache_subsonic_password">Ampache refused the password. For Subsonic apps Ampache does not accept your account password: in Ampache open Preferences → Account, set a Subsonic password (or copy your API key) and enter it here as the password.</string>
-    <string name="shazam_share_hint">Shazam a lot? In Shazam\'s settings, connect Spotify or Apple Music: every song you Shazam lands in a “My Shazam Tracks” playlist. Songport can keep it in sync on any of your services.</string>
+    <string name="shazam_share_hint">Shazam a lot? In Shazam\'s settings, connect Spotify or Apple Music: every song you Shazam lands in a “My Shazam Tracks” playlist. Trackhop can keep it in sync on any of your services.</string>
     <string name="shazam_share_hint_button">Sync my Shazams</string>
     <string name="shazam_editor_suggest">Your Shazams: %1$s</string>
     <string name="syncs_find_hint">Find a sync</string>
@@ -905,7 +903,7 @@
         <item quantity="one">%1$d of %2$d sync</item>
         <item quantity="other">%1$d of %2$d syncs</item>
     </plurals>
-    <string name="stats_title">Songport in numbers</string>
+    <string name="stats_title">Trackhop in numbers</string>
     <string name="stats_row_desc">What your syncs have done so far, as a card to share</string>
     <string name="stats_hero_link">Your numbers</string>
     <string name="stats_tracks_moved">Tracks moved</string>
@@ -942,7 +940,7 @@
         <item quantity="one">Only the latest sync (%1$d) is kept on this phone: older ones are not in these numbers.</item>
         <item quantity="other">Only the latest %1$d syncs are kept on this phone: older ones are not in these numbers.</item>
     </plurals>
-    <string name="stats_local_note">Counted on this phone from the sync history Songport already keeps. Nothing is sent anywhere unless you share the card.</string>
+    <string name="stats_local_note">Counted on this phone from the sync history Trackhop already keeps. Nothing is sent anywhere unless you share the card.</string>
     <string name="stats_empty_title">No numbers yet</string>
     <string name="stats_empty_body">They appear after your first completed sync, counted from the history kept on this phone.</string>
     <string name="stats_share_title">Share your numbers</string>
@@ -955,16 +953,16 @@
     <string name="settings_section_backups">Backups</string>
     <string name="settings_section_advanced">Advanced</string>
     <string name="settings_isrc_summary">Look up missing ISRC codes on Deezer, for exact matches.</string>
-    <string name="settings_music_links_summary">Open music links in Songport to add the track to a playlist.</string>
+    <string name="settings_music_links_summary">Open music links in Trackhop to add the track to a playlist.</string>
     <string name="settings_unplayable_summary">Tells you about tracks that stop playing. Changes nothing.</string>
     <string name="settings_notifications_system">System notification settings</string>
     <string name="settings_notifications_system_desc">Sound, vibration and which notifications Android shows.</string>
-    <string name="settings_security_summary">Encrypted, revocable sign-ins on this phone; no Songport server.</string>
+    <string name="settings_security_summary">Encrypted, revocable sign-ins on this phone; no Trackhop server.</string>
     <string name="settings_keys_summary">Your own developer keys for the services that need one.</string>
     <string name="backup_folder_stop">Stop copying to this folder</string>
     <string name="nav_back">Back</string>
     <string name="tools_service_title">Service for the tools</string>
-    <string name="tools_service_hint">Tools marked with its logo work on this service.</string>
+    <string name="tools_service_hint">The tools below work on this service; a tool it can\'t do is greyed out.</string>
     <string name="tools_go_accounts">Go to Accounts</string>
     <string name="tools_unavailable_on">Not available on %1$s</string>
     <string name="tools_section_music">Your music</string>
@@ -987,9 +985,9 @@
     <string name="tools_row_compat">Compare two playlists and get a score to share.</string>
     <string name="tools_row_poster">A shareable card with covers and a QR code.</string>
     <string name="tools_row_unplayable">Find greyed-out tracks and swap in versions that play.</string>
-    <string name="settings_battery_summary">Some phones stop background apps: exclude Songport from battery optimisation.</string>
-    <string name="settings_dynamic_color_summary">Your wallpaper\'s colours instead of Songport\'s.</string>
-    <string name="settings_notifications_summary">When a scheduled sync changes tracks or fails.</string>
+    <string name="settings_battery_summary">Some phones stop background apps: exclude Trackhop from battery optimisation.</string>
+    <string name="settings_dynamic_color_summary">Your wallpaper\'s colours instead of Trackhop\'s.</string>
+    <string name="settings_notifications_summary">When a scheduled sync changes tracks, or any sync fails.</string>
     <string name="settings_developer_summary">Connections log, technical report, traffic capture.</string>
     <string name="settings_new_look_summary">Sync cards with run numbers and recent history.</string>
     <string name="settings_log_summary">Recent sync results and technical details.</string>
@@ -1000,4 +998,193 @@
     <string name="first_sync_ready_body">%1$s is connected. Pick one of its playlists and where it should go.</string>
     <string name="first_sync_create">Create sync</string>
     <string name="editor_one_service_hint">Add a second service to sync between two services. Until then, a sync can go to a file on this phone.</string>
+    <string name="plugins_title">Plugins</string>
+    <string name="plugins_desc">Trackhop has an open connector interface: separate apps, made by anyone, can add services to it. Trackhop does not include, download or recommend any plugin. Installed ones appear here, and their services in Accounts.</string>
+    <string name="plugins_none">No plugin installed</string>
+    <string name="plugins_services">Services: %1$s</string>
+    <string name="services_group_unavailable">Not available in this version</string>
+    <string name="preview_remove_confirm">Remove these %1$d tracks from the target</string>
+    <string name="note_two_way_no_removals">Removals skipped: this is a two-way sync, so the %1$d tracks in the target that are not in the source were kept (the reverse sync copies them back). Turn off Two-way to mirror removals.</string>
+    <string name="editor_mirror_two_way">Not with Two-way: a track added on the other side could be removed before it is copied back.</string>
+    <string name="editor_twin_note">“%1$s” is the reverse half of this two-way sync. It follows these settings, so both are edited here.</string>
+    <string name="editor_schedule_desc">The first run starts within minutes of saving, then about once per interval; Android picks the exact time.</string>
+    <string name="editor_wifi_only_desc">Scheduled runs wait for an unmetered network, usually Wi‑Fi. Run now and Sync all ignore this.</string>
+    <string name="pill_held_back">Removals on hold</string>
+    <string name="pill_not_found">Not found: %1$d</string>
+    <string name="pill_incomplete">Not finished</string>
+    <string name="onboarding_docs_title">Documentation and code</string>
+    <string name="onboarding_docs_body">Want to read about every feature, or the code? Documentation and source code are on GitHub.</string>
+    <string name="onboarding_docs_open">Open on GitHub</string>
+    <!-- Contextual help: the "?" sheets -->
+    <string name="help_cd">Help: %1$s</string>
+    <string name="help_example">Example:</string>
+    <string name="help_cards_title">Sync cards</string>
+    <string name="help_status_title">Status</string>
+    <string name="help_status_body">The pill says how the last run went. Up to date: it finished and nothing waits for you. Removals on hold, Not finished and Not found: N mean something needs a look, and a tap on the pill takes you there. Needs attention: the run failed.</string>
+    <string name="help_status_example">“Not found: 12” opens the review, where you can pick those 12 tracks by hand.</string>
+    <string name="help_route_title">→ and ↔</string>
+    <string name="help_route_body">→ is a one-way sync from the source to the target. ↔ marks a two-way pair: two syncs, one per direction, shown as two cards. Editing the ↔ card opens the original sync, and deleting either one deletes both.</string>
+    <string name="help_figures_title">Numbers</string>
+    <string name="help_figures_body">Added, removed and not found count the last run: tap a number to see the tracks. Tracks is the size of the source, minus the tracks you ignore; tap it to open the target playlist. The marks below are the recent runs: faded when nothing changed, red when a run failed.</string>
+    <string name="help_to_fix_title">To fix</string>
+    <string name="help_to_fix_body">The tracks the last run could not find, plus the matches it was not sure about. You can start fixing them while the sync is still adding, and every choice is remembered for later runs.</string>
+    <string name="help_run_now_body">▶ runs this sync now, even when it is disabled or set to Wi‑Fi only. Use it after changing a playlist, instead of waiting for the schedule. Large removals are still held back unless you confirmed them in the preview first.</string>
+    <string name="help_sync_all_body">Runs every enabled sync, one after another, ignoring Wi‑Fi only; disabled syncs are skipped. Pulling the list down does the same. While syncs run, a tap on the pill scrolls to the first running card.</string>
+    <string name="help_sync_all_example">With 5 syncs, one of them disabled, 4 run.</string>
+    <string name="help_cached_title">From a previous match</string>
+    <string name="help_cached_body">The track was matched in an earlier run and is reused without searching again. If that match is wrong, change it in the review: your choice replaces it for every later run.</string>
+    <string name="help_one_service_title">One service connected</string>
+    <string name="help_one_service_body">With a single service connected, a sync can only go to a File kept inside Trackhop, so Step 2 preselects File. Connect a second service to sync between two services.</string>
+    <string name="help_one_service_example">With only Spotify connected, Step 2 offers Spotify and File, and File is chosen.</string>
+    <string name="help_library_title">Playlists and Library</string>
+    <string name="help_library_body">Playlists holds your playlists and Liked songs. Library holds saved albums, followed artists, podcasts and, as a source only, recently played. As a target, only playlists you own are listed.</string>
+    <string name="help_link_body">Paste the share link of a public playlist: short links are followed and the name is read. The playlist is only read, never written, so it can\'t be two-way. Some services must be connected even to read a public link.</string>
+    <string name="help_target_body">Where the tracks go. Trackhop preselects a service: check it before saving. Choosing another service clears the chosen playlist.</string>
+    <string name="help_liked_body">When the source is Liked songs and the target service supports likes, the target becomes that service\'s Liked songs, and every synced track is liked there. With Mirror removals on, tracks not liked in the source are unliked on the target.</string>
+    <string name="help_liked_example">Spotify Liked songs → Deezer: every track is added to your Deezer favourites.</string>
+    <string name="help_new_playlist_body">The playlist is created at the first run, not on Save, and named after the source unless you type a name. If you later delete it on the service, the sync stops and asks you to create it again or pick another.</string>
+    <string name="help_schedule_body">Runs the sync in the background about every hour, 6 hours, day or week. Android picks the exact moment and may delay it, especially on battery saver. The first run starts within minutes of saving. A scheduled run that finds both playlists unchanged stops at once.</string>
+    <string name="help_schedule_example">Daily, saved at 6 pm: the first run comes a few minutes later, the next one about a day after.</string>
+    <string name="help_mirror_body">The target becomes a copy of the source: every target track that matches nothing in the source is removed, including tracks you added there yourself. Use it only when the source is your master. If one run would remove more than 10 tracks and over a quarter of the target, they are held back until you confirm them in the preview. Removed tracks can be restored from the Sync log.</string>
+    <string name="help_mirror_example">Delete a song from your Spotify playlist, and it disappears from the copy at the next run.</string>
+    <string name="help_keep_order_body">After adding, the target is rearranged in the source\'s order; tracks found only in the target move to the end. Skipped for Liked songs and above 1,500 tracks. If the service refuses, the run still succeeds and the Sync log says so.</string>
+    <string name="help_two_way_body">Adds a second sync in the opposite direction (the ↔ card), so tracks added on either side reach the other. Neither half removes tracks, so Mirror removals stays off: a track deleted on one side usually comes back from the other. Both halves share the schedule and the rules, and both are edited here, from the original sync.</string>
+    <string name="help_enabled_body">Off pauses the schedule and leaves the sync out of Sync all, the widget and the tile. You can still run it with ▶ Run now.</string>
+    <string name="help_strictness_body">How sure Trackhop must be before it adds a track by itself. Strict adds fewer tracks automatically and asks you about more; Loose adds more, with a higher risk of a wrong version.</string>
+    <string name="help_strictness_example">For a playlist of remixes, Strict avoids picking the radio edit.</string>
+    <string name="help_explicit_body">Where a service says whether a track is explicit, Trackhop prefers the version you choose. It is a preference, not a filter: if only the other version exists, that one is used.</string>
+    <string name="help_same_album_body">Strongly prefers the same album as the source. Turn it on when a single or a compilation version would be wrong.</string>
+    <string name="help_same_album_example">A track from a live album stays live and isn\'t swapped for the studio single.</string>
+    <string name="help_preview_body">Shows what a run would do, without changing anything. To work it out it searches the target for every missing track, so it can take a while, and on YouTube it uses quota. Ignored counts the tracks you chose to ignore.</string>
+    <string name="help_preview_run_body">Runs the sync now. It works everything out again but reuses the matches found here, so it is much faster. Uncertain matches you did not settle here are asked about again in the review after the run.</string>
+    <string name="help_removals_title">Large removals</string>
+    <string name="help_removals_body">This run would remove a large part of the target. First check the source: a service that lists a playlist only partly looks exactly like this. If the tracks really should go, tick the box and tap Run now. The tick serves only that run, started by hand, and only the tracks listed here; scheduled runs keep holding them back.</string>
+    <string name="help_uncertain_title">Uncertain matches</string>
+    <string name="help_uncertain_body">Matches Trackhop is not sure about. Tap Looks right to keep one, or Change to pick another track: either way it is remembered. The ones you leave here are asked about again in the review after the run.</string>
+    <string name="help_quota_title">YouTube units</string>
+    <string name="help_quota_body">YouTube allows a fixed number of units per day: a search costs 100 and adding a track 50. The count resets at midnight Pacific time. A large first sync can take several days, and it carries on by itself.</string>
+    <string name="help_review_title">Fixing tracks</string>
+    <string name="help_change_body">Replaces the track Trackhop chose with the one you pick: the wrong one is removed from the target where the service allows it, and your choice is remembered for later runs.</string>
+    <string name="help_proposal_body">The closest track found, but not close enough to add by itself: tap Add if it is right. Tracks not found are searched again after a week; open one to search now.</string>
+    <string name="help_proposal_example">“Song (Remastered 2011)” proposed for “Song”.</string>
+    <string name="help_ignore_body">Stops searching for this track and stops reporting it, for every sync to this service. There is no way to undo it yet, so keep it for tracks that don\'t exist there, such as a home recording.</string>
+    <string name="help_results_title">Search results</string>
+    <string name="help_results_body">Likeliest lists the closest matches. Folded below: the tracks of the source\'s album on the target, the other results and, on YouTube Music, videos from the wider YouTube catalogue.</string>
+    <string name="help_ask_ai_body">Asks the AI you set up in Settings › Advanced › Your AI for a better search. The track and the results found so far are sent to your AI provider, and nowhere else.</string>
+    <string name="help_notes_body">What a run chose not to do, and why: removals held back, a search cut short by the service, an order that could not be applied. When a search was not finished, the sync\'s card points here.</string>
+    <string name="help_restore_title">Restore removed</string>
+    <string name="help_restore_body">Puts back the tracks that run removed with Mirror removals. Only the latest 200 reports are kept, so restore soon.</string>
+    <string name="help_connectors_title">Connectors</string>
+    <string name="help_connectors_body">A connector is one account on one service. Add two Spotify connectors to sync between two Spotify accounts; the name you give is only a label for the card.</string>
+    <string name="help_tags_title">Tags</string>
+    <string name="help_tags_body">Read-only: the service can only be a source. Beta: it works, but has seen less use. Setup needed: create your key first.</string>
+    <string name="help_disconnect_body">Deletes the sign-in from this phone. Syncs that use this account fail until you connect again; to pause a sync, disable it instead.</string>
+    <string name="help_remove_account_body">Disconnects and removes the card. It is blocked while a sync uses the account: delete or edit those syncs first.</string>
+    <string name="help_test_body">Checks the sign-in, reading the playlists and one sample search, one call each. If something fails, include this result when you report a problem.</string>
+    <string name="help_extra_actions_title">More in the menu</string>
+    <string name="help_extra_actions_body">Google verification page opens Google\'s own page when it blocks the YouTube Music sign-in. With developer tools on, traffic capture helps fix Amazon Music after the site changes.</string>
+    <string name="help_routes_title">Quick and official routes</string>
+    <string name="help_routes_body">Quick: you sign in on the service\'s own page, with nothing to create, but it can stop working when the site changes. Official: the service\'s own API with a free key in your name; more stable, a few minutes to set up.</string>
+    <string name="help_unavailable_body">This version of Trackhop cannot reach these services on its own.</string>
+    <string name="help_connector_name">A label for this card, handy with several accounts on one service.</string>
+    <string name="help_redirect_title">Redirect URI</string>
+    <string name="help_redirect_body">The address the service sends you back to after you sign in. Copy it exactly into the service\'s developer page, or the sign-in cannot return to Trackhop.</string>
+    <string name="help_keys_title">Your key</string>
+    <string name="help_fields_title">Client ID and the other fields</string>
+    <string name="help_fields_body">The identifiers of the free app you create on the service\'s developer page. Paste them exactly as shown; they stay encrypted on this phone.</string>
+    <string name="help_clear_key_body">Deletes your key from this phone. You need to set it up again before you can connect.</string>
+    <string name="help_files_body">Lists kept inside Trackhop: imported files, pasted lists, backups, and playlists a sync wrote to File. Each backup adds a dated version; the last 5 are kept, folded under the newest.</string>
+    <string name="help_export_title">Export formats</string>
+    <string name="help_export_body">CSV opens in spreadsheets, M3U in most music players, XSPF and JSPF in players that support them, and Text is one track per line.</string>
+    <string name="help_make_body">Builds a new playlist on the same service from existing ones. It is not a sync: the result won\'t update later.</string>
+    <string name="help_make_example">Merge two playlists into one, or split a long one into parts of 50.</string>
+    <string name="help_transfer_body">Each makes a new playlist on the target and only adds tracks; a playlist that already has a sync reuses it. They keep the schedule you choose here.</string>
+    <string name="help_transfer_example">Transferring 20 playlists with Daily creates 20 daily syncs.</string>
+    <string name="help_dedupe_body">Removes the repeated tracks at once, with no further question: the same track twice, even as a different release, keeping the first copy. Live and remix versions count as different songs. On services that remove a track with all its copies, such as Spotify and Deezer, the kept copy moves to the end.</string>
+    <string name="help_unplayable_body">For each greyed-out track Trackhop proposes a version that plays. Nothing changes until you apply, and Undo last fix puts the originals back. Reasons such as “Not in your plan” come from the service.</string>
+    <string name="help_backup_body">Trackhop saves dated copies of all your playlists to a folder you choose, so they survive the phone. Each run reads every connected service, saves what changed and copies the new files; on YouTube that uses quota. The schedule runs it by itself, Copy now at once.</string>
+    <string name="help_backup_example">To restore a playlist, import its file from that folder in Tools › File playlists, then sync the file to any service.</string>
+    <string name="help_plugins_body">An installed plugin appears here with the services it provides, and those services appear in Accounts. Removing the plugin disconnects them, and syncs that use them will fail.</string>
+    <string name="help_ai_body">Your own AI account, for the playlist generator, Ask the AI in the review and poster covers. The key stays encrypted on this phone and is sent only to the provider you pick.</string>
+    <!-- How to: the offline guides (light markup: "# " heading, "• " bullet) -->
+    <string name="howto_title">How to</string>
+    <string name="howto_summary">Short guides to every part of Trackhop, readable offline.</string>
+    <string name="howto_intro">Short guides to every part of Trackhop. They are part of the app, so they work offline.</string>
+    <string name="help_more">More in How to › %1$s</string>
+    <string name="settings_section_help">Help</string>
+    <string name="howto_first_sync_title">Your first sync</string>
+    <string name="howto_first_sync_summary">Connect a service, choose, preview, run.</string>
+    <string name="howto_first_sync_body">A sync copies one playlist to another service and keeps it up to date. Four steps:\n# 1. Connect\nIn Accounts, tap Add connector and sign in to the service your music is on. You sign in on the service\'s own page; Trackhop keeps only an encrypted token on this phone.\n# 2. Choose\n• Source: a playlist, Liked songs, a Library section (albums, artists) or a public link.\n• Target: a service and a new or existing playlist. With only one service connected, the target is a File kept inside Trackhop.\n• Options: name, colour, schedule, Mirror removals, Two-way and matching rules. The defaults suit a first sync.\n# 3. Preview\nSave opens the preview: what would be added, what was not found and the matches to double-check. Settle those with Looks right or Change; the ones you skip are asked about again after the run.\n# 4. Run\nTap Run now, then tap the card to follow it track by track. Pause and Stop act between steps. Afterwards the card shows the numbers, and a pill when something needs you: Not found, Removals on hold or Not finished.</string>
+    <string name="howto_modes_title">Add only, Mirror removals, Two-way</string>
+    <string name="howto_modes_summary">What a sync adds, removes or copies back.</string>
+    <string name="howto_modes_body"># Add only (the default)\nThe sync only adds. The target can hold extra tracks, and nothing is ever deleted there.\n# Mirror removals\nThe target follows the source, deletions included. Every target track that matches nothing in the source is removed, even one you added there yourself, so use it only when the source is your master.\n• Nothing is removed when the source is empty, the search was cut short, or the service can\'t remove tracks; the Sync log says why.\n• If one run would remove more than 10 tracks and over a quarter of the target, the card shows Removals on hold. Tap it to open the preview, check the list, tick Remove these tracks and tap Run now. The tick serves that one run; scheduled runs keep holding back.\n• Removed tracks can be put back from Settings › Advanced › Sync log › Restore.\n# Two-way\nAdds a second sync in the opposite direction, shown as a ↔ card, so tracks added on either side reach the other. Neither half removes anything, so Mirror removals is off: a track deleted on one side usually comes back from the other. Both halves share schedule and rules; editing the ↔ card opens the original sync, and deleting either deletes both.\n# Liked songs\nWith Liked songs as the target, adding a track means liking it, and Mirror removals means unliking the tracks not liked in the source.</string>
+    <string name="howto_schedules_title">Schedules</string>
+    <string name="howto_schedules_summary">When syncs run by themselves.</string>
+    <string name="howto_schedules_body"># Choosing a schedule\nManual only, Every hour, Every 6 hours, Daily or Weekly. Android picks the exact moment and may delay a run, especially on battery saver.\n• The first run starts within minutes of saving, then about once per interval.\n• A scheduled run that finds both playlists unchanged stops at once, where the service reports changes.\n• Wi‑Fi only makes scheduled runs wait for an unmetered network, usually Wi‑Fi. Run now and Sync all ignore it.\n• With Enabled off the schedule pauses; ▶ Run now still works.\n# When runs don\'t happen</string>
+    <string name="howto_schedules_body2">In Settings › Syncing, Scheduled syncs not running? opens the list where you exclude Trackhop.\n# Notifications\nYou are told when a scheduled sync adds or removes tracks, and when any sync fails. Turn it off in Settings › Notifications.</string>
+    <string name="howto_preview_title">The preview and large removals</string>
+    <string name="howto_preview_summary">See what a run would do, and confirm removals.</string>
+    <string name="howto_preview_body">The preview shows what a run would do, without changing anything. It opens after you create a sync, or from a card\'s ⋮ menu › Preview.\n# What it lists\n• Already on the target, to add, to remove (with Mirror removals only), not found and ignored.\n• Matches to double-check: tap Looks right or Change. What you settle is remembered; the rest is asked about again in the review after the run.\n• For YouTube, the units the run would use.\nTo work this out, the preview searches the target for every missing track, so a large playlist takes a while. What it finds is reused by the run.\n# Large removals\nWhen a run would remove more than 10 tracks and over a quarter of the target, a red note appears. First check the source: a service that lists a playlist only partly looks exactly like this. If the tracks really should go, tick Remove these tracks and tap Run now. The tick serves only that run, started by hand, and only the tracks you saw; scheduled runs keep holding them back.\n# Run now\nRuns the sync straight away, reusing what the preview found, so it is much faster than the preview itself.</string>
+    <string name="howto_review_title">Tracks not found</string>
+    <string name="howto_review_summary">Find what was missing and check uncertain matches.</string>
+    <string name="howto_review_body"># Where to find them\n• The Not found pill or the to fix button on a sync card.\n• The not found number on the card.\n• Settings › Advanced › Sync log › Review.\n# Fixing a track\n• Proposal: the closest track found, not close enough to add by itself. Tap Add if it is right.\n• Search by title, by “artist - title”, or paste a track link from any service. Open in opens the service\'s own app.\n• Likeliest comes first; the source\'s album, other results and, on YouTube Music, videos are folded below.\n• Ask the AI asks your own AI (Settings › Advanced › Your AI) for a better search.\n• Ignore stops searching for a track on that service, for every sync to it. There is no undo yet.\nEvery choice is remembered for later runs. Tracks not found are searched again after a week.\n# Uncertain matches\nMatches Trackhop was not sure about. Looks right keeps one; Change replaces it, removing the wrong track from the target where the service allows it.\n# Matching rules\nIn the editor, Matching rules set how a track is chosen: Strictness, Explicit versions, Same album and Studio versions only. Exact recording via Deezer (Settings › Syncing) looks up the code that identifies a recording, so Spotify, Apple Music and TIDAL return the exact version.</string>
+    <string name="howto_backups_title">Backups and restoring</string>
+    <string name="howto_backups_summary">Keep copies of your playlists and get them back.</string>
+    <string name="howto_backups_body"># Full backup\nTools › Full backup saves every playlist and the liked songs of one service as dated files in File playlists. The last 5 versions of each playlist are kept, and an unchanged playlist is not written again. Nothing changes on the service.\n# Backup to a folder\nIn Settings › Backups, choose a folder (SD card, a cloud app, any app that offers one). Each run reads every connected service, saves what changed and copies the new files there, so they survive the phone. Choose Manual only, Daily or Weekly, or tap Copy now. On YouTube, reading uses quota.\n# Restoring\n• A playlist: Tools › File playlists › Import file, pick it from the folder, then make a sync from that file to any service.\n• Tracks removed by Mirror removals: Settings › Advanced › Sync log › Restore.\n• An unplayable fix: Tools › Unplayable tracks › Undo last fix.\n# Export one playlist\nTools › Export a playlist saves it as CSV, M3U, XSPF, JSPF or plain text.</string>
+    <string name="howto_tools_title">The Tools tab</string>
+    <string name="howto_tools_summary">What each tool does.</string>
+    <string name="howto_tools_body">At the top, choose the service the tools work on. A tool it can\'t do is greyed out.\n# Your music\n• Trackhop in numbers: what your syncs have done so far.\n• Manage playlists: rename, delete, make public or private, look at the tracks.\n• Repeats across playlists: tracks in more than one playlist, liked songs in none.\n# Move and copy\n• Transfer many playlists: one sync per playlist, created and run one after another. They stay in Syncs.\n• Export a playlist: one playlist as a file.\n• New playlist from…: copy, merge, split, sort or shuffle into a new playlist on the same service. A one-off, not a sync.\n• File playlists: imported lists, pasted lists, backups and what syncs wrote to File.\n# Clean up\n• Remove duplicates: find them, then remove them at once, keeping the first copy.\n• Unplayable tracks: swap greyed-out tracks for versions that play, with Undo. Settings can check once a week.\n# Share and discover\nHow compatible are we?, the Playlist poster and the Playlist generator, which uses your own AI.</string>
+    <string name="howto_accounts_title">Accounts and your own keys</string>
+    <string name="howto_accounts_summary">Connectors, routes, keys and security.</string>
+    <string name="howto_accounts_body"># Connectors\nA connector is one account on one service. Where a service allows it you can add several, for example two Spotify accounts, each with its own name.\n# Routes\nSome services can be reached two ways. Quick route: you sign in on the service\'s own page, nothing to create, but it can stop working when the site changes. Official route: the service\'s own API with a free key in your name; more stable, a few minutes to set up.</string>
+    <string name="howto_accounts_full">In this version the quick routes of Spotify, YouTube Music, Amazon Music, Apple Music and Deezer are built in, and so is SoundCloud with your account. Deezer (web) is in alpha, SoundCloud in beta.</string>
+    <string name="howto_accounts_body2"># Your own key\nTrackhop ships without keys of its own. The setup guide walks you through the service\'s developer page: copy the Redirect URI there exactly, then paste the Client ID (and the secret, where asked) here.\n• Spotify only lets Premium accounts create a key.\n• Apple\'s developer token expires after six months at most: paste a new one in Settings › Advanced › Service keys.\n• On the official YouTube route the daily quota is yours, counted in units.\nYour own server (Jellyfin, Plex, Navidrome…) needs its address, your user and a password or token.\n# Keeping accounts safe\nPasswords are typed on the services\' own pages, never in Trackhop. Tokens are encrypted on the phone, and there is no Trackhop server. Test the connection checks a connector; Disconnect deletes its sign-in, and Remove this account also removes the card. Settings › Advanced › Show developer tools › Show connections lists every host the app has contacted.</string>
+    <string name="howto_plugins_title">Plugins</string>
+    <string name="howto_plugins_summary">How separate apps can add services.</string>
+    <string name="howto_plugins_body">Trackhop has an open connector interface: separate apps, made by anyone, can add services to it.</string>
+    <string name="howto_plugins_play">Trackhop does not include, download or recommend any plugin.\n• An installed plugin appears in Settings › Plugins, with the services it provides.\n• Those services then appear in Accounts › Add connector, like any other.\n• Services this version cannot reach on its own are listed as Not available in this version.\n• Removing the plugin disconnects its services, and syncs that use them will fail.</string>
+    <string name="howto_plugins_full">In this version the web connectors are built in, so no plugin is needed: every call and every sign-in stays inside Trackhop, and an installed plugin is not used.</string>
+    <string name="howto_guides">Guides</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">Show me around</string>
+    <string name="tour_offer_summary">A guided first sync over the real screens, in 8 steps.</string>
+    <string name="tour_progress">%1$d of %2$d</string>
+    <string name="tour_done">Done</string>
+    <string name="tour_new_sync">A sync copies a playlist to another service and keeps it up to date: it all starts from New sync.</string>
+    <string name="tour_accounts">Connect your services in Accounts: you sign in on each service’s own page, and only an encrypted token stays on this phone.</string>
+    <string name="tour_source">Pick what to copy: a playlist, Liked songs, or albums and artists under Library.</string>
+    <string name="tour_target">Choose where it goes, and check the preselected service: File means a list kept on this phone.</string>
+    <string name="tour_schedule">Keep Manual only for your first sync; a schedule you add later starts within minutes of saving.</string>
+    <string name="tour_mirror">With Mirror removals off, Trackhop only adds, which is the safe choice for a first sync.</string>
+    <string name="tour_save">Save opens the preview, which shows what would change and asks about uncertain matches before anything happens.</string>
+    <string name="tour_results">After the run the card shows the numbers, and a pill such as Not found leads you to whatever needs a look. More in Settings › How to.</string>
+    <string name="plugins_where">Plugins are published by their own authors, not through this app: on GitHub they carry the topic “trackhop-plugin”.</string>
+    <string name="provider_note_deezer_bridge">Sign in on Deezer\'s own page: no developer app needed (Deezer no longer registers new ones). Uses the web player\'s session: not an official route, against Deezer\'s terms, may stop working. Alpha. The official route with your own app ID stays available as \"Deezer\".</string>
+    <string name="provider_note_soundcloud_account">Sign in on SoundCloud\'s own page: your sets and liked tracks become sources and destinations. Uses the web app\'s session: not an official interface, against SoundCloud\'s terms, may stop working. Beta. Few SoundCloud tracks carry an ISRC, so matching relies on title, artist and duration.</string>
+    <string name="alpha">alpha</string>
+    <string name="alpha_note">Alpha: not yet tested on real accounts. Try it on a test playlist first and report problems.</string>
+    <string name="editor_mirror_liked_warning">Mirror into Liked songs unlikes everything there that isn\'t in the source.</string>
+    <string name="preview_unlike">%1$d to unlike</string>
+    <string name="preview_unlike_warning">This would unlike %1$d of the %2$d songs in Liked songs. Check that the source really lists that few: an incomplete listing by the service looks exactly like this. Unless you tick the box below, the run adds songs and keeps these liked.</string>
+    <string name="preview_unlike_confirm">Unlike these %1$d songs</string>
+    <string name="note_unlikes_capped">Unlikes held back: this run would unlike %1$d of the %2$d songs in Liked songs. Tap the sync\'s status to open the preview and see them; if they really should go, tick “Unlike these songs” there and run it. If the source has not really lost them, the service listed it incompletely and nothing should go.</string>
+    <string name="sync_menu_disable">Disable</string>
+    <string name="sync_menu_enable">Enable</string>
+    <string name="sync_disabled_snack">Sync disabled: it won\'t run on its schedule</string>
+    <string name="sync_enabled_snack">Sync enabled</string>
+    <string name="sync_pause_all">Pause all</string>
+    <string name="sync_resume_all">Resume all</string>
+    <string name="sync_stop_all">Stop all</string>
+    <plurals name="service_tiles_scroll">
+        <item quantity="one">%d service, scroll for more</item>
+        <item quantity="other">%d services, scroll for more</item>
+    </plurals>
+    <string name="pill_pausing">Pausing</string>
+    <string name="sync_pausing">Pausing after this step…</string>
+    <string name="sync_pausing_short">Pausing…</string>
+    <plurals name="syncs_paused">
+        <item quantity="one">%d sync paused</item>
+        <item quantity="other">%d syncs paused</item>
+    </plurals>
+    <string name="syncs_running_paused">%1$d running · %2$d paused</string>
 </resources>

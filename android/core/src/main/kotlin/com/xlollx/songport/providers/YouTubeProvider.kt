@@ -96,7 +96,7 @@ class YouTubeProvider(override val slot: String = "") : OAuthProvider() {
     override fun errorMessage(resp: HttpResponse): String {
         val e = runCatching { parseJson(resp.body)["error"] }.getOrNull()
         val reason = e["errors"][0]["reason"].str
-        if (reason == "quotaExceeded") return "daily YouTube API quota exceeded, retry tomorrow"
+        if (reason == "quotaExceeded") return "the daily YouTube API quota (a limit set by Google, not by Trackhop) is used up; it resets at midnight Pacific time"
         return e["message"].str ?: super.errorMessage(resp)
     }
 

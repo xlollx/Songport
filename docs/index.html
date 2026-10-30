@@ -1,30 +1,33 @@
 ---
 layout: default
-title: Songport
+title: Trackhop
 description: Keep your playlists identical across Spotify, Apple Music, YouTube Music, Amazon Music, TIDAL, Deezer and your own music server. On your phone, no account, no server.
 main_class: home
 ---
 <section class="hero">
   <div class="wrap">
     <div>
-      <img class="appicon" src="store/icon512.png" alt="">
+      <p class="renamed"><strong>Songport is now Trackhop.</strong> Same app, same code, same updates: only the name changed, because an unrelated service called "SongPort" works in the same space. Your installed app updates normally and keeps all its data, and old links keep working.</p>
+      <div class="tile"><img src="assets/mark.svg" alt=""></div>
       <h1>Your playlists,<br>everywhere.</h1>
-      <p class="lead">Songport keeps playlists in sync across music services, by hand or on a schedule.</p>
+      <p class="lead">Trackhop keeps playlists in sync across music services, by hand or on a schedule.</p>
       <p class="sub">Free and open source. No account, no server, no subscription: everything runs on your phone.</p>
       <div class="get">
         <a href="https://f-droid.org/packages/com.xlollx.songport/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid"></a>
-        <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium"></a>
-        <a class="apk" href="https://github.com/xlollx/Songport/releases/latest">Download the APK</a>
+        <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Trackhop"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium"></a>
+        <a class="apk" href="https://github.com/xlollx/Trackhop/releases/latest">Download the APK</a>
+        <a class="apk plugin" href="https://github.com/xlollx/Trackhop-Bridge/releases/latest">Plugin for the Google Play version</a>
       </div>
+      <p class="playnote">Installed Trackhop from Google Play? Add <a href="https://github.com/xlollx/Trackhop-Bridge">Trackhop Bridge</a> for YouTube Music, Amazon Music, and Spotify and Apple Music without developer keys. <a href="guide/versions">Which version do I need?</a></p>
     </div>
-    <div class="phone"><img src="store/demo.gif" width="230" alt="A tour of Songport: syncs, a new sync, accounts, tools, a shared track, the compatibility and poster cards, unplayable tracks, settings"></div>
+    <div class="phone"><img src="store/demo.gif" width="230" alt="A tour of Trackhop: syncs, a new sync, accounts, tools, a shared track, the compatibility and poster cards, unplayable tracks, settings"></div>
   </div>
 </section>
 
 <section class="section">
   <div class="wrap">
     <h2>What it does</h2>
-    <p class="intro">Pick a source and a target, choose how often. Songport finds every track on the other side, shows you what will change, and keeps both in step.</p>
+    <p class="intro">Pick a source and a target, choose how often. Trackhop finds every track on the other side, shows you what will change, and keeps both in step.</p>
     <div class="cards">
       <div class="card">
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.5 6.2"/><path d="M3 12A9 9 0 0 1 18.5 5.8"/><path d="M18 2v4h-4"/><path d="M6 22v-4h4"/></svg></div>
@@ -39,7 +42,7 @@ main_class: home
       <div class="card">
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
         <h3>Nothing guessed</h3>
-        <p>A preview before every sync. Tracks that were not found go to a review: pick the right one once, Songport remembers it.</p>
+        <p>A preview before every sync. Tracks that were not found go to a review: pick the right one once, Trackhop remembers it.</p>
       </div>
       <div class="card">
         <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
@@ -87,10 +90,10 @@ main_class: home
 <section class="section">
   <div class="wrap">
     <h2>Why not an online transfer service?</h2>
-    <p class="intro">Soundiiz, TuneMyMusic and FreeYourMusic are good at a one-off move. Songport is for keeping playlists in step over time, without handing your accounts to anyone.</p>
+    <p class="intro">Soundiiz, TuneMyMusic and FreeYourMusic are good at a one-off move. Trackhop is for keeping playlists in step over time, without handing your accounts to anyone.</p>
     <div class="table-scroll">
       <table class="compare">
-        <thead><tr><th></th><th>Songport</th><th>Online transfer services</th></tr></thead>
+        <thead><tr><th></th><th>Trackhop</th><th>Online transfer services</th></tr></thead>
         <tbody>
           <tr><td>Where it runs</td><td>On your phone</td><td>On their servers</td></tr>
           <tr><td>Who holds your logins</td><td>Only your phone, encrypted</td><td>The service</td></tr>
@@ -106,10 +109,10 @@ main_class: home
 
 <section class="section">
   <div class="wrap">
-    <h2>How Songport uses your data</h2>
+    <h2>How Trackhop uses your data</h2>
     <div class="data">
-      <p>Songport connects to the music services you choose (Spotify, YouTube Music, Apple Music, Amazon Music, TIDAL, Deezer, personal servers) with each service's own sign-in. It reads your playlists and their tracks, and, when you start or schedule a sync, creates playlists and adds or removes tracks in your own account. For YouTube Music through Google's API this means the YouTube Data API with the <code>youtube</code> permission, used only for your playlists and only on your device.</p>
-      <p>Access tokens are stored encrypted on the phone and never sent to Songport's developer or to any third party. There is no Songport server. Details in the <a href="privacy-policy">privacy policy</a>.</p>
+      <p>Trackhop connects to the music services you choose (Spotify, YouTube Music, Apple Music, Amazon Music, TIDAL, Deezer, personal servers) with each service's own sign-in. It reads your playlists and their tracks, and, when you start or schedule a sync, creates playlists and adds or removes tracks in your own account. For YouTube Music through Google's API this means the YouTube Data API with the <code>youtube</code> permission, used only for your playlists and only on your device.</p>
+      <p>Access tokens are stored encrypted on the phone and never sent to Trackhop's developer or to any third party. There is no Trackhop server. Details in the <a href="privacy-policy">privacy policy</a>.</p>
     </div>
   </div>
 </section>
@@ -117,11 +120,12 @@ main_class: home
 <section class="section">
   <div class="wrap">
     <h2>Get started</h2>
-    <p class="intro">Android 8.0 or newer, in English, Italian, French, German, Spanish, Portuguese, Polish, Russian, Turkish, Chinese, Japanese and Korean. The <a href="guide/">guide</a> walks through the first sync and the common errors; if something does not work as described, <em>Settings → Diagnostics → Report an issue</em> opens a report with the details filled in.</p>
+    <p class="intro">Android 8.0 or newer, in English, Italian, French, German, Spanish, Portuguese, Polish, Russian, Turkish, Chinese, Japanese and Korean. Not sure which build to take? <a href="guide/versions">Which Trackhop?</a> compares them. The <a href="guide/">guide</a> walks through the first sync and the common errors; if something does not work as described, <em>Settings → Diagnostics → Report an issue</em> opens a report with the details filled in.</p>
     <div class="get" style="filter: none">
       <a href="https://f-droid.org/packages/com.xlollx.songport/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid"></a>
-      <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Songport"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium"></a>
-      <a href="https://github.com/xlollx/Songport/releases/latest">or the APK from GitHub</a>
+      <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/xlollx/Trackhop"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium"></a>
+      <a href="https://github.com/xlollx/Trackhop/releases/latest">or the APK from GitHub</a>
     </div>
+    <p class="intro">Using the Google Play version? <a href="https://github.com/xlollx/Trackhop-Bridge/releases/latest"><strong>Download Trackhop Bridge</strong></a>, the plugin that adds YouTube Music, Amazon Music, and Spotify and Apple Music without developer keys (unofficial web interfaces: read its notes first).</p>
   </div>
 </section>

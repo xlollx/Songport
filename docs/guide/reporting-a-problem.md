@@ -15,7 +15,7 @@ What makes a report useful:
 - the sync involved and the time it ran (the log is in chronological order);
 - for a wrong match: the source track, the track that was picked, and the right one if you know it.
 
-Security issues: see [SECURITY.md](https://github.com/xlollx/Songport/blob/main/SECURITY.md), not a
+Security issues: see [SECURITY.md](https://github.com/xlollx/Trackhop/blob/main/SECURITY.md), not a
 public issue.
 
 [All guide pages](./)

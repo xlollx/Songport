@@ -1,0 +1,1 @@
+Jeden ekran startowy zamiast dwóch: aplikacja przechodzi od ikony prosto do Twoich synchronizacji.

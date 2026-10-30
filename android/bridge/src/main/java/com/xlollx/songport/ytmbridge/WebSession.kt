@@ -9,7 +9,7 @@ import androidx.security.crypto.MasterKey
 /**
  * A web login kept for one service (Spotify, Apple Music): the cookie jar snapshot plus a few
  * values (account name, cached tokens). Encrypted with the Android Keystore, never handed to
- * Songport as such: Songport only receives short-lived API tokens or data.
+ * Trackhop as such: Trackhop only receives short-lived API tokens or data.
  */
 class WebSession(private val name: String, private val domains: List<String>) {
     @Volatile private var cached: SharedPreferences? = null

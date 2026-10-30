@@ -2,7 +2,7 @@ package com.xlollx.songport.ytmbridge
 
 import kotlinx.serialization.Serializable
 
-/** What crosses the process boundary to Songport. Field names are the contract: do not rename. */
+/** What crosses the process boundary to Trackhop. Field names are the contract: do not rename. */
 @Serializable
 data class PlaylistDto(
     val id: String, val name: String, val count: Int = -1,
@@ -29,6 +29,8 @@ data class TrackDto(
     val year: Int? = null,
     /** False when the service lists the entry greyed out (it no longer plays); null when it did not say. */
     val available: Boolean? = null,
+    /** The recording's ISRC where the service gives it (Deezer): the matching uses it first. */
+    val isrc: String? = null,
 )
 
 @Serializable

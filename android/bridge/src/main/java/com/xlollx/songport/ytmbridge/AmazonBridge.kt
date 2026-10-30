@@ -300,7 +300,7 @@ object AmazonBridge {
         val h = headers.get()
         val c = config.get()
         if (h == null && problem.get() == SIGN_IN_AGAIN) throw BridgeException(
-            "the Amazon session no longer opens the player (it asked to sign in again). Open Songport Bridge, sign out of Amazon and sign in again.",
+            "the Amazon session no longer opens the player (it asked to sign in again). Sign out of Amazon Music and sign in again.",
         )
         if (h == null && problem.get()?.startsWith("page says") == true) throw BridgeException(
             "the Amazon Music player did not start [${problem.get()}, url: ${lastUrl.get().take(80)}].",
@@ -310,7 +310,7 @@ object AmazonBridge {
                 " [url: ${lastUrl.get().take(80).ifBlank { "none" }}" +
                 ", calls seen: ${calls.get()}" +
                 (problem.get()?.let { ", $it" } ?: "") + "]." +
-                " Open Songport Bridge, tap Capture traffic and let the player load once, then try again.",
+                " Run Capture traffic for Amazon Music once and let the player load, then try again.",
         )
         val seen = synchronized(others) { others.filterNot { it.startsWith("m.media-amazon") || it.contains("/images") }.take(12) }
         return Player(h ?: emptyMap(), c, userAgent.get(), System.currentTimeMillis(), anonymous.get(), seen)
@@ -373,7 +373,7 @@ object AmazonBridge {
           var grab = function(h){
             try { var o = plain(h); if (o['csrf-token']) { window.__amzLast = o; AmzBridge.headers(JSON.stringify(o), navigator.userAgent, location.host); } } catch(e){}
           };
-          // A call Songport asks for, sent by the page itself with the headers the player last used.
+          // A call Trackhop asks for, sent by the page itself with the headers the player last used.
           window.__amzCall = function(id, body){
             var done = function(st, t){ try { AmzBridge.result(id, st, String(t)); } catch(e){} };
             try {

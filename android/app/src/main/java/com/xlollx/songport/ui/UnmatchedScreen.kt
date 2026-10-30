@@ -90,6 +90,7 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
                 title = { Text(stringResource(R.string.review_title, report?.jobName ?: "")) },
                 navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
                 actions = {
+                    HelpButton(Helps.change, Helps.proposal, Helps.ignore, label = stringResource(R.string.help_review_title))
                     // The list as text, to keep or send: what was not found and what was matched loosely.
                     if (report != null && (report.unmatchedTracks.isNotEmpty() || report.reviewTracks.isNotEmpty())) {
                         IconButton(onClick = {
@@ -124,7 +125,8 @@ fun UnmatchedScreen(reportId: String, onClose: () -> Unit) {
         }
         val dst = Providers.byId(job.target.provider)
         val dstName = dst?.displayName ?: job.target.provider
-        val webSearch: ((String) -> String?)? = dst?.let { d -> { q: String -> d.webSearchUrl(ctx, q) } }
+        // Only when the service has a web search: Subsonic servers other than Navidrome, and Plex, have none.
+        val webSearch: ((String) -> String?)? = remember(dst) { dst?.webSearch(ctx) }
         // The user's AI, when they connected one for the generator: the same key helps here.
         val ai = remember { com.xlollx.songport.ai.AiClient.config(ctx)?.takeIf { it.complete } }
         val language = remember { java.util.Locale.getDefault().getDisplayLanguage(java.util.Locale.ENGLISH) }

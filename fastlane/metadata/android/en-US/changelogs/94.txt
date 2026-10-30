@@ -1,0 +1,1 @@
+SoundCloud sign-in looks like a plain mobile browser, so its bot protection no longer blocks it; if it still does, a clear message says what to do. Sign-in screens no longer slide under the status bar or the keyboard.

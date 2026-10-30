@@ -1,0 +1,1 @@
+A lista de serviços mostra quais serviços esta versão não consegue conectar, em vez de escondê-los. Quando a cota diária da API do YouTube acaba, a mensagem diz de quem é o limite e quando ele zera.

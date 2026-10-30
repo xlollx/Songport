@@ -10,7 +10,7 @@ import com.xlollx.songport.net.str
 
 /**
  * Cover art for a track, from Deezer's public catalogue (no key, no account: the same lookups
- * anyone makes on deezer.com). Tracks carry no image of their own in Songport; a card that shows
+ * anyone makes on deezer.com). Tracks carry no image of their own in Trackhop; a card that shows
  * them needs one. By ISRC when the track has one, else by the same search [IsrcOracle] does, and
  * only an exact enough match. Null when nothing fits: the card draws a placeholder.
  */

@@ -205,6 +205,7 @@ fun UnplayableScreen(provider: MusicProvider, onClose: () -> Unit) {
             TopAppBar(
                 title = { Text(stringResource(R.string.unplayable_title, provider.label(ctx)), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.nav_back)) } },
+                actions = { HelpButton(Helps.unplayable) },
             )
         },
         bottomBar = {
@@ -323,7 +324,7 @@ fun UnplayableScreen(provider: MusicProvider, onClose: () -> Unit) {
                                 onPick = { t -> decisions[k] = Decision.Replace(t); openKey = null },
                                 onError = { msg -> scope.launch { snackbar.showSnackbar(msg.ifBlank { ctx.getString(R.string.error_generic) }) } },
                                 autoSearch = false,
-                                webSearchUrl = { q -> provider.webSearchUrl(ctx, q) },
+                                webSearchUrl = remember(provider) { provider.webSearch(ctx) },
                                 extraActions = { busy ->
                                     if (provider.canRemoveTracks) TextButton(enabled = !busy, onClick = { decisions[k] = Decision.Remove; openKey = null }) { Text(stringResource(R.string.unplayable_remove_only)) }
                                     TextButton(enabled = !busy, onClick = { decisions[k] = Decision.Skip; openKey = null }) { Text(stringResource(R.string.unplayable_skip)) }

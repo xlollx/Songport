@@ -1,8 +1,9 @@
 name: Server
 
-# Songport server (server/, docs/guide/docker.md): tests, then the Docker image. On main the image
-# is published to ghcr.io/xlollx/songport as "latest" and as the app's version; on any other branch
-# it is only built, to prove the Dockerfile still works.
+# Trackhop server (server/, docs/guide/docker.md): tests, then the Docker image. On main the image
+# is published to ghcr.io/xlollx/trackhop as "latest" and as the app's version, with the same tags also
+# to ghcr.io/xlollx/songport (the name from before the rename) so existing installs keep updating; on
+# any other branch it is only built, to prove the Dockerfile still works.
 on:
   push:
     paths:
@@ -78,6 +79,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: ${{ env.PUBLISH == 'true' }}
           tags: |
+            ghcr.io/xlollx/trackhop:latest
+            ghcr.io/xlollx/trackhop:${{ steps.version.outputs.name }}
             ghcr.io/xlollx/songport:latest
             ghcr.io/xlollx/songport:${{ steps.version.outputs.name }}
           cache-from: type=gha

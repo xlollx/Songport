@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Songport</string>
+    <string name="app_name">Trackhop</string>
 
     <string name="tab_syncs">Senkronizasyonlar</string>
     <string name="tab_accounts">Hesaplar</string>
@@ -53,7 +53,7 @@
     <string name="editor_new_playlist_name_hint">Kaynak çalma listesinin adını kullanmak için boş bırakın.</string>
     <string name="editor_schedule">Otomatik zamanlama</string>
     <string name="editor_mirror">Kaldırmaları yansıt</string>
-    <string name="editor_mirror_desc">Kaynakta artık bulunmayan parçaları hedeften de kaldırır. Kapalı = yalnızca ekler.</string>
+    <string name="editor_mirror_desc">Kaynakta olmayan her parçayı, elle eklenenler dahil, hedeften kaldırır. Kapalı = yalnızca ekler.</string>
     <string name="editor_keep_order">Kaynak sırasını koru</string>
     <string name="editor_keep_order_desc">Ekleme sonrasında hedef, kaynağın sırasına göre düzenlenir. Spotify, YouTube Music ve Deezer bunu destekler.</string>
     <string name="note_order_aligned">Sıra kaynağa göre hizalandı.</string>
@@ -91,7 +91,7 @@
     <string name="connected_as">%1$s olarak bağlı</string>
     <string name="not_connected">Bağlı değil</string>
     <string name="not_configured">Kurulum gerekli</string>
-    <string name="not_configured_hint">Songport servis anahtarlarıyla birlikte gelmez. Servisin geliştirici sayfasında kendi ücretsiz anahtarınızı oluşturun: yaklaşık iki dakika sürer ve uygulama size adım adım yol gösterir.</string>
+    <string name="not_configured_hint">Trackhop servis anahtarlarıyla birlikte gelmez. Servisin geliştirici sayfasında kendi ücretsiz anahtarınızı oluşturun: yaklaşık iki dakika sürer ve uygulama size adım adım yol gösterir.</string>
     <string name="setup_now">Kur</string>
     <string name="connect">Bağlan</string>
     <string name="disconnect">Bağlantıyı kes</string>
@@ -100,11 +100,11 @@
 
     <string name="provider_note_spotify">Spotify hesabı gerektirir. Çalma listeleri ve Beğenilen Şarkılar.</string>
     <string name="provider_note_ytm">YouTube Music çalma listeleri ve beğeniler, bu sürüme yerleşik web oynatıcının kendi arayüzü üzerinden: Google hesabınızla oturum açın; Google Cloud projesi yok, kota yok. Resmi bir Google API\'si değildir: oturum açmadan önce gösterilen bildirimi okuyun.</string>
-    <string name="ytm_not_installed_hint">GitHub\'dan \"Songport YTM Bridge\" yardımcı uygulamasını yükleyin, sonra buraya dönüp Bağlan\'a basın. Resmi yolu mu tercih ediyorsunuz? Aşağıdaki \"YouTube Music (Google API)\" kartını kullanın.</string>
-    <string name="ytm_not_installed">Songport YTM Bridge yüklü değil.</string>
+    <string name="ytm_not_installed_hint">GitHub\'dan \"Trackhop Bridge\" yardımcı uygulamasını yükleyin, sonra buraya dönüp Bağlan\'a basın. Resmi yolu mu tercih ediyorsunuz? Aşağıdaki \"YouTube Music (Google API)\" kartını kullanın.</string>
+    <string name="ytm_not_installed">Trackhop Bridge yüklü değil.</string>
     <string name="ytm_install">Bridge\'i indir</string>
     <string name="report_issue">GitHub\'da bildir</string>
-    <string name="provider_note_youtube">Kendi Google Cloud projenizle resmi YouTube Data API. İsteğe bağlı: yukarıdaki düz \"YouTube Music\" kartı bunsuz da çalışır. Günlük kota sınırlıdır: büyük senkronizasyonlar birkaç gün sürebilir.</string>
+    <string name="provider_note_youtube">Kendi Google Cloud projenizle resmi YouTube Data API. Günlük kota sınırlıdır: büyük senkronizasyonlar birkaç gün sürebilir.</string>
     <string name="provider_note_tidal">TIDAL çalma listeleri (beta).</string>
     <string name="provider_note_deezer">Deezer çalma listeleri ve favoriler (beta).</string>
 
@@ -113,15 +113,15 @@
     <string name="log_duration">%1$d sn</string>
 
     <string name="settings_notifications">Her senkronizasyondan sonra bildir</string>
-    <string name="settings_notifications_desc">Zamanlanmış bir senkronizasyon parça eklediğinde, kaldırdığında veya başarısız olduğunda bildirim göster.</string>
+    <string name="settings_notifications_desc">Zamanlanmış bir senkronizasyon parça eklediğinde veya kaldırdığında ve herhangi bir senkronizasyon başarısız olduğunda bildirim göster.</string>
     <string name="settings_isrc">Deezer ile tam kayıt</string>
-    <string name="settings_isrc_desc">Bir parçanın ISRC\'si yoksa (web yolları, dosyalar) Songport bunu Deezer\'ın herkese açık kataloğunda bir kez arar; böylece Spotify, Apple Music ve TIDAL benzer bir parça yerine tam kaydı döndürür. Anonim istek, hesap gerekmez.</string>
+    <string name="settings_isrc_desc">Bir parçanın ISRC\'si yoksa (web yolları, dosyalar) Trackhop bunu Deezer\'ın herkese açık kataloğunda bir kez arar; böylece Spotify, Apple Music ve TIDAL benzer bir parça yerine tam kaydı döndürür. Anonim istek, hesap gerekmez.</string>
     <string name="settings_language">Dil</string>
-    <string name="settings_language_desc">Songport sistem dilini izler: İngilizce, İtalyanca, Fransızca, Almanca, İspanyolca, Portekizce, Lehçe, Rusça, Türkçe, Çince, Japonca, Korece.</string>
+    <string name="settings_language_desc">Trackhop sistem dilini izler: İngilizce, İtalyanca, Fransızca, Almanca, İspanyolca, Portekizce, Lehçe, Rusça, Türkçe, Çince, Japonca, Korece.</string>
     <string name="settings_language_open">Değiştir</string>
     <string name="settings_language_system">Sistem dili</string>
     <string name="settings_advanced">Servis anahtarları</string>
-    <string name="settings_advanced_desc">Songport kendi anahtarlarıyla gelmez: Spotify, YouTube Music, TIDAL, Deezer, Last.fm ve Apple Music, sizin adınıza oluşturulan ücretsiz bir anahtarla bağlanır; böylece limitler ve kotalar yalnızca size aittir. Burada bunları görebilir ve değiştirebilirsiniz.</string>
+    <string name="settings_advanced_desc">Trackhop kendi anahtarlarıyla gelmez: Spotify, YouTube, TIDAL, Deezer, Last.fm ve Apple Music\'in resmi yolları sizin adınıza oluşturulan ücretsiz bir anahtar kullanır; böylece limitler ve kotalar yalnızca size aittir. Burada bunları görebilir ve değiştirebilirsiniz.</string>
     <string name="settings_privacy_options">Reklam gizliliği seçenekleri</string>
     <string name="settings_privacy_policy">Gizlilik politikası</string>
     <string name="settings_about">Hakkında</string>
@@ -129,7 +129,7 @@
     <string name="settings_developer_switch">Geliştirici araçlarını göster</string>
     <string name="settings_developer_desc">Bağlantı günlüğü, paylaşılacak teknik rapor, web bağlayıcıları için trafik yakalama. Kapalıyken göz önünde durmazlar.</string>
     <string name="settings_version">Sürüm %1$s</string>
-    <string name="settings_ads_note">Songport ücretsizdir, abonelik yoktur. Tek bir küçük banner reklamla desteklenir; hiçbir veri satılmaz ve bağladığınız müzik servislerine giden istekler dışında telefonunuzdan hiçbir şey çıkmaz.</string>
+    <string name="settings_ads_note">Trackhop ücretsizdir, abonelik yoktur. Tek bir küçük banner reklamla desteklenir; hiçbir veri satılmaz ve reklam dışında, bağladığınız müzik servislerine giden istekler hariç telefonunuzdan hiçbir şey çıkmaz.</string>
     <string name="settings_csv">Dosyalar</string>
     <string name="csv_import">Dosya içe aktar</string>
     <string name="csv_export">Dışa aktar</string>
@@ -138,7 +138,7 @@
     <string name="csv_imported">%1$d parça içe aktarıldı</string>
     <string name="csv_exported">Dosya dışa aktarıldı</string>
     <string name="log_save_file">Dosya olarak kaydet…</string>
-    <string name="note_file_target">Songport içine kaydedildi: CSV veya M3U almak için buradaki “Dosya olarak kaydet” seçeneğini ya da Seçenekler → Dosyalar\'ı kullanın.</string>
+    <string name="note_file_target">Trackhop içine kaydedildi: CSV veya M3U almak için buradaki “Dosya olarak kaydet” seçeneğini ya da Araçlar › Dosya çalma listeleri\'ni kullanın.</string>
 
     <string name="auth_done">%1$s bağlandı</string>
     <string name="auth_failed">Oturum açılamadı: %1$s</string>
@@ -151,7 +151,7 @@
     <string name="notif_sync_title">Senkronizasyon: %1$s</string>
 
     <string name="delete_confirm_title">Bu senkronizasyon silinsin mi?</string>
-    <string name="delete_confirm_text">Servislerdeki çalma listelerine dokunulmaz.</string>
+    <string name="delete_confirm_text">Servislerdeki çalma listelerine dokunulmaz. Çift yönlü bir senkronizasyonun iki yarısı da silinir ve yoksaymayı seçtiğiniz parçalar yoksayılmaya devam eder.</string>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
     <string name="ok">Tamam</string>
@@ -164,7 +164,7 @@
     <string name="provider_note_files">Yerel dosyalar: herhangi bir servisten dışa aktardığınız bir çalma listesini (CSV, M3U, Apple Music/iTunes XML, JSON veya düz liste) içe aktarın ve istediğiniz yere senkronize edin. Açık API\'si olmayan servisler için köprü: Amazon Music, Qobuz, SoundCloud.</string>
     <string name="apple_token_missing">Henüz Apple Music geliştirici jetonu yok. Hesaplar, Apple Music, Kur yolundan kendi jetonunuzu girin.</string>
     <string name="apple_subscription_needed">%1$s: kitaplık için etkin bir Apple Music aboneliği gerekir; Apple reddetti (403: %2$s).</string>
-    <string name="link_paste">Veya herkese açık bir çalma listesi bağlantısı yapıştırın</string>
+    <string name="link_paste">Herkese açık bir çalma listesi bağlantısı yapıştırın</string>
     <string name="link_use">Bağlantıyı kullan</string>
     <string name="link_invalid">Bağlantı tanınmadı. Desteklenenler: Spotify, Apple Music, YouTube/YouTube Music, Deezer, TIDAL.</string>
     <string name="editor_source_link">Bağlantıdan</string>
@@ -175,10 +175,10 @@
     <string name="link_resolving">Çalma listesi okunuyor…</string>
     <string name="note_no_removals">%1$s, API\'si üzerinden çalma listesinden parça kaldırmaya izin vermiyor: %2$d parça yerinde bırakıldı.</string>
     <string name="note_removals_deferred">Kaldırmalar ertelendi: arama tamamlanmadığından, hedefte henüz hiçbir şeyle eşleşmeyen %1$d parça yerinde bırakıldı. Bir çalıştırma tamamlandığında yeniden değerlendirilecek.</string>
-    <string name="note_removals_capped">Kaldırmalar bekletildi: bu çalıştırma hedefteki %1$d parçayı kaldıracaktı (toplam %2$d). Görmek ve onaylamak için önizlemeyi açın; kaynak bunları gerçekten kaybetmediyse servis listeyi eksik vermiştir ve hiçbir şey kaldırılmamalıdır.</string>
+    <string name="note_removals_capped">Kaldırmalar bekletildi: bu çalıştırma hedefteki %1$d parçayı kaldıracaktı (toplam %2$d). Önizlemeyi açıp görmek için senkronizasyonun durumuna dokunun; gerçekten kaldırılmaları gerekiyorsa orada “Bu parçaları kaldır” seçeneğini işaretleyip çalıştırın. Kaynak bunları gerçekten kaybetmediyse servis listeyi eksik vermiştir ve hiçbir şey kaldırılmamalıdır.</string>
     <string name="note_unchanged">Son çalıştırmadan beri iki tarafta da değişiklik yok: atlandı.</string>
     <string name="review_share">Listeyi paylaş</string>
-    <string name="note_search_interrupted">%1$d / %2$d parça arandı, ardından servis daha uzun bir ara istedi (%3$s). Bu servisin bir sınırıdır, Songport hatası değil: bulunanlar uygulandı ve hatırlanacak. Kaldığı yerden devam etmek için senkronizasyonu birkaç dakika sonra yeniden çalıştırın.</string>
+    <string name="note_search_interrupted">%1$d / %2$d parça arandı, ardından servis daha uzun bir ara istedi (%3$s). Bu servisin bir sınırıdır, Trackhop hatası değil: bulunanlar uygulandı ve hatırlanacak. Kaldığı yerden devam etmek için senkronizasyonu birkaç dakika sonra yeniden çalıştırın.</string>
     <string name="error_no_removals">%1$s çalma listesinden parça kaldıramıyor</string>
     <string name="log_notes_title">Notlar</string>
     <string name="editor_mirror_unsupported">%1$s yalnızca parça ekleyebilir: kaldırmalar atlanacak.</string>
@@ -206,7 +206,7 @@
     <string name="setup_why_deezer">Deezer, sizin adınıza kayıtlı bir uygulama gerektirir. https yönlendirme sayfası proje tarafından sağlanır.</string>
     <string name="setup_why_apple">Geliştirici jetonu Apple Developer hesabınıza aittir ve en fazla altı ay sonra süresi dolar.</string>
     <string name="error_dev_mode_limit">%1$s uygulama başına yalnızca birkaç kullanıcıya izin veriyor. Kendi kimlik bilgilerinizi ayarlayın: ücretsizdir ve yaklaşık iki dakika sürer.</string>
-    <string name="error_network">telefon servise ulaşamadı (DNS başarısız). Bağlantıyı, varsa VPN veya özel DNS\'i ve Songport\'un arka planda veri kullanmasına izin verildiğini kontrol edip tekrar deneyin.</string>
+    <string name="error_network">telefon servise ulaşamadı (DNS başarısız). Bağlantıyı, varsa VPN veya özel DNS\'i ve Trackhop\'un arka planda veri kullanmasına izin verildiğini kontrol edip tekrar deneyin.</string>
     <string name="auth_timeout">tarayıcıdan yanıt gelmedi, süre doldu</string>
 
     <string name="tab_tools">Araçlar</string>
@@ -216,7 +216,7 @@
     <string name="preview_present">%1$d zaten hedefte</string>
     <string name="preview_add">%1$d eklenecek</string>
     <string name="preview_remove">%1$d kaldırılacak</string>
-    <string name="preview_remove_warning">Bu işlem hedefteki %1$d parçayı kaldıracak (toplam %2$d). Onaylamadan önce kaynağın gerçekten bu kadar az parça listelediğini kontrol edin: servisin eksik bir listelemesi tam olarak böyle görünür.</string>
+    <string name="preview_remove_warning">Bu işlem hedefteki %1$d parçayı kaldıracak (toplam %2$d). Kaynağın gerçekten bu kadar az parça listelediğini kontrol edin: servisin eksik bir listelemesi tam olarak böyle görünür. Aşağıdaki kutuyu işaretlemezseniz çalıştırma parça ekler ve bunları tutar.</string>
     <string name="preview_unmatched">%1$d bulunamadı</string>
     <string name="preview_ignored">%1$d yoksayıldı</string>
     <string name="preview_target_new">Hedef çalma listesi oluşturulacak.</string>
@@ -260,7 +260,7 @@
     <string name="result_ignored">%1$d yoksayıldı</string>
     <string name="tools_pick_service">Servis</string>
     <string name="files_row_desc">İçe aktarılan listeler ve bir senkronizasyonun “Dosya”ya yazdığı çalma listeleri: içe aktar, yapıştır, dışa aktar.</string>
-    <string name="ai_row_desc">Bir çalma listesi tarif edin; kendi yapay zekanız yazsın, Songport parçaları bulsun.</string>
+    <string name="ai_row_desc">Bir çalma listesi tarif edin; kendi yapay zekanız yazsın, Trackhop parçaları bulsun.</string>
     <string name="tools_backup_row_desc">Bu servisteki her çalma listesi, beğenilen şarkı, albüm ve sanatçı tarihli dosyalar olarak kaydedilir.</string>
     <string name="tools_none">Önce bir servis bağlayın.</string>
     <string name="spotify_forbidden">Spotify isteği reddetti (%1$s). Development Mode\'daki uygulamalar Spotify\'ın kendi yaptığı çalma listelerini (Discover Weekly, Release Radar, editoryal mixler) okuyamaz ve yalnızca uygulamanın User Management listesindeki hesaplara hizmet verir. Sizin veya başka bir kullanıcının oluşturduğu bir çalma listesi seçin ya da hesabı developer.spotify.com üzerinden ekleyin.</string>
@@ -345,7 +345,7 @@
     </plurals>
     <string name="transfer_started">%1$d senkronizasyon oluşturuldu ve başlatıldı: Senkronizasyonlar\'dan izleyin.</string>
     <string name="ai_title">Çalma listesi oluşturucu</string>
-    <string name="ai_desc">İstediğiniz çalma listesini tarif edin, kendi yapay zekanız yazsın; Songport ardından parçaları seçtiğiniz serviste normal bir senkronizasyon gibi arar, böylece yapay zekanın yanlış yazdığı her şey incelenecek parçalar arasına düşer. Songport\'un kendi yapay zekası yoktur: kendi yapay zekanızı (OpenAI, Anthropic, Google Gemini veya OpenAI uyumlu herhangi bir sunucu, yerel bile olabilir) hesabınızdan aldığınız bir anahtarla bağlarsınız ve ona yalnızca burada yazdığınız metin gönderilir.</string>
+    <string name="ai_desc">İstediğiniz çalma listesini tarif edin, kendi yapay zekanız yazsın; Trackhop ardından parçaları seçtiğiniz serviste normal bir senkronizasyon gibi arar, böylece yapay zekanın yanlış yazdığı her şey incelenecek parçalar arasına düşer. Trackhop\'un kendi yapay zekası yoktur: kendi yapay zekanızı (OpenAI, Anthropic, Google Gemini veya OpenAI uyumlu herhangi bir sunucu, yerel bile olabilir) hesabınızdan aldığınız bir anahtarla bağlarsınız ve ona yalnızca burada yazdığınız metin gönderilir.</string>
     <string name="ai_setup">Yapay zeka bağla</string>
     <string name="ai_setup_change">Değiştir</string>
     <string name="ai_setup_title">Yapay zekanız</string>
@@ -384,7 +384,7 @@
     <string name="ai_check">Test et</string>
     <string name="ai_checking">Model deneniyor…</string>
     <string name="ai_check_ok">Model hazır</string>
-    <string name="ai_free_hint">Ücretsiz deneyin: Google Gemini ve Groq\'un ücretsiz katmanı, OpenRouter\'ın ücretsiz modelleri (“:free” ile bitenler) var. Sağlayıcının sitesinde anahtar almak bir dakika sürer. Songport ortak bir anahtar sunamaz: açık kaynak kodda görünür ve bir gün içinde tükenirdi.</string>
+    <string name="ai_free_hint">Ücretsiz deneyin: Google Gemini ve Groq\'un ücretsiz katmanı, OpenRouter\'ın ücretsiz modelleri (“:free” ile bitenler) var. Sağlayıcının sitesinde anahtar almak bir dakika sürer. Trackhop ortak bir anahtar sunamaz: açık kaynak kodda görünür ve bir gün içinde tükenirdi.</string>
     <string name="ai_badge_desc">Yapay zekanız tarafından yazıldı</string>
     <string name="ai_extend">Yapay zeka ile parça ekle</string>
     <string name="ai_extend_title">Çalma listesini genişlet</string>
@@ -454,16 +454,16 @@
     </plurals>
     <string name="settings_battery">Zamanlanmış senkronizasyonlar çalışmıyor mu?</string>
     <string name="backup_folder_title">Klasöre yedekle</string>
-    <string name="backup_folder_desc">Songport çalma listelerinizin tarihli yedeklerini zaten uygulama içinde tutar. Bir klasör seçin (SD kart, Nextcloud, Drive, klasör sunan herhangi bir uygulama); yeni sürümler oraya da kopyalanır, böylece telefon gitse bile kalırlar. Geri yüklemek için Dosyalar\'dan o klasördeki bir dosyayı içe aktarın.</string>
+    <string name="backup_folder_desc">Bir klasör seçin (SD kart, Nextcloud, Drive, klasör sunan herhangi bir uygulama); Trackhop çalma listelerinizin tarihli yedeklerini oraya kaydeder, böylece telefon gitse bile kalırlar. Bir yedekleme çalışana kadar orada hiçbir şey olmaz: aşağıdaki zamanlamayla ya da Şimdi kopyala ile. Geri yüklemek için Dosyalar\'dan o klasördeki bir dosyayı içe aktarın.</string>
     <string name="backup_folder_none">Klasör seçilmedi</string>
-    <string name="backup_folder_hint">Yalnızca klasörde henüz olmayan dosyalar kopyalanır.</string>
+    <string name="backup_folder_hint">Şimdi kopyala önce bağlı her servisin yedeğini alır, sonra klasörde henüz olmayan dosyaları kopyalar.</string>
     <string name="backup_folder_pick">Klasör seç</string>
     <string name="backup_folder_now">Şimdi kopyala</string>
     <string name="backup_folder_done">%1$d servis yedeklendi, %2$d yeni dosya kopyalandı</string>
     <string name="backup_folder_forget">Durdur</string>
     <string name="backup_folder_missing">Yedekleme klasörüne artık ulaşılamıyor: silindi, kart çıkarıldı veya uygulama erişimini kaybetti. Yeniden bir klasör seçin.</string>
     <string name="backup_last_ok">Son kopya: %1$s</string>
-    <string name="settings_battery_desc">Bazı telefonlar (Xiaomi, Huawei, Oppo, Samsung) arka plan uygulamalarını durdurur. Zamanlamaya uyulması için Songport\'u pil optimizasyonundan hariç tutun.</string>
+    <string name="settings_battery_desc">Bazı telefonlar (Xiaomi, Huawei, Oppo, Samsung) arka plan uygulamalarını durdurur. Zamanlamaya uyulması için Trackhop\'u pil optimizasyonundan hariç tutun.</string>
     <string name="settings_battery_button">Pil ayarlarını aç</string>
     <string name="share_received">Bağlantı alındı: nereye senkronize edileceğini seçin.</string>
     <string name="share_invalid">Paylaşılan metinde tanınabilir bir çalma listesi bağlantısı yok.</string>
@@ -483,7 +483,7 @@
     <string name="login_token">Jeton</string>
     <string name="login_submit">Kontrol et ve kaydet</string>
     <string name="login_checking">Kontrol ediliyor…</string>
-    <string name="login_trust_server">Kimlik bilgileriniz bu telefonda şifreli olarak kalır. Songport yalnızca burada girdiğiniz sunucuyla konuşur.</string>
+    <string name="login_trust_server">Kimlik bilgileriniz bu telefonda şifreli olarak kalır. Trackhop yalnızca burada girdiğiniz sunucuyla konuşur.</string>
     <string name="login_hint_subsonic">Navidrome, Airsonic veya başka bir Subsonic uyumlu sunucunuzun adresini (örneğin https://music.example.com), kullanıcı adınızı ve şifrenizi girin. Şifre asla olduğu gibi gönderilmez: her istek tuzlanmış bir hash kullanır. Ampache: hesap şifrenizi değil, Tercihler → Hesap bölümünde belirlediğiniz Subsonic şifresini veya API anahtarını kullanın.</string>
     <string name="login_hint_jellyfin">Jellyfin sunucunuzun adresini (örneğin https://jellyfin.example.com), kullanıcı adınızı ve şifrenizi girin.</string>
     <string name="login_hint_plex">Plex Media Server adresinizi (örneğin http://192.168.1.10:32400) ve X-Plex-Token\'ınızı girin. Plex, jetonu nasıl bulacağınızı destek sayfalarında açıklar (\"Finding an authentication token\").</string>
@@ -497,12 +497,12 @@
     <string name="error_read_only">%1$s salt okunur: yalnızca kaynak olabilir.</string>
     <string name="error_create_unsupported">%1$s uygulamadan çalma listesi oluşturamıyor: %1$s üzerinde oluşturup burada seçin.</string>
     <string name="connect_title">%1$s bağlanıyor</string>
-    <string name="connect_where_oauth">%1$s üzerinde, tarayıcınızda oturum açacaksınız. Songport şifrenizi asla görmez.</string>
-    <string name="connect_where_web">Uygulama içinde gösterilen %1$s sayfasında oturum açacaksınız. Songport şifrenizi asla görmez, yalnızca bıraktığı oturumu.</string>
-    <string name="connect_where_apple">Apple\'ın kendi penceresinde Apple ID\'nizle oturum açacaksınız. Songport şifrenizi asla görmez.</string>
-    <string name="connect_where_server">Sunucu bilgileriniz bu telefonda şifreli olarak kalır. Songport yalnızca sunucunuzla konuşur.</string>
-    <string name="connect_token">Songport yalnızca sınırlı, iptal edilebilir bir izin alır ve bunu bu telefonda şifreli olarak saklar (Android Keystore).</string>
-    <string name="connect_noserver">Songport sunucusu yoktur: veriler yalnızca bu telefon ile %1$s arasında gider.</string>
+    <string name="connect_where_oauth">%1$s üzerinde, tarayıcınızda oturum açacaksınız. Trackhop şifrenizi asla görmez.</string>
+    <string name="connect_where_web">Uygulama içinde gösterilen %1$s sayfasında oturum açacaksınız. Trackhop şifrenizi asla görmez, yalnızca bıraktığı oturumu.</string>
+    <string name="connect_where_apple">Apple\'ın kendi penceresinde Apple ID\'nizle oturum açacaksınız. Trackhop şifrenizi asla görmez.</string>
+    <string name="connect_where_server">Sunucu bilgileriniz bu telefonda şifreli olarak kalır. Trackhop yalnızca sunucunuzla konuşur.</string>
+    <string name="connect_token">Trackhop yalnızca sınırlı, iptal edilebilir bir izin alır ve bunu bu telefonda şifreli olarak saklar (Android Keystore).</string>
+    <string name="connect_noserver">Trackhop sunucusu yoktur: veriler yalnızca bu telefon ile %1$s arasında gider.</string>
     <string name="connect_revoke">İstediğiniz zaman iptal edebilirsiniz: burada Bağlantıyı kes ile veya %1$s hesabınızdan.</string>
     <string name="connect_continue">Devam</string>
     <string name="connect_continue_browser">Tarayıcıda devam et</string>
@@ -532,8 +532,8 @@
     <string name="connector_pick_hint">Bazı servislere iki yoldan ulaşılabilir. En kolayı: sitede oturum açın, hiçbir şey oluşturmanız gerekmez. Resmi: servisin kendi API\'si, size ait ücretsiz bir anahtarla, daha kararlı.</string>
     <string name="route_easy">Hızlı yol</string>
     <string name="route_official">Resmi yol</string>
-    <string name="route_note_web">Tarayıcıda yapar gibi servisin kendi sayfasında oturum açarsınız: Songport şifrenizi asla görmez, yalnızca oturumu bu telefonda şifreli olarak tutar. Oluşturulacak bir şey yok. Resmi bir arayüz değildir: site değiştiğinde çalışmayı bırakabilir.</string>
-    <string name="route_note_web_only">Tarayıcıdaki gibi servisin kendi sayfasında oturum açarsınız: Songport şifrenizi asla görmez, yalnızca oturumu, bu telefonda şifreli olarak. Resmi API yoktur: site değiştiğinde çalışmayı bırakabilir.</string>
+    <string name="route_note_web">Tarayıcıda yapar gibi servisin kendi sayfasında oturum açarsınız: Trackhop şifrenizi asla görmez, yalnızca oturumu bu telefonda şifreli olarak tutar. Oluşturulacak bir şey yok. Resmi bir arayüz değildir: site değiştiğinde çalışmayı bırakabilir.</string>
+    <string name="route_note_web_only">Tarayıcıdaki gibi servisin kendi sayfasında oturum açarsınız: Trackhop şifrenizi asla görmez, yalnızca oturumu, bu telefonda şifreli olarak. Resmi API yoktur: site değiştiğinde çalışmayı bırakabilir.</string>
     <string name="route_note_api">Servisin geliştirici sayfasında yaklaşık iki dakikada oluşturulan, size ait ücretsiz API anahtarı. Resmi ve kararlı.</string>
     <string name="route_note_spotify_api">developer.spotify.com üzerinde yaklaşık iki dakikada oluşturulan, size ait ücretsiz API anahtarı. Resmi ve kararlı. Spotify bunu yalnızca Premium hesapların oluşturmasına izin verir (Şubat 2026\'dan beri bir Spotify kuralı): Premium olmadan \"Web API\" orada gri kalır.</string>
     <string name="route_note_apple_api">Bir Apple Developer hesabından (ücretli) geliştirici jetonu. Resmi.</string>
@@ -543,8 +543,8 @@
     <string name="connector_name_label">Bağlayıcı adı</string>
     <string name="connector_rename">Yeniden adlandır</string>
     <string name="connect_switch_account">Tarayıcı başka bir %1$s hesabında zaten oturum açmış olabilir. Oturum açma sayfasında “Siz değil misiniz?” seçeneğini seçin veya hesap değiştirin, sonra bu bağlayıcının hesabıyla devam edin.</string>
-    <string name="provider_note_amazon">Amazon\'un açık API\'si yok: Songport web oynatıcının arayüzünü kullanır, bu yüzden Amazon arayüzü değiştirdiğinde çalışmayı bırakabilir. Çalma listeleri, arama, oluşturma, ekleme ve kaldırma desteklenir.</string>
-    <string name="amazon_not_installed_hint">GitHub\'dan \"Songport Bridge\" yardımcı uygulamasını (1.3.1 veya üzeri) yükleyin ya da güncelleyin, sonra buraya dönüp Bağlan\'a dokunun.</string>
+    <string name="provider_note_amazon">Amazon\'un açık API\'si yok: Trackhop web oynatıcının arayüzünü kullanır, bu yüzden Amazon arayüzü değiştirdiğinde çalışmayı bırakabilir. Çalma listeleri, arama, oluşturma, ekleme ve kaldırma desteklenir.</string>
+    <string name="amazon_not_installed_hint">GitHub\'dan \"Trackhop Bridge\" yardımcı uygulamasını (1.3.1 veya üzeri) yükleyin ya da güncelleyin, sonra buraya dönüp Bağlan\'a dokunun.</string>
     <string name="sync_pause">Duraklat</string>
     <string name="sync_resume">Sürdür</string>
     <string name="sync_stop">Durdur</string>
@@ -562,18 +562,17 @@
     <string name="live_removed">Hedeften kaldırıldı</string>
     <string name="provider_note_spotify_bridge">Spotify\'ın kendi sayfasında oturum açın, geliştirici uygulaması oluşturmak gerekmez. Web oynatıcının oturumunu kullanır: resmi bir yol değildir, Spotify\'ın koşullarına aykırıdır, çalışmayı bırakabilir. Kendi anahtarınızla resmi yol \"Spotify\" olarak kullanılabilir durumda kalır.</string>
     <string name="provider_note_apple_bridge">Apple ID\'nizle oturum açın, Apple Developer Program gerekmez. Web oynatıcının jetonlarını kullanır: resmi bir yol değildir, Apple\'ın koşullarına aykırıdır, çalışmayı bırakabilir. Kendi geliştirici jetonunuzla resmi yol \"Apple Music\" olarak kullanılabilir durumda kalır.</string>
-    <string name="bridge_needed_hint">GitHub\'dan \"Songport Bridge\" yardımcı uygulamasını (1.2 veya üzeri) yükleyin ya da güncelleyin, sonra buraya dönüp Bağlan\'a dokunun.</string>
+    <string name="bridge_needed_hint">GitHub\'dan \"Trackhop Bridge\" yardımcı uygulamasını (1.2 veya üzeri) yükleyin ya da güncelleyin, sonra buraya dönüp Bağlan\'a dokunun.</string>
     <string name="settings_source_code">Kaynak kodu ve belgeler</string>
-    <string name="plugins_more">Bağlayıcı eklentileriyle başka servisler eklenebilir: nasıl çalışır.</string>
     <string name="security_title">Oturumlarınız nasıl korunur</string>
-    <string name="security_fact_1">Şifreler servislerin kendi sayfalarında yazılır, asla Songport\'ta değil.</string>
-    <string name="security_fact_2">Songport yalnızca Android Keystore ile şifrelenmiş, iptal edilebilir erişim jetonları tutar.</string>
-    <string name="security_fact_3">Songport sunucusu yoktur ve oluşturulacak hesap yoktur: bağladığınız servislere giden istekler dışında telefonunuzdan hiçbir şey çıkmaz.</string>
+    <string name="security_fact_1">Şifreler servislerin kendi sayfalarında yazılır, asla Trackhop\'ta değil.</string>
+    <string name="security_fact_2">Trackhop yalnızca Android Keystore ile şifrelenmiş, iptal edilebilir erişim jetonları tutar.</string>
+    <string name="security_fact_3">Trackhop sunucusu yoktur ve oluşturulacak hesap yoktur: bağladığınız servislere giden istekler dışında telefonunuzdan hiçbir şey çıkmaz.</string>
     <string name="security_fact_4">Bağlantıyı kesmek jetonu telefondan siler; her servis ayrıca hesap sayfasından iptal etmenize izin verir.</string>
     <string name="ai_trust_title">Anahtar nereye gidiyor?</string>
     <string name="ai_trust_1">Yalnızca bu telefonda, müzik servislerinizin jetonları gibi Android Keystore ile şifrelenmiş olarak saklanır.</string>
-    <string name="ai_trust_2">Telefondan yalnızca %1$s yönüne, yaptığınız her istekle birlikte çıkar. Songport\'un kendi sunucusu yoktur: Seçenekler → Güvenlik → Bağlantılar, bu uygulamanın şimdiye kadar iletişim kurduğu her sunucuyu listeler, böylece kontrol edebilirsiniz.</string>
-    <string name="ai_trust_3">“Anahtarı unut” onu anında siler. Daha da güvenlisi: yalnızca Songport için harcama limitli bir anahtar oluşturun ve istediğiniz zaman iptal edin.</string>
+    <string name="ai_trust_2">Telefondan yalnızca %1$s yönüne, yaptığınız her istekle birlikte çıkar. Trackhop\'un kendi sunucusu yoktur: Ayarlar › Gelişmiş › Geliştirici araçlarını göster › Bağlantıları göster, bu uygulamanın şimdiye kadar iletişim kurduğu her sunucuyu listeler, böylece kontrol edebilirsiniz.</string>
+    <string name="ai_trust_3">“Anahtarı unut” onu anında siler. Daha da güvenlisi: yalnızca Trackhop için harcama limitli bir anahtar oluşturun ve istediğiniz zaman iptal edin.</string>
     <string name="ai_limits">Harcama limiti belirle</string>
     <string name="security_connections">Bağlantıları göster</string>
     <string name="security_connections_desc">Bu uygulamanın yüklendiğinden beri iletişim kurduğu her sunucu ve kaç kez. Yalnızca sunucu adı kaydedilir, gönderilenler asla.</string>
@@ -582,9 +581,9 @@
     <string name="security_connections_clear">Listeyi temizle</string>
     <string name="security_connections_count">%1$d istek · sonuncusu %2$s</string>
     <string name="security_lock">Açmak için kilit açma iste</string>
-    <string name="security_lock_desc">Songport açılmadan önce parmak izi, yüz veya telefon PIN\'i.</string>
+    <string name="security_lock_desc">Trackhop açılmadan önce parmak izi, yüz veya telefon PIN\'i.</string>
     <string name="security_lock_unavailable">Bu telefonda ekran kilidi ayarlanmamış.</string>
-    <string name="lock_title">Songport kilitli</string>
+    <string name="lock_title">Trackhop kilitli</string>
     <string name="lock_subtitle">Parmak izi, yüz veya PIN ile kilidi açın</string>
     <string name="lock_unlock">Kilidi aç</string>
     <string name="review_title">İncelenecek: %1$s</string>
@@ -600,24 +599,24 @@
     <string name="restored_done">%1$d parça geri yüklendi</string>
     <string name="restored_note">Kaldırılan %1$d parça elle geri yüklendi.</string>
     <string name="quota_used">Bugün %1$s / %2$s YouTube birimi kullanıldı</string>
-    <string name="quota_note">Günlük sınırı YouTube (Google) belirler, Songport değil. Pasifik saatiyle gece yarısı sıfırlanır. Bir arama 100 birim, bir parça ekleme 50 birim harcar.</string>
-    <string name="quota_note_shared">Günlük sınırı YouTube (Google) belirler, Songport değil; yerleşik anahtarı kullanan herkesle paylaşılır: diğer kullanıcıların harcadığı burada sayılmaz. Kendi kimlik bilgileriniz size ait bir kota sağlar.</string>
+    <string name="quota_note">Günlük sınırı YouTube (Google) belirler, Trackhop değil. Pasifik saatiyle gece yarısı sıfırlanır. Bir arama 100 birim, bir parça ekleme 50 birim harcar.</string>
+    <string name="quota_note_shared">Günlük sınırı YouTube (Google) belirler, Trackhop değil; yerleşik anahtarı kullanan herkesle paylaşılır: diğer kullanıcıların harcadığı burada sayılmaz. Kendi kimlik bilgileriniz size ait bir kota sağlar.</string>
     <string name="quota_estimate">Bu senkronizasyon yaklaşık %1$s birim kullanacak.</string>
     <string name="quota_estimate_over">Bu senkronizasyon yaklaşık %1$s birim gerektiriyor ama bugün yalnızca %2$s kaldı: önümüzdeki günlerde tamamlanacak.</string>
     <string name="editor_bidirectional">Çift yönlü</string>
-    <string name="editor_bidirectional_desc">Ters yönde, kaldırmasız bir ayna senkronizasyonu da oluşturur; böylece iki çalma listesi de eksiksiz kalır.</string>
+    <string name="editor_bidirectional_desc">Ters yönde bir senkronizasyon da oluşturur (↔ ile işaretli); böylece bir tarafa eklenen parçalar diğerine de ulaşır. İkisi de parça kaldırmaz. İkisi de buradan düzenlenir.</string>
     <string name="editor_bidirectional_unavailable">Mevcut bir hedef çalma listesi ve yazılabilir bir kaynakla kullanılabilir.</string>
     <string name="editor_bidirectional_not_owned">Kaynak olarak herkese açık bir bağlantı veya başkasının çalma listesiyle olmaz: okunabilir, yazılamaz.</string>
-    <string name="onboarding_title">Songport\'a hoş geldiniz</string>
-    <string name="onboarding_intro">Çalma listelerinizi müzik servisleri arasında elle veya zamanlayarak aynı tutun. Ücretsiz, abonelik yok, oluşturulacak hesap yok.</string>
+    <string name="onboarding_title">Trackhop\'a hoş geldiniz</string>
+    <string name="onboarding_intro">Çalma listelerinizi bir müzik servisinden diğerine kopyalayın ve elle ya da zamanlayarak güncel tutun. Ücretsiz, abonelik yok, oluşturulacak hesap yok.</string>
     <string name="onboarding_step1_title">1. Servislerinizi bağlayın</string>
     <string name="onboarding_step1_desc">Spotify, Apple Music, YouTube Music, TIDAL, Deezer, kendi sunucunuz veya bir dosya.</string>
     <string name="onboarding_step2_title">2. Bir senkronizasyon oluşturun</string>
     <string name="onboarding_step2_desc">Bir kaynak çalma listesi ve bir hedef seçin. Önizleme, herhangi bir şey olmadan önce tam olarak nelerin değişeceğini gösterir.</string>
     <string name="onboarding_step3_title">3. Çalışmasına izin verin</string>
     <string name="onboarding_step3_desc">Her saat, gün veya hafta. Eşleştirilemeyen parçalar listelenir, böylece kendiniz düzeltebilirsiniz.</string>
-    <string name="onboarding_security">Her servisin kendi sayfasında oturum açarsınız. Songport bu telefonda yalnızca şifreli, iptal edilebilir bir jeton tutar ve kendi sunucusu yoktur.</string>
-    <string name="onboarding_credentials">Songport kendi servis anahtarlarıyla gelmez: Spotify, YouTube Music, TIDAL ve Deezer için servisin geliştirici sayfasında ücretsiz bir anahtar oluşturursunuz ve uygulama size yaklaşık iki dakikada yol gösterir. Verileriniz ardından yalnızca telefonunuz ile kendi anahtarınız arasında gider.</string>
+    <string name="onboarding_security">Her servisin kendi sayfasında oturum açarsınız. Trackhop bu telefonda yalnızca şifreli, iptal edilebilir bir jeton tutar ve kendi sunucusu yoktur.</string>
+    <string name="onboarding_credentials">Trackhop kendi servis anahtarlarıyla gelmez. Bir servisin resmi yolu anahtar gerektirdiğinde, o servisin geliştirici sayfasında ücretsiz bir anahtar oluşturursunuz ve uygulama size yaklaşık iki dakikada yol gösterir. Verileriniz ardından yalnızca telefonunuz ile servis arasında gider.</string>
     <string name="onboarding_start">Başlayalım</string>
     <string name="settings_show_onboarding">Tanıtımı yeniden göster</string>
     <string name="paste_list">Liste yapıştır</string>
@@ -644,16 +643,16 @@
     </plurals>
     <string-array name="setup_steps_spotify">
         <item>developer.spotify.com adresinde her gün kullandığınız Spotify hesabıyla oturum açın. Spotify bu hesabın Premium olmasını şart koşar; geliştirici koşullarını kabul etmeniz istenirse kabul edin. O sayfada \"Web API\" gri görünüyorsa hesabın Premium\'u yoktur: Spotify anahtara izin vermez, bunun yerine diğer yolu kullanın.</item>
-        <item>\"Create app\" düğmesine basın. Ad ve açıklama size kalmış (örneğin \"Songport\"). \"Website\" alanını boş bırakın.</item>
+        <item>\"Create app\" düğmesine basın. Ad ve açıklama size kalmış (örneğin \"Trackhop\"). \"Website\" alanını boş bırakın.</item>
         <item>\"Redirect URIs\" alanına aşağıda gösterilen adresi tam olarak yapıştırın ve \"Add\" düğmesine basın. Bu olmadan oturum açma uygulamaya geri dönemez.</item>
         <item>\"Which API/SDKs are you planning to use?\" altında \"Web API\" seçeneğini işaretleyin, koşulları kabul edin ve \"Save\" düğmesine basın.</item>
         <item>Oluşturduğunuz uygulamayı açın, \"Settings\" (sağ üst) düğmesine basın ve \"Client ID\" değerini buraya kopyalayın. Client secret gerekmez.</item>
         <item>İsteğe bağlı: \"User Management\", anahtarınızı kullanabilecek en fazla 5 başka Spotify hesabı (ad ve e-posta) eklemenize izin verir, örneğin aile üyeleri.</item>
     </string-array>
     <string-array name="setup_steps_youtube">
-        <item>console.cloud.google.com adresinde Google hesabınızla oturum açın ve bir proje oluşturun. Herhangi bir ad olur, örneğin \"Songport\". Oluşturulduğuna dair bildirimi bekleyin, sonra projeyi seçin.</item>
+        <item>console.cloud.google.com adresinde Google hesabınızla oturum açın ve bir proje oluşturun. Herhangi bir ad olur, örneğin \"Trackhop\". Oluşturulduğuna dair bildirimi bekleyin, sonra projeyi seçin.</item>
         <item>YouTube Data API v3\'ü etkinleştirin: bağlantı kitaplıktaki sayfasını açar, \"Enable\" düğmesine basın.</item>
-        <item>Google Auth Platform, \"Overview\", \"Get started\" düğmesine basın: uygulama adı \"Songport\", destek adresi olarak e-postanız, kitle \"External\", iletişim olarak e-postanız. Kabul edin ve \"Create\" düğmesine basın.</item>
+        <item>Google Auth Platform, \"Overview\", \"Get started\" düğmesine basın: uygulama adı \"Trackhop\", destek adresi olarak e-postanız, kitle \"External\", iletişim olarak e-postanız. Kabul edin ve \"Create\" düğmesine basın.</item>
         <item>Google Auth Platform, \"Audience\": \"Test users\" altında \"Add users\" düğmesine basıp kendi Gmail adresinizi ekleyin, sonra kaydedin. Bu adım olmadan Google oturum açmayı \"access blocked\" ile reddeder.</item>
         <item>Google Auth Platform, \"Clients\", \"Create client\": uygulama türü \"Desktop app\", herhangi bir ad. Client ID ve Client secret değerlerini buraya kopyalayın. Başka bir şey kaydetmenize gerek yok: uygulama oturum açmayı 127.0.0.1 üzerinden alır.</item>
     </string-array>
@@ -705,26 +704,26 @@
     <string name="settings_log">Senkronizasyon günlüğü</string>
     <string name="settings_log_desc">Son senkronizasyonların sonucu ve bir rapora eklenecek teknik ayrıntılar.</string>
     <string name="settings_open">Aç</string>
-    <string name="accounts_intro">Her servisin resmi sayfasında oturum açarsınız. Songport şifrenizi asla görmez.</string>
-    <string name="web_auth_hint">%1$s servisinin kendi sayfasında oturum açın. Songport yalnızca sonunda geri dönen onayı alır.</string>
+    <string name="accounts_intro">Her servisin resmi sayfasında oturum açarsınız. Trackhop şifrenizi asla görmez.</string>
+    <string name="web_auth_hint">%1$s servisinin kendi sayfasında oturum açın. Trackhop yalnızca sonunda geri dönen onayı alır.</string>
     <string name="show_details">Ayrıntılar</string>
     <string name="hide_details">Ayrıntıları gizle</string>
     <string name="ads_why_title">Reklamlar neden var?</string>
-    <string name="ads_why_body">Songport ücretsizdir; abonelik yok, kilitli özellik yok. Asla tam ekran olmayan tek bir küçük banner, geliştiricinin kahvesini ve her servisi çalışır tutmak için harcanan saatleri karşılar. Rahatsız ederse GitHub\'da bir konu açın.</string>
-    <string name="settings_free_note">Songport ücretsizdir; reklam yok, abonelik yok. Bağladığınız müzik servislerine giden istekler dışında telefondan hiçbir şey çıkmaz.</string>
+    <string name="ads_why_body">Trackhop ücretsizdir; abonelik yok, kilitli özellik yok. Asla tam ekran olmayan tek bir küçük banner, geliştiricinin kahvesini ve her servisi çalışır tutmak için harcanan saatleri karşılar. Rahatsız ederse GitHub\'da bir konu açın.</string>
+    <string name="settings_free_note">Trackhop ücretsizdir; reklam yok, abonelik yok. Bağladığınız müzik servislerine giden istekler dışında telefondan hiçbir şey çıkmaz.</string>
     <string name="free_why_title">Ücretsiz, reklamsız</string>
-    <string name="free_why_body">Songport\'ta reklam, abonelik veya kilitli özellik yoktur. Gönüllü katkılarla yaşar: size zaman kazandırıyorsa geliştiriciye bir kahve ısmarlayabilirsiniz.</string>
-    <string name="support_title">Songport\'u beğendiniz mi?</string>
+    <string name="free_why_body">Trackhop\'ta reklam, abonelik veya kilitli özellik yoktur. Gönüllü katkılarla yaşar: size zaman kazandırıyorsa geliştiriciye bir kahve ısmarlayabilirsiniz.</string>
+    <string name="support_title">Trackhop\'u beğendiniz mi?</string>
     <string name="support_body">İsterseniz Ko-fi üzerinden geliştiriciye bir kahve ısmarlayın. Tamamen isteğe bağlı: hiçbir şey açılmaz, uygulama herkes için eksiksiz kalır.</string>
     <string name="support_button">Bana bir kahve ısmarla</string>
     <string name="support_sponsors">GitHub Sponsors</string>
     <string name="support_prompt_title">Az önce %1$s parça taşıdınız</string>
-    <string name="support_prompt_body">“%1$s” senkronizasyonuyla. Songport ücretsiz ve reklamsızdır, gönüllü katkılarla yaşar: size zaman kazandırdıysa geliştiriciye bir kahve ısmarlayabilirsiniz.</string>
+    <string name="support_prompt_body">“%1$s” senkronizasyonuyla. Trackhop ücretsiz ve reklamsızdır, gönüllü katkılarla yaşar: size zaman kazandırdıysa geliştiriciye bir kahve ısmarlayabilirsiniz.</string>
     <string name="support_prompt_later">Şimdi değil</string>
     <!-- A track link shared from any music app, headed for any connected service (ShareTrackSheet). -->
     <string name="share_sheet_title">Şuraya ekle…</string>
     <string name="share_sheet_from">%1$s üzerinden paylaşıldı</string>
-    <string name="share_sheet_unknown">Songport bu parçanın adını okuyamadı. Aşağıda elle ara.</string>
+    <string name="share_sheet_unknown">Trackhop bu parçanın adını okuyamadı. Aşağıda elle ara.</string>
     <string name="share_sheet_open">%1$s içinde aç</string>
     <string name="share_sheet_copy">Bağlantıyı kopyala</string>
     <string name="share_sheet_copied">Bağlantı kopyalandı</string>
@@ -736,8 +735,8 @@
     <string name="share_sheet_no_match">%1$s üzerinde bulunamadı. Elle ara ya da başka bir servis seç.</string>
     <string name="share_sheet_add">Çalma listesine ekle…</string>
     <string name="share_sheet_change">Değiştir</string>
-    <string name="settings_music_links">Müzik bağlantıları için Songport\'u öner</string>
-    <string name="settings_music_links_desc">Bir Spotify, Apple Music, YouTube Music, Amazon Music, Deezer veya TIDAL bağlantısı Songport\'ta açılabilir; Songport parçayı servislerinden herhangi birindeki bir çalma listesine ekler. Android yine hangi uygulamanın kullanılacağını sorar ya da bağlantı ayarlarında seçileni kullanır: Songport bir bağlantıyı asla kendiliğinden almaz.</string>
+    <string name="settings_music_links">Müzik bağlantıları için Trackhop\'u öner</string>
+    <string name="settings_music_links_desc">Bir Spotify, Apple Music, YouTube Music, Amazon Music, Deezer veya TIDAL bağlantısı Trackhop\'ta açılabilir; Trackhop parçayı servislerinden herhangi birindeki bir çalma listesine ekler. Android yine hangi uygulamanın kullanılacağını sorar ya da bağlantı ayarlarında seçileni kullanır: Trackhop bir bağlantıyı asla kendiliğinden almaz.</string>
     <!-- Cards: "how compatible are we?" and the playlist poster. -->
     <string name="tools_compat_title">Ne kadar uyumluyuz?</string>
     <string name="tools_compat_desc">Farklı servislerden bile olsa iki çalma listesini karşılaştırır: ortak parçalar, ortak sanatçılar, bir puan ve paylaşılacak bir kart.</string>
@@ -775,18 +774,18 @@
     <string name="settings_theme_light">Açık</string>
     <string name="settings_theme_dark">Koyu</string>
     <string name="settings_dynamic_color">Dinamik renkler (Material You)</string>
-    <string name="settings_dynamic_color_desc">Songport\'un renkleri yerine duvar kağıdının renkleri. Başlık alanı marka renklerini korur.</string>
+    <string name="settings_dynamic_color_desc">Trackhop\'un renkleri yerine duvar kağıdının renkleri. Başlık alanı marka renklerini korur.</string>
     <string name="settings_dynamic_color_unavailable">Android 12 veya daha yenisi gerekir.</string>
 
     <!-- Unplayable tracks tool -->
     <string name="tools_unplayable_title">Çalınamayan parçalar</string>
     <string name="tools_unplayable_desc">Bir servisin listelediği ama artık çalmadığı (gri) parçaları bulur ve çalan bir sürümle değiştirir.</string>
     <string name="unplayable_title">Çalınamayan parçalar: %1$s</string>
-    <string name="unplayable_unsupported">%1$s hangi parçaları artık çalmadığını söylemiyor, bu yüzden Songport burada kontrol edemiyor.</string>
+    <string name="unplayable_unsupported">%1$s hangi parçaları artık çalmadığını söylemiyor, bu yüzden Trackhop burada kontrol edemiyor.</string>
     <string name="unplayable_all_playlists">Tüm çalma listelerim</string>
     <string name="unplayable_scan">Kontrol et</string>
     <string name="unplayable_scanning">%1$s kontrol ediliyor…</string>
-    <string name="unplayable_hint">Her biri için Songport çalan bir sürüm önerir. Kabul et, başkasını ara, kaydı kaldır ya da atla. Uygulayana kadar hiçbir şey değişmez.</string>
+    <string name="unplayable_hint">Her biri için Trackhop çalan bir sürüm önerir. Kabul et, başkasını ara, kaydı kaldır ya da atla. Uygulayana kadar hiçbir şey değişmez.</string>
     <string name="unplayable_searching">Çalan bir sürüm aranıyor…</string>
     <string name="unplayable_no_proposal">İkna edici bir sürüm bulunamadı: elle aramak için kaydı aç ya da kaldır.</string>
     <string name="unplayable_proposal">Yerine: %1$s (%%%2$d eşleşme)</string>
@@ -799,7 +798,7 @@
     <string name="unplayable_apply">%1$d değişikliği uygula</string>
     <string name="unplayable_applying">Uygulanıyor %1$d/%2$d…</string>
     <string name="unplayable_confirm_title">Değişiklikler uygulansın mı?</string>
-    <string name="unplayable_confirm_body">%1$d parça çalan bir sürüm alacak, %2$d kayıt kaldırılacak. Orijinaller Songport günlüğünde kalır, böylece geri alabilirsin.</string>
+    <string name="unplayable_confirm_body">%1$d parça çalan bir sürüm alacak, %2$d kayıt kaldırılacak. Orijinaller Trackhop günlüğünde kalır, böylece geri alabilirsin.</string>
     <string name="unplayable_no_removal">%1$s uygulamaların parça kaldırmasına izin vermiyor: çalan sürüm eklenir, çalınamayan kayıt kalır.</string>
     <string name="unplayable_done">%1$d değiştirildi, %2$d kaldırıldı</string>
     <string name="unplayable_undo">Geri al</string>
@@ -812,7 +811,7 @@
     <string name="unplayable_reason_deleted">Silinmiş</string>
     <string name="unplayable_reason_unknown">Çalınamıyor</string>
     <string name="settings_unplayable">Çalınamayan parçalar için haftalık kontrol</string>
-    <string name="settings_unplayable_desc">Songport haftada bir çalma listelerini tarar ve bir parça artık çalınamadığında haber verir. Kendi başına hiçbir şeyi değiştirmez.</string>
+    <string name="settings_unplayable_desc">Trackhop haftada bir çalma listelerini tarar ve bir parça artık çalınamadığında haber verir. Kendi başına hiçbir şeyi değiştirmez.</string>
     <string name="notif_unplayable_title">Çalınamayan parçalar</string>
     <plurals name="notif_unplayable_text">
         <item quantity="one">Çalma listelerindeki %1$d parça artık çalınamıyor. Değiştirmek için dokun.</item>
@@ -865,7 +864,7 @@
     <string name="soundcloud_label">SoundCloud (herkese açık bağlantılar, resmî değil)</string>
     <string name="provider_note_soundcloud">Herkese açık SoundCloud setleri ve beğeni sayfaları, yalnızca okuma ve oturum açmadan: bağlantıyı bir eşitlemenin kaynağı olarak yapıştırın. Resmî bir arayüz değil: SoundCloud sitesini değiştirdiğinde çalışmayı bırakabilir.</string>
     <string name="soundcloud_not_public">Bu SoundCloud çalma listesi gizli veya mevcut değil: yalnızca herkese açık bağlantılar çalışır</string>
-    <string name="soundcloud_player_changed">SoundCloud web oynatıcısını değiştirdi; Songport\'un güncellenmesi gerekiyor</string>
+    <string name="soundcloud_player_changed">SoundCloud web oynatıcısını değiştirdi; Trackhop\'un güncellenmesi gerekiyor</string>
     <string name="job_color">Renk</string>
     <string name="job_color_default">Varsayılan</string>
     <string name="color_red">Kırmızı</string>
@@ -886,7 +885,7 @@
         <item quantity="other">%d eşitleme sürüyor</item>
     </plurals>
     <string name="error_ampache_subsonic_password">Ampache şifreyi reddetti. Ampache, Subsonic uygulamaları için hesap şifrenizi kabul etmez: Ampache\'de Tercihler → Hesap\'ı açın, bir Subsonic şifresi belirleyin (veya API anahtarınızı kopyalayın) ve burada şifre olarak girin.</string>
-    <string name="shazam_share_hint">Shazam\'ı sık mı kullanıyorsunuz? Shazam ayarlarında Spotify veya Apple Music\'i bağlayın: tanıdığınız her şarkı “My Shazam Tracks” çalma listesine eklenir. Songport onu tüm hizmetlerinizde eşitleyebilir.</string>
+    <string name="shazam_share_hint">Shazam\'ı sık mı kullanıyorsunuz? Shazam ayarlarında Spotify veya Apple Music\'i bağlayın: tanıdığınız her şarkı “My Shazam Tracks” çalma listesine eklenir. Trackhop onu tüm hizmetlerinizde eşitleyebilir.</string>
     <string name="shazam_share_hint_button">Shazam\'larımı eşitle</string>
     <string name="shazam_editor_suggest">Shazam\'larınız: %1$s</string>
     <string name="syncs_find_hint">Senkronizasyon bul</string>
@@ -902,7 +901,7 @@
         <item quantity="one">%1$d / %2$d senkronizasyon</item>
         <item quantity="other">%1$d / %2$d senkronizasyon</item>
     </plurals>
-    <string name="stats_title">Rakamlarla Songport</string>
+    <string name="stats_title">Rakamlarla Trackhop</string>
     <string name="stats_row_desc">Eşitlemelerinizin şimdiye kadar yaptıkları, paylaşılacak bir kartta</string>
     <string name="stats_hero_link">Rakamlarınız</string>
     <string name="stats_tracks_moved">Taşınan şarkılar</string>
@@ -939,7 +938,7 @@
         <item quantity="one">Bu telefonda yalnızca son %1$d eşitleme saklanır: daha eskiler bu rakamlara dahil değildir.</item>
         <item quantity="other">Bu telefonda yalnızca son %1$d eşitleme saklanır: daha eskiler bu rakamlara dahil değildir.</item>
     </plurals>
-    <string name="stats_local_note">Songport\'un zaten sakladığı eşitleme geçmişinden bu telefonda sayıldı. Kartı paylaşmadığınız sürece hiçbir şey gönderilmez.</string>
+    <string name="stats_local_note">Trackhop\'un zaten sakladığı eşitleme geçmişinden bu telefonda sayıldı. Kartı paylaşmadığınız sürece hiçbir şey gönderilmez.</string>
     <string name="stats_empty_title">Henüz rakam yok</string>
     <string name="stats_empty_body">İlk tamamlanan eşitlemeden sonra, bu telefondaki geçmişten sayılarak görünürler.</string>
     <string name="stats_share_title">Rakamlarınızı paylaşın</string>
@@ -952,16 +951,16 @@
     <string name="settings_section_backups">Yedekler</string>
     <string name="settings_section_advanced">Gelişmiş</string>
     <string name="settings_isrc_summary">Eksik ISRC kodlarını Deezer\'da arar, tam eşleşmeler için.</string>
-    <string name="settings_music_links_summary">Şarkıyı bir çalma listesine eklemek için müzik bağlantılarını Songport\'ta aç.</string>
+    <string name="settings_music_links_summary">Şarkıyı bir çalma listesine eklemek için müzik bağlantılarını Trackhop\'ta aç.</string>
     <string name="settings_unplayable_summary">Çalmayı bırakan şarkıları bildirir. Hiçbir şeyi değiştirmez.</string>
     <string name="settings_notifications_system">Sistem bildirim ayarları</string>
     <string name="settings_notifications_system_desc">Ses, titreşim ve Android\'in hangi bildirimleri gösterdiği.</string>
-    <string name="settings_security_summary">Bu telefonda şifreli, iptal edilebilir oturumlar; Songport sunucusu yok.</string>
+    <string name="settings_security_summary">Bu telefonda şifreli, iptal edilebilir oturumlar; Trackhop sunucusu yok.</string>
     <string name="settings_keys_summary">Anahtar isteyen servisler için kendi geliştirici anahtarlarınız.</string>
     <string name="backup_folder_stop">Bu klasöre kopyalamayı durdur</string>
     <string name="nav_back">Geri</string>
     <string name="tools_service_title">Araçların servisi</string>
-    <string name="tools_service_hint">Logosu olan araçlar bu servis üzerinde çalışır.</string>
+    <string name="tools_service_hint">Aşağıdaki araçlar bu servis üzerinde çalışır; servisin desteklemedikleri gri görünür.</string>
     <string name="tools_go_accounts">Hesaplar\'a git</string>
     <string name="tools_unavailable_on">%1$s üzerinde kullanılamaz</string>
     <string name="tools_section_music">Müziğin</string>
@@ -984,9 +983,9 @@
     <string name="tools_row_compat">İki çalma listesini karşılaştır ve paylaşılacak bir puan al.</string>
     <string name="tools_row_poster">Kapaklar ve QR kodlu, paylaşılabilir bir kart.</string>
     <string name="tools_row_unplayable">Gri görünen şarkıları bul, çalınabilen sürümlerle değiştir.</string>
-    <string name="settings_battery_summary">Bazı telefonlar arka plandaki uygulamaları durdurur: Songport\'u pil optimizasyonundan çıkarın.</string>
-    <string name="settings_dynamic_color_summary">Songport\'un renkleri yerine duvar kağıdının renkleri.</string>
-    <string name="settings_notifications_summary">Zamanlanmış bir senkronizasyon şarkıları değiştirdiğinde veya başarısız olduğunda.</string>
+    <string name="settings_battery_summary">Bazı telefonlar arka plandaki uygulamaları durdurur: Trackhop\'u pil optimizasyonundan çıkarın.</string>
+    <string name="settings_dynamic_color_summary">Trackhop\'un renkleri yerine duvar kağıdının renkleri.</string>
+    <string name="settings_notifications_summary">Zamanlanmış bir senkronizasyon şarkıları değiştirdiğinde veya biri başarısız olduğunda.</string>
     <string name="settings_developer_summary">Bağlantı günlüğü, teknik rapor, trafik kaydı.</string>
     <string name="settings_new_look_summary">Sayılar ve son çalıştırma geçmişiyle senkronizasyon kartları.</string>
     <string name="settings_log_summary">Son senkronizasyon sonuçları ve teknik ayrıntılar.</string>
@@ -997,4 +996,193 @@
     <string name="first_sync_ready_body">%1$s bağlandı. Çalma listelerinden birini ve nereye gideceğini seç.</string>
     <string name="first_sync_create">Senkronizasyon oluştur</string>
     <string name="editor_one_service_hint">İki servis arasında senkronize etmek için ikinci bir servis ekle. O zamana kadar senkronizasyon bu telefondaki bir dosyaya gidebilir.</string>
+    <string name="plugins_title">Eklentiler</string>
+    <string name="plugins_desc">Trackhop\'un açık bir bağlayıcı arayüzü vardır: herkesin yapabileceği ayrı uygulamalar hizmet ekleyebilir. Trackhop hiçbir eklentiyi içermez, indirmez veya önermez. Yüklü olanlar burada, hizmetleri ise Hesaplar\'da görünür.</string>
+    <string name="plugins_none">Yüklü eklenti yok</string>
+    <string name="plugins_services">Hizmetler: %1$s</string>
+    <string name="services_group_unavailable">Bu sürümde kullanılamaz</string>
+    <string name="preview_remove_confirm">Bu %1$d parçayı hedeften kaldır</string>
+    <string name="note_two_way_no_removals">Kaldırmalar atlandı: bu çift yönlü bir senkronizasyon, bu yüzden hedefte olup kaynakta olmayan %1$d parça tutuldu (ters senkronizasyon onları geri kopyalar). Kaldırmaları yansıtmak için Çift yönlü\'yü kapatın.</string>
+    <string name="editor_mirror_two_way">Çift yönlü ile olmaz: diğer tarafa eklenen bir parça geri kopyalanmadan önce kaldırılabilir.</string>
+    <string name="editor_twin_note">“%1$s”, bu çift yönlü senkronizasyonun ters yarısıdır. Bu ayarları izler, bu yüzden ikisi de buradan düzenlenir.</string>
+    <string name="editor_schedule_desc">İlk çalıştırma kaydettikten birkaç dakika sonra başlar, sonra yaklaşık her aralıkta bir kez; kesin zamanı Android seçer.</string>
+    <string name="editor_wifi_only_desc">Zamanlanmış çalıştırmalar sınırsız bir ağı, genellikle Wi‑Fi\'ı bekler. Şimdi çalıştır ve Tümünü senkronize et bunu dikkate almaz.</string>
+    <string name="pill_held_back">Kaldırmalar bekliyor</string>
+    <string name="pill_not_found">Bulunamadı: %1$d</string>
+    <string name="pill_incomplete">Tamamlanmadı</string>
+    <string name="onboarding_docs_title">Belgeler ve kod</string>
+    <string name="onboarding_docs_body">Her özelliği okumak ya da koda bakmak mı istiyorsunuz? Belgeler ve kaynak kodu GitHub\'da.</string>
+    <string name="onboarding_docs_open">GitHub\'da aç</string>
+    <!-- Contextual help: the "?" sheets -->
+    <string name="help_cd">Yardım: %1$s</string>
+    <string name="help_example">Örnek:</string>
+    <string name="help_cards_title">Senkronizasyon kartları</string>
+    <string name="help_status_title">Durum</string>
+    <string name="help_status_body">Etiket, son çalıştırmanın nasıl geçtiğini gösterir. Güncel: tamamlandı ve sizi bekleyen bir şey yok. Kaldırmalar bekliyor, Tamamlanmadı ve Bulunamadı: N, bakılması gereken bir şey olduğunu söyler; etikete dokunmak sizi oraya götürür. İlgilenilmeli: çalıştırma başarısız oldu.</string>
+    <string name="help_status_example">“Bulunamadı: 12” incelemeyi açar; orada bu 12 parçayı elle seçebilirsiniz.</string>
+    <string name="help_route_title">→ ve ↔</string>
+    <string name="help_route_body">→ kaynaktan hedefe tek yönlü bir senkronizasyondur. ↔ çift yönlü bir çifti gösterir: her yön için bir tane olmak üzere iki senkronizasyon, iki kart olarak görünür. ↔ kartını düzenlemek asıl senkronizasyonu açar; birini silmek ikisini de siler.</string>
+    <string name="help_figures_title">Sayılar</string>
+    <string name="help_figures_body">Eklendi, kaldırıldı ve bulunamadı son çalıştırmayı sayar: parçaları görmek için bir sayıya dokunun. Parça, yoksaydıklarınız hariç kaynağın boyutudur; dokunursanız hedef çalma listesi açılır. Alttaki çizgiler son çalıştırmalardır: hiçbir şey değişmediyse soluk, bir çalıştırma başarısız olduysa kırmızı.</string>
+    <string name="help_to_fix_title">Düzeltilecekler</string>
+    <string name="help_to_fix_body">Son çalıştırmanın bulamadığı parçalar ile emin olamadığı eşleşmeler. Senkronizasyon hâlâ eklerken düzeltmeye başlayabilirsiniz; her seçim sonraki çalıştırmalar için hatırlanır.</string>
+    <string name="help_run_now_body">▶ bu senkronizasyonu devre dışı olsa veya Yalnızca Wi‑Fi olarak ayarlansa bile hemen çalıştırır. Bir çalma listesini değiştirdikten sonra zamanlamayı beklemek yerine kullanın. Önizlemede önceden onaylamadıysanız büyük kaldırmalar yine bekletilir.</string>
+    <string name="help_sync_all_body">Etkin tüm senkronizasyonları Yalnızca Wi‑Fi ayarını yok sayarak sırayla çalıştırır; devre dışı olanlar atlanır. Listeyi aşağı çekmek de aynısını yapar. Senkronizasyonlar sürerken düğmeye dokunmak çalışan ilk karta kaydırır.</string>
+    <string name="help_sync_all_example">Biri devre dışı olan 5 senkronizasyondan 4\'ü çalışır.</string>
+    <string name="help_cached_title">Önceki bir eşleşmeden</string>
+    <string name="help_cached_body">Parça daha önceki bir çalıştırmada eşleştirildi ve yeniden aranmadan kullanılıyor. Eşleşme yanlışsa incelemede değiştirin: seçiminiz sonraki tüm çalıştırmalarda onun yerini alır.</string>
+    <string name="help_one_service_title">Tek servis bağlı</string>
+    <string name="help_one_service_body">Yalnızca bir servis bağlıyken senkronizasyon yalnızca Trackhop içinde tutulan bir File\'a gidebilir; bu yüzden 2. adımda File seçili gelir. İki servis arasında senkronize etmek için ikinci bir servis bağlayın.</string>
+    <string name="help_one_service_example">Yalnızca Spotify bağlıysa 2. adım Spotify ve File sunar ve File seçilidir.</string>
+    <string name="help_library_title">Çalma listeleri ve Kitaplık</string>
+    <string name="help_library_body">Çalma listeleri bölümünde çalma listeleriniz ve Beğenilen şarkılar bulunur. Kitaplık; kaydedilen albümleri, takip edilen sanatçıları, podcast\'leri ve yalnızca kaynak olarak son çalınanları içerir. Hedef olarak yalnızca size ait çalma listeleri gösterilir.</string>
+    <string name="help_link_body">Herkese açık bir çalma listesinin paylaşım bağlantısını yapıştırın: kısa bağlantılar açılır ve adı okunur. Çalma listesi yalnızca okunur, asla değiştirilmez; bu yüzden çift yönlü olamaz. Bazı servislerin herkese açık bir bağlantıyı okumak için bile bağlı olması gerekir.</string>
+    <string name="help_target_body">Parçaların gideceği yer. Trackhop bir servisi önceden seçer: kaydetmeden önce kontrol edin. Başka bir servis seçmek, seçili çalma listesini temizler.</string>
+    <string name="help_liked_body">Kaynak Beğenilen şarkılar olduğunda ve hedef servis beğenmeyi destekliyorsa, hedef o servisin beğenilen şarkıları olur ve senkronize edilen her parça orada beğenilir. Kaldırmaları yansıt açıkken kaynakta beğenilmeyen parçaların hedefteki beğenisi kaldırılır.</string>
+    <string name="help_liked_example">Spotify Beğenilen şarkılar → Deezer: her parça Deezer favorilerinize eklenir.</string>
+    <string name="help_new_playlist_body">Çalma listesi kaydederken değil, ilk çalıştırmada oluşturulur ve siz bir ad yazmazsanız kaynağın adını alır. Daha sonra serviste silerseniz senkronizasyon durur ve onu yeniden oluşturmanızı ya da başka birini seçmenizi ister.</string>
+    <string name="help_schedule_body">Senkronizasyonu arka planda yaklaşık her saat, her 6 saatte, her gün veya her hafta çalıştırır. Kesin zamanı Android seçer ve özellikle pil tasarrufunda geciktirebilir. İlk çalıştırma kaydettikten birkaç dakika sonra başlar. İki çalma listesini de değişmemiş bulan zamanlanmış bir çalıştırma hemen durur.</string>
+    <string name="help_schedule_example">Her gün, saat 18:00\'de kaydedildi: ilk çalıştırma birkaç dakika sonra, bir sonraki yaklaşık bir gün sonra gelir.</string>
+    <string name="help_mirror_body">Hedef, kaynağın bir kopyasına dönüşür: kaynakta hiçbir şeyle eşleşmeyen her hedef parçası, oraya kendi eklediklerinizle birlikte kaldırılır. Yalnızca kaynak ana listenizse kullanın. Bir çalıştırma 10\'dan fazla parçayı ve hedefin dörtte birinden fazlasını kaldıracaksa, siz önizlemede onaylayana kadar bu kaldırmalar bekletilir. Kaldırılan parçalar Senkronizasyon günlüğünden geri yüklenebilir.</string>
+    <string name="help_mirror_example">Spotify çalma listenizden bir şarkıyı silin; bir sonraki çalıştırmada kopyadan da kaybolur.</string>
+    <string name="help_keep_order_body">Ekledikten sonra hedef, kaynağın sırasına göre düzenlenir; yalnızca hedefte olan parçalar sona gider. Beğenilen şarkılarda ve 1.500 parçanın üzerinde uygulanmaz. Servis reddederse çalıştırma yine başarılı olur ve Senkronizasyon günlüğü bunu belirtir.</string>
+    <string name="help_two_way_body">Ters yönde ikinci bir senkronizasyon (↔ kartı) ekler; böylece bir tarafa eklenen parçalar diğerine de ulaşır. İki yarı da parça kaldırmaz, bu yüzden Kaldırmaları yansıt kapalı kalır: bir tarafta silinen parça genellikle diğer taraftan geri gelir. İki yarı zamanlamayı ve kuralları paylaşır ve ikisi de burada, asıl senkronizasyondan düzenlenir.</string>
+    <string name="help_enabled_body">Kapalıyken zamanlama duraklar ve senkronizasyon Tümünü senkronize et, widget ve kutucuk dışında kalır. Yine de ▶ Şimdi çalıştır ile başlatabilirsiniz.</string>
+    <string name="help_strictness_body">Trackhop\'un bir parçayı kendi başına eklemeden önce ne kadar emin olması gerektiği. Katı, otomatik olarak daha az ekler ve size daha çok sorar; Esnek daha çok ekler, ama yanlış sürüm riski daha yüksektir.</string>
+    <string name="help_strictness_example">Remikslerden oluşan bir çalma listesinde Katı, radyo sürümünü seçmekten kaçınır.</string>
+    <string name="help_explicit_body">Bir servis parçanın müstehcen olup olmadığını belirttiğinde Trackhop seçtiğiniz sürümü tercih eder. Bu bir tercihtir, filtre değil: yalnızca diğer sürüm varsa o kullanılır.</string>
+    <string name="help_same_album_body">Kaynaktaki albümün aynısını güçlü biçimde tercih eder. Single veya derleme sürümü yanlış olacaksa açın.</string>
+    <string name="help_same_album_example">Canlı albümden bir parça canlı kalır, stüdyo single\'ıyla değiştirilmez.</string>
+    <string name="help_preview_body">Bir çalıştırmanın ne yapacağını hiçbir şeyi değiştirmeden gösterir. Bunun için eksik her parçayı hedefte arar; bu biraz sürebilir ve YouTube\'da kota harcar. Yoksayıldı, yoksaymayı seçtiğiniz parçaları sayar.</string>
+    <string name="help_preview_run_body">Senkronizasyonu hemen çalıştırır. Her şeyi yeniden hesaplar ama burada bulunan eşleşmeleri kullanır, bu yüzden çok daha hızlıdır. Burada karara bağlamadığınız belirsiz eşleşmeler, çalıştırmadan sonra incelemede yeniden sorulur.</string>
+    <string name="help_removals_title">Büyük kaldırmalar</string>
+    <string name="help_removals_body">Bu çalıştırma hedefin büyük bir kısmını kaldırırdı. Önce kaynağı kontrol edin: bir çalma listesini yalnızca kısmen listeleyen bir servis tam olarak böyle görünür. Parçaların gerçekten gitmesi gerekiyorsa kutuyu işaretleyip Şimdi çalıştır\'a dokunun. İşaret yalnızca elle başlatılan o çalıştırma ve yalnızca burada listelenen parçalar için geçerlidir; zamanlanmış çalıştırmalar onları bekletmeye devam eder.</string>
+    <string name="help_uncertain_title">Belirsiz eşleşmeler</string>
+    <string name="help_uncertain_body">Trackhop\'un emin olmadığı eşleşmeler. Birini tutmak için Doğru görünüyor\'a, başka bir parça seçmek için Değiştir\'e dokunun: her iki durumda da hatırlanır. Burada bıraktıklarınız çalıştırmadan sonra incelemede yeniden sorulur.</string>
+    <string name="help_quota_title">YouTube birimleri</string>
+    <string name="help_quota_body">YouTube günde sabit sayıda birim verir: bir arama 100, bir parça eklemek 50 birim tutar. Sayaç Pasifik saatiyle gece yarısı sıfırlanır. Büyük bir ilk senkronizasyon birkaç gün sürebilir ve kendi kendine devam eder.</string>
+    <string name="help_review_title">Parçaları düzeltme</string>
+    <string name="help_change_body">Trackhop\'un seçtiği parçayı sizin seçtiğinizle değiştirir: servis izin veriyorsa yanlış olan hedeften kaldırılır ve seçiminiz sonraki çalıştırmalar için hatırlanır.</string>
+    <string name="help_proposal_body">Bulunan en yakın parça, ama kendiliğinden eklenecek kadar yakın değil: doğruysa Ekle\'ye dokunun. Bulunamayan parçalar bir hafta sonra yeniden aranır; hemen aramak için birini açın.</string>
+    <string name="help_proposal_example">“Song” için önerilen “Song (Remastered 2011)”.</string>
+    <string name="help_ignore_body">Bu servise yapılan tüm senkronizasyonlar için bu parçayı aramayı ve bildirmeyi bırakır. Henüz geri alınamaz; bu yüzden orada bulunmayan parçalar için kullanın, örneğin bir ev kaydı.</string>
+    <string name="help_results_title">Arama sonuçları</string>
+    <string name="help_results_body">En olası, en yakın eşleşmeleri gösterir. Altta, kapalı olarak: kaynak albümün hedefteki parçaları, diğer sonuçlar ve YouTube Music\'te daha geniş YouTube kataloğundan videolar.</string>
+    <string name="help_ask_ai_body">Ayarlar › Gelişmiş › Yapay zekanız bölümünde kurduğunuz yapay zekadan daha iyi bir arama ister. Parça ve şimdiye kadar bulunan sonuçlar yalnızca yapay zeka sağlayıcınıza gönderilir.</string>
+    <string name="help_notes_body">Bir çalıştırmanın bilerek yapmadıkları ve nedenleri: bekletilen kaldırmalar, servis tarafından yarıda kesilen bir arama, uygulanamayan bir sıralama. Bir arama tamamlanmadığında senkronizasyon kartı buraya yönlendirir.</string>
+    <string name="help_restore_title">Kaldırılanları geri yükle</string>
+    <string name="help_restore_body">O çalıştırmanın Kaldırmaları yansıt ile kaldırdığı parçaları geri koyar. Yalnızca son 200 rapor saklanır, bu yüzden geri yüklemeyi geciktirmeyin.</string>
+    <string name="help_connectors_title">Bağlayıcılar</string>
+    <string name="help_connectors_body">Bağlayıcı, bir servisteki bir hesaptır. İki Spotify hesabı arasında senkronize etmek için iki Spotify bağlayıcısı ekleyin; verdiğiniz ad yalnızca kartın etiketidir.</string>
+    <string name="help_tags_title">Etiketler</string>
+    <string name="help_tags_body">Salt okunur: servis yalnızca kaynak olabilir. Beta: çalışır ama daha az kullanıldı. Kurulum gerekli: önce anahtarınızı oluşturun.</string>
+    <string name="help_disconnect_body">Bu telefondaki oturumu siler. Bu hesabı kullanan senkronizasyonlar siz yeniden bağlanana kadar başarısız olur; bir senkronizasyonu duraklatmak için onu devre dışı bırakın.</string>
+    <string name="help_remove_account_body">Bağlantıyı keser ve kartı kaldırır. Bir senkronizasyon hesabı kullandığı sürece engellidir: önce o senkronizasyonları silin veya düzenleyin.</string>
+    <string name="help_test_body">Oturumu, çalma listelerinin okunmasını ve bir deneme aramasını her biri için tek çağrıyla denetler. Bir şey başarısız olursa sorun bildirirken bu sonucu ekleyin.</string>
+    <string name="help_extra_actions_title">Menüde daha fazlası</string>
+    <string name="help_extra_actions_body">Google doğrulama sayfası, Google YouTube Music oturum açmayı engellediğinde Google\'ın kendi sayfasını açar. Geliştirici araçları açıkken trafik yakalama, site değiştiğinde Amazon Music\'i düzeltmeye yardım eder.</string>
+    <string name="help_routes_title">Hızlı ve resmi yol</string>
+    <string name="help_routes_body">Hızlı: servisin kendi sayfasında oturum açarsınız, oluşturacak bir şey yoktur, ama site değişince çalışmayı bırakabilir. Resmi: adınıza ücretsiz bir anahtarla servisin kendi API\'si; daha kararlıdır, kurulumu birkaç dakika sürer.</string>
+    <string name="help_unavailable_body">Trackhop\'un bu sürümü bu servislere kendi başına erişemez.</string>
+    <string name="help_connector_name">Bu kart için bir etiket; aynı serviste birden çok hesap varsa işe yarar.</string>
+    <string name="help_redirect_title">Yönlendirme URI\'si</string>
+    <string name="help_redirect_body">Oturum açtıktan sonra servisin sizi geri gönderdiği adres. Servisin geliştirici sayfasına aynen kopyalayın; yoksa oturum açma Trackhop\'a geri dönemez.</string>
+    <string name="help_keys_title">Anahtarınız</string>
+    <string name="help_fields_title">Client ID ve diğer alanlar</string>
+    <string name="help_fields_body">Servisin geliştirici sayfasında oluşturduğunuz ücretsiz uygulamanın kimlikleri. Göründükleri gibi yapıştırın; bu telefonda şifreli olarak kalırlar.</string>
+    <string name="help_clear_key_body">Anahtarınızı bu telefondan siler. Bağlanmadan önce yeniden kurmanız gerekir.</string>
+    <string name="help_files_body">Trackhop içinde tutulan listeler: içe aktarılan dosyalar, yapıştırılan listeler, yedekler ve bir senkronizasyonun File\'a yazdığı çalma listeleri. Her yedek tarihli bir sürüm ekler; en yenisinin altında toplanan son 5 sürüm saklanır.</string>
+    <string name="help_export_title">Dışa aktarma biçimleri</string>
+    <string name="help_export_body">CSV elektronik tablolarda, M3U çoğu müzik çalarda, XSPF ve JSPF bunları destekleyen çalarlarda açılır; Metin ise her satırda bir parça içerir.</string>
+    <string name="help_make_body">Mevcut çalma listelerinden aynı serviste yeni bir çalma listesi oluşturur. Bu bir senkronizasyon değildir: sonuç daha sonra güncellenmez.</string>
+    <string name="help_make_example">İki çalma listesini birleştirin ya da uzun bir listeyi 50\'şerlik parçalara bölün.</string>
+    <string name="help_transfer_body">Her biri hedefte yeni bir çalma listesi oluşturur ve yalnızca ekler; zaten senkronizasyonu olan bir çalma listesi onu yeniden kullanır. Hepsi burada seçtiğiniz zamanlamayı alır.</string>
+    <string name="help_transfer_example">20 çalma listesini Her gün ile aktarmak 20 günlük senkronizasyon oluşturur.</string>
+    <string name="help_dedupe_body">Tekrarlanan parçaları başka bir soru sormadan hemen kaldırır: aynı parça iki kez, farklı bir yayımdan olsa bile; ilk kopya kalır. Canlı ve remiks sürümler farklı şarkı sayılır. Spotify ve Deezer gibi bir parçayı tüm kopyalarıyla birlikte kaldıran servislerde tutulan kopya sona gider.</string>
+    <string name="help_unplayable_body">Gri görünen her parça için Trackhop çalınabilen bir sürüm önerir. Siz uygulayana kadar hiçbir şey değişmez; Son düzeltmeyi geri al ise orijinalleri geri getirir. “Planında yok” gibi nedenler servisten gelir.</string>
+    <string name="help_backup_body">Trackhop tüm çalma listelerinizin tarihli kopyalarını seçtiğiniz bir klasöre kaydeder; böylece telefondan bağımsız kalırlar. Her çalıştırma bağlı tüm servisleri okur, değişenleri kaydeder ve yeni dosyaları kopyalar; YouTube\'da bu kota harcar. Zamanlama bunu kendiliğinden, Şimdi kopyala ise hemen yapar.</string>
+    <string name="help_backup_example">Bir çalma listesini geri yüklemek için dosyasını o klasörden Araçlar › Dosya çalma listeleri bölümünde içe aktarın, ardından dosyayı istediğiniz servise senkronize edin.</string>
+    <string name="help_plugins_body">Yüklü bir eklenti burada sağladığı servislerle birlikte görünür ve bu servisler Hesaplar\'da yer alır. Eklentiyi kaldırırsanız bağlantıları kesilir ve onları kullanan senkronizasyonlar başarısız olur.</string>
+    <string name="help_ai_body">Çalma listesi oluşturucu, incelemedeki Yapay zekaya sor ve poster kapakları için kendi yapay zeka hesabınız. Anahtar bu telefonda şifreli kalır ve yalnızca seçtiğiniz sağlayıcıya gönderilir.</string>
+    <!-- How to: the offline guides -->
+    <string name="howto_title">Nasıl yapılır</string>
+    <string name="howto_summary">Trackhop\'un her bölümü için kısa rehberler, çevrimdışı da okunur.</string>
+    <string name="howto_intro">Trackhop\'un her bölümü için kısa rehberler. Uygulamanın içinde oldukları için çevrimdışı da çalışırlar.</string>
+    <string name="help_more">Nasıl yapılır › %1$s bölümünde daha fazlası</string>
+    <string name="settings_section_help">Yardım</string>
+    <string name="howto_first_sync_title">İlk senkronizasyonunuz</string>
+    <string name="howto_first_sync_summary">Bir servis bağlayın, seçin, önizleyin, çalıştırın.</string>
+    <string name="howto_first_sync_body">Senkronizasyon bir çalma listesini başka bir servise kopyalar ve güncel tutar. Dört adım:\n# 1. Bağlayın\nHesaplar\'da Bağlayıcı ekle\'ye dokunun ve müziğinizin bulunduğu servise giriş yapın. Giriş servisin kendi sayfasında yapılır; Trackhop bu telefonda yalnızca şifreli bir belirteç tutar.\n# 2. Seçin\n• Kaynak: bir çalma listesi, Beğenilen şarkılar, Kitaplık\'tan bir bölüm (albümler, sanatçılar) veya herkese açık bir bağlantı.\n• Hedef: bir servis ve yeni ya da mevcut bir çalma listesi. Yalnızca bir servis bağlıysa hedef, Trackhop içinde tutulan bir File olur.\n• Seçenekler: ad, renk, zamanlama, Kaldırmaları yansıt, Çift yönlü ve eşleştirme kuralları. İlk senkronizasyon için varsayılanlar uygundur.\n# 3. Önizleme\nKaydet önizlemeyi açar: neyin ekleneceği, neyin bulunamadığı ve kontrol edilmesi gereken eşleşmeler. Bunları Doğru görünüyor veya Değiştir ile karara bağlayın; atladıklarınız çalıştırmadan sonra yeniden sorulur.\n# 4. Çalıştırın\nŞimdi çalıştır\'a, ardından parça parça izlemek için karta dokunun. Duraklat ve Durdur adımlar arasında devreye girer. Sonunda kart sayıları ve sizi bekleyen bir şey varsa bir etiket gösterir: Bulunamadı, Kaldırmalar bekliyor veya Tamamlanmadı.</string>
+    <string name="howto_modes_title">Yalnızca ekle, Kaldırmaları yansıt, Çift yönlü</string>
+    <string name="howto_modes_summary">Bir senkronizasyonun ne eklediği, kaldırdığı veya geri kopyaladığı.</string>
+    <string name="howto_modes_body"># Yalnızca ekle (varsayılan)\nSenkronizasyon yalnızca ekler. Hedefte fazladan parça olabilir ve orada hiçbir şey silinmez.\n# Kaldırmaları yansıt\nHedef, silmeler dahil kaynağı izler. Kaynakta hiçbir şeyle eşleşmeyen her hedef parçası, oraya kendiniz eklemiş olsanız bile kaldırılır; bu yüzden yalnızca kaynak ana listenizse kullanın.\n• Kaynak boşsa, arama yarıda kesildiyse veya servis parça kaldıramıyorsa hiçbir şey kaldırılmaz; Senkronizasyon günlüğü nedenini söyler.\n• Bir çalıştırma 10\'dan fazla parçayı ve hedefin dörtte birinden fazlasını kaldıracaksa kartta Kaldırmalar bekliyor görünür. Önizlemeyi açmak için dokunun, listeyi kontrol edin, Bu parçaları hedeften kaldır\'ı işaretleyip Şimdi çalıştır\'a dokunun. İşaret o tek çalıştırma için geçerlidir; zamanlanmış çalıştırmalar bekletmeye devam eder.\n• Kaldırılan parçalar Ayarlar › Gelişmiş › Senkronizasyon günlüğü › Geri yükle ile geri gelir.\n# Çift yönlü\nTers yönde, ↔ kartı olarak görünen ikinci bir senkronizasyon ekler; böylece bir tarafa eklenen parçalar diğerine de ulaşır. İki yarı da hiçbir şey kaldırmaz, bu yüzden Kaldırmaları yansıt kapalıdır: bir tarafta silinen parça genellikle diğer taraftan geri gelir. İki yarı zamanlamayı ve kuralları paylaşır; ↔ kartını düzenlemek asıl senkronizasyonu açar, birini silmek ikisini de siler.\n# Beğenilen şarkılar\nHedef Beğenilen şarkılar olduğunda, parça eklemek onu beğenmek demektir; Kaldırmaları yansıt ise kaynakta beğenilmeyen parçaların beğenisini kaldırmak demektir.</string>
+    <string name="howto_schedules_title">Zamanlamalar</string>
+    <string name="howto_schedules_summary">Senkronizasyonların kendiliğinden ne zaman çalıştığı.</string>
+    <string name="howto_schedules_body"># Zamanlama seçmek\nYalnızca manuel, Her saat, 6 saatte bir, Her gün veya Her hafta. Kesin zamanı Android seçer ve özellikle pil tasarrufunda bir çalıştırmayı geciktirebilir.\n• İlk çalıştırma kaydettikten birkaç dakika sonra başlar, sonra yaklaşık her aralıkta bir kez.\n• İki çalma listesini de değişmemiş bulan zamanlanmış bir çalıştırma, servis değişiklikleri bildiriyorsa hemen durur.\n• Yalnızca Wi‑Fi, zamanlanmış çalıştırmaların veri sınırı olmayan bir ağı, genellikle Wi‑Fi\'ı beklemesini sağlar. Şimdi çalıştır ve Tümünü senkronize et bunu dikkate almaz.\n• Etkin kapalıyken zamanlama duraklar; ▶ Şimdi çalıştır yine çalışır.\n# Çalıştırmalar olmadığında</string>
+    <string name="howto_schedules_body2">Ayarlar › Senkronizasyon bölümünde “Zamanlanmış senkronizasyonlar çalışmıyor mu?” Trackhop\'u hariç tutacağınız listeyi açar.\n# Bildirimler\nZamanlanmış bir senkronizasyon parça eklediğinde veya kaldırdığında ve herhangi bir senkronizasyon başarısız olduğunda haber alırsınız. Ayarlar › Bildirimler\'den kapatabilirsiniz.</string>
+    <string name="howto_preview_title">Önizleme ve büyük kaldırmalar</string>
+    <string name="howto_preview_summary">Bir çalıştırmanın ne yapacağını görün ve kaldırmaları onaylayın.</string>
+    <string name="howto_preview_body">Önizleme, bir çalıştırmanın ne yapacağını hiçbir şeyi değiştirmeden gösterir. Bir senkronizasyon oluşturduktan sonra ya da bir kartın ⋮ menüsü › Önizleme ile açılır.\n# Neleri listeler\n• Zaten hedefte olanlar, eklenecekler, kaldırılacaklar (yalnızca Kaldırmaları yansıt ile), bulunamayanlar ve yoksayılanlar.\n• Kontrol edilecek eşleşmeler: Doğru görünüyor veya Değiştir\'e dokunun. Karara bağladıklarınız hatırlanır; gerisi çalıştırmadan sonra incelemede yeniden sorulur.\n• YouTube için çalıştırmanın harcayacağı birimler.\nBunun için önizleme eksik her parçayı hedefte arar, bu yüzden büyük bir çalma listesi biraz zaman alır. Bulduklarını çalıştırma yeniden kullanır.\n# Büyük kaldırmalar\nBir çalıştırma 10\'dan fazla parçayı ve hedefin dörtte birinden fazlasını kaldıracaksa kırmızı bir not görünür. Önce kaynağı kontrol edin: bir çalma listesini yalnızca kısmen listeleyen bir servis tam olarak böyle görünür. Parçaların gerçekten gitmesi gerekiyorsa Bu parçaları hedeften kaldır\'ı işaretleyip Şimdi çalıştır\'a dokunun. İşaret yalnızca elle başlatılan o çalıştırma ve yalnızca gördüğünüz parçalar için geçerlidir; zamanlanmış çalıştırmalar onları bekletmeye devam eder.\n# Şimdi çalıştır\nÖnizlemenin bulduklarını kullanarak senkronizasyonu hemen çalıştırır; bu yüzden önizlemenin kendisinden çok daha hızlıdır.</string>
+    <string name="howto_review_title">Bulunamayan parçalar</string>
+    <string name="howto_review_summary">Eksik kalanları bulun ve belirsiz eşleşmeleri kontrol edin.</string>
+    <string name="howto_review_body"># Nerede bulunur\n• Bir senkronizasyon kartındaki Bulunamadı etiketi veya düzeltilecek düğmesi.\n• Karttaki bulunamadı sayısı.\n• Ayarlar › Gelişmiş › Senkronizasyon günlüğü › İncele.\n# Bir parçayı düzeltmek\n• Öneri: bulunan en yakın parça, ama kendiliğinden eklenecek kadar yakın değil. Doğruysa Ekle\'ye dokunun.\n• Başlığa, “sanatçı - başlık” biçimine göre arayın ya da herhangi bir servisten bir parça bağlantısı yapıştırın. … ile aç, servisin kendi uygulamasını açar.\n• En olası en üsttedir; kaynağın albümü, diğer sonuçlar ve YouTube Music\'te videolar altta kapalı durur.\n• Yapay zekaya sor, kendi yapay zekanızdan (Ayarlar › Gelişmiş › Yapay zekanız) daha iyi bir arama ister.\n• Yoksay, o servise yapılan tüm senkronizasyonlar için bir parçayı aramayı bırakır. Henüz geri alınamaz.\nHer seçim sonraki çalıştırmalar için hatırlanır. Bulunamayan parçalar bir hafta sonra yeniden aranır.\n# Belirsiz eşleşmeler\nTrackhop\'un emin olmadığı eşleşmeler. Doğru görünüyor birini tutar; Değiştir onu değiştirir ve servis izin veriyorsa yanlış parçayı hedeften kaldırır.\n# Eşleştirme kuralları\nDüzenleyicideki Eşleştirme kuralları bir parçanın nasıl seçileceğini belirler: Katılık, Müstehcen sürümler, Aynı albüm ve Yalnızca stüdyo sürümleri. Deezer ile tam kayıt (Ayarlar › Senkronizasyon) bir kaydı tanımlayan kodu arar; böylece Spotify, Apple Music ve TIDAL tam sürümü döndürür.</string>
+    <string name="howto_backups_title">Yedekler ve geri yükleme</string>
+    <string name="howto_backups_summary">Çalma listelerinizin kopyalarını saklayın ve geri alın.</string>
+    <string name="howto_backups_body"># Tam yedekleme\nAraçlar › Tam yedekleme, bir servisin tüm çalma listelerini ve beğenilen şarkılarını Dosya çalma listeleri\'ne tarihli dosyalar olarak kaydeder. Her çalma listesinin son 5 sürümü saklanır, değişmemiş bir çalma listesi yeniden yazılmaz. Serviste hiçbir şey değişmez.\n# Klasöre yedekle\nAyarlar › Yedekler\'de bir klasör seçin (SD kart, bir bulut uygulaması, klasör sunan herhangi bir uygulama). Her çalıştırma bağlı tüm servisleri okur, değişenleri kaydeder ve yeni dosyaları oraya kopyalar; böylece telefondan bağımsız kalırlar. Yalnızca manuel, Her gün veya Her hafta seçin ya da Şimdi kopyala\'ya dokunun. YouTube\'da okuma kota harcar.\n# Geri yükleme\n• Bir çalma listesi: Araçlar › Dosya çalma listeleri › Dosya içe aktar, klasörden seçin, sonra bu dosyadan istediğiniz servise bir senkronizasyon oluşturun.\n• Kaldırmaları yansıt ile kaldırılan parçalar: Ayarlar › Gelişmiş › Senkronizasyon günlüğü › Geri yükle.\n• Çalınamayan parça düzeltmesi: Araçlar › Çalınamayan parçalar › Son düzeltmeyi geri al.\n# Tek bir çalma listesini dışa aktarma\nAraçlar › Çalma listesini dışa aktar, onu CSV, M3U, XSPF, JSPF veya düz metin olarak kaydeder.</string>
+    <string name="howto_tools_title">Araçlar sekmesi</string>
+    <string name="howto_tools_summary">Her aracın ne yaptığı.</string>
+    <string name="howto_tools_body">En üstte araçların çalışacağı servisi seçin. Servisin desteklemediği araçlar gri görünür.\n# Müziğin\n• Rakamlarla Trackhop: senkronizasyonlarınızın şimdiye kadar yaptıkları.\n• Çalma listelerini yönet: yeniden adlandırın, silin, herkese açık veya gizli yapın, parçalara bakın.\n• Çalma listeleri arasında tekrarlar: birden çok çalma listesinde bulunan parçalar ve hiçbirinde olmayan beğenilen şarkılar.\n# Taşı ve kopyala\n• Birden çok çalma listesi aktar: her çalma listesi için bir senkronizasyon, oluşturulup sırayla çalıştırılır. Senkronizasyonlar\'da kalırlar.\n• Çalma listesini dışa aktar: bir çalma listesi dosya olarak.\n• Yeni çalma listesi oluştur…: aynı serviste yeni bir çalma listesine kopyalayın, birleştirin, bölün, sıralayın veya karıştırın. Tek seferlik, senkronizasyon değil.\n• Dosya çalma listeleri: içe aktarılan ve yapıştırılan listeler, yedekler ve senkronizasyonların File\'a yazdıkları.\n# Temizlik\n• Yinelenenleri kaldır: bulun, sonra ilk kopyayı tutarak tek seferde kaldırın.\n• Çalınamayan parçalar: gri parçaları çalınabilen sürümlerle değiştirin, geri alma da var. Ayarlar haftada bir kontrol edebilir.\n# Paylaş ve keşfet\nNe kadar uyumluyuz?, Çalma listesi posteri ve kendi yapay zekanızı kullanan Çalma listesi oluşturucu.</string>
+    <string name="howto_accounts_title">Hesaplar ve kendi anahtarlarınız</string>
+    <string name="howto_accounts_summary">Bağlayıcılar, yollar, anahtarlar ve güvenlik.</string>
+    <string name="howto_accounts_body"># Bağlayıcılar\nBağlayıcı, bir servisteki bir hesaptır. Servis izin veriyorsa birden çok ekleyebilirsiniz; örneğin her biri kendi adıyla iki Spotify hesabı.\n# Yollar\nBazı servislere iki yoldan ulaşılır. Hızlı yol: servisin kendi sayfasında oturum açarsınız, oluşturacak bir şey yoktur, ama site değişince çalışmayı bırakabilir. Resmi yol: adınıza ücretsiz bir anahtarla servisin kendi API\'si; daha kararlıdır, kurulumu birkaç dakika sürer.</string>
+    <string name="howto_accounts_full">Bu sürümde Spotify, YouTube Music, Amazon Music, Apple Music ve Deezer için hızlı yollar yerleşiktir; hesabınızla SoundCloud da öyle. Deezer (web) alfa, SoundCloud beta aşamasındadır.</string>
+    <string name="howto_accounts_body2"># Kendi anahtarınız\nTrackhop kendi anahtarlarıyla gelmez. Kurulum rehberi sizi servisin geliştirici sayfasında yönlendirir: Yönlendirme URI\'sini oraya aynen kopyalayın, sonra Client ID\'yi (ve istenirse secret\'ı) buraya yapıştırın.\n• Spotify yalnızca Premium hesapların anahtar oluşturmasına izin verir.\n• Apple\'ın geliştirici belirtecinin süresi en fazla altı ayda dolar: yenisini Ayarlar › Gelişmiş › Servis anahtarları\'na yapıştırın.\n• Resmi YouTube yolunda günlük kota size aittir ve birimlerle sayılır.\nKendi sunucunuz (Jellyfin, Plex, Navidrome…) adresini, kullanıcı adınızı ve bir parola veya belirteç ister.\n# Hesapları güvende tutmak\nParolalar servislerin kendi sayfalarına yazılır, asla Trackhop\'a değil. Belirteçler telefonda şifrelidir ve bir Trackhop sunucusu yoktur. Bağlantıyı test et bir bağlayıcıyı denetler; Bağlantıyı kes oturumu siler, Bu hesabı kaldır ise kartı da kaldırır. Ayarlar › Gelişmiş › Geliştirici araçlarını göster › Bağlantıları göster, uygulamanın iletişim kurduğu her sunucuyu listeler.</string>
+    <string name="howto_plugins_title">Eklentiler</string>
+    <string name="howto_plugins_summary">Ayrı uygulamaların nasıl servis ekleyebildiği.</string>
+    <string name="howto_plugins_body">Trackhop\'un açık bir bağlayıcı arayüzü vardır: herkesin yapabileceği ayrı uygulamalar ona servis ekleyebilir.</string>
+    <string name="howto_plugins_play">Trackhop hiçbir eklenti içermez, indirmez veya önermez.\n• Yüklü bir eklenti, sağladığı servislerle birlikte Ayarlar › Eklentiler\'de görünür.\n• Bu servisler ardından diğerleri gibi Hesaplar › Bağlayıcı ekle\'de yer alır.\n• Bu sürümün kendi başına erişemediği servisler Bu sürümde kullanılamaz altında listelenir.\n• Eklentiyi kaldırırsanız servislerinin bağlantısı kesilir ve onları kullanan senkronizasyonlar başarısız olur.</string>
+    <string name="howto_plugins_full">Bu sürümde web bağlayıcıları yerleşiktir, bu yüzden eklentiye gerek yoktur: her çağrı ve her oturum açma Trackhop içinde kalır, yüklü bir eklenti kullanılmaz.</string>
+    <string name="howto_guides">Rehberler</string>
+    <!-- Guided first sync (coach marks) -->
+    <string name="tour_offer">Kısa bir tur</string>
+    <string name="tour_offer_summary">Gerçek ekranlar üzerinde, 8 adımda rehberli ilk senkronizasyon.</string>
+    <string name="tour_progress">%1$d / %2$d</string>
+    <string name="tour_done">Bitti</string>
+    <string name="tour_new_sync">Senkronizasyon bir çalma listesini başka bir servise kopyalar ve güncel tutar: her şey Yeni senkronizasyon ile başlar.</string>
+    <string name="tour_accounts">Servislerinizi Hesaplar\'da bağlayın: her servisin kendi sayfasında oturum açarsınız ve bu telefonda yalnızca şifreli bir belirteç kalır.</string>
+    <string name="tour_source">Neyin kopyalanacağını seçin: bir çalma listesi, Beğenilen şarkılar ya da Kitaplık\'taki albümler ve sanatçılar.</string>
+    <string name="tour_target">Nereye gideceğini seçin ve önceden seçilen servisi kontrol edin: File, bu telefonda tutulan bir listedir.</string>
+    <string name="tour_schedule">İlk senkronizasyonda Yalnızca manuel\'i bırakın; sonradan eklediğiniz bir zamanlama kaydettikten birkaç dakika sonra başlar.</string>
+    <string name="tour_mirror">Kaldırmaları yansıt kapalıyken Trackhop yalnızca ekler: ilk senkronizasyon için güvenli seçim budur.</string>
+    <string name="tour_save">Kaydet önizlemeyi açar; önizleme neyin değişeceğini gösterir ve bir şey olmadan önce belirsiz eşleşmeleri sorar.</string>
+    <string name="tour_results">Çalıştırmadan sonra kart sayıları gösterir; Bulunamadı gibi bir etiket sizi bakılması gerekene götürür. Daha fazlası Ayarlar › Nasıl yapılır\'da.</string>
+    <string name="plugins_where">Eklentileri bu uygulama değil, kendi geliştiricileri yayınlar: GitHub\'da “trackhop-plugin” konusunu taşırlar.</string>
+    <string name="provider_note_deezer_bridge">Deezer\'ın kendi sayfasında oturum açın: geliştirici uygulaması gerekmez (Deezer artık yenilerini kaydetmiyor). Web oynatıcının oturumunu kullanır: resmi bir yol değildir, Deezer\'ın koşullarına aykırıdır ve çalışmayı bırakabilir. Alfa. Kendi uygulama kimliğinizle resmi yol \"Deezer\" olarak kullanılabilir kalır.</string>
+    <string name="provider_note_soundcloud_account">SoundCloud\'un kendi sayfasında oturum açın: setleriniz ve beğendiğiniz parçalar kaynak ve hedef olur. Web uygulamasının oturumunu kullanır: resmi bir arayüz değildir, SoundCloud\'un koşullarına aykırıdır ve çalışmayı bırakabilir. Beta. SoundCloud\'daki az sayıda parçada ISRC vardır; eşleştirme başlık, sanatçı ve süreye dayanır.</string>
+    <string name="alpha">alfa</string>
+    <string name="alpha_note">Alfa: henüz gerçek hesaplarda denenmedi. Önce bir test çalma listesinde deneyin ve sorunları bildirin.</string>
+    <string name="editor_mirror_liked_warning">Beğenilen şarkılara yansıtmak, orada olup kaynakta olmayan her şeyin beğenisini kaldırır.</string>
+    <string name="preview_unlike">%1$d beğeni kaldırılacak</string>
+    <string name="preview_unlike_warning">Bu, Beğenilen şarkılardaki %2$d şarkının %1$d tanesinin beğenisini kaldırır. Kaynağın gerçekten bu kadar az şarkı listelediğini kontrol edin: hizmetin eksik bir listesi tam olarak böyle görünür. Aşağıdaki kutuyu işaretlemezseniz çalıştırma şarkı ekler ve bunları beğenilmiş bırakır.</string>
+    <string name="preview_unlike_confirm">Bu %1$d şarkının beğenisini kaldır</string>
+    <string name="note_unlikes_capped">Beğeni kaldırmalar bekletildi: bu çalıştırma Beğenilen şarkılardaki %2$d şarkının %1$d tanesinin beğenisini kaldırırdı. Önizlemeyi açıp görmek için senkronizasyonun durumuna dokunun; gerçekten gitmeleri gerekiyorsa orada kutuyu işaretleyip çalıştırın. Kaynak bunları gerçekten kaybetmediyse hizmet listeyi eksik vermiştir ve hiçbir şey gitmemelidir.</string>
+    <string name="sync_menu_disable">Devre dışı bırak</string>
+    <string name="sync_menu_enable">Etkinleştir</string>
+    <string name="sync_disabled_snack">Senkronizasyon devre dışı: zamanlamasına göre çalışmayacak</string>
+    <string name="sync_enabled_snack">Senkronizasyon etkin</string>
+    <string name="sync_pause_all">Tümünü duraklat</string>
+    <string name="sync_resume_all">Tümünü sürdür</string>
+    <string name="sync_stop_all">Tümünü durdur</string>
+    <plurals name="service_tiles_scroll">
+        <item quantity="one">%d hizmet, daha fazlası için kaydırın</item>
+        <item quantity="other">%d hizmet, daha fazlası için kaydırın</item>
+    </plurals>
+    <string name="pill_pausing">Duraklatılıyor</string>
+    <string name="sync_pausing">Bu adımdan sonra duraklatılıyor…</string>
+    <string name="sync_pausing_short">Duraklatılıyor…</string>
+    <plurals name="syncs_paused">
+        <item quantity="one">%d eşitleme duraklatıldı</item>
+        <item quantity="other">%d eşitleme duraklatıldı</item>
+    </plurals>
+    <string name="syncs_running_paused">%1$d sürüyor · %2$d duraklatıldı</string>
 </resources>

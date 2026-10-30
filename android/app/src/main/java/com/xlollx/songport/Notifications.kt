@@ -12,6 +12,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.xlollx.songport.model.SyncReport
+import com.xlollx.songport.sync.SyncState
 
 /**
  * Notifications are asked for when they are first needed, a sync run or scheduled, not on first
@@ -32,15 +33,16 @@ object NotificationAsk {
 object Notifications {
     private const val CHANNEL_ID = "sync_results"
     const val PROGRESS_CHANNEL_ID = "sync_progress"
-    const val PROGRESS_ID = 1001
-    private const val PROGRESS_GROUP = "sync_progress"
-
     /**
-     * Each running sync has its own progress notification: two workers posting under one id would
-     * overwrite each other and only the last to speak would be visible. "Sync all" keeps the base id.
+     * The one ongoing notification of the syncs running: every worker that goes to the foreground
+     * posts under this id, so WorkManager's service and the progress updates share a single entry.
      */
-    fun progressId(jobId: String?): Int =
-        if (jobId == null || jobId == "*") PROGRESS_ID else PROGRESS_ID + 1 + (jobId.hashCode() and 0xffff)
+    const val PROGRESS_ID = 1001
+    /** The completion notices, bundled under one summary when several syncs finish. */
+    const val RESULTS_GROUP = "sync_results"
+    private const val RESULTS_SUMMARY_ID = 1000
+    /** The value of [com.xlollx.songport.sync.SyncControlReceiver.EXTRA_JOB] that means every running sync. */
+    const val ALL_JOBS = "*"
 
     fun ensureChannel(context: Context) {
         val mgr = context.getSystemService(NotificationManager::class.java)
@@ -55,40 +57,99 @@ object Notifications {
     }
 
     /**
-     * Notifica silenziosa e persistente mentre una sync manuale gira in primo piano. Con un totale
-     * noto la barra e' determinata; con un [jobId] offre Pausa/Riprendi e Interrompi. Con [others]
-     * altre sync in corso lo dice sotto il testo, cosi' chi vede solo questa sa che non e' l'unica.
+     * One running sync as the ongoing notification shows it: its name, the step it is at, and where
+     * it stands ([SyncState.Run]: "Pausing…" while its step finishes, "Paused" once it waits).
      */
-    fun progress(
-        context: Context, title: String, text: String,
-        done: Int = 0, total: Int = 0, jobId: String? = null, paused: Boolean = false, others: Int = 0,
-    ): android.app.Notification {
+    class RunningSync(
+        val jobId: String, val name: String, val step: String, val done: Int = 0, val total: Int = 0,
+        val run: SyncState.Run = SyncState.Run.RUNNING,
+    ) {
+        /** Waiting for real: its bar stands still. */
+        val paused: Boolean get() = run == SyncState.Run.PAUSED
+        /** Pause asked for, reached or not: its button is Resume. */
+        val pauseAsked: Boolean get() = run == SyncState.Run.PAUSED || run == SyncState.Run.PAUSING
+    }
+
+    /**
+     * The ongoing notification while syncs run, built from all of them at once. One sync: its name,
+     * its step, its bar, Pause/Resume and Stop. Several: "N syncs running", one line per sync with
+     * its step, the overall bar, and Pause all/Resume all and Stop all.
+     *
+     * Paused syncs say so: the title becomes "N syncs paused" (all of them) or "N running · M paused",
+     * each line "Paused" once its sync really waits ("Pausing…" while its step finishes), and the bar
+     * stands still, never indeterminate, when nothing is moving.
+     */
+    fun running(context: Context, syncs: List<RunningSync>): android.app.Notification {
         val open = Intent(context, MainActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP }
         val pi = PendingIntent.getActivity(context, PROGRESS_ID, open, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val b = NotificationCompat.Builder(context, PROGRESS_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(title)
-            .setContentText(text)
-            .setProgress(if (total > 0) total else 0, done, total <= 0)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .setGroup(PROGRESS_GROUP)
+            .setSilent(true)
+            .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setContentIntent(pi)
-        if (others > 0) b.setSubText(context.resources.getQuantityString(R.plurals.notif_more_running, others, others))
-        if (jobId != null) {
-            // Request codes differ per job: PendingIntents with equal codes and intents that differ
-            // only in their extras replace each other, and Pause on one sync would pause another.
-            fun action(act: String, code: Int): PendingIntent = PendingIntent.getBroadcast(
-                context, (jobId.hashCode() shl 2) or code,
-                Intent(context, com.xlollx.songport.sync.SyncControlReceiver::class.java).setAction(act).putExtra(com.xlollx.songport.sync.SyncControlReceiver.EXTRA_JOB, jobId),
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-            )
-            if (paused) b.addAction(0, context.getString(R.string.sync_resume), action(com.xlollx.songport.sync.SyncControlReceiver.ACTION_RESUME, 1))
-            else b.addAction(0, context.getString(R.string.sync_pause), action(com.xlollx.songport.sync.SyncControlReceiver.ACTION_PAUSE, 2))
-            b.addAction(0, context.getString(R.string.sync_stop), action(com.xlollx.songport.sync.SyncControlReceiver.ACTION_STOP, 3))
+        // Request codes differ per job: PendingIntents with equal codes and intents that differ
+        // only in their extras replace each other, and Pause on one sync would pause another.
+        fun action(jobId: String, act: String, code: Int): PendingIntent = PendingIntent.getBroadcast(
+            context, (jobId.hashCode() shl 2) or code,
+            Intent(context, com.xlollx.songport.sync.SyncControlReceiver::class.java).setAction(act).putExtra(com.xlollx.songport.sync.SyncControlReceiver.EXTRA_JOB, jobId),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
+        val one = syncs.singleOrNull()
+        if (syncs.size <= 1) {
+            val text = one?.let { lineText(context, it) }.orEmpty()
+            b.setContentTitle(one?.name ?: context.getString(R.string.running))
+                .setContentText(text)
+            if (one != null && one.paused) b.setProgress(100, percent(one), false)
+            else b.setProgress(one?.total?.coerceAtLeast(0) ?: 0, one?.done ?: 0, (one?.total ?: 0) <= 0)
+            if (one != null) {
+                if (one.pauseAsked) b.addAction(0, context.getString(R.string.sync_resume), action(one.jobId, com.xlollx.songport.sync.SyncControlReceiver.ACTION_RESUME, 1))
+                else b.addAction(0, context.getString(R.string.sync_pause), action(one.jobId, com.xlollx.songport.sync.SyncControlReceiver.ACTION_PAUSE, 2))
+                b.addAction(0, context.getString(R.string.sync_stop), action(one.jobId, com.xlollx.songport.sync.SyncControlReceiver.ACTION_STOP, 3))
+            }
+            return b.build()
         }
+        val tally = SyncState.Tally(syncs.size, syncs.count { it.paused })
+        val title = when {
+            tally.allPaused -> context.resources.getQuantityString(R.plurals.syncs_paused, syncs.size, syncs.size)
+            tally.somePaused -> context.getString(R.string.syncs_running_paused, tally.running, tally.paused)
+            else -> context.resources.getQuantityString(R.plurals.syncs_running, syncs.size, syncs.size)
+        }
+        val lines = syncs.map { "${it.name} — ${lineText(context, it)}" }
+        val inbox = NotificationCompat.InboxStyle().setBigContentTitle(title)
+        lines.take(MAX_LINES).forEach { inbox.addLine(it) }
+        if (lines.size > MAX_LINES) inbox.setSummaryText(context.resources.getQuantityString(R.plurals.notif_more_running, lines.size - MAX_LINES, lines.size - MAX_LINES))
+        // The overall bar: each sync weighs the same, one with no count yet as not started.
+        val known = syncs.filter { it.total > 0 }
+        val overall = syncs.sumOf { s -> percent(s).toDouble() } / syncs.size
+        b.setContentTitle(title)
+            .setContentText(lines.joinToString(" · "))
+            .setStyle(inbox)
+            .setNumber(syncs.size)
+            // Everything paused: a still bar at where they stopped, not a moving one.
+            .setProgress(100, overall.toInt(), known.isEmpty() && !tally.allPaused)
+        if (syncs.all { it.pauseAsked }) b.addAction(0, context.getString(R.string.sync_resume_all), action(ALL_JOBS, com.xlollx.songport.sync.SyncControlReceiver.ACTION_RESUME, 1))
+        else b.addAction(0, context.getString(R.string.sync_pause_all), action(ALL_JOBS, com.xlollx.songport.sync.SyncControlReceiver.ACTION_PAUSE, 2))
+        b.addAction(0, context.getString(R.string.sync_stop_all), action(ALL_JOBS, com.xlollx.songport.sync.SyncControlReceiver.ACTION_STOP, 3))
         return b.build()
     }
+
+    /** Lines past this many are counted ("+N more syncs running"), not listed. */
+    private const val MAX_LINES = 6
+
+    /** One sync's share of the bar: none until its step has a count. */
+    private fun percent(s: RunningSync): Int = if (s.total > 0) (s.done.coerceIn(0, s.total) * 100L / s.total).toInt() else 0
+
+    /** What one sync is doing, with "Paused" (or "Pausing…") before it and its percentage after. */
+    private fun lineText(context: Context, s: RunningSync): String =
+        when (s.run) {
+            SyncState.Run.PAUSED -> context.getString(R.string.sync_paused) + " · "
+            SyncState.Run.PAUSING -> context.getString(R.string.sync_pausing_short) + " · "
+            else -> ""
+        } + s.step +
+            (if (s.total > 0) " · ${(s.done.coerceIn(0, s.total) * 100L / s.total)}%" else "")
 
     fun canPost(context: Context): Boolean =
         Build.VERSION.SDK_INT < 33 ||
@@ -161,7 +222,40 @@ object Notifications {
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setContentIntent(pi)
             .setAutoCancel(true)
+            .setGroup(RESULTS_GROUP)
             .build()
-        ContextCompat.getSystemService(context, NotificationManager::class.java)?.notify(report.jobId.hashCode(), n)
+        val mgr = ContextCompat.getSystemService(context, NotificationManager::class.java) ?: return
+        mgr.notify(report.jobId.hashCode(), n)
+        resultsSummary(context, mgr)
+    }
+
+    /**
+     * The summary that bundles the completion notices: posted once two or more are in the shade, so
+     * syncs finishing together collapse into one group. A lone notice stays as it is.
+     */
+    private fun resultsSummary(context: Context, mgr: NotificationManager) {
+        val children = runCatching { mgr.activeNotifications.toList() }.getOrDefault(emptyList())
+            .filter { it.notification.group == RESULTS_GROUP && it.id != RESULTS_SUMMARY_ID }
+        if (children.size < 2) return
+        val open = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra(MainActivity.EXTRA_TAB, MainActivity.TAB_LOG)
+        }
+        val pi = PendingIntent.getActivity(context, RESULTS_SUMMARY_ID, open, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        val title = context.getString(R.string.notif_channel_name)
+        val inbox = NotificationCompat.InboxStyle().setBigContentTitle(title)
+        children.mapNotNull { it.notification.extras.getCharSequence(android.app.Notification.EXTRA_TITLE) }.forEach { inbox.addLine(it) }
+        val n = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(title)
+            .setStyle(inbox)
+            .setNumber(children.size)
+            .setGroup(RESULTS_GROUP)
+            .setGroupSummary(true)
+            .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+            .setContentIntent(pi)
+            .setAutoCancel(true)
+            .build()
+        runCatching { mgr.notify(RESULTS_SUMMARY_ID, n) }
     }
 }

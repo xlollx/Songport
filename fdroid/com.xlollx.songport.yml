@@ -7,16 +7,16 @@ Categories:
   - Multimedia
 License: GPL-3.0-only
 AuthorName: xlollx
-WebSite: https://xlollx.github.io/Songport/
-SourceCode: https://github.com/xlollx/Songport
-IssueTracker: https://github.com/xlollx/Songport/issues
-Changelog: https://github.com/xlollx/Songport/releases
+WebSite: https://xlollx.github.io/Trackhop/
+SourceCode: https://github.com/xlollx/Trackhop
+IssueTracker: https://github.com/xlollx/Trackhop/issues
+Changelog: https://github.com/xlollx/Trackhop/releases
 
-AutoName: Songport
+AutoName: Trackhop
 
 RepoType: git
-Repo: https://github.com/xlollx/Songport.git
-Binaries: https://github.com/xlollx/Songport/releases/download/v%v/Songport-v%v.apk
+Repo: https://github.com/xlollx/Trackhop.git
+Binaries: https://github.com/xlollx/Trackhop/releases/download/v%v/Songport-v%v.apk
 
 Builds:
   - versionName: 1.0.46

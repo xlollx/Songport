@@ -1,0 +1,1 @@
+Neuer Look für Trackhop: neues App-Symbol (auch als Themensymbol auf Android 13), neue Store-Grafiken und derselbe Lichtstrahl-Stil im Sync-Kopf, in der Einführung und auf der teilbaren Statistikkarte.

@@ -8,7 +8,12 @@ import com.xlollx.songport.data.Diagnostics
 import com.xlollx.songport.data.Store
 import com.xlollx.songport.providers.LocalFilesProvider
 import com.xlollx.songport.providers.Providers
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -26,7 +31,11 @@ object BackupExport {
     data class State(val lastOk: Long, val lastError: String?)
 
     private fun prefs(ctx: Context) = ctx.applicationContext.getSharedPreferences("backup_state", Context.MODE_PRIVATE)
-    fun state(ctx: Context): State = prefs(ctx).let { State(it.getLong("ok", 0), it.getString("error", null)) }
+    fun state(ctx: Context): State = prefs(ctx).let {
+        // Versions up to 1.2.1 stored a cancelled copy (screen left mid-way) as an error; it never was one.
+        val error = it.getString("error", null)?.takeUnless { e -> "left the composition" in e || e.startsWith("Job was cancelled") }
+        State(it.getLong("ok", 0), error)
+    }
     private fun remember(ctx: Context, error: String?) {
         prefs(ctx).edit().apply { if (error == null) putLong("ok", System.currentTimeMillis()).remove("error") else putString("error", error) }.apply()
     }
@@ -55,10 +64,36 @@ object BackupExport {
         }
         return try {
             copyNew(ctx, Uri.parse(folder)).also { remember(ctx, null) }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Diagnostics.log(ctx, "backup", "folder copy failed: ${e.message}")
             remember(ctx, e.message ?: e.javaClass.simpleName)
             throw e
+        }
+    }
+
+    /**
+     * "Copy now" from Settings, in the app's own scope: it keeps going when the user leaves the
+     * screen (it used to be cancelled with it, and the cancellation was then shown as the last
+     * error). [running] and [step] drive the row; [finished] carries the outcome for a snackbar.
+     */
+    val running = MutableStateFlow(false)
+    val step = MutableStateFlow("")
+    val finished = MutableStateFlow<Result?>(null)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    fun start(ctx: Context) {
+        if (!running.compareAndSet(false, true)) return
+        val app = ctx.applicationContext
+        step.value = ""
+        scope.launch {
+            try {
+                finished.value = run(app) { step.value = it }
+            } finally {
+                running.value = false
+                step.value = ""
+            }
         }
     }
 
@@ -81,12 +116,15 @@ object BackupExport {
                 // The screen has one line: how many the service would not hand over, not each reason.
                 if (r.failures.isNotEmpty()) failed += p.displayName + ": " + ctx.resources.getQuantityString(com.xlollx.songport.R.plurals.tools_backup_unread, r.failures.size, r.failures.size)
                 services++
+            } catch (e: CancellationException) {
+                // Stopped, not failed: nothing to report, and the next run carries on.
+                throw e
             } catch (e: Exception) {
                 failed += "${p.displayName}: ${e.message}"
             }
         }
         var copyError: String? = null
-        val copied = try { copyNew(ctx, Uri.parse(folder)) } catch (e: Exception) {
+        val copied = try { copyNew(ctx, Uri.parse(folder)) } catch (e: CancellationException) { throw e } catch (e: Exception) {
             Diagnostics.log(ctx, "backup", "folder copy failed: ${e.message}")
             copyError = e.message ?: e.javaClass.simpleName
             failed += copyError
@@ -118,7 +156,7 @@ object BackupExport {
         copied
     }
 
-    /** Nome leggibile della cartella scelta, dall'ultimo pezzo del suo id ("primary:Music/Songport" -> "Music/Songport"). */
+    /** Nome leggibile della cartella scelta, dall'ultimo pezzo del suo id ("primary:Music/Trackhop" -> "Music/Trackhop"). */
     fun folderLabel(uriString: String): String = runCatching {
         DocumentsContract.getTreeDocumentId(Uri.parse(uriString)).substringAfter(':').ifBlank { uriString }
     }.getOrDefault(uriString)
