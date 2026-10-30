@@ -79,6 +79,8 @@ class Runner(private val env: ServerEnv) {
             while (isActive) {
                 val now = System.currentTimeMillis()
                 env.store.data.jobs.filter { isDue(it, now) && !isRunning(it.id) }.forEach { start(it, scheduled = true) }
+                // The backup schedule (Tools › Full backup), as the app's BackupWorker.
+                if (Backups.isDue(env, now)) Tasks.start(Backups.TITLE, "/tools/backup", { env.log("backup", it) }) { t -> Backups.run(env) { t.progress = it } }
                 delay(TICK_MS)
             }
         }

@@ -96,16 +96,24 @@ internal fun Web.tools(r: Web.Req, rest: List<String>) {
     when (rest.firstOrNull()) {
         null -> toolsIndex(r)
         "export" -> exportTool(r)
+        "task" -> taskPage(r, rest.getOrNull(1).orEmpty())
+        "backup", "dedupe", "unplayable" -> toolPage(r, rest[0])
         else -> send(r.ex, 404, page("Not found", """<p><a href="/tools">Back</a></p>"""))
     }
 }
 
 private fun Web.toolsIndex(r: Web.Req) {
     val body = StringBuilder(notice(r))
-    body.append(
-        """<div class="card"><h3><a href="/tools/export">Export a playlist</a></h3><p class="muted">Any playlist of a connected service as CSV, M3U, XSPF, JSPF or plain text, or saved into File.</p></div>
-<div class="card"><h3><a href="/connectors/csv">File playlists</a></h3><p class="muted">Upload a playlist file to sync it anywhere; download the ones Trackhop saved.</p></div>""",
-    )
+    fun tool(href: String, title: String, text: String) =
+        body.append("""<div class="card"><h3><a href="$href">$title</a></h3><p class="muted">$text</p></div>""")
+    body.append("<h2>Move</h2>")
+    tool("/tools/export", "Export a playlist", "Any playlist of a connected service as CSV, M3U, XSPF, JSPF or plain text, or saved into File.")
+    tool("/connectors/csv", "File playlists", "Upload a playlist file to sync it anywhere; download the ones Trackhop saved.")
+    body.append("<h2>Clean up</h2>")
+    tool("/tools/dedupe", "Duplicates", "The tracks a playlist has more than once, and the extra copies removed.")
+    tool("/tools/unplayable", "Unplayable tracks", "The tracks a service still lists but no longer plays, replaced by a playable version.")
+    body.append("<h2>Safety</h2>")
+    tool("/tools/backup", "Full backup", "Every playlist of a service saved as dated files, by hand or on a schedule, and copied to a folder.")
     send(r.ex, 200, page("Tools", body.toString()))
 }
 

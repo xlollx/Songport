@@ -85,6 +85,7 @@ import com.xlollx.songport.model.Progress
 import com.xlollx.songport.model.Track
 import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.Providers
+import com.xlollx.songport.sync.LibraryTools
 import com.xlollx.songport.sync.Tools
 import com.xlollx.songport.providers.LocalFilesProvider
 import kotlinx.coroutines.Dispatchers
@@ -372,7 +373,7 @@ private fun BackupCard(provider: MusicProvider, snackbar: SnackbarHostState) {
     var busy by remember { mutableStateOf(false) }
     var progress by remember { mutableStateOf<Progress?>(null) }
     var copying by remember { mutableStateOf(false) }
-    var details by remember { mutableStateOf<List<Tools.Failure>?>(null) }
+    var details by remember { mutableStateOf<List<LibraryTools.Failure>?>(null) }
     details?.let { list ->
         AlertDialog(
             onDismissRequest = { details = null },

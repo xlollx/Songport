@@ -184,4 +184,30 @@ class WebTest {
         assertEquals(200, get("/tools").statusCode())
         assertEquals(200, get("/tools/export").statusCode())
     }
+
+    @Test fun toolsFindAndRemoveDuplicatesInTheBackground() {
+        File(data, "csv").mkdirs()
+        File(data, "csv/Dup.csv").writeText("title,artist\nSong,Band\nOther,Band\nSong,Band\n")
+        assertEquals(303, post("/connectors/add", "service=csv", *origin).statusCode())
+        val found = get("/tools/dedupe?service=csv&playlist=Dup")
+        assertEquals(200, found.statusCode())
+        assertTrue(found.body(), found.body().contains("more than once"))
+        val started = post("/tools/dedupe", "service=csv&playlist=Dup", *origin)
+        assertEquals(303, started.statusCode())
+        val task = started.headers().firstValue("Location").get()
+        assertTrue(task.startsWith("/tools/task/"))
+        var page = ""
+        repeat(50) { if (!page.contains("Removed")) { Thread.sleep(100); page = get(task).body() } }
+        assertTrue(page, page.contains("Removed 1 extra copies"))
+        assertEquals(2, File(data, "csv/Dup.csv").readLines().size - 1)
+        // Backup settings: a folder that is not there is refused, a real one kept.
+        assertTrue(post("/tools/backup", "action=settings&schedule=DAILY&folder=/no/such/dir", *origin).headers().firstValue("Location").get().contains("err="))
+        val folder = tmp.newFolder("copies")
+        assertEquals(303, post("/tools/backup", "action=settings&schedule=WEEKLY&folder=${java.net.URLEncoder.encode(folder.path, "UTF-8")}", *origin).statusCode())
+        assertEquals(com.xlollx.songport.model.Schedule.WEEKLY, env.store.data.settings.backupSchedule)
+        assertEquals(1, Backups.copyToFolder(env))
+        assertTrue(File(folder, "Dup.csv").exists())
+        assertEquals(200, get("/tools/unplayable").statusCode())
+        assertEquals(200, get("/tools").statusCode())
+    }
 }

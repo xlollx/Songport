@@ -64,6 +64,7 @@ import com.xlollx.songport.model.UnplayableFix
 import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.sync.Matcher
 import com.xlollx.songport.sync.SyncEngine
+import com.xlollx.songport.sync.LibraryTools
 import com.xlollx.songport.sync.Tools
 import com.xlollx.songport.sync.Unplayable
 import kotlinx.coroutines.CancellationException
@@ -93,7 +94,7 @@ fun UnplayableScreen(provider: MusicProvider, onClose: () -> Unit) {
     // null = every playlist of the service.
     var chosen by remember(provider.id) { mutableStateOf<Playlist?>(null) }
     var expanded by remember { mutableStateOf(false) }
-    var scan by remember(provider.id) { mutableStateOf<Tools.UnplayableScan?>(null) }
+    var scan by remember(provider.id) { mutableStateOf<LibraryTools.UnplayableScan?>(null) }
     var scanning by remember { mutableStateOf<String?>(null) }
     var applying by remember { mutableStateOf<Progress?>(null) }
     var confirm by remember { mutableStateOf(false) }
