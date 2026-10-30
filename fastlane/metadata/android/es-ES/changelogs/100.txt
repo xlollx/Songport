@@ -1,0 +1,1 @@
+SoundCloud con tu cuenta sale de alfa y pasa a beta: probado en una cuenta real, el inicio de sesión, la renovación de la sesión y los Me gusta funcionan.

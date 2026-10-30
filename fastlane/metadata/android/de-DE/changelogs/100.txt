@@ -1,0 +1,1 @@
+SoundCloud mit deinem Konto verlässt die Alpha und ist jetzt Beta: an einem echten Konto getestet, Anmeldung, Sitzungserneuerung und Lieblingstitel funktionieren.

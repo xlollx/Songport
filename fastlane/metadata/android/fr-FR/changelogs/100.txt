@@ -1,0 +1,1 @@
+SoundCloud avec votre compte quitte l'alpha et passe en bêta : essayé sur un vrai compte, la connexion, le renouvellement de session et les titres aimés fonctionnent.
