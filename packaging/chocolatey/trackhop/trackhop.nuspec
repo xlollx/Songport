@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Trackhop Desktop for Chocolatey (packaging/README.md). The version, and the address and checksum
+     in tools/chocolateyinstall.ps1, are set for each release by packaging/chocolatey/update.ps1, which
+     the Desktop workflow runs before `choco pack` and `choco push`. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>trackhop</id>
+    <version>0.5.1</version>
+    <title>Trackhop Desktop</title>
+    <authors>xlollx</authors>
+    <owners>xlollx</owners>
+    <projectUrl>https://xlollx.github.io/Trackhop/</projectUrl>
+    <projectSourceUrl>https://github.com/xlollx/Trackhop</projectSourceUrl>
+    <packageSourceUrl>https://github.com/xlollx/Trackhop/tree/main/packaging/chocolatey</packageSourceUrl>
+    <docsUrl>https://xlollx.github.io/Trackhop/guide/desktop</docsUrl>
+    <bugTrackerUrl>https://github.com/xlollx/Trackhop/issues</bugTrackerUrl>
+    <iconUrl>https://xlollx.github.io/Trackhop/store/icon512.png</iconUrl>
+    <licenseUrl>https://github.com/xlollx/Trackhop/blob/main/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <copyright>Copyright (c) xlollx, GPL-3.0-only</copyright>
+    <tags>trackhop music playlist sync spotify youtube-music tidal navidrome subsonic jellyfin plex foss</tags>
+    <summary>Keeps playlists in sync between music services (beta)</summary>
+    <description><![CDATA[Trackhop Desktop is the sync engine of the Trackhop Android app as a program for your computer, with its own Java runtime: nothing else to install.
+
+It keeps playlists in sync between Spotify, YouTube, TIDAL, Navidrome and other Subsonic servers, Jellyfin, Plex, Last.fm, ListenBrainz, SoundCloud links and CSV files, on a schedule, with an icon next to the clock. Its pages open in its own window and at `http://127.0.0.1:8642`, reachable only from this computer.
+
+**Beta:** it works for everyday use, but pages and settings can still change between releases.
+
+## Notes
+
+- The installer is per user: Trackhop is installed into `%LOCALAPPDATA%\Trackhop` of the account that runs `choco install` (normally yours, elevated). Installing from another administrator account or as SYSTEM installs it for that account instead.
+- The data (syncs, sign-ins, log) is kept in `%APPDATA%\Trackhop` and stays when the package is uninstalled.
+- Its window uses Microsoft Edge WebView2, part of Windows 10 and 11; without it the pages open in the browser.
+]]></description>
+    <releaseNotes>https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.1</releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

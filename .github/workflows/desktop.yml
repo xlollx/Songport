@@ -102,6 +102,9 @@ jobs:
     needs: package
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
+    outputs:
+      # Set only when this run made the release, for the stores job.
+      version: ${{ steps.release.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -114,6 +117,7 @@ jobs:
           merge-multiple: true
 
       - name: Release
+        id: release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -128,3 +132,15 @@ jobs:
           EOF
           gh release create "$tag" dist/* --target "$GITHUB_SHA" --prerelease --latest=false \
             --title "Trackhop Desktop & Server $v (beta)" --notes-file notes.md
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+
+  stores:
+    # The new release to winget and Chocolatey (stores.yml; each skipped until its secret exists).
+    # Here rather than on the release event: a release made with the workflow's own token starts no
+    # other workflow.
+    needs: release
+    if: ${{ needs.release.outputs.version != '' }}
+    uses: ./.github/workflows/stores.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+    secrets: inherit

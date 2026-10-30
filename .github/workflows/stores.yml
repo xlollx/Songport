@@ -1,0 +1,119 @@
+name: Stores
+
+# A Trackhop Desktop release (server-v<version>, made by desktop.yml) to the Windows package
+# managers: a pull request to winget's community repository, and the Chocolatey package pushed to
+# the community repository's moderation. Each part runs only once its secret exists (WINGET_TOKEN,
+# CHOCOLATEY_API_KEY: packaging/README.md says how to get them); without it, it says so and stops.
+# Called by desktop.yml after a new release; by hand (Actions › Stores › Run workflow) to send a
+# release again. Scoop's bucket updates itself (its Excavator), Flathub and the Microsoft Store by
+# hand (packaging/README.md).
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version already released as server-v<version>, e.g. 0.5.1'
+        type: string
+        required: true
+      winget:
+        description: 'Open the winget pull request'
+        type: boolean
+        default: true
+      chocolatey:
+        description: 'Push the Chocolatey package'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  winget:
+    # Needs one version of xlollx.Trackhop already in microsoft/winget-pkgs (the first is a manual
+    # pull request) and a fork of winget-pkgs under xlollx; WINGET_TOKEN is a classic token with
+    # public_repo (and workflow, to keep the fork in sync).
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.winget }}
+    runs-on: ubuntu-latest
+    env:
+      WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
+    steps:
+      - name: No WINGET_TOKEN
+        if: env.WINGET_TOKEN == ''
+        run: 'echo "::notice::winget skipped, no WINGET_TOKEN secret yet (packaging/README.md)"'
+
+      - name: Pull request to winget-pkgs
+        if: env.WINGET_TOKEN != ''
+        uses: vedantmgoyal9/winget-releaser@b7370d4d152efdce803a26cc6ca9eee58cb2ad54 # v2
+        with:
+          identifier: xlollx.Trackhop
+          version: ${{ inputs.version }}
+          release-tag: server-v${{ inputs.version }}
+          # The MSI only: the MSIX is unsigned (for the Store), the ZIP is Scoop's.
+          installers-regex: '-windows\.msi$'
+          release-notes-url: https://github.com/xlollx/Trackhop/releases/tag/server-v${{ inputs.version }}
+          token: ${{ secrets.WINGET_TOKEN }}
+
+  chocolatey:
+    # CHOCOLATEY_API_KEY: the API key of the xlollx account on community.chocolatey.org. Every
+    # version waits for the community repository's moderation (automatic checks, then a person).
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.chocolatey }}
+    runs-on: windows-latest
+    env:
+      CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+      VERSION: ${{ inputs.version }}
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: No CHOCOLATEY_API_KEY
+        if: env.CHOCOLATEY_API_KEY == ''
+        run: 'echo "::notice::Chocolatey skipped, no CHOCOLATEY_API_KEY secret yet (packaging/README.md)"'
+
+      - name: Checkout
+        if: env.CHOCOLATEY_API_KEY != ''
+        uses: actions/checkout@v7
+
+      - name: The release's MSI
+        if: env.CHOCOLATEY_API_KEY != ''
+        id: msi
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "server-v$env:VERSION" --pattern "Trackhop-Desktop-v$env:VERSION-windows.msi" --dir msi
+          $hash = (Get-FileHash "msi/Trackhop-Desktop-v$env:VERSION-windows.msi" -Algorithm SHA256).Hash
+          "sha256=$hash" >> $env:GITHUB_OUTPUT
+
+      - name: Pack
+        if: env.CHOCOLATEY_API_KEY != ''
+        run: |
+          ./packaging/chocolatey/update.ps1 -Version $env:VERSION -Checksum "${{ steps.msi.outputs.sha256 }}"
+          choco pack packaging/chocolatey/trackhop/trackhop.nuspec --outputdirectory choco-out
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install and remove it here
+        # The package as users get it: installs the MSI silently, then uninstalls it.
+        if: env.CHOCOLATEY_API_KEY != ''
+        run: |
+          choco install trackhop --source "$PWD\choco-out" -y --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not (Test-Path "$env:LOCALAPPDATA\Trackhop\Trackhop.exe")) { throw 'Trackhop.exe not installed' }
+          choco uninstall trackhop -y --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Push
+        if: env.CHOCOLATEY_API_KEY != ''
+        run: |
+          choco push "choco-out/trackhop.$env:VERSION.nupkg" --source https://push.chocolatey.org/ --api-key $env:CHOCOLATEY_API_KEY
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Keep the package
+        if: env.CHOCOLATEY_API_KEY != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: chocolatey-trackhop-${{ inputs.version }}
+          path: choco-out/*.nupkg
+          retention-days: 30
