@@ -13,6 +13,8 @@ the Docker image carried the app's version.
   is in the tray's menu. Links to other sites open in your browser.
 - **Playlists** tab: each service's playlists and their tracks; rename, delete, take tracks out; or
   tick several and copy them to another service at once (optionally kept in sync daily).
+- **API and webhook** (Tools › API): a token for Home Assistant, n8n or scripts to list the syncs,
+  start them and read their runs, and a webhook (HMAC-signed) called when a run ends.
 - **Back** at the top of every inner page.
 - **Report an issue on GitHub** from the Log page, with the version and the last lines of the log
   filled in.

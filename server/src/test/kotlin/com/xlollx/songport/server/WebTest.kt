@@ -265,4 +265,42 @@ class WebTest {
         assertTrue(get("/tools/backup").body().contains("""class="back" href="/tools""""))
         assertFalse(get("/").body().contains("class=\"back\""))
     }
+
+    @Test fun apiNeedsItsTokenListsAndStartsSyncsAndCallsTheWebhook() {
+        fun api(path: String, token: String?, method: String = "GET") = client.send(
+            HttpRequest.newBuilder(URI("$base$path")).apply { if (token != null) header("Authorization", "Bearer $token") }
+                .method(method, HttpRequest.BodyPublishers.noBody()).build(),
+            HttpResponse.BodyHandlers.ofString(),
+        )
+        assertEquals(403, api("/api/v1/syncs", "x").statusCode())
+        val made = post("/tools/api", "action=token", *origin).body()
+        val token = Regex("""<pre>(th_[A-Za-z0-9_-]+)</pre>""").find(made)?.groupValues?.get(1) ?: error(made)
+        assertEquals(401, api("/api/v1/syncs", null).statusCode())
+        assertEquals(401, api("/api/v1/syncs", "th_wrong").statusCode())
+        // The page's password is not asked for on the API, nor the token on the page.
+        File(data, "csv").mkdirs()
+        File(data, "csv/In.csv").writeText("title,artist\nSong,Band\n")
+        env.store.upsertJob(com.xlollx.songport.model.SyncJob("j9", "Api", com.xlollx.songport.model.PlaylistRef("csv", "In", "In"), com.xlollx.songport.model.PlaylistRef("csv", null, "Out")))
+        val list = api("/api/v1/syncs", token)
+        assertEquals(200, list.statusCode())
+        assertTrue(list.body(), list.body().contains("\"id\":\"j9\""))
+        // A webhook to a local receiver: the run's end arrives there.
+        val got = java.util.concurrent.LinkedBlockingQueue<String>()
+        val hook = HttpServer.create(java.net.InetSocketAddress("127.0.0.1", 0), 0)
+        hook.createContext("/hook") { ex -> got.add(ex.requestHeaders.getFirst("X-Trackhop-Signature") + " " + String(ex.requestBody.readBytes())); ex.sendResponseHeaders(204, -1); ex.close() }
+        hook.start()
+        try {
+            assertEquals(303, post("/tools/api", "action=webhook&url=${java.net.URLEncoder.encode("http://127.0.0.1:${hook.address.port}/hook", "UTF-8")}&secret=s3", *origin).statusCode())
+            assertEquals(202, api("/api/v1/syncs/j9/run", token, "POST").statusCode())
+            val event = got.poll(20, java.util.concurrent.TimeUnit.SECONDS) ?: error("no webhook")
+            assertTrue(event, event.startsWith("sha256=") && event.contains("sync.finished") && event.contains("\"added\":1"))
+        } finally {
+            hook.stop(0)
+        }
+        assertTrue(api("/api/v1/syncs/j9", token).body().contains("\"runs\""))
+        assertEquals(200, api("/api/v1/services", token).statusCode())
+        assertEquals(404, api("/api/v1/nope", token).statusCode())
+        assertEquals(303, post("/tools/api", "action=revoke", *origin).statusCode())
+        assertEquals(403, api("/api/v1/syncs", token).statusCode())
+    }
 }

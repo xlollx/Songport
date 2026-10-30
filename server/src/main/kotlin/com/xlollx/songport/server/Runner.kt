@@ -53,6 +53,7 @@ class Runner(private val env: ServerEnv) {
                 "end ${job.name}: +${report.added} -${report.removed} nf=${report.unmatched.size} src=${report.sourceCount} dst=${report.targetCount}" +
                     (report.error?.let { " ERR $it" } ?: ""),
             )
+            Api.notify(env, job, report)
             if (scheduled && !report.ok && isTransientNetwork(report.error)) {
                 retryAt[job.id] = System.currentTimeMillis() + RETRY_MS
                 env.log("sync", "no network for ${job.name}: will retry")

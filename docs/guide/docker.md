@@ -212,6 +212,35 @@ File). Trackhop has no AI of its own and sends the AI only your description. Fre
 What the AI proposes is searched on the service like any sync, so a track it made up is simply not
 found.
 
+## API
+
+Other tools (Home Assistant, n8n, Node-RED, a script) can list the syncs, start them and read how
+they went. Turn it on in **Tools › API**: make a token (shown once; only its hash is kept) and send
+it as `Authorization: Bearer <token>`. It is separate from the page's password; on Trackhop Desktop
+only the computer itself can reach it.
+
+| Call | What it does |
+|---|---|
+| `GET /api/v1/status` | Version, number of syncs, the ones running, the last run's time |
+| `GET /api/v1/syncs` | Every sync: source, target, schedule, running, last result |
+| `GET /api/v1/syncs/<id>` | One sync and its last 20 runs |
+| `POST /api/v1/syncs/<id>/run` | Starts it (202) |
+| `POST /api/v1/syncs/run-all` | Starts every enabled sync |
+| `GET /api/v1/runs/<id>` | A run: added, removed, not found, with the tracks |
+| `GET /api/v1/services` | The services and whether they are connected |
+| `GET /api/v1/files`, `GET /api/v1/files/<name>.csv?format=m3u` | The File playlists, in any export format |
+
+```sh
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/v1/syncs
+curl -X POST -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/v1/syncs/run-all
+```
+
+**Webhook.** With an address set in Tools › API, every finished run is POSTed there as JSON
+(`"event": "sync.finished"`, the sync, and the run with its added and not-found tracks). With a
+secret, `X-Trackhop-Signature: sha256=<hex>` is the HMAC-SHA256 of the body. In Home Assistant, a
+*Webhook* trigger with that address starts an automation (a notification when tracks were not
+found, say); a `rest_command` that POSTs to `/api/v1/syncs/run-all` starts every sync from one.
+
 ## Not there yet
 
 The connectors that run a service's own web player (Amazon Music, Spotify and Apple Music without a
