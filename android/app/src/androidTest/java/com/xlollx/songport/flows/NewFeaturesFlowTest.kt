@@ -137,6 +137,7 @@ class NewFeaturesFlowTest : FlowTest() {
         waitText("Road Trip")
         // With two syncs or more, the pinned "Sync all" pill.
         assertTrue(exists(s(R.string.sync_all)))
+        snapshot("sync-all-pill")
         // By word.
         val field = compose.onAllNodes(hasSetTextAction() and hasText(s(R.string.syncs_find_hint))).onFirst()
         scrollTo(field).performTextReplacement("Road")

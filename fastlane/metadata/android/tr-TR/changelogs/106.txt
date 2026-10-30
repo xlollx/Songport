@@ -1,1 +1,1 @@
-Yeni: yenilik getiren bir güncellemeden sonra öne çıkanları bir bakışta gösteren “Yenilikler” sayfası. Hemen kapatabilirsiniz; bir daha gelmez. Ayrıca Ayarlar › Hakkında › Yenilikler'de.
+Yeni: yenilik getiren bir güncellemeden sonra öne çıkanları bir bakışta gösteren “Yenilikler” sayfası. Hemen kapatabilirsiniz; bir daha gelmez. Ayrıca Ayarlar › Hakkında › Yenilikler'de. Tümünü eşitle düğmesi yine arkasında çubuk olmadan yüzüyor.
