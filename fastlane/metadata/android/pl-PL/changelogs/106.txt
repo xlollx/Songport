@@ -1,0 +1,1 @@
+Nowość: strona „Nowości” po aktualizacji, która wnosi coś nowego, z najważniejszymi zmianami w skrócie. Można ją od razu zamknąć i już nie wraca. Także w Ustawienia › O aplikacji › Nowości.

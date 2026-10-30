@@ -1,0 +1,1 @@
+New: a “What's new” page after an update that brings something new, with its highlights at a glance. You can close it right away; it does not come back. Also in Settings › About › What's new.

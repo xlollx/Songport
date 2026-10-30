@@ -1,0 +1,1 @@
+Nuevo: una página de “Novedades” tras una actualización que trae algo nuevo, con lo mejor de un vistazo. Puedes cerrarla enseguida y no vuelve. También en Ajustes › Acerca de › Novedades.
