@@ -24,6 +24,9 @@ import java.util.Base64
 import java.util.UUID
 import java.util.concurrent.Executors
 
+/** The largest request body accepted: a playlist file is far smaller. */
+private const val MAX_BODY = 20_000_000
+
 /**
  * True when a POST comes from this server's own pages: its Origin is the address the browser used
  * (Host) or [baseUrl] (SONGPORT_URL, for a reverse proxy that rewrites Host). "Origin: null" is
@@ -84,7 +87,11 @@ class Web(
 
     // ------------------------------------------------------------------ plumbing
 
-    internal class Req(val ex: HttpExchange, val method: String, val path: List<String>, val query: Map<String, String>, val form: Map<String, String>)
+    internal class Req(
+        val ex: HttpExchange, val method: String, val path: List<String>, val query: Map<String, String>, val form: Map<String, String>,
+        /** Uploaded files (multipart forms): field name to file name and content. */
+        val files: Map<String, Multipart.File> = emptyMap(),
+    )
 
     private fun handle(ex: HttpExchange) {
         val path = ex.requestURI.path.trim('/').split('/').filter { it.isNotEmpty() }.map { decode(it) }
@@ -100,8 +107,12 @@ class Web(
         val method = ex.requestMethod.uppercase()
         // A form posted from another site is refused: every change comes from these pages.
         if (method == "POST" && !sameOrigin({ ex.requestHeaders.getFirst(it) }, env.baseUrl)) return send(ex, 403, "Cross-site request refused", "text/plain")
-        val form = if (method == "POST") parseForm(String(ex.requestBody.readBytes(), StandardCharsets.UTF_8)) else emptyMap()
-        val r = Req(ex, method, path, parseForm(ex.requestURI.rawQuery ?: ""), form)
+        val type = ex.requestHeaders.getFirst("Content-Type").orEmpty()
+        val bytes = if (method == "POST") ex.requestBody.readNBytes(MAX_BODY + 1) else ByteArray(0)
+        if (bytes.size > MAX_BODY) return send(ex, 413, page("Too large", "<p>Files up to ${MAX_BODY / 1_000_000} MB.</p>"))
+        val parts = if (type.startsWith("multipart/form-data")) Multipart.parse(type, bytes) else null
+        val form = parts?.fields ?: if (method == "POST") parseForm(String(bytes, StandardCharsets.UTF_8)) else emptyMap()
+        val r = Req(ex, method, path, parseForm(ex.requestURI.rawQuery ?: ""), form, parts?.files.orEmpty())
         when {
             path.isEmpty() -> home(r)
             path == listOf("style.css") -> send(ex, 200, Html.CSS, "text/css")
@@ -110,6 +121,9 @@ class Web(
             path == listOf("quit") && onQuit != null && method == "POST" -> quit(r, onQuit)
             path[0] == "connectors" -> connectors(r, path.drop(1))
             path.size == 2 && path[0] == "files" && method == "GET" -> download(r, path[1])
+            path.size == 2 && path[0] == "files" && method == "POST" -> fileAction(r, path[1])
+            path == listOf("files") && method == "POST" -> upload(r)
+            path[0] == "tools" -> tools(r, path.drop(1))
             path[0] == "syncs" -> syncs(r, path.drop(1))
             else -> send(ex, 404, page("Not found", "<p><a href=\"/\">Back</a></p>"))
         }
@@ -340,31 +354,6 @@ class Web(
         }
         body.append("""<p>${Html.postButton("/connectors/${q(p.id)}/remove", "Remove from the list", "danger", confirm = "Remove this service from the list?")}</p>""")
         send(r.ex, 200, page(p.label(env), body.toString()))
-    }
-
-    /** The File service's playlists, each one downloadable; new ones are files put in its folder. */
-    private fun fileList(): String {
-        val dir = LocalFilesProvider.dir(env)
-        val files = csvFiles()
-        val sb = StringBuilder("""<div class="card">""")
-        if (files.isEmpty()) sb.append("""<p class="muted">No playlist files yet.</p>""")
-        else {
-            sb.append("<ul>")
-            for (f in files) sb.append("""<li><a href="/files/${q(f.name)}" download>${h(f.nameWithoutExtension)}</a> <span class="muted">(${h(f.name)})</span></li>""")
-            sb.append("</ul>")
-        }
-        sb.append("""<p class="muted">Playlists saved inside Trackhop, as CSV files. A sync whose target is File writes its playlist here: click one to download it. To use a CSV file as a source, put it in <code>${h(dir.path)}</code>.</p></div>""")
-        return sb.toString()
-    }
-
-    private fun csvFiles() = LocalFilesProvider.dir(env).listFiles { f -> f.isFile && f.extension == "csv" }.orEmpty().sortedBy { it.name.lowercase() }
-
-    /** One of [csvFiles], by its exact name: nothing else in the data folder can be asked for. */
-    private fun download(r: Req, name: String) {
-        val f = csvFiles().firstOrNull { it.name == name } ?: return send(r.ex, 404, page("Not found", """<p><a href="/connectors/csv">Back</a></p>"""))
-        val ascii = name.replace(Regex("[^A-Za-z0-9._ ()-]"), "_")
-        r.ex.responseHeaders.set("Content-Disposition", "attachment; filename=\"$ascii\"; filename*=UTF-8''${q(name).replace("+", "%20")}")
-        send(r.ex, 200, f.readText(), "text/csv")
     }
 
     private fun ytmNote(): String = """<div class="card"><p><span class="badge">unofficial</span> <span class="alpha">alpha</span></p>

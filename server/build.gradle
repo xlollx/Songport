@@ -58,6 +58,8 @@ tasks.named('processResources') { dependsOn versionFile }
 tasks.register('printVersion') { doLast { println appVersion } }
 
 test {
+    // File names with accents (a playlist "Città"): the JVM reads them in the locale's encoding.
+    if (!System.getProperty('os.name').startsWith('Windows')) environment 'LC_ALL', 'C.UTF-8'
     testLogging {
         events "failed"
         exceptionFormat "full"

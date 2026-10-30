@@ -1,0 +1,151 @@
+package com.xlollx.songport.server
+
+import com.xlollx.songport.model.Track
+import com.xlollx.songport.providers.LocalFilesProvider
+import com.xlollx.songport.providers.Providers
+import com.xlollx.songport.server.Html.h
+import com.xlollx.songport.sync.CsvCodec
+import com.xlollx.songport.sync.PlaylistFiles
+import kotlinx.coroutines.runBlocking
+
+/**
+ * The File service's playlists (CSV files in the data folder) and the Tools that move playlists in
+ * and out as files, as the app's Tools › File playlists and Export a playlist do: upload a file in
+ * any format Trackhop reads, download one as CSV, M3U, XSPF, JSPF or plain text, delete one, and
+ * export any service's playlist the same way.
+ */
+internal enum class ExportFormat(val label: String, val ext: String, val mime: String) {
+    CSV("CSV", "csv", "text/csv"),
+    M3U("M3U", "m3u", "audio/x-mpegurl"),
+    XSPF("XSPF", "xspf", "application/xspf+xml"),
+    JSPF("JSPF (ListenBrainz)", "jspf", "application/json"),
+    TEXT("Text", "txt", "text/plain"),
+    ;
+
+    fun encode(name: String, tracks: List<Track>): String = when (this) {
+        CSV -> CsvCodec.encode(tracks)
+        M3U -> PlaylistFiles.toM3u(tracks)
+        XSPF -> PlaylistFiles.toXspf(name, tracks)
+        JSPF -> PlaylistFiles.toJspf(name, tracks)
+        TEXT -> PlaylistFiles.toText(tracks)
+    }
+
+    companion object {
+        fun of(s: String?) = entries.firstOrNull { it.ext == s?.lowercase() } ?: CSV
+    }
+}
+
+internal fun Web.csvFiles() = LocalFilesProvider.dir(env).listFiles { f -> f.isFile && f.extension == "csv" }.orEmpty().sortedBy { it.name.lowercase() }
+
+internal fun Web.fileList(): String {
+    val files = csvFiles()
+    val sb = StringBuilder("""<div class="card">""")
+    if (files.isEmpty()) sb.append("""<p class="muted">No playlist files yet.</p>""")
+    for (f in files) {
+        val n = CsvCodec.parse(f.readText()).size
+        val links = ExportFormat.entries.joinToString(" · ") { """<a href="/files/${q(f.name)}?format=${it.ext}" download>${it.label}</a>""" }
+        sb.append(
+            """<div class="row"><div><b>${h(f.nameWithoutExtension)}</b> <span class="muted">$n tracks</span><br><span class="muted">Download: </span>$links</div>""" +
+                Html.postButton("/files/${q(f.name)}", "Delete", "danger", fields = mapOf("action" to "delete"), confirm = "Delete ${f.nameWithoutExtension}? A sync that uses it stops finding it.") +
+                "</div>",
+        )
+    }
+    sb.append(
+        """<p class="muted">Playlists saved inside Trackhop. A sync whose target is File writes its playlist here; a file uploaded here can be the source of a sync to any service.</p></div>
+<form method="post" action="/files" enctype="multipart/form-data" class="card"><label>Add a playlist file: CSV, M3U, PLS, XSPF, JSPF or JSON, iTunes XML, OPML, or a text list of “Artist - Title”</label>
+<input type="file" name="file" required><p><button>Upload</button></p></form>""",
+    )
+    return sb.toString()
+}
+
+/** One of [csvFiles], by its exact name: nothing else in the data folder can be asked for. */
+internal fun Web.download(r: Web.Req, name: String) {
+    val f = csvFiles().firstOrNull { it.name == name } ?: return send(r.ex, 404, page("Not found", """<p><a href="/connectors/csv">Back</a></p>"""))
+    val format = ExportFormat.of(r.query["format"])
+    val text = if (format == ExportFormat.CSV) f.readText() else format.encode(f.nameWithoutExtension, CsvCodec.parse(f.readText()))
+    attachment(r, "${f.nameWithoutExtension}.${format.ext}", text, format.mime)
+}
+
+internal fun Web.attachment(r: Web.Req, fileName: String, text: String, mime: String) {
+    val ascii = fileName.replace(Regex("[^A-Za-z0-9._ ()-]"), "_")
+    r.ex.responseHeaders.set("Content-Disposition", "attachment; filename=\"$ascii\"; filename*=UTF-8''${q(fileName).replace("+", "%20")}")
+    send(r.ex, 200, text, mime)
+}
+
+internal fun Web.fileAction(r: Web.Req, name: String) {
+    val f = csvFiles().firstOrNull { it.name == name } ?: return redirect(r.ex, "/connectors/csv?err=${q("No such file.")}")
+    when (r.form["action"]) {
+        "delete" -> { f.delete(); redirect(r.ex, "/connectors/csv?ok=${q("Deleted ${f.nameWithoutExtension}.")}") }
+        else -> redirect(r.ex, "/connectors/csv")
+    }
+}
+
+internal fun Web.upload(r: Web.Req) {
+    val file = r.files["file"] ?: return redirect(r.ex, "/connectors/csv?err=${q("Choose a file.")}")
+    val text = PlaylistFiles.decode(file.bytes)
+    val n = runCatching { LocalFilesProvider.importFile(env, file.name.substringAfterLast('/').substringAfterLast('\\'), text) }
+        .getOrElse { return redirect(r.ex, "/connectors/csv?err=${q(it.message ?: "Could not read the file.")}") }
+    if (n == 0) return redirect(r.ex, "/connectors/csv?err=${q("No tracks found in ${file.name}.")}")
+    env.log("files", "imported ${file.name}: $n tracks")
+    redirect(r.ex, "/connectors/csv?ok=${q("Added ${file.name}: $n tracks.")}")
+}
+
+// ------------------------------------------------------------------ tools
+
+internal fun Web.tools(r: Web.Req, rest: List<String>) {
+    when (rest.firstOrNull()) {
+        null -> toolsIndex(r)
+        "export" -> exportTool(r)
+        else -> send(r.ex, 404, page("Not found", """<p><a href="/tools">Back</a></p>"""))
+    }
+}
+
+private fun Web.toolsIndex(r: Web.Req) {
+    val body = StringBuilder(notice(r))
+    body.append(
+        """<div class="card"><h3><a href="/tools/export">Export a playlist</a></h3><p class="muted">Any playlist of a connected service as CSV, M3U, XSPF, JSPF or plain text, or saved into File.</p></div>
+<div class="card"><h3><a href="/connectors/csv">File playlists</a></h3><p class="muted">Upload a playlist file to sync it anywhere; download the ones Trackhop saved.</p></div>""",
+    )
+    send(r.ex, 200, page("Tools", body.toString()))
+}
+
+private fun Web.exportTool(r: Web.Req) {
+    val readable = Providers.connectors().filter { (!it.requiresAuth || it.isConnected(env)) && it !is LocalFilesProvider && !it.linkOnly }
+    // Downloads are GETs; saving into File changes something, so it is a POST (the form's second button).
+    val params = if (r.method == "POST") r.form else r.query
+    val service = params["service"]?.let { id -> readable.firstOrNull { it.id == id } }
+    val body = StringBuilder(notice(r))
+    if (readable.isEmpty()) {
+        body.append("""<div class="card">Connect a service first: <a href="/connectors">Services</a>.</div>""")
+        return send(r.ex, 200, page("Export a playlist", body.toString()))
+    }
+    if (service == null) {
+        val opts = readable.joinToString("") { """<option value="${h(it.id)}">${h(it.label(env))}</option>""" }
+        body.append("""<form method="get" action="/tools/export" class="card"><label>From</label><select name="service">$opts</select><p><button>Next</button></p></form>""")
+        return send(r.ex, 200, page("Export a playlist", body.toString()))
+    }
+    val lists = runCatching { runBlocking { service.libraryEntries(env, false) + service.playlists(env) } }
+    lists.exceptionOrNull()?.let { body.append("""<div class="card err">${h(service.label(env))}: ${h(it.message)}</div>""") }
+    val playlistId = params["playlist"]
+    val playlist = playlistId?.let { id -> lists.getOrNull()?.firstOrNull { it.id == id } }
+    if (playlist != null) {
+        // Only playlists the service listed: an id is never typed in.
+        val tracks = runCatching { runBlocking { service.tracks(env, playlist.id) } }
+            .getOrElse { return redirect(r.ex, "/tools/export?service=${q(service.id)}&err=${q(it.message ?: "Error")}") }
+        if (r.method == "POST" && params["to"] == "file") {
+            val id = LocalFilesProvider.importTracks(env, playlist.name, tracks)
+            return redirect(r.ex, "/connectors/csv?ok=${q("Saved ${playlist.name} into File as $id (${tracks.size} tracks).")}")
+        }
+        val format = ExportFormat.of(params["format"])
+        return attachment(r, "${playlist.name}.${format.ext}", format.encode(playlist.name, tracks), format.mime)
+    }
+    val opts = lists.getOrDefault(emptyList()).joinToString("") { p -> """<option value="${h(p.id)}">${h(p.name)}${if (p.trackCount >= 0) " (${p.trackCount})" else ""}</option>""" }
+    val formats = ExportFormat.entries.joinToString("") { """<option value="${it.ext}">${h(it.label)}</option>""" }
+    body.append(
+        """<form method="get" action="/tools/export" class="card"><input type="hidden" name="service" value="${h(service.id)}">
+<label>Playlist on ${h(service.label(env))}</label><select name="playlist" required>$opts</select>
+<label>Format</label><select name="format">$formats</select>
+<p><button>Download</button> <button class="secondary" name="to" value="file" formmethod="post">Save into File</button> <a class="button secondary" href="/tools/export">Back</a></p></form>""",
+    )
+    send(r.ex, 200, page("Export a playlist", body.toString()))
+}

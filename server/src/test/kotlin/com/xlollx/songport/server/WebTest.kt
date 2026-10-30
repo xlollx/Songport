@@ -161,4 +161,27 @@ class WebTest {
         // Another sync's run is not reachable through this one.
         assertEquals(404, get("/syncs/j1/review/r1").statusCode())
     }
+
+    @Test fun playlistFilesUploadInAnyFormatAndExportInOthers() {
+        val boundary = "----trackhop"
+        val m3u = "#EXTM3U\r\n#EXTINF:200,Band - Song\r\nBand - Song.mp3\r\n"
+        val body = "--$boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"Città.m3u\"\r\nContent-Type: audio/x-mpegurl\r\n\r\n$m3u\r\n--$boundary--\r\n"
+        val res = client.send(
+            HttpRequest.newBuilder(URI("$base/files")).header("Authorization", auth).header("Origin", base)
+                .header("Content-Type", "multipart/form-data; boundary=$boundary").POST(HttpRequest.BodyPublishers.ofByteArray(body.toByteArray(Charsets.UTF_8))).build(),
+            HttpResponse.BodyHandlers.ofString(),
+        )
+        assertEquals(303, res.statusCode())
+        assertTrue(res.headers().firstValue("Location").orElse("").contains("ok="))
+        val csv = File(data, "csv/Città.csv")
+        assertTrue(csv.exists() && csv.readText().contains("Song"))
+        val xspf = get("/files/Citt%C3%A0.csv?format=xspf")
+        assertEquals(200, xspf.statusCode())
+        assertTrue(xspf.body().contains("<creator>Band</creator>"))
+        assertTrue(get("/files/Citt%C3%A0.csv?format=txt").body().trim() == "Band - Song")
+        assertEquals(303, post("/files/Citt%C3%A0.csv", "action=delete", *origin).statusCode())
+        assertFalse(csv.exists())
+        assertEquals(200, get("/tools").statusCode())
+        assertEquals(200, get("/tools/export").statusCode())
+    }
 }

@@ -28,7 +28,7 @@ ${refreshSeconds?.let { """<meta http-equiv="refresh" content="$it">""" } ?: ""}
 <title>${h(title)} · Trackhop</title>
 <link rel="stylesheet" href="/style.css">
 </head><body>
-<header><a class="brand" href="/">Trackhop <span class="alpha">alpha</span></a><nav><a href="/">Syncs</a><a href="/connectors">Services</a><a href="/log">Log</a></nav></header>
+<header><a class="brand" href="/">Trackhop <span class="alpha">alpha</span></a><nav><a href="/">Syncs</a><a href="/connectors">Services</a><a href="/tools">Tools</a><a href="/log">Log</a></nav></header>
 <p class="alpha-note"><strong>Alpha.</strong> ${h(edition.product)} is an early test version: things can break or change between releases. Keep a copy of the data folder and <a href="https://xlollx.github.io/Trackhop/guide/reporting-a-problem">report what goes wrong</a>.</p>
 <main>
 <h1>${h(title)}</h1>

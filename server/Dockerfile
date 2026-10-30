@@ -26,7 +26,8 @@ RUN groupadd --system songport && useradd --system --gid songport --home-dir /da
     && mkdir -p /data && chown songport:songport /data
 COPY --from=build /src/server/build/install/songport-server /opt/songport
 USER songport
-ENV SONGPORT_DATA=/data SONGPORT_PORT=8080
+# UTF-8 file names (a playlist file "Città.csv").
+ENV SONGPORT_DATA=/data SONGPORT_PORT=8080 LANG=C.UTF-8 LC_ALL=C.UTF-8
 VOLUME /data
 EXPOSE 8080
 ENTRYPOINT ["/opt/songport/bin/songport-server"]
