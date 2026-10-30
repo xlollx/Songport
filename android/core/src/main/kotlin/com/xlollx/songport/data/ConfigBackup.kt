@@ -104,6 +104,8 @@ object ConfigBackup {
     private fun portable(st: Settings) = st.copy(
         clientSecrets = emptyMap(), appLock = false, backupFolder = "",
         supportPromptReport = null, appOpens = 0, supportNudgeSeen = 0,
+        // Which "What's new" this phone has shown: the phone that imports the file keeps its own.
+        whatsNewSeen = "",
     )
 
     /** [incoming]'s settings over [current], keeping this device's own. */
@@ -125,6 +127,7 @@ object ConfigBackup {
         supportPromptDone = current.supportPromptDone,
         appOpens = current.appOpens,
         supportNudgeSeen = current.supportNudgeSeen,
+        whatsNewSeen = current.whatsNewSeen,
     )
 
     /** The file's name: trackhop-2026-10-30.trackhop. */

@@ -65,6 +65,12 @@ data class Settings(
     val newLook: Boolean = true,
     /** The guided first sync was finished or skipped: it is no longer offered on the empty Syncs tab. */
     val tourDone: Boolean = false,
+    /**
+     * The newest release whose "What's new" this device has seen ("1.4"), so it opens once per
+     * release with one; "" = none yet (an update from before the sheet, or a fresh install still in
+     * the welcome, which marks it when it ends). Per device: a configuration file leaves it out.
+     */
+    val whatsNewSeen: String = "",
 )
 
 /** Unita' di quota consumate in un giorno (chiave = data nel fuso del servizio). */
