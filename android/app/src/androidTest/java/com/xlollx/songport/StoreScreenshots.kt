@@ -184,6 +184,7 @@ class StoreScreenshots {
                 connectors = listOf("spotify", yt, fourth, "deezer", "jellyfin"), connectorsInit = true,
                 onboardingDone = true, tourDone = true, themeMode = "DARK", dynamicColor = false, newLook = true,
                 supportPromptDone = true, appOpens = 1, supportNudgeSeen = 0, shareTarget = yt,
+                whatsNewSeen = com.xlollx.songport.ui.WhatsNew.newestVersion,
             )
         }
         store.flush()

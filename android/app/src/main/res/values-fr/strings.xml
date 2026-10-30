@@ -1225,4 +1225,19 @@
     <string name="shazam_howto_body">Shazam peut garder chaque titre reconnu dans une playlist « My Shazam Tracks » sur Spotify ou Apple Music. Dans l\'app Shazam, ouvrez Réglages › Se connecter à Spotify (ou Apple Music), shazamez un titre, puis vérifiez à nouveau.</string>
     <string name="shazam_howto_connect">Connectez ensuite le même compte Spotify ou Apple Music à Trackhop.</string>
     <string name="shazam_howto_retry">Vérifier à nouveau</string>
+    <string name="whats_new_title">Nouveautés de Trackhop %1$s</string>
+    <string name="whats_new_subtitle">L\'essentiel de cette mise à jour, en un coup d\'œil.</string>
+    <string name="whats_new_got_it">Compris</string>
+    <string name="whats_new_all_changes">Toutes les modifications</string>
+    <string name="whats_new_release">Trackhop %1$s</string>
+    <string name="whats_new_row">Nouveautés</string>
+    <string name="whats_new_row_summary">L\'essentiel de Trackhop %1$s</string>
+    <string name="whats_new_14_shazam_title">Synchronisez vos Shazam</string>
+    <string name="whats_new_14_shazam_body">Chaque titre shazamé, dans la playlist de votre choix : choisissez Shazam comme source. Via « My Shazam Tracks » sur Spotify ou Apple Music.</string>
+    <string name="whats_new_14_backup_title">Sauvegarde et restauration réunies</string>
+    <string name="whats_new_14_backup_body">Tous vos réglages dans un fichier, pour un autre téléphone, Trackhop Desktop ou Docker. Playlists sauvegardées maintenant ou à heure fixe.</string>
+    <string name="whats_new_14_look_title">Une apparence plus claire</string>
+    <string name="whats_new_14_look_body">Chaque section des Réglages et des Outils a sa couleur, et revenir en arrière vous ramène où vous étiez.</string>
+    <string name="whats_new_14_messages_title">Des messages plus clairs</string>
+    <string name="whats_new_14_messages_body">Des mots simples quand ça coince, comme un refus de playlist par Spotify : depuis 2026, votre clé Spotify ne lit que vos playlists.</string>
 </resources>

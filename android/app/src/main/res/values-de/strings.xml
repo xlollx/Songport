@@ -1217,4 +1217,19 @@
     <string name="shazam_howto_body">Shazam kann jeden erkannten Song in einer Playlist „My Shazam Tracks“ auf Spotify oder Apple Music sammeln. Öffne in der Shazam-App Einstellungen › Mit Spotify (oder Apple Music) verbinden, erkenne einen Song und prüfe dann erneut.</string>
     <string name="shazam_howto_connect">Verbinde danach dasselbe Spotify- oder Apple-Music-Konto mit Trackhop.</string>
     <string name="shazam_howto_retry">Erneut prüfen</string>
+    <string name="whats_new_title">Neu in Trackhop %1$s</string>
+    <string name="whats_new_subtitle">Das Wichtigste dieses Updates auf einen Blick.</string>
+    <string name="whats_new_got_it">Verstanden</string>
+    <string name="whats_new_all_changes">Alle Änderungen</string>
+    <string name="whats_new_release">Trackhop %1$s</string>
+    <string name="whats_new_row">Was ist neu</string>
+    <string name="whats_new_row_summary">Das Wichtigste aus Trackhop %1$s</string>
+    <string name="whats_new_14_shazam_title">Deine Shazams synchronisieren</string>
+    <string name="whats_new_14_shazam_body">Jeder Song, den du shazamst, in einer Playlist deiner Wahl: Wähle Shazam als Quelle. Nutzt „My Shazam Tracks“ auf Spotify oder Apple Music.</string>
+    <string name="whats_new_14_backup_title">Sichern &amp; Wiederherstellen an einem Ort</string>
+    <string name="whats_new_14_backup_body">Deine ganze Einrichtung in einer Datei, für ein anderes Handy, Trackhop Desktop oder Docker. Playlists jetzt oder nach Zeitplan sichern.</string>
+    <string name="whats_new_14_look_title">Ein klareres Aussehen</string>
+    <string name="whats_new_14_look_body">Jeder Bereich in Einstellungen und Werkzeuge hat seine eigene Farbe, und Zurück bringt dich dahin, wo du warst.</string>
+    <string name="whats_new_14_messages_title">Klarere Meldungen</string>
+    <string name="whats_new_14_messages_body">Klare Worte, wenn etwas schiefgeht, etwa wenn Spotify eine Playlist ablehnt: Seit 2026 liest dein Spotify-Schlüssel nur deine Playlists.</string>
 </resources>

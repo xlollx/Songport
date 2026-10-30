@@ -1261,4 +1261,19 @@
     <string name="shazam_howto_body">Shazam может сохранять каждый распознанный трек в плейлист «My Shazam Tracks» в Spotify или Apple Music. В приложении Shazam откройте Настройки › Подключить Spotify (или Apple Music), распознайте трек и проверьте снова.</string>
     <string name="shazam_howto_connect">Затем подключите тот же аккаунт Spotify или Apple Music к Trackhop.</string>
     <string name="shazam_howto_retry">Проверить снова</string>
+    <string name="whats_new_title">Что нового в Trackhop %1$s</string>
+    <string name="whats_new_subtitle">Главное в этом обновлении — коротко.</string>
+    <string name="whats_new_got_it">Понятно</string>
+    <string name="whats_new_all_changes">Все изменения</string>
+    <string name="whats_new_release">Trackhop %1$s</string>
+    <string name="whats_new_row">Что нового</string>
+    <string name="whats_new_row_summary">Главное в Trackhop %1$s</string>
+    <string name="whats_new_14_shazam_title">Синхронизация Shazam</string>
+    <string name="whats_new_14_shazam_body">Каждая песня, найденная в Shazam, — в плейлисте на ваш выбор: укажите Shazam источником. Из «My Shazam Tracks» в Spotify или Apple Music.</string>
+    <string name="whats_new_14_backup_title">Копия и восстановление в одном месте</string>
+    <string name="whats_new_14_backup_body">Все настройки в одном файле — для другого телефона, Trackhop Desktop или Docker. Копии плейлистов сразу или по расписанию.</string>
+    <string name="whats_new_14_look_title">Более понятный вид</string>
+    <string name="whats_new_14_look_body">У каждого раздела Настроек и Инструментов свой цвет, а при возврате назад вы остаётесь на том же месте.</string>
+    <string name="whats_new_14_messages_title">Понятные сообщения</string>
+    <string name="whats_new_14_messages_body">Простые слова, когда что-то не так, например если Spotify отклоняет плейлист: с 2026 года ваш ключ Spotify читает только ваши плейлисты.</string>
 </resources>

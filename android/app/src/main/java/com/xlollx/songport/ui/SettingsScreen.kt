@@ -48,6 +48,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Policy
 import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.NewReleases
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Security
@@ -94,7 +95,7 @@ fun openSupport(ctx: android.content.Context) = openUrl(ctx, BuildConfig.KOFI_UR
 
 fun openSponsors(ctx: android.content.Context) = openUrl(ctx, BuildConfig.SPONSORS_URL)
 
-private fun openUrl(ctx: android.content.Context, url: String) {
+internal fun openUrl(ctx: android.content.Context, url: String) {
     if (url.isBlank()) return
     runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }
@@ -123,6 +124,7 @@ fun SettingsScreen(
     onOpenLog: () -> Unit = {},
     onHowTo: () -> Unit = {},
     onBackup: () -> Unit = {},
+    onWhatsNew: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
     val privacyRequired by Ads.privacyOptionsRequired.collectAsState()
@@ -357,6 +359,8 @@ fun SettingsScreen(
                 null, stringResource(R.string.app_name), stringResource(R.string.settings_version, BuildConfig.VERSION_NAME),
                 leading = { BrandMark(40.dp) },
             )
+            // The newest release's highlights, the sheet shown once after the update.
+            PrefRow(Icons.Filled.NewReleases, stringResource(R.string.whats_new_row), stringResource(R.string.whats_new_row_summary, WhatsNew.newestVersion), onClick = onWhatsNew)
             // Open source: the repository holds the code, the docs and the connector-plugin page.
             PrefRow(Icons.Filled.Code, stringResource(R.string.settings_source_code), SOURCE_URL.removePrefix("https://"), trailing = { ExternalMark() }) {
                 runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(SOURCE_URL))) }

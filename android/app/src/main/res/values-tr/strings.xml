@@ -1215,4 +1215,19 @@
     <string name="shazam_howto_body">Shazam, tanıdığınız her şarkıyı Spotify veya Apple Music\'te “My Shazam Tracks” çalma listesinde tutabilir. Shazam uygulamasında Ayarlar › Spotify\'a (veya Apple Music\'e) bağlan\'ı açın, bir şarkı tanıtın, sonra yeniden kontrol edin.</string>
     <string name="shazam_howto_connect">Ardından aynı Spotify veya Apple Music hesabını Trackhop\'a bağlayın.</string>
     <string name="shazam_howto_retry">Yeniden kontrol et</string>
+    <string name="whats_new_title">Trackhop %1$s sürümündeki yenilikler</string>
+    <string name="whats_new_subtitle">Bu güncellemenin öne çıkanları, bir bakışta.</string>
+    <string name="whats_new_got_it">Anladım</string>
+    <string name="whats_new_all_changes">Tüm değişiklikler</string>
+    <string name="whats_new_release">Trackhop %1$s</string>
+    <string name="whats_new_row">Yenilikler</string>
+    <string name="whats_new_row_summary">Trackhop %1$s sürümünün öne çıkanları</string>
+    <string name="whats_new_14_shazam_title">Shazam\'larınızı eşitleyin</string>
+    <string name="whats_new_14_shazam_body">Shazam\'la bulunan her şarkı seçtiğiniz listede: kaynak olarak Shazam\'ı seçin. Spotify veya Apple Music\'teki “My Shazam Tracks” kullanılır.</string>
+    <string name="whats_new_14_backup_title">Yedekleme ve geri yükleme tek yerde</string>
+    <string name="whats_new_14_backup_body">Tüm kurulumunuz tek dosyada: başka bir telefonda, Trackhop Desktop\'ta veya Docker\'da geri yükleyin. Listeleri hemen ya da planlı yedekleyin.</string>
+    <string name="whats_new_14_look_title">Daha net bir görünüm</string>
+    <string name="whats_new_14_look_body">Ayarlar ve Araçlar\'daki her bölümün kendi rengi var; geri dönünce kaldığınız yerdesiniz.</string>
+    <string name="whats_new_14_messages_title">Daha anlaşılır mesajlar</string>
+    <string name="whats_new_14_messages_body">Sorunlarda sade bir dil; örneğin Spotify bir listeyi reddederse: 2026\'dan beri Spotify anahtarınız yalnızca kendi listelerinizi okur.</string>
 </resources>

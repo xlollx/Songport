@@ -1195,4 +1195,19 @@
     <string name="shazam_howto_body">Shazamは認識した曲をすべて、SpotifyまたはApple Musicの「My Shazam Tracks」プレイリストに保存できます。Shazamアプリで「設定 › Spotify（またはApple Music）に接続」を開き、曲を1曲認識してから、もう一度確認してください。</string>
     <string name="shazam_howto_connect">次に、同じSpotifyまたはApple MusicのアカウントをTrackhopに接続してください。</string>
     <string name="shazam_howto_retry">もう一度確認</string>
+    <string name="whats_new_title">Trackhop %1$s の新機能</string>
+    <string name="whats_new_subtitle">今回のアップデートの見どころをひと目で。</string>
+    <string name="whats_new_got_it">わかりました</string>
+    <string name="whats_new_all_changes">すべての変更点</string>
+    <string name="whats_new_release">Trackhop %1$s</string>
+    <string name="whats_new_row">新機能</string>
+    <string name="whats_new_row_summary">Trackhop %1$s の見どころ</string>
+    <string name="whats_new_14_shazam_title">Shazamの曲を同期</string>
+    <string name="whats_new_14_shazam_body">Shazamで見つけた曲を、選んだプレイリストへ。新しい同期の同期元に「Shazam」を選ぶだけ。SpotifyかApple Musicの「My Shazam Tracks」を使います。</string>
+    <string name="whats_new_14_backup_title">バックアップと復元をひとつに</string>
+    <string name="whats_new_14_backup_body">設定のすべてを1つのファイルに。別のスマホやTrackhop Desktop、Dockerで復元できます。プレイリストは今すぐ、または定期的にバックアップ。</string>
+    <string name="whats_new_14_look_title">より見やすいデザイン</string>
+    <string name="whats_new_14_look_body">設定とツールの各セクションに専用の色。戻っても、さっきの場所のままです。</string>
+    <string name="whats_new_14_messages_title">よりわかりやすいメッセージ</string>
+    <string name="whats_new_14_messages_body">問題が起きたときの説明をわかりやすく。たとえばSpotifyがプレイリストを拒否した場合：2026年以降、自分のSpotifyキーでは自分のプレイリストしか読めません。</string>
 </resources>

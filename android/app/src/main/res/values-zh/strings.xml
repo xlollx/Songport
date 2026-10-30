@@ -1195,4 +1195,19 @@
     <string name="shazam_howto_body">Shazam 可以把你识别的每首歌放进 Spotify 或 Apple Music 上的“My Shazam Tracks”歌单。在 Shazam 应用中打开“设置 › 连接到 Spotify（或 Apple Music）”，识别一首歌，然后再检查一次。</string>
     <string name="shazam_howto_connect">然后把同一个 Spotify 或 Apple Music 账号连接到 Trackhop。</string>
     <string name="shazam_howto_retry">再检查一次</string>
+    <string name="whats_new_title">Trackhop %1$s 新功能</string>
+    <string name="whats_new_subtitle">本次更新的亮点，一目了然。</string>
+    <string name="whats_new_got_it">知道了</string>
+    <string name="whats_new_all_changes">全部更新内容</string>
+    <string name="whats_new_release">Trackhop %1$s</string>
+    <string name="whats_new_row">新功能</string>
+    <string name="whats_new_row_summary">Trackhop %1$s 的亮点</string>
+    <string name="whats_new_14_shazam_title">同步你的 Shazam</string>
+    <string name="whats_new_14_shazam_body">用 Shazam 识别的每首歌，都会进入你选择的歌单：新建同步时选择 Shazam 作为来源。它使用 Spotify 或 Apple Music 上的“My Shazam Tracks”。</string>
+    <string name="whats_new_14_backup_title">备份与恢复，集中一处</string>
+    <string name="whats_new_14_backup_body">全部设置保存为一个文件，可在另一部手机、Trackhop Desktop 或 Docker 中恢复。歌单可立即备份，也可按计划备份。</string>
+    <string name="whats_new_14_look_title">更清晰的外观</string>
+    <string name="whats_new_14_look_body">“设置”和“工具”的每个分区都有自己的颜色，返回时仍停留在原来的位置。</string>
+    <string name="whats_new_14_messages_title">更清楚的提示</string>
+    <string name="whats_new_14_messages_body">出错时用更易懂的话说明，例如 Spotify 拒绝某个歌单时：自 2026 年起，你自己的 Spotify 密钥只能读取你自己的歌单。</string>
 </resources>

@@ -1225,4 +1225,19 @@
     <string name="shazam_howto_body">O Shazam pode guardar cada música que você reconhece em uma playlist “My Shazam Tracks” no Spotify ou no Apple Music. No app Shazam, abra Configurações › Conectar ao Spotify (ou Apple Music), reconheça uma música e verifique de novo.</string>
     <string name="shazam_howto_connect">Depois conecte a mesma conta do Spotify ou do Apple Music ao Trackhop.</string>
     <string name="shazam_howto_retry">Verificar de novo</string>
+    <string name="whats_new_title">Novidades do Trackhop %1$s</string>
+    <string name="whats_new_subtitle">O melhor desta atualização, num relance.</string>
+    <string name="whats_new_got_it">Entendi</string>
+    <string name="whats_new_all_changes">Todas as mudanças</string>
+    <string name="whats_new_release">Trackhop %1$s</string>
+    <string name="whats_new_row">Novidades</string>
+    <string name="whats_new_row_summary">O melhor do Trackhop %1$s</string>
+    <string name="whats_new_14_shazam_title">Sincronize seus Shazams</string>
+    <string name="whats_new_14_shazam_body">Cada música que você acha no Shazam, na playlist que quiser: escolha Shazam como origem. Usa “My Shazam Tracks” do Spotify ou Apple Music.</string>
+    <string name="whats_new_14_backup_title">Backup e restauração num só lugar</string>
+    <string name="whats_new_14_backup_body">Toda a sua configuração num arquivo, para restaurar em outro celular, no Trackhop Desktop ou Docker. Playlists salvas agora ou com horário.</string>
+    <string name="whats_new_14_look_title">Um visual mais claro</string>
+    <string name="whats_new_14_look_body">Cada seção de Configurações e Ferramentas tem sua própria cor, e ao voltar você continua onde estava.</string>
+    <string name="whats_new_14_messages_title">Mensagens mais claras</string>
+    <string name="whats_new_14_messages_body">Palavras simples quando algo dá errado, como o Spotify recusando uma playlist: desde 2026, sua chave do Spotify só lê suas playlists.</string>
 </resources>

@@ -302,6 +302,8 @@ private fun MainScreen(
     var connectNow by rememberSaveable(stateSaver = ProviderSaver) { mutableStateOf<MusicProvider?>(null) }
     var firstSyncFor by rememberSaveable { mutableStateOf<String?>(null) }
     var firstSyncReady by rememberSaveable { mutableStateOf<String?>(null) }
+    // Settings › About › What's new: the newest release's sheet, on demand.
+    var whatsNewAsked by rememberSaveable { mutableStateOf(false) }
     fun startNewSync() {
         if (Providers.connectors().any { it.requiresAuth && it.isConnected(ctx) }) editing = newJob() else firstSheet = true
     }
@@ -397,9 +399,11 @@ private fun MainScreen(
     }
 
     if (!data.settings.onboardingDone) {
+        // A fresh install has nothing new to hear about: the welcome marks the newest "What's new" as seen.
+        val newest = com.xlollx.songport.ui.WhatsNew.newestVersion
         OnboardingScreen(
-            onDone = { store.updateSettings { it.copy(onboardingDone = true) } },
-            onTour = { store.updateSettings { it.copy(onboardingDone = true) }; com.xlollx.songport.ui.Tour.start() },
+            onDone = { store.updateSettings { it.copy(onboardingDone = true, whatsNewSeen = newest) } },
+            onTour = { store.updateSettings { it.copy(onboardingDone = true, whatsNewSeen = newest) }; com.xlollx.songport.ui.Tour.start() },
         )
         return
     }
@@ -484,6 +488,21 @@ private fun MainScreen(
         backupOpen -> "backup"
         current != null -> "edit:" + current.id
         else -> null
+    }
+    // "What's new" after an update that brings something new: once the tabs are on screen, with no
+    // page, sheet, dialog or tour step over them; then never again for that release, however it is closed.
+    val whatsNew = when {
+        whatsNewAsked -> com.xlollx.songport.ui.WhatsNew.releases.take(1)
+        overlay == null && tourStep == null && !firstSheet && sharedLink == null && sharedTrack == null &&
+            connectNow == null && firstSyncReady == null -> com.xlollx.songport.ui.WhatsNew.due(data.settings)
+        else -> emptyList()
+    }
+    if (whatsNew.isNotEmpty()) com.xlollx.songport.ui.WhatsNewSheet(whatsNew) {
+        whatsNewAsked = false
+        val newest = com.xlollx.songport.ui.WhatsNew.newestVersion
+        if (com.xlollx.songport.ui.WhatsNew.compareVersions(store.data.settings.whatsNewSeen, newest) < 0) {
+            store.updateSettings { it.copy(whatsNewSeen = newest) }
+        }
     }
     if (overlay != null) {
         // The tabs' Scaffold (and its snackbar host) is not composed under a full-screen page: its
@@ -656,7 +675,7 @@ private fun MainScreen(
                 )
                 MainActivity.TAB_ACCOUNTS -> AccountsScreen(snackbar, addConnector, { addConnector = it }, { wizardFor = it }, onManageFiles = { filesOpen = true })
                 MainActivity.TAB_TOOLS -> ToolsScreen(snackbar, onManageFiles = { filesOpen = true }, onTransfer = { transferOpen = true }, onSyncStarted = { tab = MainActivity.TAB_SYNCS }, onManage = { manageProvider = it }, onScan = { scanProvider = it }, onUnplayable = { unplayableProvider = it }, compareLinks = compareLinks, onSubpage = { toolSubpage = it }, onGoToAccounts = { tab = MainActivity.TAB_ACCOUNTS }, onStats = { statsOpen = true }, onCompareClosed = { compareLinks = null }, onBackup = { backupOpen = true })
-                else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true }, onHowTo = { howToOpen = true }, onBackup = { backupOpen = true })
+                else -> SettingsScreen(data, store, snackbar, onSetup = { wizardFor = it }, onOpenLog = { logOpen = true }, onHowTo = { howToOpen = true }, onBackup = { backupOpen = true }, onWhatsNew = { whatsNewAsked = true })
             } } }
             }
         }

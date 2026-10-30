@@ -1194,4 +1194,19 @@
     <string name="shazam_howto_body">Shazam은 인식한 모든 곡을 Spotify나 Apple Music의 “My Shazam Tracks” 플레이리스트에 모아 둘 수 있습니다. Shazam 앱에서 설정 › Spotify(또는 Apple Music)에 연결을 열고, 곡을 하나 인식한 뒤 다시 확인하세요.</string>
     <string name="shazam_howto_connect">그다음 같은 Spotify 또는 Apple Music 계정을 Trackhop에 연결하세요.</string>
     <string name="shazam_howto_retry">다시 확인</string>
+    <string name="whats_new_title">Trackhop %1$s의 새로운 기능</string>
+    <string name="whats_new_subtitle">이번 업데이트의 핵심을 한눈에.</string>
+    <string name="whats_new_got_it">확인</string>
+    <string name="whats_new_all_changes">전체 변경 사항</string>
+    <string name="whats_new_release">Trackhop %1$s</string>
+    <string name="whats_new_row">새로운 기능</string>
+    <string name="whats_new_row_summary">Trackhop %1$s의 주요 기능</string>
+    <string name="whats_new_14_shazam_title">Shazam 곡 동기화</string>
+    <string name="whats_new_14_shazam_body">Shazam으로 찾은 모든 곡을 원하는 플레이리스트로. 새 동기화의 원본으로 Shazam을 고르세요. Spotify나 Apple Music의 “My Shazam Tracks”를 사용합니다.</string>
+    <string name="whats_new_14_backup_title">백업과 복원을 한곳에서</string>
+    <string name="whats_new_14_backup_body">모든 설정을 파일 하나에 담아 다른 휴대폰, Trackhop Desktop 또는 Docker에서 복원하세요. 플레이리스트는 지금 또는 일정에 따라 백업됩니다.</string>
+    <string name="whats_new_14_look_title">더 깔끔한 화면</string>
+    <string name="whats_new_14_look_body">설정과 도구의 각 섹션마다 고유한 색이 있고, 뒤로 가도 보던 위치가 그대로 유지됩니다.</string>
+    <string name="whats_new_14_messages_title">더 알기 쉬운 메시지</string>
+    <string name="whats_new_14_messages_body">문제가 생기면 쉬운 말로 알려 줍니다. 예: Spotify가 플레이리스트를 거부할 때, 2026년부터 내 Spotify 키로는 내 플레이리스트만 읽을 수 있습니다.</string>
 </resources>

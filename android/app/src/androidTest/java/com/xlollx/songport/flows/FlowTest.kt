@@ -88,10 +88,14 @@ abstract class FlowTest {
         store.flush()
     }
 
-    /** Onboarding and the guided tour done, the connectors signed in, nothing that would open by itself (support card, ISRC lookups). */
+    /**
+     * Onboarding and the guided tour done, the connectors signed in, nothing that would open by itself
+     * (support card, ISRC lookups, the "What's new" sheet: only WhatsNewFlowTest clears it).
+     */
     protected open fun baseSettings() = Settings(
         connectors = connectedAtStart, connectorsInit = true, onboardingDone = true, tourDone = true,
         isrcLookup = false, supportPromptDone = true, appOpens = 0, themeMode = "LIGHT",
+        whatsNewSeen = com.xlollx.songport.ui.WhatsNew.newestVersion,
     )
 
     // ------------------------------------------------------------------ the activity
