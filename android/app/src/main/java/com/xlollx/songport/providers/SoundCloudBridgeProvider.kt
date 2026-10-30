@@ -45,7 +45,8 @@ class SoundCloudBridgeProvider(override val slot: String = "") : MusicProvider {
     override val familyName: String get() = "SoundCloud"
     override val brandColor = 0xFFFF5500
     override val noteName = "provider_note_soundcloud_account"
-    override val alpha = true
+    // Tried on a real account (sign-in, renewal, liked songs to a playlist): out of alpha.
+    override val beta = true
     override val supportsLikedSongs = true
     override val supportsLikedTarget = true
     override val supportsMultipleAccounts = false

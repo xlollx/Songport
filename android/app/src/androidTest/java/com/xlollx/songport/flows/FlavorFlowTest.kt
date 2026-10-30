@@ -85,25 +85,31 @@ class FlavorFlowTest : FlowTest() {
     }
 
     @Test
-    fun deezerWebAndSoundCloudAccountAreAlpha() {
+    fun deezerWebIsAlphaAndSoundCloudAccountIsBeta() {
         installConnectors()
-        // The flags themselves, in both builds: alpha, and not also beta.
-        listOf("deezer_bridge", "soundcloud").forEach { id ->
-            val p = Providers.byId(id)
-            assertNotNull(id, p)
-            assertTrue("$id is alpha", p!!.alpha)
-            assertFalse("$id is not also beta", p.beta)
-        }
+        // The flags themselves, in both builds: Deezer (web) alpha and not also beta; SoundCloud
+        // with an account came out of alpha after real-account use (1.3.7) and is beta.
+        val deezer = Providers.byId("deezer_bridge")
+        assertNotNull(deezer)
+        assertTrue(deezer!!.alpha)
+        assertFalse(deezer.beta)
+        val sc = Providers.byId("soundcloud")
+        assertNotNull(sc)
+        assertFalse("soundcloud is out of alpha", sc!!.alpha)
+        assertTrue("soundcloud is beta", sc.beta)
         assertFalse("the official Deezer route is not alpha", Providers.byId("deezer")!!.alpha)
-        // Each one's card in Accounts: "alpha" after the name, and the note asking to try a test playlist first.
-        listOf("deezer_bridge", "soundcloud").forEach { id ->
-            store.updateSettings { it.copy(connectors = listOf(id)) }
-            store.flush()
-            launch(tabIntent(MainActivity.TAB_ACCOUNTS))
-            waitText(s(R.string.alpha_note))
-            assertTrue("$id's card says alpha", exists(" · " + s(R.string.alpha), substring = true))
-            assertFalse("$id's card has no beta note", exists(s(R.string.beta_note)))
-        }
+        // Each one's card in Accounts.
+        store.updateSettings { it.copy(connectors = listOf("deezer_bridge")) }
+        store.flush()
+        launch(tabIntent(MainActivity.TAB_ACCOUNTS))
+        waitText(s(R.string.alpha_note))
+        assertTrue("Deezer (web)'s card says alpha", exists(" · " + s(R.string.alpha), substring = true))
+        assertFalse(exists(s(R.string.beta_note)))
+        store.updateSettings { it.copy(connectors = listOf("soundcloud")) }
+        store.flush()
+        launch(tabIntent(MainActivity.TAB_ACCOUNTS))
+        waitText(s(R.string.beta_note))
+        assertFalse("SoundCloud's card has no alpha note", exists(s(R.string.alpha_note)))
     }
 
     @Test

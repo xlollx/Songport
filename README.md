@@ -74,11 +74,11 @@ common errors.
 
 ### Good to know
 
-- Apple Music, TIDAL, Deezer, the personal servers, Last.fm and ListenBrainz are marked **beta** in
+- Apple Music, TIDAL, Deezer, SoundCloud, the personal servers, Last.fm and ListenBrainz are marked **beta** in
   the app: written against each service's documented API and working, but with far less real-world
   use than the rest, so a report about them is especially welcome.
-- Deezer (web) and SoundCloud with your account are marked **alpha**: covered by offline tests but
-  not yet tried on real accounts. Try them on a test playlist first and report what goes wrong.
+- Deezer (web) is marked **alpha**: covered by offline tests but not yet tried on real accounts. Try
+  it on a test playlist first and report what goes wrong. SoundCloud with your account is **beta**.
 - The app ships without service credentials of its own: on the services that require one (Spotify,
   YouTube Music, TIDAL, Deezer, Last.fm) each user creates a free developer key, and the app walks
   them through it in about two minutes. Or use the quick route: sign in on the service's own page.

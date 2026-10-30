@@ -29,7 +29,7 @@ It adds:
   Developer Program (the official routes stay available in Trackhop).
 - **Deezer** sign-in (alpha) for people who cannot create a Deezer developer app, now that Deezer no
   longer registers new ones (the official route stays available in Trackhop).
-- **SoundCloud** with your account (alpha): your sets and liked tracks as sources and destinations,
+- **SoundCloud** with your account (beta): your sets and liked tracks as sources and destinations,
   and public SoundCloud links.
 
 Read this before installing: the Bridge uses the same web interfaces the services' own web players use,
