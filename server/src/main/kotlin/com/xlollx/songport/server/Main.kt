@@ -17,20 +17,22 @@ import com.xlollx.songport.providers.YouTubeProvider
 import java.io.File
 
 /**
- * The connectors a server can use: the official APIs, the personal servers, and YouTube Music with
- * cookies pasted from a browser (unofficial: [YtmServerProvider]), and public SoundCloud links as a
- * read-only source (unofficial too: [SoundCloudProvider]). The other web connectors (Amazon
- * Music, Spotify without a key, Apple Music without a key) run the service's own web player in an
+ * The connectors a server can use: the official APIs, the personal servers, YouTube Music, Spotify
+ * and Deezer with cookies pasted from a browser (unofficial: [CookieConnector]), and public
+ * SoundCloud links as a read-only source (unofficial too: [SoundCloudProvider]). The other web
+ * connectors (Amazon Music, Apple Music without a key) run the service's own web player in an
  * Android WebView, and Apple Music's official route signs in with MusicKit JS in one too: none of
  * them exists without a phone.
  */
 fun installServerConnectors() = Providers.install(
     listOf(
         Factory(SpotifyProvider.SERVICE) { SpotifyProvider(it) },
+        Factory(SpotifyWebServerProvider.SERVICE) { SpotifyWebServerProvider(it) },
         Factory(YouTubeProvider.SERVICE) { YouTubeProvider(it) },
         Factory(YtmServerProvider.SERVICE) { YtmServerProvider(it) },
         Factory(TidalProvider.SERVICE) { TidalProvider(it) },
         Factory(DeezerProvider.SERVICE) { DeezerProvider(it) },
+        Factory(DeezerWebServerProvider.SERVICE) { DeezerWebServerProvider(it) },
         Factory(SubsonicProvider.SERVICE) { SubsonicProvider(it) },
         Factory(JellyfinProvider.SERVICE) { JellyfinProvider(it) },
         Factory(PlexProvider.SERVICE) { PlexProvider(it) },

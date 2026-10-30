@@ -6,10 +6,12 @@
 # architecture, so a multi-platform image (amd64, arm64 for a NAS or a Raspberry Pi) compiles once.
 FROM --platform=$BUILDPLATFORM gradle:8.14.3-jdk17 AS build
 WORKDIR /src
-# Only what the server build reads: the engine, the YouTube Music client, the app's texts and
+# Only what the server build reads: the engine, the YouTube Music client, the Spotify and Deezer
+# web clients (server/build.gradle picks them out of :bridge's sources), the app's texts and
 # version, the server itself.
 COPY android/core android/core
 COPY android/ytm android/ytm
+COPY android/bridge/src/main/java android/bridge/src/main/java
 COPY android/app/build.gradle android/app/build.gradle
 COPY android/app/src/main/res android/app/src/main/res
 COPY server server
