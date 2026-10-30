@@ -27,6 +27,20 @@ object LocalFilesProvider : MusicProvider {
     fun dir(ctx: Env): File = File(ctx.dataDir, "csv").apply { mkdirs() }
     private fun file(ctx: Env, id: String) = File(dir(ctx), "$id.csv")
 
+    /**
+     * [f] with [text], swapped in whole: a sync reading the file meanwhile (a radio sync adds songs
+     * to its source while a run reads it) sees the old content or the new, never an empty file.
+     */
+    private fun write(f: File, text: String) {
+        val tmp = File(f.parentFile, ".${f.name}.tmp")
+        tmp.writeText(text)
+        try {
+            java.nio.file.Files.move(tmp.toPath(), f.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE)
+        } catch (e: java.nio.file.AtomicMoveNotSupportedException) {
+            java.nio.file.Files.move(tmp.toPath(), f.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        }
+    }
+
     override fun isConfigured(ctx: Env) = true
     override fun isConnected(ctx: Env) = true
     override fun accountName(ctx: Env): String? = null
@@ -52,7 +66,7 @@ object LocalFilesProvider : MusicProvider {
         var candidate = base
         var n = 2
         while (file(ctx, candidate).exists()) { candidate = "$base ($n)"; n++ }
-        file(ctx, candidate).writeText(CsvCodec.encode(emptyList()))
+        write(file(ctx, candidate), CsvCodec.encode(emptyList()))
         return Playlist(candidate, candidate, 0)
     }
 
@@ -61,7 +75,7 @@ object LocalFilesProvider : MusicProvider {
         val current = if (f.exists()) CsvCodec.parse(f.readText()) else emptyList()
         val ids = current.map { it.id }.toHashSet()
         val merged = current + tracks.map { CsvCodec.withStableId(it) }.filter { ids.add(it.id) }
-        f.writeText(CsvCodec.encode(merged))
+        write(f, CsvCodec.encode(merged))
     }
 
     override suspend fun renamePlaylist(ctx: Env, playlistId: String, name: String) {
@@ -90,7 +104,7 @@ object LocalFilesProvider : MusicProvider {
         val f = file(ctx, playlistId)
         if (!f.exists()) return
         val remove = tracks.map { it.id }.toHashSet()
-        f.writeText(CsvCodec.encode(CsvCodec.parse(f.readText()).filter { it.id !in remove }))
+        write(f, CsvCodec.encode(CsvCodec.parse(f.readText()).filter { it.id !in remove }))
     }
 
     // --- import/export per la UI (Storage Access Framework) ---
@@ -102,7 +116,7 @@ object LocalFilesProvider : MusicProvider {
         var candidate = base
         var n = 2
         while (file(ctx, candidate).exists()) { candidate = "$base ($n)"; n++ }
-        file(ctx, candidate).writeText(CsvCodec.encode(tracks))
+        write(file(ctx, candidate), CsvCodec.encode(tracks))
         return tracks.size
     }
 
@@ -112,7 +126,7 @@ object LocalFilesProvider : MusicProvider {
         var candidate = base
         var n = 2
         while (file(ctx, candidate).exists()) { candidate = "$base ($n)"; n++ }
-        file(ctx, candidate).writeText(CsvCodec.encode(tracks))
+        write(file(ctx, candidate), CsvCodec.encode(tracks))
         return candidate
     }
 
@@ -193,7 +207,7 @@ object LocalFilesProvider : MusicProvider {
         var id = "$base ($when_)"
         var n = 2
         while (file(ctx, id).exists()) { id = "$base ($when_) ($n)"; n++ }
-        file(ctx, id).writeText(text)
+        write(file(ctx, id), text)
         versions.drop(KEEP_VERSIONS - 1).filter { it.id !in protectedIds }.forEach { file(ctx, it.id).delete() }
         return BackupOutcome.WRITTEN
     }
