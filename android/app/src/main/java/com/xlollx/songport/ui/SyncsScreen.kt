@@ -26,6 +26,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.ui.text.style.TextOverflow
@@ -324,31 +325,19 @@ private class PullGuard : NestedScrollConnection {
 /**
  * The "sync all" pill: filled and inviting when idle, a quiet progress state while syncs run.
  *
- * It sits on an opaque band of the screen's background, edge to edge (over the list's side padding
- * too) and as tall as the pill with its shadow: pinned, the cards scroll beneath the band and none of
- * them shows around the pill or its "?". Until 1.3.1 the band faded to transparent, and the first
- * card's title, status and figures read through under the pill. Once cards are beneath it, a hairline
- * marks its edge, as under a scrolled top bar.
+ * It floats over the list: pinned, the cards scroll beneath it and show around it (an opaque band
+ * edge to edge, from 1.3.2 to 1.4.0, looked like a bar across the screen and was dropped on the
+ * owner's request). The pill keeps its shadow, and the "?" beside it sits on a small raised circle of
+ * its own, so both read over any card.
  */
 @Composable
 private fun RunAllPill(tally: SyncState.Tally, pinned: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val haptic = rememberConfirmHaptic()
     val runningCount = tally.total
     val busy = runningCount > 0
-    val bg = MaterialTheme.colorScheme.background
-    val line = MaterialTheme.colorScheme.outlineVariant
-    val lineAlpha by animateFloatAsState(if (pinned) 0.6f else 0f, label = "runall-edge")
+    val helpShadow by animateDpAsState(if (pinned) 4.dp else 0.dp, label = "runall-help")
     Box(
-        modifier.fillMaxWidth()
-            .drawBehind {
-                // The list pads its items by 16dp on each side: the band covers that gutter as well.
-                val gutter = 16.dp.toPx()
-                drawRect(bg, topLeft = Offset(-gutter, 0f), size = Size(size.width + 2 * gutter, size.height))
-                if (lineAlpha > 0f) drawRect(
-                    line.copy(alpha = lineAlpha), topLeft = Offset(-gutter, size.height - 1f), size = Size(size.width + 2 * gutter, 1f),
-                )
-            }
-            .padding(top = 4.dp, bottom = 12.dp),
+        modifier.fillMaxWidth().padding(top = 4.dp, bottom = 12.dp),
         contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -380,7 +369,12 @@ private fun RunAllPill(tally: SyncState.Tally, pinned: Boolean, modifier: Modifi
                     )
                 }
             }
-            HelpButton(Helps.syncAll)
+            // Its own small raised circle: over a card scrolling beneath, the "?" still reads.
+            androidx.compose.material3.Surface(
+                shape = CircleShape,
+                color = if (pinned) MaterialTheme.colorScheme.surfaceContainerHigh else Color.Transparent,
+                shadowElevation = helpShadow,
+            ) { HelpButton(Helps.syncAll) }
         }
     }
 }
