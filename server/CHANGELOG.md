@@ -5,6 +5,18 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## 0.3.0
+
+- **Trackhop Desktop has its own window**: the pages in a window of their own with Trackhop's icon,
+  on the system's web engine (Edge's WebView2 on Windows, WebKitGTK on Linux), no browser tab.
+  Closing it leaves Trackhop in the tray, where scheduled syncs keep running; "Open in the browser"
+  is in the tray's menu. Links to other sites open in your browser.
+- **Playlists** tab: each service's playlists and their tracks; rename, delete, take tracks out; or
+  tick several and copy them to another service at once (optionally kept in sync daily).
+- **Back** at the top of every inner page.
+- **Report an issue on GitHub** from the Log page, with the version and the last lines of the log
+  filled in.
+
 ## 0.2.0
 
 The app's Tools on the page.

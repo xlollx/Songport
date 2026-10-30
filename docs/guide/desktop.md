@@ -31,12 +31,15 @@ To update, install the newer file over the old one: your syncs and sign-ins stay
 
 ## Use it
 
-Start **Trackhop**: the browser opens on `http://127.0.0.1:8642`. Add services, create syncs,
-run them, as in the [Docker guide](docker#services); the page is the same.
+Start **Trackhop**: its window opens (from 0.3.0; it uses the system's web engine, Edge's WebView2
+on Windows and WebKitGTK on Linux). Add services, create syncs, run them, as in the
+[Docker guide](docker#services): the pages are the same. The same pages are also at
+`http://127.0.0.1:8642` in any browser on this computer (*Open in the browser* in the tray's menu).
+Closing the window leaves Trackhop running in the tray, for the scheduled syncs.
 
-The icon next to the clock has **Open Trackhop**, **Start with the computer** (it then starts
-hidden when you sign in, and scheduled syncs keep running) and **Quit**. Starting Trackhop again
-while it runs just opens the page. Some Linux desktops (GNOME without the *AppIndicator*
+The icon next to the clock has **Open Trackhop**, **Open in the browser**, **Start with the
+computer** (it then starts hidden when you sign in, and scheduled syncs keep running) and **Quit**.
+Starting Trackhop again while it runs just brings its window up. Some Linux desktops (GNOME without the *AppIndicator*
 extension) have no icons there: use **Quit Trackhop** at the bottom of the page instead.
 
 Only this computer can reach the page: it listens on `127.0.0.1` and asks for no password.
