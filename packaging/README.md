@@ -47,7 +47,7 @@ both steps are skipped and nothing else changes; `ghcr.io/xlollx/trackhop` stays
 ## winget
 
 **In the repository.** `winget/manifests/x/xlollx/Trackhop/0.5.1/`: the three files of a multi-file
-manifest (schema 1.10, the format `microsoft/winget-pkgs` requires), validated against the official
+manifest (schema 1.12, the format `microsoft/winget-pkgs` requires), validated against the official
 JSON schemas. `PackageIdentifier: xlollx.Trackhop`; installer: the release's MSI (WiX, per-user,
 `Scope: user`, no elevation), its SHA-256 and its `ProductCode` read from the MSI
 (`{814DEDF3-BE95-3D1C-9364-D639845B0CFD}`; jpackage makes a new one each version, the
