@@ -54,6 +54,70 @@ object Notifications {
             NotificationChannel(PROGRESS_CHANNEL_ID, context.getString(R.string.notif_progress_channel), NotificationManager.IMPORTANCE_LOW)
                 .apply { description = context.getString(R.string.notif_progress_desc); setShowBadge(false) }
         )
+        // Quiet, like the progress: the ongoing "Listening to …" of a radio sync, and its rare "tap to listen".
+        mgr.createNotificationChannel(
+            NotificationChannel(RADIO_CHANNEL_ID, context.getString(R.string.radio_notif_channel), NotificationManager.IMPORTANCE_LOW)
+                .apply { description = context.getString(R.string.radio_notif_channel_desc); setShowBadge(false) }
+        )
+    }
+
+    const val RADIO_CHANNEL_ID = "radio_listening"
+    /** The ongoing notification of the radio listening service (see com.xlollx.songport.sync.RadioService). */
+    const val RADIO_ID = 1003
+    /** "Tap to listen": the listening could not start by itself. */
+    const val RADIO_BLOCKED_ID = 1004
+
+    private fun openApp(context: Context, code: Int): PendingIntent {
+        val open = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra(MainActivity.EXTRA_TAB, MainActivity.TAB_SYNCS)
+        }
+        return PendingIntent.getActivity(context, code, open, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
+    /**
+     * While radio syncs listen: "Listening to <station>" and the last song heard (or that it waits
+     * for Wi-Fi, or what went wrong). Several stations at once share the one notification.
+     */
+    fun radio(context: Context, lines: List<Pair<String, String>>): android.app.Notification {
+        val title = context.getString(R.string.radio_notif_listening, lines.joinToString(", ") { it.first }.ifEmpty { "…" })
+        val text = lines.joinToString(" · ") { it.second }
+        val b = NotificationCompat.Builder(context, RADIO_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setSilent(true)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+            .setContentIntent(openApp(context, RADIO_ID))
+        if (lines.size > 1) {
+            val inbox = NotificationCompat.InboxStyle().setBigContentTitle(title)
+            lines.forEach { inbox.addLine(it.first + " — " + it.second) }
+            b.setStyle(inbox)
+        }
+        return b.build()
+    }
+
+    /** A radio sync's window is open but Android did not let the listening start in the background: a tap opens the app, which starts it. */
+    fun radioBlocked(context: Context, station: String) {
+        if (!canPost(context)) return
+        val text = context.getString(R.string.radio_notif_blocked_text)
+        val n = NotificationCompat.Builder(context, RADIO_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(context.getString(R.string.radio_notif_blocked_title, station))
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setOnlyAlertOnce(true)
+            .setContentIntent(openApp(context, RADIO_BLOCKED_ID))
+            .setAutoCancel(true)
+            .build()
+        ContextCompat.getSystemService(context, NotificationManager::class.java)?.notify(RADIO_BLOCKED_ID, n)
+    }
+
+    fun cancelRadioBlocked(context: Context) {
+        runCatching { ContextCompat.getSystemService(context, NotificationManager::class.java)?.cancel(RADIO_BLOCKED_ID) }
     }
 
     /**

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Schedule
@@ -445,6 +446,11 @@ private fun JobCard(
                             Icon(ShazamGlyph, stringResource(R.string.shazam_badge_desc), Modifier.size(16.dp), tint = shazamTint())
                             Spacer(Modifier.width(4.dp))
                         }
+                        // The songs a radio plays: a radio, tinted like the AI's spark.
+                        if (job.radio != null) {
+                            Icon(Icons.Filled.Radio, stringResource(R.string.radio_badge_desc), Modifier.size(16.dp), tint = MaterialTheme.colorScheme.tertiary)
+                            Spacer(Modifier.width(4.dp))
+                        }
                         Text(job.name.ifBlank { job.source.playlistName }, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     Text(
@@ -539,14 +545,18 @@ private fun JobCard(
                     Text(stringResource(R.string.review_now, toFix))
                 }
             }
+            // A radio sync while it listens: what is on air (or that it waits for Wi-Fi, or what went wrong).
+            if (job.radio != null) RadioCardStatus(job)
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Filled.Schedule, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.width(6.dp))
                 val last = if (job.lastRunEpoch > 0) formatDate(job.lastRunEpoch) else stringResource(R.string.last_run_never)
                 Text(
-                    // A two-way pair never removes, whatever an older version saved.
-                    scheduleLabel(job.schedule) + (if (job.mirrorRemovals && job.linkedJobId == null) " · " + stringResource(R.string.editor_mirror) else "") + " · " + last,
+                    // A two-way pair never removes, whatever an older version saved. A radio sync shows
+                    // its window (days and hours) where the others show their schedule.
+                    (job.radio?.let { radioWindowLabel(ctx, it) } ?: scheduleLabel(job.schedule)) +
+                        (if (job.mirrorRemovals && job.linkedJobId == null) " · " + stringResource(R.string.editor_mirror) else "") + " · " + last,
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f),
                 )
@@ -730,6 +740,18 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
     var shazamTry by remember { mutableIntStateOf(0) }
     // Written by the AI: the source is the AI's own list, kept in a file; nothing to pick.
     val aiSource = job.aiPrompt != null && job.source.provider == com.xlollx.songport.providers.LocalFilesProvider.id
+    // The songs a radio plays: the station, its days and hours. The source, a File playlist, is made on saving.
+    var radioMode by rememberSaveable { mutableStateOf(job.radio != null) }
+    var radioStation by rememberSaveable { mutableStateOf(job.radio?.station ?: "") }
+    var radioStream by rememberSaveable { mutableStateOf(job.radio?.stream ?: "") }
+    var radioHome by rememberSaveable { mutableStateOf(job.radio?.homepage ?: "") }
+    // As "1,2,3": a list of days kept across a rotation.
+    var radioDays by rememberSaveable { mutableStateOf((job.radio?.days ?: (1..7).toList()).joinToString(",")) }
+    var radioStart by rememberSaveable { mutableIntStateOf(job.radio?.startMinute ?: RADIO_DEFAULT_START) }
+    var radioEnd by rememberSaveable { mutableIntStateOf(job.radio?.endMinute ?: RADIO_DEFAULT_END) }
+    var radioSaving by remember { mutableStateOf(false) }
+    val radioName = radioStation.trim().takeIf { radioMode && it.isNotEmpty() }?.let { stringResource(R.string.radio_sync_name, it) }
+    val editorScope = rememberCoroutineScope()
     // With a single service there is nowhere else to write to: a file on the phone always is, so a
     // first sync is possible before a second service is connected.
     val writable = available.filter { it.canWrite }.let { w ->
@@ -786,7 +808,16 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
         if (!shazamMode && isNew) { schedule = Schedule.HOURLY; mirror = false }
         shazamMode = true
         linkMode = false
+        radioMode = false
         srcPlaylist = playlist
+    }
+    // A radio as the source: listened to on Wi-Fi unless the user says otherwise, run by its window, never mirrored.
+    fun useRadio() {
+        if (!radioMode && isNew) { schedule = Schedule.MANUAL; mirror = false; wifiOnly = true; bidirectional = false; keepOrder = false }
+        radioMode = true
+        linkMode = false
+        shazamMode = false
+        srcPlaylist = null
     }
     // Looks for Shazam's playlist on every connected Spotify and Apple Music account, the source's own first.
     LaunchedEffect(shazamMode, shazamTry) {
@@ -808,7 +839,51 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
     }
 
     // Save, from the bottom bar: the same checks and the same jobs as before the cards.
+    fun saveRadio() {
+        if (radioSaving) return
+        val station = radioStation.trim()
+        val stream = radioStream.trim()
+        val dp = dstPlaylist
+        if (station.isEmpty() || stream.isEmpty() || dstProvider.isEmpty() || (!createNew && dp == null)) {
+            error = ctx.getString(R.string.editor_error_incomplete)
+            return
+        }
+        val days = radioDays.split(',').mapNotNull { it.trim().toIntOrNull() }.filter { it in 1..7 }.distinct().sorted()
+        if (days.isEmpty()) {
+            error = ctx.getString(R.string.radio_window_no_day)
+            return
+        }
+        val radio = com.xlollx.songport.model.RadioSource(station, stream, radioHome.trim().ifEmpty { null }, days, radioStart, radioEnd)
+        val defaultName = ctx.getString(R.string.radio_sync_name, station)
+        val target = if (createNew) PlaylistRef(dstProvider, null, newName.ifBlank { defaultName }) else PlaylistRef(dstProvider, dp!!.id, dp.name)
+        radioSaving = true
+        editorScope.launch {
+            try {
+                val files = com.xlollx.songport.providers.LocalFilesProvider
+                // The songs heard are kept in a File playlist of their own, as on the server: the sync's source.
+                val source = job.source.takeIf { job.radio != null && it.provider == files.id && it.playlistId != null }
+                    ?: files.createPlaylist(ctx, "Radio - $station", "").let { PlaylistRef(files.id, it.id, it.name) }
+                saveHaptic()
+                onSave(
+                    job.copy(
+                        name = name.ifBlank { defaultName }, source = source, target = target,
+                        schedule = Schedule.MANUAL, mirrorRemovals = false, wifiOnly = wifiOnly, enabled = enabled, policy = policy,
+                        keepOrder = false, color = color, radio = radio, shazam = false, linkedJobId = null,
+                    ),
+                    null,
+                )
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                error = e.message ?: ctx.getString(R.string.error_generic)
+            } finally {
+                radioSaving = false
+            }
+        }
+    }
+
     fun save() {
+        if (radioMode) return saveRadio()
         val sp = srcPlaylist
         val dp = dstPlaylist
         if (srcProvider.isEmpty() || dstProvider.isEmpty() || sp == null || (!createNew && dp == null)) {
@@ -907,14 +982,24 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                             }
                         }
                     }
+                } else if (job.radio != null) {
+                    // A radio sync stays one: its station is shown, its days and hours change below.
+                    RadioStationCard(radioStation, radioStream, onChange = null)
                 } else {
                     // Il servizio di un link incollato puo' non essere fra quelli collegati (playlist pubblica).
                     val srcProviders = (available + listOfNotNull(Providers.byId(srcProvider))).distinctBy { it.id }
-                    ProviderPicker(srcProviders, if (linkMode || shazamMode) "" else srcProvider, link = true, linkSelected = linkMode,
-                        onLink = { if (!linkMode) { linkMode = true; shazamMode = false; srcPlaylist = null } },
+                    ProviderPicker(srcProviders, if (linkMode || shazamMode || radioMode) "" else srcProvider, link = true, linkSelected = linkMode,
+                        onLink = { if (!linkMode) { linkMode = true; shazamMode = false; radioMode = false; srcPlaylist = null } },
                         shazam = true, shazamSelected = shazamMode, onShazam = { if (!shazamMode) useShazam() },
-                    ) { srcProvider = it; srcPlaylist = null; linkMode = false; shazamMode = false }
-                    if (shazamMode) {
+                        radio = true, radioSelected = radioMode, onRadio = { useRadio() },
+                    ) { srcProvider = it; srcPlaylist = null; linkMode = false; shazamMode = false; radioMode = false }
+                    if (radioMode) {
+                        if (radioStream.isEmpty()) RadioStationPicker { st ->
+                            radioStation = st.name
+                            radioStream = st.stream
+                            radioHome = st.homepage
+                        } else RadioStationCard(radioStation, radioStream) { radioStream = ""; radioStation = ""; radioHome = "" }
+                    } else if (shazamMode) {
                         ShazamSource(
                             shazamLookup, srcProvider, srcPlaylist,
                             onRetry = { shazamTry++ },
@@ -956,7 +1041,7 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                 if (createNew) {
                     OutlinedTextField(value = newName, onValueChange = { newName = it }, singleLine = true, modifier = Modifier.fillMaxWidth(),
                         label = { Text(stringResource(R.string.editor_new_playlist_name)) },
-                        placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") },
+                        placeholder = { Text(radioName ?: srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") },
                         supportingText = { Text(stringResource(R.string.editor_new_playlist_name_hint)) })
                 } else {
                     PlaylistPicker(dstLists, dstPlaylist, label = stringResource(R.string.editor_playlist), onlyOwned = true) { dstPlaylist = it }
@@ -966,10 +1051,19 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
             EditorStep(3, stringResource(R.string.editor_step_options)) {
                 OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.editor_name)) },
                     singleLine = true, modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text(srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
+                    placeholder = { Text(radioName ?: srcPlaylist?.let { playlistDisplayName(it.id, it.name) } ?: "") })
                 Text(stringResource(R.string.job_color), style = MaterialTheme.typography.labelLarge)
                 JobColorPicker(color) { color = it }
-                Column(Modifier.tourTarget(TourTarget.EDITOR_SCHEDULE), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                // A radio sync runs by its window: days and hours instead of a schedule, and no
+                // removals, two-way or reordering (its source only grows).
+                if (radioMode) Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    RadioWindowPicker(
+                        days = radioDays.split(',').mapNotNull { it.trim().toIntOrNull() },
+                        start = radioStart, end = radioEnd,
+                        onDays = { radioDays = it.joinToString(",") }, onStart = { radioStart = it }, onEnd = { radioEnd = it },
+                    )
+                    RadioAlarmHint()
+                } else Column(Modifier.tourTarget(TourTarget.EDITOR_SCHEDULE), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     HelpLabel(stringResource(R.string.editor_schedule)) { HelpButton(Helps.schedule) }
                     // I chip vanno a capo da soli, quante righe servono per lo schermo.
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
@@ -981,62 +1075,64 @@ fun SyncEditorScreen(job: SyncJob, onCancel: () -> Unit, onConnectService: () ->
                 }
                 // Two-way and Mirror removals don't go together: a track added on the target could be
                 // removed by this sync before the reverse one copies it back.
-                if (bidirectional && mirror) mirror = false
-                SwitchRow(
-                    stringResource(R.string.editor_mirror),
-                    stringResource(if (bidirectional) R.string.editor_mirror_two_way else R.string.editor_mirror_desc),
-                    mirror, enabled = !bidirectional,
-                    modifier = Modifier.tourTarget(TourTarget.EDITOR_MIRROR),
-                    // Towards Liked songs, mirroring means unliking: said where the switch is.
-                    help = { if (MusicProvider.isLibrary(dstPlaylist?.id) && !createNew) HelpButton(Helps.mirror, Helps.liked, label = stringResource(R.string.editor_mirror)) else HelpButton(Helps.mirror) },
-                ) { mirror = it }
-                // Into Liked songs a removal is an unlike, of everything liked there that the source lacks:
-                // said in plain words under the switch, not only behind the "?".
-                if (mirror && !createNew && dstPlaylist?.id == MusicProvider.LIKED_ID) {
-                    Text(
-                        stringResource(R.string.editor_mirror_liked_warning),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-                if (Providers.byId(dstProvider)?.canReorder == true) {
-                    SwitchRow(stringResource(R.string.editor_keep_order), stringResource(R.string.editor_keep_order_desc), keepOrder, help = { HelpButton(Helps.keepOrder) }) { keepOrder = it }
-                }
-                val dstProviderObj = Providers.byId(dstProvider)
-                if (mirror && dstProviderObj != null && !dstProviderObj.canRemoveTracks) {
-                    Text(
-                        stringResource(R.string.editor_mirror_unsupported, dstProviderObj.displayName),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-                // Bidirezionale: crea la sync gemella al contrario, senza rimozioni (niente cancellazioni a ping-pong).
-                val srcObj = Providers.byId(srcProvider)
-                // A public link or someone else's playlist can be read, not written: nothing to send back to.
-                val srcOwned = srcPlaylist?.ownedByMe == true && srcObj?.isConnected(ctx) == true
-                // Not into Shazam's own playlist: Shazam alone writes there.
-                val biAllowed = !shazamMode && !createNew && srcObj?.canWrite == true && srcOwned &&
-                    srcObj.supportsLibrary(srcPlaylist?.id, asTarget = true) &&
-                    dstProviderObj?.supportsLibrary(dstPlaylist?.id, asTarget = false) == true
-                if (!biAllowed && bidirectional) bidirectional = false
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Column(Modifier.weight(1f)) {
-                        Text(stringResource(R.string.editor_bidirectional))
+                if (!radioMode) {
+                    if (bidirectional && mirror) mirror = false
+                    SwitchRow(
+                        stringResource(R.string.editor_mirror),
+                        stringResource(if (bidirectional) R.string.editor_mirror_two_way else R.string.editor_mirror_desc),
+                        mirror, enabled = !bidirectional,
+                        modifier = Modifier.tourTarget(TourTarget.EDITOR_MIRROR),
+                        // Towards Liked songs, mirroring means unliking: said where the switch is.
+                        help = { if (MusicProvider.isLibrary(dstPlaylist?.id) && !createNew) HelpButton(Helps.mirror, Helps.liked, label = stringResource(R.string.editor_mirror)) else HelpButton(Helps.mirror) },
+                    ) { mirror = it }
+                    // Into Liked songs a removal is an unlike, of everything liked there that the source lacks:
+                    // said in plain words under the switch, not only behind the "?".
+                    if (mirror && !createNew && dstPlaylist?.id == MusicProvider.LIKED_ID) {
                         Text(
-                            stringResource(
-                                when {
-                                    biAllowed -> R.string.editor_bidirectional_desc
-                                    srcPlaylist != null && !srcOwned -> R.string.editor_bidirectional_not_owned
-                                    else -> R.string.editor_bidirectional_unavailable
-                                },
-                            ),
-                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            stringResource(R.string.editor_mirror_liked_warning),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
                         )
                     }
-                    HelpButton(Helps.twoWay)
-                    Switch(checked = bidirectional, enabled = biAllowed, onCheckedChange = { bidirectional = it })
+                    if (Providers.byId(dstProvider)?.canReorder == true) {
+                        SwitchRow(stringResource(R.string.editor_keep_order), stringResource(R.string.editor_keep_order_desc), keepOrder, help = { HelpButton(Helps.keepOrder) }) { keepOrder = it }
+                    }
+                    val dstProviderObj = Providers.byId(dstProvider)
+                    if (mirror && dstProviderObj != null && !dstProviderObj.canRemoveTracks) {
+                        Text(
+                            stringResource(R.string.editor_mirror_unsupported, dstProviderObj.displayName),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                    // Bidirezionale: crea la sync gemella al contrario, senza rimozioni (niente cancellazioni a ping-pong).
+                    val srcObj = Providers.byId(srcProvider)
+                    // A public link or someone else's playlist can be read, not written: nothing to send back to.
+                    val srcOwned = srcPlaylist?.ownedByMe == true && srcObj?.isConnected(ctx) == true
+                    // Not into Shazam's own playlist: Shazam alone writes there.
+                    val biAllowed = !shazamMode && !createNew && srcObj?.canWrite == true && srcOwned &&
+                        srcObj.supportsLibrary(srcPlaylist?.id, asTarget = true) &&
+                        dstProviderObj?.supportsLibrary(dstPlaylist?.id, asTarget = false) == true
+                    if (!biAllowed && bidirectional) bidirectional = false
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        Column(Modifier.weight(1f)) {
+                            Text(stringResource(R.string.editor_bidirectional))
+                            Text(
+                                stringResource(
+                                    when {
+                                        biAllowed -> R.string.editor_bidirectional_desc
+                                        srcPlaylist != null && !srcOwned -> R.string.editor_bidirectional_not_owned
+                                        else -> R.string.editor_bidirectional_unavailable
+                                    },
+                                ),
+                                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        HelpButton(Helps.twoWay)
+                        Switch(checked = bidirectional, enabled = biAllowed, onCheckedChange = { bidirectional = it })
+                    }
                 }
-                SwitchRow(stringResource(R.string.editor_wifi_only), stringResource(R.string.editor_wifi_only_desc), wifiOnly) { wifiOnly = it }
+                SwitchRow(stringResource(R.string.editor_wifi_only), stringResource(if (radioMode) R.string.radio_wifi_desc else R.string.editor_wifi_only_desc), wifiOnly) { wifiOnly = it }
                 SwitchRow(stringResource(R.string.editor_enabled), null, enabled, help = { HelpButton(Helps.enabled) }) { enabled = it }
 
                 // How candidates are chosen: folded, because the defaults suit most syncs.
@@ -1199,22 +1295,26 @@ private fun ProviderPicker(
     available: List<MusicProvider>, selected: String,
     link: Boolean = false, linkSelected: Boolean = false, onLink: () -> Unit = {},
     shazam: Boolean = false, shazamSelected: Boolean = false, onShazam: () -> Unit = {},
+    radio: Boolean = false, radioSelected: Boolean = false, onRadio: () -> Unit = {},
     onSelect: (String) -> Unit,
 ) {
     val ctx = LocalContext.current
     // A row of tiles that scrolls: with several accounts and personal servers there can be many.
     val linkLabel = stringResource(R.string.editor_source_link)
     val shazamLabel = stringResource(R.string.editor_source_shazam)
+    val radioLabel = stringResource(R.string.editor_source_radio)
     val tiles = available.map { ServiceTile(it.id, it.label(ctx), it) } +
         (if (link) listOf(ServiceTile(LINK_KEY, linkLabel, icon = Icons.Filled.Link)) else emptyList()) +
-        (if (shazam) listOf(ServiceTile(SHAZAM_KEY, shazamLabel, icon = ShazamGlyph, brandColor = ServiceMarks.SHAZAM_COLOR)) else emptyList())
-    val current = when { linkSelected -> LINK_KEY; shazamSelected -> SHAZAM_KEY; else -> selected }
-    ServiceTiles(tiles, current, { key -> when (key) { LINK_KEY -> onLink(); SHAZAM_KEY -> onShazam(); else -> onSelect(key) } })
+        (if (shazam) listOf(ServiceTile(SHAZAM_KEY, shazamLabel, icon = ShazamGlyph, brandColor = ServiceMarks.SHAZAM_COLOR)) else emptyList()) +
+        (if (radio) listOf(ServiceTile(RADIO_KEY, radioLabel, icon = Icons.Filled.Radio)) else emptyList())
+    val current = when { linkSelected -> LINK_KEY; shazamSelected -> SHAZAM_KEY; radioSelected -> RADIO_KEY; else -> selected }
+    ServiceTiles(tiles, current, { key -> when (key) { LINK_KEY -> onLink(); SHAZAM_KEY -> onShazam(); RADIO_KEY -> onRadio(); else -> onSelect(key) } })
 }
 
 /** The "from a link" tile among the services. */
 private const val LINK_KEY = "link:"
 private const val SHAZAM_KEY = "shazam:"
+private const val RADIO_KEY = "radio:"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

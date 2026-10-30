@@ -10,6 +10,10 @@
     <!-- Sync manuali lunghe in primo piano con notifica di avanzamento (tipo dataSync). -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- Radio syncs: an alarm wakes the listening when a radio's window opens (exact, where the user
+         allows it, so it may start in the background), armed again after a reboot. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Necessario per aprire il browser (Custom Tabs) per il login OAuth su Android 11+. -->
     <queries>
@@ -150,6 +154,26 @@
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="dataSync"
             tools:node="merge" />
+
+        <!-- Radio syncs: every 2 minutes in a radio's window, a short visit to its stream for the title on
+             air, in the foreground with a quiet "Listening to …" notification (see sync/RadioListening.kt). -->
+        <service
+            android:name=".sync.RadioService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <!-- The radio's alarm, and re-arming it when alarms are lost or move (reboot, update, time zone). -->
+        <receiver
+            android:name=".sync.RadioAlarmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
 
         <!-- Accesso a server personali (Subsonic/Navidrome, Jellyfin, Plex) e sorgenti a nome utente. -->
         <activity

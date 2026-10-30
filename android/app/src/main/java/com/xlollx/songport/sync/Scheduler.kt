@@ -29,6 +29,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
     override suspend fun doWork(): Result {
         val jobId = inputData.getString(KEY_JOB) ?: return Result.failure()
         val scheduled = inputData.getBoolean(KEY_SCHEDULED, false)
+        val quiet = inputData.getBoolean(KEY_QUIET, false)
         val ctx = applicationContext
         val store = Store.get(ctx)
         val batch = inputData.getStringArray(KEY_JOBS)
@@ -81,7 +82,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                     }
                     SupportPrompt.offer(store, report)
                     val notable = report.added > 0 || report.removed > 0 || !report.ok
-                    if (!networkGone && store.data.settings.notifyOnSync && (scheduled || !report.ok) && notable) {
+                    if (!networkGone && !quiet && store.data.settings.notifyOnSync && (scheduled || !report.ok) && notable) {
                         Notifications.syncResult(ctx, report)
                     }
                 } finally {
@@ -104,6 +105,8 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         const val ALL = "*"
         /** Several syncs run one after another in a single worker (a batch transfer). */
         const val KEY_JOBS = "jobs"
+        /** No notice of the result: a radio sync's runs while it listens (one every 10 minutes), not the one when its window closes. */
+        const val KEY_QUIET = "quiet"
     }
 }
 
@@ -187,6 +190,13 @@ object Scheduler {
 
     /** Allinea il lavoro periodico di WorkManager alla configurazione della sync. */
     fun apply(ctx: Context, job: SyncJob) {
+        // A radio sync listens in its window: the listening and its alarm follow the change.
+        // Called from the app on screen (editor, card menu, restore), so listening may start now.
+        if (job.radio != null || RadioService.running.value) RadioPlan.refresh(ctx, start = true)
+        applyWork(ctx, job)
+    }
+
+    private fun applyWork(ctx: Context, job: SyncJob) {
         val wm = WorkManager.getInstance(ctx)
         if (!job.enabled || job.schedule == Schedule.MANUAL) {
             wm.cancelUniqueWork(name(job.id))
@@ -205,13 +215,35 @@ object Scheduler {
         wm.enqueueUniquePeriodicWork(name(job.id), ExistingPeriodicWorkPolicy.UPDATE, req)
     }
 
-    fun cancel(ctx: Context, jobId: String) = WorkManager.getInstance(ctx).cancelUniqueWork(name(jobId))
+    fun cancel(ctx: Context, jobId: String) {
+        WorkManager.getInstance(ctx).cancelUniqueWork(name(jobId))
+        // A deleted radio sync stops listening (and its alarm goes) at once.
+        RadioPlan.refresh(ctx, start = false)
+    }
 
     fun applyAll(ctx: Context) {
         val store = Store.get(ctx)
-        store.data.jobs.forEach { apply(ctx, it) }
+        store.data.jobs.forEach { applyWork(ctx, it) }
         applyBackup(ctx)
         applyUnplayable(ctx)
+        // At every start of the process, in the background too: the radio's alarm armed, no listening started from here.
+        RadioPlan.refresh(ctx, start = false)
+    }
+
+    /**
+     * A radio sync's run while it listens: the songs heard so far reach the target. As a scheduled
+     * run, on Wi-Fi when the sync asks for it, without a notice of its result but for the last one.
+     * [final]: the one when the window closes, queued after a run still going rather than dropped.
+     */
+    fun runRadio(ctx: Context, jobId: String, final: Boolean) {
+        val job = Store.get(ctx).job(jobId)?.takeIf { it.enabled } ?: return
+        val req = OneTimeWorkRequestBuilder<SyncWorker>()
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(if (job.wifiOnly) NetworkType.UNMETERED else NetworkType.CONNECTED).build())
+            .setInputData(workDataOf(SyncWorker.KEY_JOB to jobId, SyncWorker.KEY_SCHEDULED to true, SyncWorker.KEY_QUIET to !final))
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 15, TimeUnit.MINUTES)
+            .addTag("sync")
+            .build()
+        WorkManager.getInstance(ctx).enqueueUniqueWork("radio-$jobId", if (final) ExistingWorkPolicy.APPEND_OR_REPLACE else ExistingWorkPolicy.KEEP, req)
     }
 
     /**

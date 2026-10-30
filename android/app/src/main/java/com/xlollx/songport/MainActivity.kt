@@ -172,6 +172,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // A radio sync whose window is open listens from here if it could not start in the background.
+        runCatching { com.xlollx.songport.sync.RadioPlan.refresh(this, start = true) }
+    }
+
     override fun onDestroy() {
         if (isFinishing) NotificationAsk.request = null
         super.onDestroy()
@@ -544,8 +550,9 @@ private fun MainScreen(
                             store.deleteJob(old); Scheduler.cancel(ctx, old)
                         }
                         editing = null
-                        // A sync just made: what its first run would do, before it does it.
-                        if (previous == null) previewJob = job
+                        // A sync just made: what its first run would do, before it does it. Not a
+                        // radio sync: its source fills while it listens, there is nothing to show yet.
+                        if (previous == null && job.radio == null) previewJob = job
                     },
                 )
             }
