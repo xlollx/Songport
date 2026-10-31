@@ -74,7 +74,7 @@ version running, and the app version whose engine it uses.
 | Variable | Default | What it does |
 |---|---|---|
 | `SONGPORT_URL` | `http://127.0.0.1:8080` | The address your browser uses to reach Trackhop. Sign-ins come back to `<SONGPORT_URL>/callback`. |
-| `SONGPORT_PASSWORD` | none | Asks for this password on every page. **Set it** whenever anyone else can reach the port. |
+| `SONGPORT_PASSWORD` | none | Asks for this password on every page. The browser also asks for a user name: any will do, only the password counts. **Set it** whenever anyone else can reach the port. |
 | `SONGPORT_LOCALE` | English | Language of the texts that come from the engine: `it`, `de`, `fr`, `es`, `pt-BR`, `pl`, `ru`, `tr`, `zh`, `ja`, `ko`. |
 | `SONGPORT_PORT` | `8080` | Port inside the container. |
 | `SONGPORT_DATA` | `/data` | Where everything is kept (the volume). |

@@ -39,7 +39,7 @@ docker run -d --name trackhop -p 8080:8080 -v trackhop-data:/data \
   -e SONGPORT_PASSWORD=choose-one ghcr.io/xlollx/trackhop:latest
 ```
 
-Then open `http://<server>:8080`, add your music server under **Services** (its address and your
+Then open `http://<server>:8080` (any user name, the password you chose), add your music server under **Services** (its address and your
 login) and a streaming service, and create a sync. The [Docker guide](docker) has Compose, the
 settings and the details for each service.
 
