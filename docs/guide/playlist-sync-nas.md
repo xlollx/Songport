@@ -35,12 +35,12 @@ services:
     volumes:
       - ./trackhop-data:/data
     environment:
-      SONGPORT_URL: http://192.168.1.10:8080
+      SONGPORT_URL: http://<NAS-IP>:8080   # example: http://192.168.1.10:8080
       SONGPORT_PASSWORD: choose-one
 ```
 
-`192.168.1.10` is only an example: in `SONGPORT_URL` put your NAS's own address on your network
-(on a Synology: *Control Panel › Network › Network Interface*), with the port. Sign-ins to the music
+Replace `<NAS-IP>` with your NAS's own address on your network (on a Synology: *Control Panel ›
+Network › Network Interface*), keeping the port. Sign-ins to the music
 services come back to that address, so a wrong one makes them fail.
 
 When the page asks for a user name and a password, any user name works: only the password counts,
