@@ -87,7 +87,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
-          name: Songport-debug-apk
+          name: Trackhop-debug-apk
           path: android/app/build/outputs/apk/full/debug/app-full-debug.apk
           if-no-files-found: error
           # Gli APK pesano: senza scadenza breve si satura la quota artifact dell'account.
@@ -126,7 +126,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
-          name: Songport-release-aab
+          name: Trackhop-release-aab
           path: android/app/build/outputs/bundle/playRelease/app-play-release.aab
           if-no-files-found: error
           retention-days: 14
@@ -136,7 +136,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
-          name: Songport-release-apk
+          name: Trackhop-release-apk
           path: android/app/build/outputs/apk/full/release/app-full-release.apk
           if-no-files-found: error
           retention-days: 14

@@ -4,7 +4,7 @@ The app is **Trackhop** on Google Play as everywhere else. Same code,
 same name, same package id `com.xlollx.songport`, same signing key as every other build: the `play`
 flavor only drops the built-in web connectors, describes plugin-based services generically and
 adds the AdMob banner with the UMP consent form. Upload **only the `play` AAB** (the
-`Songport-release-aab` artifact of a CI run on `main`, or `Trackhop-vX-play.aab` in a GitHub Release (`Songport-vX-play.aab` up to 1.5.2)).
+`Trackhop-release-aab` artifact of a CI run on `main`, or `Trackhop-vX-play.aab` in a GitHub Release (`Songport-vX-play.aab` up to 1.5.2)).
 
 Rule for everything below: the listing describes official-API services and files only. No companion
 app, no plugin, no link to one; screenshots taken from the `play` build on a phone without plugins.
@@ -159,7 +159,7 @@ has run.
    e-mail, privacy policy URL.
 4. **App content**: every row of the table above, in one sitting (the console blocks releases while
    any declaration is missing).
-5. **Build to upload**: the `Songport-release-aab` artifact of a green CI run on `main` (flavor `play`,
+5. **Build to upload**: the `Trackhop-release-aab` artifact of a green CI run on `main` (flavor `play`,
    release, signed with the upload key from the `UPLOAD_KEYSTORE_*` secrets). Each upload must carry
    a higher `versionCode` than the last one accepted, so bump `android/app/build.gradle` before the
    next upload once a build has gone to any track (the F-Droid version keeps the same numbers).
