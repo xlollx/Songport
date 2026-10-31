@@ -157,11 +157,16 @@ jobs:
 
       - name: Name release assets after the version
         if: ${{ steps.rel.outputs.tag != '' }}
-        # The assets keep the "Songport-" prefix after the rename to Trackhop: F-Droid's Binaries
-        # pattern and Obtainium setups match these names.
+        # "Trackhop-v<version>.apk" and "-play.aab". Until F-Droid's metadata (fdroiddata) names
+        # Trackhop-v%v.apk in its Binaries line, the APK also goes out under its old name,
+        # "Songport-v<version>.apk", which that line still asks for: then KEEP_SONGPORT_APK goes.
+        env:
+          KEEP_SONGPORT_APK: 'true'
         run: |
-          cp app/build/outputs/apk/full/release/app-full-release.apk "$GITHUB_WORKSPACE/Songport-${{ steps.rel.outputs.tag }}.apk"
-          cp app/build/outputs/bundle/playRelease/app-play-release.aab "$GITHUB_WORKSPACE/Songport-${{ steps.rel.outputs.tag }}-play.aab"
+          tag="${{ steps.rel.outputs.tag }}"
+          cp app/build/outputs/apk/full/release/app-full-release.apk "$GITHUB_WORKSPACE/Trackhop-$tag.apk"
+          cp app/build/outputs/bundle/playRelease/app-play-release.aab "$GITHUB_WORKSPACE/Trackhop-$tag-play.aab"
+          if [ "$KEEP_SONGPORT_APK" = true ]; then cp "$GITHUB_WORKSPACE/Trackhop-$tag.apk" "$GITHUB_WORKSPACE/Songport-$tag.apk"; fi
 
       - name: GitHub Release
         if: ${{ steps.rel.outputs.tag != '' }}
@@ -170,8 +175,9 @@ jobs:
           tag_name: ${{ steps.rel.outputs.tag }}
           target_commitish: ${{ github.sha }}
           files: |
+            Trackhop-*.apk
+            Trackhop-*.aab
             Songport-*.apk
-            Songport-*.aab
           generate_release_notes: true
 
   virustotal:

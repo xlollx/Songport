@@ -562,9 +562,9 @@ The app has two product flavors of the same code:
   open connector interface, discovered through the intent action `com.xlollx.songport.action.CONNECTOR`)
   are offered only when such a plugin is already installed, with generic wording, and are otherwise
   absent from the service picker. Trackhop itself only ever calls official APIs and local files, so the
-  Play review sees exactly that. The AAB in the CI artifacts and in every release (`Songport-vX-play.aab`)
+  Play review sees exactly that. The AAB in the CI artifacts and in every release (`Trackhop-vX-play.aab`)
   is this flavor: upload only that to the Play Console.
-- **`full`** is the direct-download build on GitHub Releases (`Songport-vX.apk`). It can point to where a
+- **`full`** is the direct-download build on GitHub Releases (`Trackhop-vX.apk`). It can point to where a
   plugin is available and recognises older plugin versions by package name.
 
 Keep the Play listing consistent with the `play` flavor: describe official-API services and file
@@ -574,7 +574,8 @@ Both flavors are called **Trackhop**, as are this repository, the site and the D
 version 1.1 the app was called Songport outside Google Play; the name changed because "SongPort" is
 also an unrelated, active service in the same niche (songport.link). What existing installs and
 setups depend on keeps the old name: the package id `com.xlollx.songport`, the `songport://callback`
-redirect, the release asset names (`Songport-vX.apk`, which F-Droid's metadata matches), the Deezer
+redirect, a copy of each release's APK as `Songport-vX.apk` until F-Droid's metadata names the new
+`Trackhop-vX.apk`, the Deezer
 redirect page at `https://xlollx.github.io/Songport/deezer-redirect.html`, the server's `SONGPORT_*`
 variables and the `ghcr.io/xlollx/songport` image, which is still published next to
 `ghcr.io/xlollx/trackhop`.

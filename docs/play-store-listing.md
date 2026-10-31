@@ -4,7 +4,7 @@ The app is **Trackhop** on Google Play as everywhere else. Same code,
 same name, same package id `com.xlollx.songport`, same signing key as every other build: the `play`
 flavor only drops the built-in web connectors, describes plugin-based services generically and
 adds the AdMob banner with the UMP consent form. Upload **only the `play` AAB** (the
-`Songport-release-aab` artifact of a CI run on `main`, or `Songport-vX-play.aab` in a GitHub Release).
+`Songport-release-aab` artifact of a CI run on `main`, or `Trackhop-vX-play.aab` in a GitHub Release (`Songport-vX-play.aab` up to 1.5.2)).
 
 Rule for everything below: the listing describes official-API services and files only. No companion
 app, no plugin, no link to one; screenshots taken from the `play` build on a phone without plugins.
