@@ -574,8 +574,8 @@ Both flavors are called **Trackhop**, as are this repository, the site and the D
 version 1.1 the app was called Songport outside Google Play; the name changed because "SongPort" is
 also an unrelated, active service in the same niche (songport.link). What existing installs and
 setups depend on keeps the old name: the package id `com.xlollx.songport`, the `songport://callback`
-redirect, a copy of each release's APK as `Songport-vX.apk` until F-Droid's metadata names the new
-`Trackhop-vX.apk`, the Deezer
+redirect, the APK's old name `Songport-vX.apk` on the releases up to 1.5.2 (F-Droid's metadata names
+those, and `Trackhop-vX.apk` from then on), the Deezer
 redirect page at `https://xlollx.github.io/Songport/deezer-redirect.html`, the server's `SONGPORT_*`
 variables and the `ghcr.io/xlollx/songport` image, which is still published next to
 `ghcr.io/xlollx/trackhop`.

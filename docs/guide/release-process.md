@@ -6,8 +6,7 @@
    locales (en-US, it-IT, fr-FR, de-DE, es-ES, zh-CN, ja-JP), under 500 characters.
 3. **Push to `main`**. CI (`.github/workflows/build.yml`) runs the unit tests, builds the debug APK, the signed release APK (`full` flavour) and the AAB (`play` flavour),
    and, when the `versionName` has no tag yet, creates the tag `vX.Y.Z` and the GitHub Release with
-   `Trackhop-vX.Y.Z.apk` and `Trackhop-vX.Y.Z-play.aab` (and, until F-Droid's metadata names the new
-   APK, a copy of it as `Songport-vX.Y.Z.apk`).
+   `Trackhop-vX.Y.Z.apk` and `Trackhop-vX.Y.Z-play.aab` (up to 1.5.2 the APK was `Songport-vX.Y.Z.apk`).
 4. **Obtainium** users get it at once. **F-Droid** finds the new tag (`UpdateCheckMode: Tags`),
    builds it from source a few days later and, because the build is reproducible, publishes the
    GitHub APK with its own signature.

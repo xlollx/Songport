@@ -157,16 +157,12 @@ jobs:
 
       - name: Name release assets after the version
         if: ${{ steps.rel.outputs.tag != '' }}
-        # "Trackhop-v<version>.apk" and "-play.aab". Until F-Droid's metadata (fdroiddata) names
-        # Trackhop-v%v.apk in its Binaries line, the APK also goes out under its old name,
-        # "Songport-v<version>.apk", which that line still asks for: then KEEP_SONGPORT_APK goes.
-        env:
-          KEEP_SONGPORT_APK: 'true'
+        # "Trackhop-v<version>.apk" and "-play.aab": F-Droid's metadata names Trackhop-v%v.apk in its
+        # Binaries line since fdroiddata!55131 (the versions up to 1.5.2 keep Songport-v<version>.apk).
         run: |
           tag="${{ steps.rel.outputs.tag }}"
           cp app/build/outputs/apk/full/release/app-full-release.apk "$GITHUB_WORKSPACE/Trackhop-$tag.apk"
           cp app/build/outputs/bundle/playRelease/app-play-release.aab "$GITHUB_WORKSPACE/Trackhop-$tag-play.aab"
-          if [ "$KEEP_SONGPORT_APK" = true ]; then cp "$GITHUB_WORKSPACE/Trackhop-$tag.apk" "$GITHUB_WORKSPACE/Songport-$tag.apk"; fi
 
       - name: GitHub Release
         if: ${{ steps.rel.outputs.tag != '' }}
@@ -177,7 +173,6 @@ jobs:
           files: |
             Trackhop-*.apk
             Trackhop-*.aab
-            Songport-*.apk
           generate_release_notes: true
 
   virustotal:
