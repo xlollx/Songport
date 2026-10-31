@@ -188,3 +188,12 @@ jobs:
     with:
       version: ${{ needs.release.outputs.version }}
     secrets: inherit
+
+  virustotal:
+    # The new release's files checked by VirusTotal (virustotal.yml), as the app's are.
+    needs: release
+    if: ${{ needs.release.outputs.version != '' }}
+    uses: ./.github/workflows/virustotal.yml
+    with:
+      tag: server-v${{ needs.release.outputs.version }}
+    secrets: inherit

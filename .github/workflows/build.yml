@@ -16,6 +16,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      # Set only when this run made the release, for the VirusTotal job.
+      tag: ${{ steps.rel.outputs.tag }}
     defaults:
       run:
         working-directory: android
@@ -170,3 +173,13 @@ jobs:
             Songport-*.apk
             Songport-*.aab
           generate_release_notes: true
+
+  virustotal:
+    # The new release's files checked by VirusTotal (virustotal.yml): the results go into its notes
+    # and the README's badge. Skipped until the VT_API_KEY secret exists.
+    needs: build
+    if: ${{ needs.build.outputs.tag != '' }}
+    uses: ./.github/workflows/virustotal.yml
+    with:
+      tag: ${{ needs.build.outputs.tag }}
+    secrets: inherit
