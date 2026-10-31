@@ -5,11 +5,32 @@ url: https://xlollx.github.io
 baseurl: /Trackhop
 plugins:
   - jekyll-sitemap
+# Pages are linked without ".html" (guide/docker, privacy-policy): the permalinks say so too, so the
+# sitemap and the canonical links name the same address the links use (the files on disk keep
+# their .html, which GitHub Pages serves for the bare path). The two index pages keep their folder.
 defaults:
   - scope:
       path: ""
     values:
       layout: default
+      permalink: /:path/:basename
+  - scope:
+      path: "index.html"
+    values:
+      permalink: /
+  - scope:
+      path: "guide/index.md"
+    values:
+      permalink: /guide/
+  # Google's verification file and the Deezer redirect page are not for search engines.
+  - scope:
+      path: "google3df636f9c5610d0d.html"
+    values:
+      sitemap: false
+  - scope:
+      path: "deezer-redirect.html"
+    values:
+      sitemap: false
 exclude:
   - play-store-listing.md
   - google-shared-client.md
