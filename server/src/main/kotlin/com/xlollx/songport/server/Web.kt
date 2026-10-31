@@ -12,6 +12,7 @@ import com.xlollx.songport.providers.MusicProvider
 import com.xlollx.songport.providers.OAuthProvider
 import com.xlollx.songport.providers.Providers
 import com.xlollx.songport.server.Html.h
+import com.xlollx.songport.sync.PlaylistLinks
 import com.xlollx.songport.sync.SoundCloudPublic
 import com.xlollx.songport.sync.SyncState
 import kotlinx.coroutines.runBlocking
@@ -532,6 +533,23 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
 
     private fun usable(p: MusicProvider) = !p.requiresAuth || p.isConnected(env)
 
+    /** What a link to a playlist on [src] looks like, for the form's hint. */
+    private fun linkHint(src: MusicProvider): String = when (src.serviceId) {
+        com.xlollx.songport.sync.NeteasePublic.SERVICE -> "https://music.163.com/#/playlist?id=…"
+        com.xlollx.songport.sync.QqMusicPublic.SERVICE -> "https://y.qq.com/n/ryqq/playlist/…"
+        else -> "https://soundcloud.com/user/sets/…"
+    }
+
+    /** The playlist a pasted link names on [src]: the link itself, or where a short link lands. */
+    private suspend fun linkedPlaylist(src: MusicProvider, text: String): String? {
+        PlaylistLinks.parse(text)?.takeIf { it.providerId == src.serviceId }?.let { return it.playlistId }
+        if (src.serviceId == SoundCloudPublic.SERVICE) return SoundCloudPublic.pathFromLink(text)
+        val url = Regex("""https?://[^\s<>"']+""").find(text)?.value ?: return null
+        val landing = runCatching { com.xlollx.songport.net.Http.follow(url) }.getOrNull() ?: return null
+        return (PlaylistLinks.parse(landing.url) ?: PlaylistLinks.parseAll(landing.page).firstOrNull())
+            ?.takeIf { it.providerId == src.serviceId }?.playlistId
+    }
+
     private fun newSync(r: Req) {
         val connected = Providers.connectors().filter(::usable)
         // Link-only sources need nothing added or connected: they are always offered as a source.
@@ -562,7 +580,7 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
         body.append(
             """<form method="post" action="/syncs" class="card">
 <input type="hidden" name="src" value="${h(src.id)}"><input type="hidden" name="dst" value="${h(dst.id)}">
-${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input type="url" name="srcLink" required placeholder="https://soundcloud.com/user/sets/…">"""
+${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input type="url" name="srcLink" required placeholder="${linkHint(src)}">"""
             else """<label>From ${h(src.label(env))}</label><select name="srcPlaylist" required>${opts(srcLists.getOrDefault(emptyList()))}</select>"""}
 <label>To ${h(dst.label(env))}</label><select name="dstPlaylist">${if (dst.canCreatePlaylists) "<option value=\"\">A new playlist with the same name</option>" else ""}${opts(dstLists.getOrDefault(emptyList()))}</select>
 <label>Name of the sync (optional)</label><input type="text" name="name">
@@ -577,11 +595,11 @@ ${if (src.linkOnly) """<label>Public link on ${h(src.label(env))}</label><input 
         val src = Providers.byId(r.form["src"].orEmpty()) ?: return redirect(r.ex, "/syncs/new?err=${q("Pick a source.")}")
         val dst = Providers.byId(r.form["dst"].orEmpty()) ?: return redirect(r.ex, "/syncs/new?err=${q("Pick a destination.")}")
         val back = "/syncs/new?src=${q(src.id)}&dst=${q(dst.id)}"
-        // A link-only source (SoundCloud): the pasted link, short links followed, is the playlist,
-        // and reading its name now says at once whether it is public.
+        // A link-only source (SoundCloud, NetEase, QQ Music): the pasted link, short links followed,
+        // is the playlist, and reading its name now says at once whether it is public.
         val linked = if (src.linkOnly) {
-            val path = runBlocking { SoundCloudPublic.pathFromLink(r.form["srcLink"].orEmpty()) }
-                ?: return redirect(r.ex, "$back&err=${q("Not a link to a SoundCloud set or likes page.")}")
+            val path = runBlocking { linkedPlaylist(src, r.form["srcLink"].orEmpty()) }
+                ?: return redirect(r.ex, "$back&err=${q("Not a link to a public playlist on ${src.label(env)}.")}")
             runCatching { runBlocking { src.playlistInfo(env, path) } }.getOrElse { return redirect(r.ex, "$back&err=${q(it.message ?: "Error")}") }
         } else null
         val srcId = linked?.id ?: r.form["srcPlaylist"].orEmpty().ifBlank { return redirect(r.ex, "$back&err=${q("Pick a playlist.")}") }

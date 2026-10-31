@@ -6,6 +6,8 @@ import com.xlollx.songport.providers.JellyfinProvider
 import com.xlollx.songport.providers.LastFmProvider
 import com.xlollx.songport.providers.ListenBrainzProvider
 import com.xlollx.songport.providers.LocalFilesProvider
+import com.xlollx.songport.providers.NeteaseProvider
+import com.xlollx.songport.providers.QqMusicProvider
 import com.xlollx.songport.providers.SoundCloudProvider
 import com.xlollx.songport.providers.PlexProvider
 import com.xlollx.songport.providers.Providers
@@ -19,7 +21,8 @@ import java.io.File
 /**
  * The connectors a server can use: the official APIs, the personal servers, YouTube Music, Spotify
  * and Deezer with cookies pasted from a browser (unofficial: [CookieConnector]), and public
- * SoundCloud links as a read-only source (unofficial too: [SoundCloudProvider]). The other web
+ * SoundCloud, NetEase Cloud Music and QQ Music public links as read-only sources (unofficial too:
+ * [SoundCloudProvider], [NeteaseProvider], [QqMusicProvider]). The other web
  * connectors (Amazon Music, Apple Music without a key) run the service's own web player in an
  * Android WebView, and Apple Music's official route signs in with MusicKit JS in one too: none of
  * them exists without a phone.
@@ -42,7 +45,12 @@ fun installServerConnectors(officialOnly: Boolean = false) = Providers.install(
         Factory(LastFmProvider.SERVICE) { LastFmProvider(it) },
         Factory(ListenBrainzProvider.SERVICE) { ListenBrainzProvider(it) },
     ),
-    singletons = listOfNotNull(LocalFilesProvider, SoundCloudProvider.takeUnless { officialOnly }),
+    singletons = listOfNotNull(
+        LocalFilesProvider,
+        SoundCloudProvider.takeUnless { officialOnly },
+        NeteaseProvider.takeUnless { officialOnly },
+        QqMusicProvider.takeUnless { officialOnly },
+    ),
 )
 
 /** The settings, from the environment (what `docker run -e` sets). */

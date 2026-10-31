@@ -893,6 +893,14 @@
     <string name="provider_note_soundcloud">Публичные сеты и страницы лайков SoundCloud, только чтение и без входа: вставьте ссылку как источник синхронизации. Это неофициальный интерфейс: он может перестать работать, когда SoundCloud изменит свой сайт.</string>
     <string name="soundcloud_not_public">Этот плейлист SoundCloud приватный или не существует: работают только публичные ссылки</string>
     <string name="soundcloud_player_changed">SoundCloud изменил свой веб-плеер; Trackhop нужно обновить</string>
+    <string name="netease_label">NetEase Cloud Music (публичные ссылки, неофициально)</string>
+    <string name="provider_note_netease">Публичные плейлисты NetEase Cloud Music (网易云音乐), только чтение и без входа: вставьте ссылку на плейлист как источник синхронизации. Неофициальный интерфейс: может перестать работать при изменении сайта.</string>
+    <string name="netease_not_public">Этот плейлист NetEase Cloud Music приватный или не существует: работают только публичные ссылки</string>
+    <string name="netease_changed">NetEase Cloud Music изменил свой сайт; Trackhop нужно обновить</string>
+    <string name="qqmusic_label">QQ Music (публичные ссылки, неофициально)</string>
+    <string name="provider_note_qqmusic">Публичные плейлисты QQ Music (歌单), только чтение и без входа: вставьте ссылку на плейлист как источник синхронизации. Неофициальный интерфейс: может перестать работать при изменении сайта.</string>
+    <string name="qqmusic_not_public">Этот плейлист QQ Music приватный или не существует: работают только публичные ссылки</string>
+    <string name="qqmusic_changed">QQ Music изменил свой сайт; Trackhop нужно обновить</string>
     <string name="job_color">Цвет</string>
     <string name="job_color_default">По умолчанию</string>
     <string name="color_red">Красный</string>

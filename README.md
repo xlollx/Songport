@@ -41,8 +41,8 @@ On your phone, on a schedule. No account, no server, no subscription.</p>
 <p align="center"><img src="docs/store/screenshots.png" width="100%" alt="Syncs with their numbers, a new sync, a shared track going into a playlist, how compatible two playlists are, a playlist poster, unplayable tracks and their replacements"></p>
 
 Trackhop keeps playlists identical across Spotify, Apple Music, YouTube Music, Amazon Music, TIDAL,
-Deezer, Subsonic/Navidrome, Jellyfin and Plex, with Last.fm, ListenBrainz and public SoundCloud links
-as sources and playlist files (CSV, TSV, M3U, iTunes XML, JSON, pasted text) as a bridge to everything else. Everything runs
+Deezer, Subsonic/Navidrome, Jellyfin and Plex, with Last.fm, ListenBrainz and public SoundCloud, NetEase
+Cloud Music and QQ Music links as sources and playlist files (CSV, TSV, M3U, iTunes XML, JSON, pasted text) as a bridge to everything else. Everything runs
 on the phone: there is no Trackhop server, and access tokens never leave the device. Free, no ads in
 this build: development lives on voluntary donations.
 
@@ -235,6 +235,7 @@ that is exactly what to report.
 | ListenBrainz | read-only, beta | username | nothing | Playlists and loved tracks, source only. |
 | Files | complete | | | Import/export through the system file picker, or "Paste a list". |
 | SoundCloud | public links, read-only, unofficial; GitHub/F-Droid build and server only | none: paste a public set or likes link | nothing | No public API for new apps, so the link is read the way soundcloud.com's web player reads it, with the client id the site ships in its scripts. Sets (playlists, albums, EPs, unlisted ones with their secret link) and a user's public likes page; nothing to sign in to, never a destination. ISRC and album only where the uploader filled in the label metadata; otherwise "Artist - Title" is split from the title. Not an official route, may break without notice: the app then says it needs an update. |
+| NetEase Cloud Music, QQ Music | public links, read-only, unofficial; GitHub/F-Droid build, Docker and Desktop from the site only | none: paste a public playlist link | nothing | No interface for third-party apps, so a public playlist is read the way the sites' own pages read it, with no account: title, artists, album and duration, no ISRC. Never a destination, never a sign-in. Not an official route, may break without notice: the app then says it needs an update. [More](https://xlollx.github.io/Trackhop/guide/netease-qq-music). |
 | Qobuz, Pandora | not connectable | | | Partner-only or closed-beta APIs. Use files. |
 
 Own credentials are entered from *Accounts → service card → Use your own credentials*: numbered
@@ -393,7 +394,7 @@ MainActivity (tabs: Syncs, Accounts, Tools, Log, Settings)                      
                                                                                         │
                                                        MusicProvider (interface, one instance per account)
                                                        Spotify · AppleMusic · YouTube · Tidal · Deezer
-                                                       Subsonic · Jellyfin · Plex · LastFm · ListenBrainz · SoundCloud · LocalFiles
+                                                       Subsonic · Jellyfin · Plex · LastFm · ListenBrainz · SoundCloud · Netease · QqMusic · LocalFiles
                                                                                         │
 AuthFlow (PKCE, loopback) · AppleAuthActivity (MusicKit JS) · ServerLoginActivity · TokenStore (encrypted)
                                                                                         ▼

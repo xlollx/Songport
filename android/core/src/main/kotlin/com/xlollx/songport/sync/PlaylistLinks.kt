@@ -27,6 +27,14 @@ object PlaylistLinks {
         // The id is the page's path ("you/…" is whoever is signed in: no public page); on.soundcloud.com
         // short links are followed first.
         Regex("""(?<![\w-])(?:(?:www|m)\.)?soundcloud\.com/((?!you/)[A-Za-z0-9_-]+/(?:sets/[A-Za-z0-9_-]+(?:/s-[A-Za-z0-9]+)?|likes))(?![\w-])""") to "soundcloud",
+        // NetEase Cloud Music: https://music.163.com/#/playlist?id=123, …/playlist/123/…, the mobile
+        // y.music.163.com/m/playlist?id=123; the app's 163cn.tv short links are followed first.
+        Regex("""music\.163\.com/(?:#/)?(?:m/)?(?:my/m/music/)?playlist\?(?:[^\s#]*&)?id=(\d+)""") to "netease",
+        Regex("""music\.163\.com/(?:#/)?(?:m/)?playlist/(\d+)""") to "netease",
+        // QQ Music: https://y.qq.com/n/ryqq/playlist/123 (older: /n/yqq/playlist/123.html), the shared
+        // i.y.qq.com/n2/m/share/details/taoge.html?…&id=123; c.y.qq.com short links are followed first.
+        Regex("""y\.qq\.com/n/(?:ryqq|yqq)/playlist/(\d+)""") to "qqmusic",
+        Regex("""y\.qq\.com/[^\s]*(?:taoge|playlist)[^\s]*?[?&](?:id|disstid)=(\d+)""") to "qqmusic",
     )
 
     /** Every playlist link in [text], in order and without repeats: two links shared together are a comparison. */
@@ -59,6 +67,8 @@ object PlaylistLinks {
             "deezer", "deezer_bridge" -> "https://www.deezer.com/playlist/$playlistId"
             "tidal" -> "https://tidal.com/browse/playlist/$playlistId"
             "soundcloud" -> "https://soundcloud.com/$playlistId"
+            "netease" -> "https://music.163.com/#/playlist?id=$playlistId"
+            "qqmusic" -> "https://y.qq.com/n/ryqq/playlist/$playlistId"
             "amazon" -> "https://music.amazon.${region?.lowercase()?.takeIf { it.isNotBlank() } ?: "com"}/user-playlists/$playlistId"
             "jellyfin" -> b?.let { "$it/web/#/details?id=$playlistId" }
             "subsonic", "plex" -> b

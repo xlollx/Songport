@@ -867,6 +867,14 @@
     <string name="provider_note_soundcloud">Öffentliche SoundCloud-Sets und Likes-Seiten, nur lesend und ohne Anmeldung: Füge den Link als Quelle einer Synchronisierung ein. Keine offizielle Schnittstelle: Sie kann aufhören zu funktionieren, wenn SoundCloud seine Website ändert.</string>
     <string name="soundcloud_not_public">Diese SoundCloud-Playlist ist privat oder existiert nicht: Nur öffentliche Links funktionieren</string>
     <string name="soundcloud_player_changed">SoundCloud hat seinen Web-Player geändert; Trackhop braucht ein Update</string>
+    <string name="netease_label">NetEase Cloud Music (öffentliche Links, inoffiziell)</string>
+    <string name="provider_note_netease">Öffentliche Playlists von NetEase Cloud Music (网易云音乐), nur lesend und ohne Anmeldung: füge den Playlist-Link als Quelle einer Synchronisierung ein. Keine offizielle Schnittstelle: kann aufhören zu funktionieren, wenn sich die Website ändert.</string>
+    <string name="netease_not_public">Diese NetEase-Cloud-Music-Playlist ist privat oder existiert nicht: nur öffentliche Links funktionieren</string>
+    <string name="netease_changed">NetEase Cloud Music hat seine Website geändert; Trackhop braucht ein Update</string>
+    <string name="qqmusic_label">QQ Music (öffentliche Links, inoffiziell)</string>
+    <string name="provider_note_qqmusic">Öffentliche Playlists von QQ Music (歌单), nur lesend und ohne Anmeldung: füge den Playlist-Link als Quelle einer Synchronisierung ein. Keine offizielle Schnittstelle: kann aufhören zu funktionieren, wenn sich die Website ändert.</string>
+    <string name="qqmusic_not_public">Diese QQ-Music-Playlist ist privat oder existiert nicht: nur öffentliche Links funktionieren</string>
+    <string name="qqmusic_changed">QQ Music hat seine Website geändert; Trackhop braucht ein Update</string>
     <string name="job_color">Farbe</string>
     <string name="job_color_default">Standard</string>
     <string name="color_red">Rot</string>

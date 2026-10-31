@@ -9,6 +9,7 @@ description (architecture, matching, services and their limits) stays in the
 - [Which Trackhop?](versions): the GitHub/F-Droid and Play builds, connector plugins, the community.
 - [Shared links](shared-links): a friend's Spotify link into your YouTube Music, Navidrome or Jellyfin playlist.
 - [SoundCloud](soundcloud): a public SoundCloud set or likes page as the source of a sync, no account needed.
+- [NetEase Cloud Music and QQ Music](netease-qq-music): a public 网易云音乐 or QQ音乐 playlist as the source of a sync, from its link, no Chinese account needed ([中文](netease-qq-music-zh)).
 - [Troubleshooting](troubleshooting): the errors people actually meet, and what to do about each.
 - [Reporting a problem](reporting-a-problem): the diagnostic report, and what makes a report useful.
 - [Cards](cards): "how compatible are we?" between two playlists, and the playlist poster with a QR code.

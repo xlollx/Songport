@@ -28,7 +28,9 @@ fun installConnectors() = Providers.install(
         Factory(LastFmProvider.SERVICE) { LastFmProvider(it) },
         Factory(ListenBrainzProvider.SERVICE) { ListenBrainzProvider(it) },
     ),
-    singletons = listOf(LocalFilesProvider),
+    // The read-only link sources with no official route (NetEase Cloud Music, QQ Music): with the
+    // builds that carry unofficial connectors, as SoundCloud's links; not in the Google Play one.
+    singletons = listOfNotNull(LocalFilesProvider, NeteaseProvider.takeIf { BuiltIn.available }, QqMusicProvider.takeIf { BuiltIn.available }),
 )
 
 /**

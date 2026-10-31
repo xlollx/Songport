@@ -1,0 +1,1 @@
+Nuove sorgenti: il link di una playlist pubblica di NetEase Cloud Music (网易云音乐) o QQ Music può essere la sorgente di una sync, in sola lettura e senza account cinese.

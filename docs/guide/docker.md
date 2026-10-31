@@ -96,6 +96,7 @@ playlist files. Back that folder up and you have backed up Trackhop.
 | Navidrome / Subsonic, Jellyfin, Plex | yes | The server's address and your login |
 | Last.fm, ListenBrainz | yes, as sources | Your user name |
 | SoundCloud | yes, as a source (unofficial) | Nothing: pick it as the source of a new sync and paste a public set or likes link. [More](soundcloud) |
+| NetEase Cloud Music, QQ Music | yes, as sources (unofficial) | Nothing: pick one as the source of a new sync and paste a public playlist link. [More](netease-qq-music) |
 | CSV files | yes | Put them in `csv/` inside the data volume |
 | YouTube Music | yes (unofficial, alpha) | The cookies of a browser where you are signed in: [see below](#youtube-music-unofficial) |
 | Spotify (web) | yes (unofficial, alpha) | The `sp_dc` cookie of a browser where you are signed in: [see below](#spotify-and-deezer-without-a-key-unofficial) |

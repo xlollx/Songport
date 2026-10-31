@@ -5,6 +5,13 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## Next
+
+- **NetEase Cloud Music and QQ Music as sources**: a public playlist link of 网易云音乐 or QQ音乐 as
+  the source of a sync, read-only and with no Chinese account, like SoundCloud's links. Not in the
+  Microsoft Store build, which carries official connectors only.
+  [How](https://xlollx.github.io/Trackhop/guide/netease-qq-music).
+
 ## 0.5.5
 
 - **On the phone, as an app**: the server's page can be added to the home screen and opens full

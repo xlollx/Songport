@@ -854,6 +854,14 @@
     <string name="provider_note_soundcloud">SoundCloud 的公开歌单和喜欢页面，只读且无需登录：将链接粘贴为同步的来源。这不是官方接口：SoundCloud 修改网站后可能会失效。</string>
     <string name="soundcloud_not_public">此 SoundCloud 歌单为私密或不存在：仅支持公开链接</string>
     <string name="soundcloud_player_changed">SoundCloud 更改了网页播放器；Trackhop 需要更新</string>
+    <string name="netease_label">网易云音乐（公开链接，非官方）</string>
+    <string name="provider_note_netease">网易云音乐的公开歌单，只读且无需登录：把歌单链接粘贴为同步的来源。这不是官方接口：网站改版后可能失效。</string>
+    <string name="netease_not_public">这个网易云音乐歌单是私密的或不存在：只支持公开链接</string>
+    <string name="netease_changed">网易云音乐改版了；Trackhop 需要更新</string>
+    <string name="qqmusic_label">QQ音乐（公开链接，非官方）</string>
+    <string name="provider_note_qqmusic">QQ音乐的公开歌单，只读且无需登录：把歌单链接粘贴为同步的来源。这不是官方接口：网站改版后可能失效。</string>
+    <string name="qqmusic_not_public">这个QQ音乐歌单是私密的或不存在：只支持公开链接</string>
+    <string name="qqmusic_changed">QQ音乐改版了；Trackhop 需要更新</string>
     <string name="job_color">颜色</string>
     <string name="job_color_default">默认</string>
     <string name="color_red">红色</string>

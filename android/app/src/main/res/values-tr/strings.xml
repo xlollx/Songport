@@ -865,6 +865,14 @@
     <string name="provider_note_soundcloud">Herkese açık SoundCloud setleri ve beğeni sayfaları, yalnızca okuma ve oturum açmadan: bağlantıyı bir eşitlemenin kaynağı olarak yapıştırın. Resmî bir arayüz değil: SoundCloud sitesini değiştirdiğinde çalışmayı bırakabilir.</string>
     <string name="soundcloud_not_public">Bu SoundCloud çalma listesi gizli veya mevcut değil: yalnızca herkese açık bağlantılar çalışır</string>
     <string name="soundcloud_player_changed">SoundCloud web oynatıcısını değiştirdi; Trackhop\'un güncellenmesi gerekiyor</string>
+    <string name="netease_label">NetEase Cloud Music (herkese açık bağlantılar, resmi değil)</string>
+    <string name="provider_note_netease">NetEase Cloud Music (网易云音乐) herkese açık çalma listeleri, salt okunur ve oturum açmadan: çalma listesi bağlantısını bir eşitlemenin kaynağı olarak yapıştır. Resmi bir arayüz değil: site değiştiğinde çalışmayı durdurabilir.</string>
+    <string name="netease_not_public">Bu NetEase Cloud Music çalma listesi gizli ya da yok: yalnızca herkese açık bağlantılar çalışır</string>
+    <string name="netease_changed">NetEase Cloud Music sitesini değiştirdi; Trackhop\'un güncellenmesi gerekiyor</string>
+    <string name="qqmusic_label">QQ Music (herkese açık bağlantılar, resmi değil)</string>
+    <string name="provider_note_qqmusic">QQ Music herkese açık çalma listeleri (歌单), salt okunur ve oturum açmadan: çalma listesi bağlantısını bir eşitlemenin kaynağı olarak yapıştır. Resmi bir arayüz değil: site değiştiğinde çalışmayı durdurabilir.</string>
+    <string name="qqmusic_not_public">Bu QQ Music çalma listesi gizli ya da yok: yalnızca herkese açık bağlantılar çalışır</string>
+    <string name="qqmusic_changed">QQ Music sitesini değiştirdi; Trackhop\'un güncellenmesi gerekiyor</string>
     <string name="job_color">Renk</string>
     <string name="job_color_default">Varsayılan</string>
     <string name="color_red">Kırmızı</string>

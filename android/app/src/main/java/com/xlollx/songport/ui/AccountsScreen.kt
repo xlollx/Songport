@@ -581,6 +581,8 @@ private fun serviceGroups(names: List<String>, families: Map<String, List<MusicP
 private val UNAVAILABLE_ON_PLAY = listOf(
     Triple("amazon", 0xFF1AB0D6, "Amazon Music"),
     Triple("soundcloud", 0xFFFF5500, "SoundCloud"),
+    Triple("netease", 0xFFC20C0C, "NetEase Cloud Music"),
+    Triple("qqmusic", 0xFF31C27C, "QQ Music"),
 )
 
 /** A greyed-out tile for a service this version cannot reach: the mark and the name, nothing to tap. */

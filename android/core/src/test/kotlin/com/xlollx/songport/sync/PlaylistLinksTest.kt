@@ -79,4 +79,22 @@ class PlaylistLinksTest {
             PlaylistLinks.parseAll("https://soundcloud.com/artist-name/sets/my_set-2 https://soundcloud.com/someone/likes"))
         assertEquals("https://soundcloud.com/dj/sets/promo/s-AbC12", PlaylistLinks.webUrl("soundcloud", "dj/sets/promo/s-AbC12"))
     }
+
+    @Test fun netease() {
+        val ref1 = PlaylistLinks.Ref("netease", "19723756")
+        assertEquals(ref1, ref("https://music.163.com/#/playlist?id=19723756"))
+        assertEquals(ref1, ref("https://music.163.com/playlist?id=19723756&userid=1"))
+        assertEquals(ref1, ref("https://y.music.163.com/m/playlist?id=19723756&creatorId=1"))
+        assertEquals(ref1, ref("分享歌单 https://music.163.com/playlist/19723756/1/?userid=2 (来自@网易云音乐)"))
+        assertEquals(ref1, ref("https://music.163.com/#/my/m/music/playlist?id=19723756"))
+        assertEquals("https://music.163.com/#/playlist?id=19723756", PlaylistLinks.webUrl("netease", "19723756"))
+    }
+
+    @Test fun qqMusic() {
+        val ref1 = PlaylistLinks.Ref("qqmusic", "7256912512")
+        assertEquals(ref1, ref("https://y.qq.com/n/ryqq/playlist/7256912512"))
+        assertEquals(ref1, ref("https://y.qq.com/n/yqq/playlist/7256912512.html"))
+        assertEquals(ref1, ref("https://i.y.qq.com/n2/m/share/details/taoge.html?hosteuin=x&id=7256912512&ADTAG=share"))
+        assertEquals("https://y.qq.com/n/ryqq/playlist/7256912512", PlaylistLinks.webUrl("qqmusic", "7256912512"))
+    }
 }
