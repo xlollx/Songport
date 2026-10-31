@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -34,6 +35,8 @@ class RadioListener(private val env: ServerEnv, private val runner: Runner) {
     val status = ConcurrentHashMap<String, Status>()
     /** When each radio sync last ran because of new songs: not more than once every [RUN_EVERY_MS]. */
     private val lastPush = ConcurrentHashMap<String, Long>()
+
+    fun stop() = scope.cancel()
 
     fun start() {
         scope.launch {

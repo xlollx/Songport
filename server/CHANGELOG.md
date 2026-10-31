@@ -5,6 +5,17 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## 0.6.0
+
+- **Several people on one server** (Docker): with `SONGPORT_MULTIUSER=true` each person signs in
+  with their own user name and password and has a Trackhop of their own, with their own services,
+  syncs, files, backups and log; nobody sees the others'. The admin (`admin`, with
+  `SONGPORT_PASSWORD`) adds and removes people in **Users** and keeps what the server had before.
+  A real sign-in page with a sign-out, scheduled syncs for everyone, `trackhop --user <name>` on the
+  command line, an API token per person. Without the setting nothing changes.
+  [How](https://xlollx.github.io/Trackhop/guide/docker#several-people-on-one-server).
+- Trackhop Desktop: no changes.
+
 ## 0.5.6
 
 - **NetEase Cloud Music and QQ Music as sources**: a public playlist link of 网易云音乐 or QQ音乐 as

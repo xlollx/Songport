@@ -1,6 +1,7 @@
 package com.xlollx.songport.server
 
 import com.sun.net.httpserver.HttpExchange
+import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
 import com.xlollx.songport.model.Playlist
 import com.xlollx.songport.model.PlaylistRef
@@ -58,6 +59,13 @@ class Web(
     private val onQuit: (() -> Unit)? = null,
     /** Desktop: brings its window up (a second start asks the running one). */
     private val onShow: (() -> Unit)? = null,
+    /** Several people on one server (MultiUser.kt): whose pages these are; null on a single-user one. */
+    internal val account: Html.Account? = null,
+    /**
+     * Several people: the data volume shared by everyone, which this user's folders (a backup's) may
+     * not point into except their own part. Null for the admin and on a single-user server.
+     */
+    internal val sharedRoot: java.io.File? = null,
 ) {
     /** The addresses a desktop install answers to; null (a server) answers to any. */
     @Volatile private var localHosts: Set<String>? = null
@@ -73,20 +81,26 @@ class Web(
         val server = HttpServer.create(address, 0)
         if (loopbackOnly) server.address.port.let { p -> localHosts = setOf("127.0.0.1:$p", "localhost:$p") }
         server.executor = Executors.newFixedThreadPool(8)
-        server.createContext("/") { ex ->
-            try {
-                handle(ex)
-            } catch (e: Exception) {
-                env.log("web", "${ex.requestMethod} ${ex.requestURI.path}: ${e.javaClass.simpleName}: ${e.message}")
-                runCatching { send(ex, 500, page("Something went wrong", """<div class="card err">${h(e.message ?: e.javaClass.simpleName)}</div><p><a href="/">Back</a></p>""")) }
-            } finally {
-                ex.close()
-            }
-        }
+        server.createContext("/", handler())
         server.start()
         env.log("web", "listening on port ${server.address.port}, reachable as ${env.baseUrl}")
         return server
     }
+
+    /** Every request, answered and closed: what [start] serves, and what a shared server hands each user's requests to. */
+    fun handler(): HttpHandler = HttpHandler { ex ->
+        try {
+            handle(ex)
+        } catch (e: Exception) {
+            env.log("web", "${ex.requestMethod} ${ex.requestURI.path}: ${e.javaClass.simpleName}: ${e.message}")
+            runCatching { send(ex, 500, page("Something went wrong", """<div class="card err">${h(e.message ?: e.javaClass.simpleName)}</div><p><a href="/">Back</a></p>""")) }
+        } finally {
+            ex.close()
+        }
+    }
+
+    /** True when this server's API would take [header] from [from]: its token, or the command line's key. */
+    fun acceptsApi(header: String?, from: InetAddress?): Boolean = LocalKey.matches(header, from) || Api.authorized(env, header)
 
     // ------------------------------------------------------------------ plumbing
 
@@ -187,7 +201,7 @@ class Web(
     /** "Trackhop server" or "Trackhop Desktop". */
     internal val productName: String get() = edition.product
 
-    internal fun page(title: String, body: String, refresh: Int? = null) = Html.page(title, body, version, refresh, edition, currentPath.get().orEmpty())
+    internal fun page(title: String, body: String, refresh: Int? = null) = Html.page(title, body, version, refresh, edition, currentPath.get().orEmpty(), account)
 
     /** The path being answered, for the header's current tab. */
     private val currentPath = ThreadLocal<String>()

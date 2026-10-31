@@ -59,6 +59,11 @@ private fun Web.backupTool(r: Web.Req) {
                 val schedule = Schedule.entries.firstOrNull { it.name == r.form["schedule"] && it in BACKUP_SCHEDULES } ?: Schedule.MANUAL
                 val folder = r.form["folder"].orEmpty().trim()
                 if (folder.isNotEmpty() && !java.io.File(folder).isDirectory) return redirect(r.ex, "/tools/backup?err=${q("$folder is not a folder here.")}")
+                // On a server shared by several people, nobody copies files into the others' part of the data volume.
+                if (folder.isNotEmpty() && sharedRoot != null) {
+                    val f = java.io.File(folder).canonicalFile
+                    if (f.startsWith(sharedRoot.canonicalFile) && !f.startsWith(env.dataDir.canonicalFile)) return redirect(r.ex, "/tools/backup?err=${q("$folder is part of Trackhop's own data: choose another folder, such as /backups/${account?.name ?: "you"}.")}")
+                }
                 env.store.updateSettings { it.copy(backupSchedule = schedule, backupFolder = folder) }
                 return redirect(r.ex, "/tools/backup?ok=${q("Saved.")}")
             }
@@ -89,7 +94,7 @@ private fun Web.backupTool(r: Web.Req) {
 <p class="muted">On the schedule, every connected service is backed up. With a folder, the new files and the set-up of the day are copied there too.</p>
 <label>Back up every connected service</label><select name="schedule">$schedules</select>
 <label>Also copy the backups and the set-up to this folder (optional)</label><input type="text" name="folder" value="${h(settings.backupFolder)}" placeholder="/backups">
-<p class="muted">A folder this ${if (env.dataDir.path == "/data") "container" else "computer"} can write to: with Docker, mount one (for example <code>-v /mnt/nas/trackhop:/backups</code>). Only files the folder does not have yet are copied, so it keeps every version.</p>
+<p class="muted">A folder this ${if (env.dataDir.path.startsWith("/data")) "container" else "computer"} can write to: with Docker, mount one (for example <code>-v /mnt/nas/trackhop:/backups</code>)${account?.let { if (!it.admin) ". The server is shared: use a folder of your own, such as <code>/backups/${h(it.name)}</code>" else "" } ?: ""}. Only files the folder does not have yet are copied, so it keeps every version.</p>
 <p><button class="secondary">Save</button></p></form>""",
     )
     send(r.ex, 200, page("Backup & restore", body.toString()))

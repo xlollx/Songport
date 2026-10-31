@@ -74,7 +74,27 @@ object Html {
         }
     }
 
-    fun page(title: String, body: String, version: String, refreshSeconds: Int? = null, edition: Edition = Edition.SERVER, path: String = ""): String = """<!doctype html>
+    /** Who is signed in, on a server shared by several people (MultiUser.kt); null on a single-user one. */
+    class Account(val name: String, val admin: Boolean)
+
+    /** The header's links: the pages, then (several people) the users' page for the admin and one's own account. */
+    private fun nav(path: String, account: Account?): String {
+        val links = NAV + listOfNotNull(
+            ("/users" to "Users").takeIf { account?.admin == true },
+            account?.let { "/account" to "👤 ${h(it.name)}" },
+        )
+        return links.joinToString("") { (href, label) ->
+            val on = if (href == "/") path.isEmpty() || path.startsWith("syncs") else path.startsWith(href.drop(1))
+            """<a href="$href"${if (on) " class=\"on\" aria-current=\"page\"" else ""}>$label</a>"""
+        }
+    }
+
+    fun page(
+        title: String, body: String, version: String, refreshSeconds: Int? = null, edition: Edition = Edition.SERVER, path: String = "",
+        account: Account? = null,
+        /** False for the sign-in page: nothing to go to before signing in. */
+        showNav: Boolean = true,
+    ): String = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#141218">
@@ -84,7 +104,7 @@ ${refreshSeconds?.let { """<meta http-equiv="refresh" content="$it">""" } ?: ""}
 ${if (edition == Edition.DESKTOP) DESKTOP_LINKS else Pwa.HEAD}
 </head><body>
 <header class="top"><a class="brand" href="/"><span class="tile">$MARK</span>Trackhop <span class="${edition.stage}">${edition.stage}</span></a>
-<nav>${NAV.joinToString("") { (href, label) -> val on = if (href == "/") path.isEmpty() || path.startsWith("syncs") else path.startsWith(href.drop(1)); """<a href="$href"${if (on) " class=\"on\" aria-current=\"page\"" else ""}>$label</a>""" }}</nav></header>
+${if (showNav) "<nav>${nav(path, account)}</nav>" else ""}</header>
 <p class="alpha-note">${if (edition.stage == "beta") "<strong>Beta.</strong> ${h(edition.product)} works for everyday use but is still young: things can change between releases." else "<strong>Alpha.</strong> ${h(edition.product)} is an early test version: things can break or change between releases."} Keep a copy of the data folder and <a href="https://xlollx.github.io/Trackhop/guide/reporting-a-problem">report what goes wrong</a>.</p>
 <main>
 ${backTo(path)?.let { """<a class="back" href="${h(it)}">‹ Back</a>""" } ?: ""}

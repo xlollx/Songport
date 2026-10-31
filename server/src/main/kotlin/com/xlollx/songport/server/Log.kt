@@ -14,12 +14,14 @@ object Log {
     private val time = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     private val lines = ArrayDeque<String>()
     @Volatile private var file: File? = null
+    /** Several people on one server: whose engine this is, at the start of its lines in the container's output. */
+    @Volatile var who: String? = null
 
     fun init(dataDir: File) { file = File(dataDir, "songport.log") }
 
     fun add(tag: String, message: String) {
         val line = "${LocalDateTime.now().format(time)} [$tag] $message"
-        println(line)
+        println(who?.let { "[$it] $line" } ?: line)
         synchronized(lines) {
             lines.addLast(line)
             while (lines.size > KEEP) lines.removeFirst()

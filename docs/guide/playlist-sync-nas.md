@@ -46,6 +46,9 @@ services come back to that address, so a wrong one makes them fail.
 When the page asks for a user name and a password, any user name works: only the password counts,
 the one in `SONGPORT_PASSWORD`.
 
+For the whole household, add `SONGPORT_MULTIUSER: "true"`: everyone signs in with their own name and
+password and has their own services and syncs ([how](docker#several-people-on-one-server)).
+
 ## Per system
 
 - **Synology** (DSM 7.2 and later): *Container Manager › Project › Create*, paste the Compose file

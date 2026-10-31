@@ -74,7 +74,8 @@ version running, and the app version whose engine it uses.
 | Variable | Default | What it does |
 |---|---|---|
 | `SONGPORT_URL` | `http://127.0.0.1:8080` | The address your browser uses to reach Trackhop. Sign-ins come back to `<SONGPORT_URL>/callback`. |
-| `SONGPORT_PASSWORD` | none | Asks for this password on every page. The browser also asks for a user name: any will do, only the password counts. **Set it** whenever anyone else can reach the port. |
+| `SONGPORT_PASSWORD` | none | Asks for this password on every page. The browser also asks for a user name: any will do, only the password counts. **Set it** whenever anyone else can reach the port. With `SONGPORT_MULTIUSER`, the admin's password. |
+| `SONGPORT_MULTIUSER` | off | `true`: [several people](#several-people-on-one-server), each with their own services and syncs, signing in with a user name and a password. Needs `SONGPORT_PASSWORD`. |
 | `SONGPORT_LOCALE` | English | Language of the texts that come from the engine: `it`, `de`, `fr`, `es`, `pt-BR`, `pl`, `ru`, `tr`, `zh`, `ja`, `ko`. |
 | `SONGPORT_PORT` | `8080` | Port inside the container. |
 | `SONGPORT_DATA` | `/data` | Where everything is kept (the volume). |
@@ -209,6 +210,43 @@ another of its streams (an MP3 one rather than HLS), or another station. Listeni
 station's bandwidth (128 kbps is about 60 MB an hour) on the server and on Trackhop Desktop, which
 are always on. The Android app has radio syncs too: there the phone samples the stream every 2
 minutes, on Wi‑Fi by default, instead of listening throughout ([guide](radio)).
+
+## Several people on one server
+
+One container can serve the whole household: each person signs in with their own user name and
+password and has a Trackhop of their own, with their own services, syncs, files, backups and log.
+Nobody sees the others'. Add `SONGPORT_MULTIUSER`:
+
+```yaml
+    environment:
+      SONGPORT_URL: http://<NAS-IP>:8080   # example: http://192.168.1.10:8080
+      SONGPORT_PASSWORD: choose-one        # the admin's password
+      SONGPORT_MULTIUSER: "true"
+```
+
+1. Open the page and sign in as **admin**, with `SONGPORT_PASSWORD`.
+2. In **Users**, add each person with a user name and a first password.
+3. They sign in at the same address with their name and password, and connect their own services.
+   The 👤 link with their name, in the top bar, is where they change their password or sign out.
+
+- **What was there stays the admin's.** A server used by one person before carries on as the
+  admin's Trackhop: same services, same syncs. The others start empty.
+- **Scheduled syncs run for everyone**, signed in or not.
+- **Data**: each person's is in `/data/users/<name>`, the admin's in `/data` as before. Removing
+  someone stops their Trackhop and moves their folder to `/data/users-removed`, to delete when you
+  no longer need it. A forgotten password: the admin sets a new one in **Users**.
+- **Sign-ins to the services** come back to the person who started them, through the same
+  `SONGPORT_URL`: nothing to set per person. With your own Spotify or Google keys, they are shared by
+  everyone on the server; Spotify's own limits on how many people a key in development mode serves
+  apply.
+- **The command line** works for each person: `docker exec trackhop trackhop --user anna status`
+  (without `--user`, the admin's). The API's token is per person too (Tools › API), and says whose
+  Trackhop answers.
+- **Backups to a folder**: each person picks a folder of their own, such as `/backups/anna`.
+- Each person's Trackhop takes some memory of its own: fine for a household, not meant for strangers
+  sharing one server.
+
+Without `SONGPORT_MULTIUSER` nothing changes: one Trackhop, one password, any user name.
 
 ## Behind a reverse proxy
 

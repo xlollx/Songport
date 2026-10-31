@@ -44,7 +44,7 @@ object Cli {
     class Failure(val code: Int, message: String) : Exception(message)
 
     private val USAGE = """
-        Usage: trackhop [--json] [--url URL --token TOKEN] <command> [arguments]
+        Usage: trackhop [--json] [--user NAME] [--url URL --token TOKEN] <command> [arguments]
 
         Syncs
           syncs                          list the syncs, with their last result
@@ -68,7 +68,8 @@ object Cli {
           help                           this text
 
         A <sync> is its name (or the start of it) or its id; a <service> its name or id; a <playlist>
-        its name or id. Without --url, trackhop talks to the Trackhop running on this computer.
+        its name or id. Without --url, trackhop talks to the Trackhop running on this computer; on a
+        server shared by several people, --user NAME (or TRACKHOP_USER) picks whose, the admin's without.
     """.trimIndent()
 
     private val json = Json { prettyPrint = true }
@@ -79,6 +80,7 @@ object Cli {
         val rest = ArrayList<String>()
         var asJson = false; var wait = false; var all = false
         var url = env["TRACKHOP_URL"]?.takeIf { it.isNotBlank() }; var token = env["TRACKHOP_TOKEN"]?.takeIf { it.isNotBlank() }
+        var user = env["TRACKHOP_USER"]?.takeIf { it.isNotBlank() }
         var i = 0
         while (i < args.size) {
             when (val a = args[i]) {
@@ -87,6 +89,7 @@ object Cli {
                 "--all" -> all = true
                 "--url" -> url = args.getOrNull(++i) ?: return usage(err, "--url needs an address")
                 "--token" -> token = args.getOrNull(++i) ?: return usage(err, "--token needs the API token")
+                "--user" -> user = args.getOrNull(++i) ?: return usage(err, "--user needs a user name")
                 "-h", "--help" -> rest.add(0, "help")
                 "-V", "--version" -> { out.println("trackhop ${cliVersion()}"); return 0 }
                 else -> if (a.startsWith("--")) return usage(err, "unknown option $a") else rest += a
@@ -97,7 +100,10 @@ object Cli {
         val params = rest.drop(1)
         if (command == "help") { out.println(USAGE); return 0 }
         return try {
-            val api = connect(url, token, dataDir)
+            val name = user?.let { MultiUser.normalize(it) }?.takeIf { it != MultiUser.ADMIN }
+            if (name != null && !MultiUser.NAME.matches(name)) return usage(err, "no user can be called \"$user\"")
+            // A person's Trackhop on a shared server keeps its key in their own folder (MultiUser.kt).
+            val api = connect(url, token, if (name == null) dataDir else { { File(File(dataDir(), MultiUser.USERS_DIR), name) } })
             Commands(api, out, asJson).run(command, params, wait, all)
         } catch (f: Failure) {
             err.println("trackhop: ${f.message}")

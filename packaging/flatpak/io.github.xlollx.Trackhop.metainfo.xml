@@ -99,6 +99,12 @@
   </requires>
 
   <releases>
+    <release version="0.6.0" date="2026-10-31">
+      <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.6.0</url>
+      <description>
+        <p>The server edition can be shared by several people, each with their own syncs. No changes for the desktop app.</p>
+      </description>
+    </release>
     <release version="0.5.6" date="2026-10-31">
       <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.6</url>
       <description>

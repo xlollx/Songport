@@ -9,6 +9,7 @@ import com.xlollx.songport.sync.isTransientNetwork
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -74,6 +75,12 @@ class Runner(private val env: ServerEnv) {
         if (!job.enabled || job.schedule == Schedule.MANUAL) return false
         retryAt[job.id]?.let { if (now >= it) return true }
         return now - job.lastRunEpoch >= job.schedule.minutes * 60_000
+    }
+
+    /** Stops the scheduler, the radio listeners and the runs under way (a user removed from a shared server). */
+    fun stop() {
+        radio.stop()
+        scope.cancel()
     }
 
     /** The scheduler: once a minute, the syncs that are due. */

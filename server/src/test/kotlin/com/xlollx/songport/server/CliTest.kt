@@ -94,6 +94,17 @@ class CliTest {
         assertEquals(0, cli("help").code)
     }
 
+    @Test fun onASharedServerUserPicksWhoseTrackhop() {
+        val shared = tmp.newFolder("shared")
+        val anna = cli("--user", "Anna", "status", dir = shared)
+        assertEquals(3, anna.code)
+        assertTrue(anna.err, anna.err.contains(File(File(shared, "users"), "anna").path))
+        assertTrue(cli("status", env = mapOf("TRACKHOP_USER" to "marco"), dir = shared).err.contains(File(File(shared, "users"), "marco").path))
+        // The admin's is the data folder's own.
+        assertEquals(0, cli("--user", "admin", "status").code)
+        assertEquals(2, cli("--user", "../etc", "status").code)
+    }
+
     @Test fun aServerElsewhereNeedsTheApiToken() {
         val url = "http://127.0.0.1:${server.address.port}"
         val off = cli("--url", url, "--token", "th_wrong", "status")

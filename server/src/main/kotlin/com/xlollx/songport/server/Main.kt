@@ -66,6 +66,8 @@ class Config(
     val baseUrl = (env["SONGPORT_URL"]?.takeIf { it.isNotBlank() } ?: "http://$defaultHost:$port").trimEnd('/')
     val password = env["SONGPORT_PASSWORD"]?.takeIf { it.isNotEmpty() }
     val locale = env["SONGPORT_LOCALE"]
+    /** Several people, each with their own services and syncs (MultiUser.kt): needs SONGPORT_PASSWORD, the admin's. */
+    val multiUser = env["SONGPORT_MULTIUSER"]?.trim()?.lowercase() in setOf("1", "true", "yes", "on")
 
     /** Keys given to the container instead of being typed in the page (same names as the app's build). */
     val buildDefaults: Map<String, String> = buildMap {
@@ -79,6 +81,10 @@ class Config(
 fun main() {
     System.setProperty("java.awt.headless", "true")
     val config = Config(System.getenv())
+    if (config.multiUser) {
+        if (config.password != null) { MultiUser.serve(config, System.getenv()); return }
+        println("SONGPORT_MULTIUSER needs SONGPORT_PASSWORD, the admin's password: starting for one person.")
+    }
     val app = launch(config, Html.Edition.SERVER)
     app.web.start(config.port)
     app.started(config.password == null)
@@ -87,6 +93,12 @@ fun main() {
 /** The engine set up on [config]'s data folder, not yet serving: [web] is started by the caller. */
 class Launched(val env: ServerEnv, val runner: Runner, val web: Web, val version: String, private val config: Config, private val edition: Html.Edition) {
     /** Once the pages are served on [port]: the scheduler, the command line's key, the first log line, the data saved on exit. */
+    /** Stops its scheduler and saves its data: a user removed from a shared server. */
+    fun stop() {
+        runner.stop()
+        env.store.flush()
+    }
+
     fun started(warnNoPassword: Boolean, port: Int = config.port) {
         runner.startScheduler()
         runCatching { LocalKey.write(config.dataDir, port) }.onFailure { env.log("server", "no key for the command line: ${it.message}") }
@@ -95,7 +107,10 @@ class Launched(val env: ServerEnv, val runner: Runner, val web: Web, val version
     }
 }
 
-fun launch(config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null, onShow: (() -> Unit)? = null, officialOnly: Boolean = false): Launched {
+fun launch(
+    config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null, onShow: (() -> Unit)? = null, officialOnly: Boolean = false,
+    account: Html.Account? = null, sharedRoot: File? = null,
+): Launched {
     config.dataDir.mkdirs()
     Log.init(config.dataDir)
     fun resource(name: String) = Config::class.java.getResourceAsStream(name)?.use { String(it.readBytes()).trim() }
@@ -109,6 +124,6 @@ fun launch(config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null, 
     if (!env.store.data.settings.connectorsInit) env.store.updateSettings { it.copy(connectorsInit = true) }
 
     val runner = Runner(env)
-    val web = Web(env, runner, Auth(env), config.password, version, edition, onQuit, onShow)
+    val web = Web(env, runner, Auth(env), config.password, version, edition, onQuit, onShow, account, sharedRoot)
     return Launched(env, runner, web, version, config, edition)
 }

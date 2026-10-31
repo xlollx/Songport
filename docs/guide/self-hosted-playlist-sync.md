@@ -50,6 +50,8 @@ settings and the details for each service.
 - **Your logins stay with you**: nothing goes through a third-party service.
 - **No limits and no subscription**: as many playlists and tracks as you like.
 - **It talks to your server on your network**: no need to open it to the internet.
+- **For the whole household**: with `SONGPORT_MULTIUSER`, each person signs in and has their own
+  services and syncs on the same server ([how](docker#several-people-on-one-server)).
 - **Scriptable**: a [REST API, a webhook](docker#api) and a [command line](cli), for Home Assistant,
   n8n or cron.
 

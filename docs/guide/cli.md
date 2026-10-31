@@ -37,6 +37,10 @@ Trackhop has to be running: Desktop next to the clock, or the container. The com
 through a key Trackhop makes at each start and leaves in its data folder (`cli.json`, readable by
 your user only), accepted from this computer only. When Trackhop is not running, the command says so.
 
+On a server shared by [several people](docker#several-people-on-one-server), `--user NAME` (or
+`TRACKHOP_USER`) picks whose Trackhop: `docker exec trackhop trackhop --user anna run --all`.
+Without it, the admin's.
+
 ## Commands
 
 **Syncs**
