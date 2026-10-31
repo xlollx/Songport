@@ -72,6 +72,21 @@ a { color: var(--link); text-underline-offset: 2px; }
 :root[data-theme="dark"] .top nav a.coffee { background: #4a3410; color: #ffdf9e; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .top nav a.coffee { background: #4a3410; color: #ffdf9e; } }
 @media (max-width: 480px) { .top nav a.coffee .long { display: none; } }
+/* The menu button (three bars) and the drawer with every page, from the right. */
+.top .menu { display: inline-flex; flex-direction: column; justify-content: center; gap: 4px; width: 38px; height: 34px; padding: 0 9px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; }
+.top .menu span { display: block; height: 2px; border-radius: 2px; background: var(--ink); }
+.top .menu:hover { border-color: var(--ink-3); }
+.drawer { position: fixed; inset: 0; z-index: 20; background: rgba(28, 27, 34, .35); }
+.drawer-panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(360px, 90vw); display: flex; flex-direction: column; background: var(--surface); box-shadow: -8px 0 24px rgba(28, 27, 34, .12); }
+.drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--line); color: var(--ink); }
+.drawer-head .close { border: 0; background: none; font-size: 26px; line-height: 1; color: var(--ink-2); cursor: pointer; padding: 0 4px; }
+.drawer-nav { flex: 1; overflow-y: auto; padding: 6px 18px 24px; }
+.drawer-nav h4 { margin: 18px 0 6px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.drawer-nav a { display: block; padding: 7px 0; color: var(--ink); text-decoration: none; font-size: 15px; border-bottom: 1px solid var(--surface-2); }
+.drawer-nav a:hover { color: var(--link); }
+body.drawer-open { overflow: hidden; }
+/* On a phone the bar keeps one row: the text links live in the drawer, the cup and the menu stay. */
+@media (max-width: 560px) { .top nav { flex-wrap: nowrap; } .top nav > a:not(.coffee) { display: none; } }
 /* The rename notice, once at the top of the hero, now a quiet note at the end of Get started. */
 .renamed-note { max-width: 70ch; margin: 22px 0 0; padding: 12px 16px; font-size: 14px; color: var(--ink-2); background: var(--surface-2); border-radius: 12px; }
 .stage { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 1px 8px; border-radius: 999px; background: #c8e6ff; color: #003258; vertical-align: middle; }

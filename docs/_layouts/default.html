@@ -23,8 +23,65 @@
       <a href="{{ '/privacy-policy' | relative_url }}">Privacy</a>
       <a href="https://github.com/xlollx/Trackhop">GitHub</a>
       <a class="coffee" href="https://ko-fi.com/xlollx" target="_blank" rel="noopener" aria-label="Buy me a coffee on Ko-fi">☕<span class="long"> Buy me a coffee</span></a>
+      <button class="menu" type="button" aria-label="All pages" aria-expanded="false" aria-controls="allpages"><span></span><span></span><span></span></button>
     </nav>
   </header>
+  <!-- Every page of the site, grouped, behind the menu button: the search engines find them through
+       the sitemap, people through this. Add a new page here when it is made. -->
+  <div class="drawer" id="allpages" hidden>
+   <div class="drawer-panel">
+    <div class="drawer-head"><strong>All pages</strong><button class="close" type="button" aria-label="Close">×</button></div>
+    <nav class="drawer-nav">
+      <h4>Get Trackhop</h4>
+      <a href="{{ '/' | relative_url }}">Android app</a>
+      <a href="{{ '/guide/playlist-sync-windows' | relative_url }}">Windows</a>
+      <a href="{{ '/guide/playlist-sync-mac' | relative_url }}">Mac</a>
+      <a href="{{ '/guide/playlist-sync-linux' | relative_url }}">Linux</a>
+      <a href="{{ '/guide/playlist-sync-nas' | relative_url }}">Docker on a NAS or home server</a>
+      <a href="{{ '/guide/versions' | relative_url }}">Which version do I need?</a>
+      <h4>Step by step</h4>
+      <a href="{{ '/guide/getting-started' | relative_url }}">Getting started</a>
+      <a href="{{ '/guide/spotify-to-youtube-music' | relative_url }}">Spotify → YouTube Music</a>
+      <a href="{{ '/guide/apple-music-to-spotify' | relative_url }}">Apple Music → Spotify</a>
+      <a href="{{ '/guide/spotify-to-tidal' | relative_url }}">Spotify → TIDAL</a>
+      <a href="{{ '/guide/spotify-to-navidrome-jellyfin' | relative_url }}">Spotify → Navidrome, Jellyfin, Plex</a>
+      <a href="{{ '/guide/self-hosted-playlist-sync' | relative_url }}">Self-hosted playlist sync</a>
+      <a href="{{ '/guide/export-playlist-csv' | relative_url }}">Export to CSV or M3U, backups</a>
+      <a href="{{ '/guide/shazam' | relative_url }}">Shazams in a playlist</a>
+      <a href="{{ '/guide/radio' | relative_url }}">Songs from a radio</a>
+      <a href="{{ '/guide/shared-links' | relative_url }}">Shared links</a>
+      <a href="{{ '/guide/soundcloud' | relative_url }}">SoundCloud links</a>
+      <a href="{{ '/guide/cards' | relative_url }}">Compatibility cards and posters</a>
+      <a href="{{ '/guide/unplayable-tracks' | relative_url }}">Unplayable tracks</a>
+      <h4>Compared with</h4>
+      <a href="{{ '/guide/soundiiz-alternative' | relative_url }}">Soundiiz</a>
+      <a href="{{ '/guide/tunemymusic-alternative' | relative_url }}">TuneMyMusic</a>
+      <h4>Desktop, server, automation</h4>
+      <a href="{{ '/guide/desktop' | relative_url }}">Trackhop Desktop</a>
+      <a href="{{ '/guide/docker' | relative_url }}">Docker server</a>
+      <a href="{{ '/guide/cli' | relative_url }}">The trackhop command</a>
+      <a href="{{ '/guide/docker' | relative_url }}#api">REST API and webhook</a>
+      <a href="{{ '/plugins' | relative_url }}">Plugins</a>
+      <h4>Help</h4>
+      <a href="{{ '/guide/troubleshooting' | relative_url }}">Troubleshooting</a>
+      <a href="{{ '/guide/reporting-a-problem' | relative_url }}">Reporting a problem</a>
+      <a href="{{ '/privacy-policy' | relative_url }}">Privacy policy</a>
+      <a href="https://github.com/xlollx/Trackhop">Source code on GitHub</a>
+      <a href="{{ '/guide/' | relative_url }}">The whole guide</a>
+    </nav>
+   </div>
+  </div>
+  <script>
+    (function () {
+      var b = document.querySelector('.top .menu'), d = document.getElementById('allpages');
+      if (!b || !d) return;
+      function set(open) { d.hidden = !open; b.setAttribute('aria-expanded', open); document.body.classList.toggle('drawer-open', open); }
+      b.addEventListener('click', function () { set(d.hidden); });
+      d.querySelector('.close').addEventListener('click', function () { set(false); });
+      d.addEventListener('click', function (e) { if (e.target === d) set(false); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
+    })();
+  </script>
   <main class="{{ page.main_class | default: 'prose' }}">
 {{ content }}
   </main>
