@@ -11,6 +11,7 @@ description (architecture, matching, services and their limits) stays in the
 - [SoundCloud](soundcloud): a public SoundCloud set or likes page as the source of a sync, no account needed.
 - [NetEase Cloud Music and QQ Music](netease-qq-music): a public 网易云音乐 or QQ音乐 playlist as the source of a sync, from its link, no Chinese account needed ([中文](netease-qq-music-zh)).
 - [Troubleshooting](troubleshooting): the errors people actually meet, and what to do about each.
+- [Is it safe?](security): every download checked on VirusTotal, the files' SHA-256 and how Trackhop is built.
 - [Reporting a problem](reporting-a-problem): the diagnostic report, and what makes a report useful.
 - [Cards](cards): "how compatible are we?" between two playlists, and the playlist poster with a QR code.
 - [Unplayable tracks](unplayable-tracks): the greyed-out tracks in your playlists, and how Trackhop replaces them.
