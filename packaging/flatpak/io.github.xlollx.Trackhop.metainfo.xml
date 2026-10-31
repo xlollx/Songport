@@ -99,6 +99,12 @@
   </requires>
 
   <releases>
+    <release version="0.5.6" date="2026-10-31">
+      <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.6</url>
+      <description>
+        <p>A public NetEase Cloud Music or QQ Music playlist link can be the source of a sync, read-only.</p>
+      </description>
+    </release>
     <release version="0.5.5" date="2026-10-31">
       <url type="details">https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.5</url>
       <description>
