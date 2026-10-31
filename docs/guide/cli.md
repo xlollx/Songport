@@ -1,5 +1,5 @@
 ---
-title: The trackhop command
+title: Sync playlists from the command line (the trackhop command)
 description: Run your playlist syncs, list them and add or remove tracks from a terminal, a script or a scheduled task, with the trackhop command of Trackhop Desktop and the Docker server. Free and open source.
 ---
 

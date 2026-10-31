@@ -17,6 +17,11 @@ description (architecture, matching, services and their limits) stays in the
 - [Trackhop on a server (Docker, beta)](docker): works for everyday use, still young. Scheduled syncs on a home server or a NAS, with a web page.
 - [The trackhop command](cli): run syncs, read their results, add and remove tracks from a terminal or a script, with Desktop or Docker.
 
+**On your computer or server**
+- [Playlist sync for Windows](playlist-sync-windows), [for Mac](playlist-sync-mac), [for Linux](playlist-sync-linux): the desktop app, how to install it and what it does.
+- [Self-hosted playlist sync](self-hosted-playlist-sync): your Navidrome, Jellyfin or Plex in step with your streaming service.
+- [On a NAS or home server](playlist-sync-nas): Docker on Synology, Unraid, TrueNAS or a Raspberry Pi.
+
 **Step by step**
 - [Sync Spotify playlists to YouTube Music](spotify-to-youtube-music), and keep them in sync.
 - [Transfer Apple Music playlists to Spotify](apple-music-to-spotify), no Mac or iPhone needed.
@@ -25,6 +30,10 @@ description (architecture, matching, services and their limits) stays in the
 - [Export a playlist to CSV or M3U](export-playlist-csv), and back up all of them.
 - [Your Shazams in a playlist](shazam): every song you Shazam, on any service.
 - [Songs from a radio, in a playlist](radio): what a station plays in the hours you choose, on any service.
+
+**Coming from another service**
+- [A free Soundiiz alternative](soundiiz-alternative): the same moves, kept in sync, no account, no limits.
+- [A free TuneMyMusic alternative](tunemymusic-alternative): transfers plus automatic sync, free and open source.
 
 **Maintaining it**
 - [Release process](release-process): version, changelogs, what CI does, F-Droid and Obtainium.

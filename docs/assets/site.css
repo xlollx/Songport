@@ -89,9 +89,10 @@ a { color: var(--link); text-underline-offset: 2px; }
 .prose code { background: var(--surface-2); padding: 1px 6px; border-radius: 6px; font-size: .92em; }
 .prose pre { background: var(--surface-2); padding: 14px; border-radius: 12px; overflow-x: auto; }
 .prose pre code { background: none; padding: 0; }
-.prose table { display: block; overflow-x: auto; border-collapse: collapse; margin: 16px 0; font-size: 15px; }
+.prose table { display: block; overflow-x: auto; border-collapse: collapse; margin: 16px 0; font-size: 15px; overflow-wrap: normal; }
 .prose th, .prose td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
 .prose th { background: var(--surface-2); }
+.prose img { max-width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); }
 .prose blockquote { margin: 16px 0; padding: 4px 16px; border-left: 3px solid var(--accent); color: var(--ink-2); }
 .prose li { margin: 4px 0; }
 

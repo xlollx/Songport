@@ -97,7 +97,7 @@ main_class: home
 <section class="section">
   <div class="wrap">
     <h2>Why not an online transfer service?</h2>
-    <p class="intro">Soundiiz, TuneMyMusic and FreeYourMusic are good at a one-off move. Trackhop is for keeping playlists in step over time, without handing your accounts to anyone.</p>
+    <p class="intro">Soundiiz, TuneMyMusic and FreeYourMusic are good at a one-off move. Trackhop is for keeping playlists in step over time, without handing your accounts to anyone. Side by side: <a href="guide/soundiiz-alternative">Trackhop and Soundiiz</a>, <a href="guide/tunemymusic-alternative">Trackhop and TuneMyMusic</a>.</p>
     <div class="table-scroll">
       <table class="compare">
         <thead><tr><th></th><th>Trackhop</th><th>Online transfer services</th></tr></thead>
@@ -121,7 +121,14 @@ main_class: home
     <div class="data server">
       <p><strong>Trackhop Desktop</strong> <span class="stage">beta</span> for Windows, macOS and Linux: install it like any program, no Docker or Java needed, no administrator rights. It sits next to the clock and runs scheduled syncs while the computer is on. Version 0.5.5 (<a href="https://github.com/xlollx/Trackhop/releases/tag/server-v0.5.5">what's in it</a>).</p>
       <p class="get" style="filter: none"><a class="button-dl" href="https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-windows.msi">Windows installer</a> <a class="button-dl" href="https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-windows.zip">Windows, no install (.zip)</a> <a class="button-dl" href="https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-macos-arm64.dmg">macOS, Apple silicon</a> <a class="button-dl" href="https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-macos-x64.dmg">macOS, Intel</a> <a class="button-dl" href="https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-linux.deb">Linux (.deb)</a> <a class="button-dl" href="https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-linux.tar.gz">Linux (.tar.gz)</a> <a class="button-dl" href="https://github.com/xlollx/Trackhop/releases/download/server-v0.5.5/Trackhop-Desktop-v0.5.5-linux.flatpak">Linux (Flatpak)</a></p>
-      <p><a href="guide/desktop">How to install it</a> · <a href="https://github.com/xlollx/Trackhop/releases?q=server-v&amp;expanded=true">All versions</a></p>
+      <p>Or with a package manager:</p>
+      <pre><code># Windows, with Scoop
+scoop bucket add xlollx https://github.com/xlollx/scoop-bucket
+scoop install xlollx/trackhop
+
+# macOS, with Homebrew
+brew install --cask xlollx/tap/trackhop</code></pre>
+      <p><a href="guide/desktop">How to install it</a> · <a href="https://github.com/xlollx/Trackhop/releases?q=server-v&amp;expanded=true">All versions</a> · For <a href="guide/playlist-sync-windows">Windows</a>, <a href="guide/playlist-sync-mac">Mac</a>, <a href="guide/playlist-sync-linux">Linux</a></p>
     </div>
     <div class="data server" style="margin-top: 14px">
       <p><strong>Docker</strong> <span class="stage">beta</span>, for a home server, a NAS or a Raspberry Pi:</p>
@@ -129,7 +136,7 @@ main_class: home
   -v trackhop-data:/data \
   -e SONGPORT_PASSWORD=choose-one \
   ghcr.io/xlollx/trackhop</code></pre>
-      <p>Then open <code>http://127.0.0.1:8080</code>. To update, pull the image and start the container again: your syncs stay in the volume. Settings, Docker Compose and what works there: <a href="guide/docker"><strong>the Docker guide</strong></a>. Also on <a href="https://hub.docker.com/r/xlollx/trackhop">Docker Hub</a> as <code>xlollx/trackhop</code>.</p>
+      <p>Then open <code>http://127.0.0.1:8080</code>. To update, pull the image and start the container again: your syncs stay in the volume. Settings, Docker Compose and what works there: <a href="guide/docker"><strong>the Docker guide</strong></a>. Also on <a href="https://hub.docker.com/r/xlollx/trackhop">Docker Hub</a> as <code>xlollx/trackhop</code>. On a <a href="guide/playlist-sync-nas">NAS (Synology, Unraid, TrueNAS)</a>, or <a href="guide/self-hosted-playlist-sync">next to Navidrome, Jellyfin or Plex</a>.</p>
       <p class="muted">Both have the app's look, the review of tracks not found, File playlists in every format, and the app's Tools: export, full backups (also on a schedule), duplicates, unplayable tracks, AI playlists and your numbers.</p>
     </div>
   </div>
