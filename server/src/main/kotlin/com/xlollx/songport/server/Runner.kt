@@ -85,7 +85,7 @@ class Runner(private val env: ServerEnv) {
 
     /** The scheduler: once a minute, the syncs that are due. */
     fun startScheduler() {
-        radio.start()
+        if (env.may(Permissions.RADIO)) radio.start()
         scope.launch {
             delay(STARTUP_DELAY_MS)
             while (isActive) {

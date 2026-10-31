@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Base64
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.function.BiPredicate
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
@@ -67,6 +68,7 @@ class MultiUser private constructor(
         val dir = userDir(name).apply { mkdirs() }
         val settings = baseEnv - "SONGPORT_PASSWORD" - "SONGPORT_MULTIUSER" + mapOf(
             "SONGPORT_DATA" to dir.path, ACCOUNT to name, ROOT to root.path, PORT to config.port.toString(),
+            PERMISSIONS to Permissions.format(users.permissions(name)),
         )
         val loader = URLClassLoader("trackhop-$name", classPath, ClassLoader.getPlatformClassLoader())
         try {
@@ -86,9 +88,21 @@ class MultiUser private constructor(
 
     private fun stopEngine(name: String) {
         val e = engines.remove(name) ?: return
-        // The loader stays open: a thread of that engine still winding down may need a class of it.
         runCatching { withLoader(e.loader) { e.stop.run() } }
+        // Closed a little later: a thread of that engine still winding down may need a class of it.
+        e.loader?.let { loader -> closer.schedule({ runCatching { loader.close() } }, 2, TimeUnit.MINUTES) }
     }
+
+    /** New permissions take effect in a new copy of the person's Trackhop (a run under way stops). */
+    private fun restartEngine(name: String) {
+        stopEngine(name)
+        startEngine(name)
+    }
+
+    private val closer = Executors.newSingleThreadScheduledExecutor { r -> Thread(r, "trackhop-users").apply { isDaemon = true } }
+
+    /** The admin, or a co-admin ([Permissions.ADMIN]): who sees the Users page. */
+    private fun manages(name: String) = name == ADMIN || Permissions.ADMIN in users.permissions(name)
 
     private fun engineOf(name: String): Engine? = if (name == ADMIN) adminEngine else engines[name]
 
@@ -127,12 +141,12 @@ class MultiUser private constructor(
         when {
             path == "/logout" && method == "POST" -> logout(ex)
             path == "/account" -> account(ex, method, name)
-            path == "/users" && name == ADMIN -> usersPage(ex, method)
+            path == "/users" && manages(name) -> usersPage(ex, method, name)
             else -> {
                 val engine = engineOf(name) ?: return send(ex, 503, page(
                     "Your Trackhop did not start",
                     """<div class="card err">${h(broken[name] ?: "It is starting: try again in a moment.")}</div><p class="muted">The admin finds the details in the log.</p>""",
-                    Html.Account(name, false),
+                    Html.Account(name, manages(name)),
                 ))
                 delegate(engine, ex)
             }
@@ -225,14 +239,14 @@ class MultiUser private constructor(
 <label for="user">User name</label><input type="text" id="user" name="user" autocomplete="username" autocapitalize="none" required autofocus>
 <label for="password">Password</label><input type="password" id="password" name="password" autocomplete="current-password" required>
 <p><button>Sign in</button></p></form>
-<p class="muted">Each person on this Trackhop has their own services and syncs. Forgot your password? Ask whoever runs this server.</p>""",
+<p class="muted">Each person on this Trackhop has their own services and syncs. Forgot your password? Ask the admin: they set a new one on the Users page. The admin's own is <code>SONGPORT_PASSWORD</code> in the container's settings.</p>""",
         admin.version, null, Html.Edition.SERVER, "login", null, showNav = false,
     )
 
     // ------------------------------------------------------------------ pages
 
     private fun account(ex: HttpExchange, method: String, name: String) {
-        val me = Html.Account(name, name == ADMIN)
+        val me = Html.Account(name, manages(name))
         var message: String? = null
         var error: String? = null
         if (method == "POST" && name != ADMIN) {
@@ -253,7 +267,7 @@ class MultiUser private constructor(
             }
         }
         val passwordCard = if (name == ADMIN)
-            """<div class="card"><p>You are the admin: your password is <code>SONGPORT_PASSWORD</code> in the container's settings. Change it there and restart the container.</p><p><a class="button secondary" href="/users">Users</a></p></div>"""
+            """<div class="card"><p>You are the admin: your password is <code>SONGPORT_PASSWORD</code> in the container's settings (the Compose file, or the container's environment in Portainer, Unraid, Synology…). To change it, or if you forgot it, read or set it there and restart the container.</p><p><a class="button secondary" href="/users">Users</a></p></div>"""
         else """<form method="post" action="/account" class="card"><h2>Change your password</h2>
 <label for="current">Current password</label><input type="password" id="current" name="current" autocomplete="current-password" required>
 <label for="new">New password</label><input type="password" id="new" name="new" autocomplete="new-password" minlength="$MIN_PASSWORD" required>
@@ -261,19 +275,28 @@ class MultiUser private constructor(
 <p><button>Change password</button></p></form>"""
         val body = """${message?.let { """<div class="card ok">${h(it)}</div>""" } ?: ""}${error?.let { """<div class="card err">${h(it)}</div>""" } ?: ""}
 <div class="card"><p>Signed in as <b>${h(name)}</b>.</p><p class="muted">Your services, syncs, files and backups are yours alone: the others on this server do not see them.</p>
+${if (name == ADMIN) "" else {
+            val mine = users.permissions(name)
+            val (yes, no) = Permissions.ALL.partition { it.first in mine }
+            fun list(ps: List<Triple<String, String, String>>) = ps.joinToString("") { "<li>${h(it.second)}</li>" }
+            (if (yes.isNotEmpty()) "<p>✓ Turned on for you:</p><ul>${list(yes)}</ul>" else "") +
+                (if (no.isNotEmpty()) "<p>✗ Not turned on for you:</p><ul>${list(no)}</ul>" else "") +
+                "<p class=\"muted\">The admin sets these on the Users page.</p>"
+        }}
 ${Html.postButton("/logout", "Sign out", "secondary")}</div>
 $passwordCard"""
         send(ex, 200, page("Your account", body, me, "account"))
     }
 
-    private fun usersPage(ex: HttpExchange, method: String) {
-        val me = Html.Account(ADMIN, true)
+    private fun usersPage(ex: HttpExchange, method: String, me: String) {
         var message: String? = null
         var error: String? = null
         if (method == "POST") {
-            val f = form(String(ex.requestBody.readNBytes(MAX_FORM), StandardCharsets.UTF_8))
+            val pairs = formPairs(String(ex.requestBody.readNBytes(MAX_FORM), StandardCharsets.UTF_8))
+            val f = pairs.toMap()
             val name = normalize(f["name"].orEmpty())
             val password = f["password"].orEmpty()
+            val chosen = Permissions.parse(pairs.filter { it.first == "perm" }.joinToString(",") { it.second })
             when (f["action"]) {
                 "add" -> when {
                     !NAME.matches(name) -> error = "A user name is 1 to 32 lowercase letters, digits, - or _, starting with a letter or a digit."
@@ -281,9 +304,9 @@ $passwordCard"""
                     users.has(name) -> error = "There is already a user called $name."
                     password.length < MIN_PASSWORD -> error = "Use at least $MIN_PASSWORD characters for the password."
                     else -> {
-                        users.add(name, password)
+                        users.add(name, password, chosen)
                         startEngine(name)
-                        log("added $name")
+                        log("$me added $name (${Permissions.format(chosen).ifEmpty { "no permissions" }})")
                         message = "Added $name: they sign in with that name and password, and start with an empty Trackhop."
                     }
                 }
@@ -294,37 +317,59 @@ $passwordCard"""
                         users.setPassword(name, password)
                         sessions.removeUser(name)
                         basicCache.clear()
-                        log("new password for $name")
-                        message = "New password for $name: they sign in again with it."
+                        log("$me set a new password for $name")
+                        message = "New password for $name: tell them, they sign in again with it."
                     }
                 }
-                "remove" -> if (users.has(name)) {
-                    stopEngine(name)
-                    users.remove(name)
-                    sessions.removeUser(name)
-                    basicCache.clear()
-                    broken.remove(name)
-                    val kept = moveAway(name)
-                    log("removed $name, data kept in ${kept?.path ?: "(nothing)"}")
-                    message = "Removed $name." + (kept?.let { " Their data is kept in ${it.path}: delete that folder when you no longer need it." } ?: "")
+                "permissions" -> when {
+                    !users.has(name) -> error = "There is no user called $name."
+                    // Nobody takes their own co-admin away by mistake: another admin does it.
+                    name == me && Permissions.ADMIN !in chosen -> error = "You cannot take co-admin away from yourself: the admin or another co-admin can."
+                    else -> {
+                        users.setPermissions(name, chosen)
+                        restartEngine(name)
+                        log("$me set $name's permissions: ${Permissions.format(chosen).ifEmpty { "none" }}")
+                        message = "Saved $name's permissions. Their Trackhop restarted with them: a sync that was running starts again at its next turn."
+                    }
+                }
+                "remove" -> when {
+                    !users.has(name) -> error = "There is no user called $name."
+                    name == me -> error = "You cannot remove yourself: the admin or another co-admin can."
+                    else -> {
+                        stopEngine(name)
+                        users.remove(name)
+                        sessions.removeUser(name)
+                        basicCache.clear()
+                        broken.remove(name)
+                        val kept = moveAway(name)
+                        log("$me removed $name, data kept in ${kept?.path ?: "(nothing)"}")
+                        message = "Removed $name." + (kept?.let { " Their data is kept in ${it.path}: delete that folder when you no longer need it." } ?: "")
+                    }
                 }
             }
         }
+        fun boxes(selected: Set<String>) = Permissions.ALL.joinToString("") { (k, label, help) ->
+            """<label class="check"><input type="checkbox" name="perm" value="$k"${if (k in selected) " checked" else ""}> <span><b>${h(label)}</b><br><span class="muted">${h(help)}</span></span></label>"""
+        }
         val rows = users.names().joinToString("") { n ->
             val state = broken[n]?.let { """<span class="err">did not start: ${h(it)}</span>""" } ?: if (engines.containsKey(n)) "" else "starting…"
-            """<div class="card"><p><b>${h(n)}</b> <span class="muted">since ${Html.date(users.created(n))}</span> $state</p>
-<form method="post" action="/users" class="inline"><input type="hidden" name="action" value="password"><input type="hidden" name="name" value="${h(n)}"><input type="password" name="password" placeholder="New password" autocomplete="new-password" minlength="$MIN_PASSWORD" required> <button class="secondary">Set password</button></form>
-${Html.postButton("/users", "Remove", "secondary", mapOf("action" to "remove", "name" to n), confirm = "Remove $n? Their Trackhop stops; their data is kept in a folder you can delete afterwards.")}</div>"""
+            val perms = users.permissions(n)
+            """<div class="card"><p><b>${h(n)}</b>${if (Permissions.ADMIN in perms) " <span class=\"badge\">co-admin</span>" else ""}${if (n == me) " <span class=\"badge\">you</span>" else ""} <span class="muted">since ${Html.date(users.created(n))}</span> $state</p>
+<details><summary>Permissions</summary><form method="post" action="/users"><input type="hidden" name="action" value="permissions"><input type="hidden" name="name" value="${h(n)}">${boxes(perms)}<p><button class="secondary">Save permissions</button></p></form></details>
+<details><summary>Forgot the password?</summary><form method="post" action="/users"><input type="hidden" name="action" value="password"><input type="hidden" name="name" value="${h(n)}"><label>New password for ${h(n)}</label><input type="password" name="password" autocomplete="new-password" minlength="$MIN_PASSWORD" required><p class="muted">They are signed out everywhere and sign in again with it; they can change it afterwards under their name.</p><p><button class="secondary">Set the new password</button></p></form></details>
+${if (n == me) "" else Html.postButton("/users", "Remove $n", "secondary", mapOf("action" to "remove", "name" to n), confirm = "Remove $n? Their Trackhop stops; their data is kept in a folder you can delete afterwards.")}</div>"""
         }.ifEmpty { """<p class="muted">Nobody else yet.</p>""" }
         val body = """${message?.let { """<div class="card ok">${h(it)}</div>""" } ?: ""}${error?.let { """<div class="card err">${h(it)}</div>""" } ?: ""}
-<p class="muted">Each person has a Trackhop of their own on this server: their own services, syncs, files, backups and log, in <code>${h(File(root, USERS_DIR).path)}/&lt;name&gt;</code>. Their scheduled syncs run whether or not they are signed in. You (<b>$ADMIN</b>) keep this server's own Trackhop.</p>
+<p class="muted">Each person has a Trackhop of their own on this server: their own services, syncs, files, backups and log, in <code>${h(File(root, USERS_DIR).path)}/&lt;name&gt;</code>. Their scheduled syncs run whether or not they are signed in. <b>$ADMIN</b> keeps this server's own Trackhop and may do everything.</p>
 <form method="post" action="/users" class="card"><h2>Add someone</h2><input type="hidden" name="action" value="add">
 <label for="name">User name</label><input type="text" id="name" name="name" autocapitalize="none" pattern="[a-zA-Z0-9][a-zA-Z0-9_\-]{0,31}" required>
 <label for="password">Password</label><input type="password" id="password" name="password" autocomplete="new-password" minlength="$MIN_PASSWORD" required>
+<p><b>They may use</b></p>${boxes(Permissions.DEFAULT)}
 <p><button>Add</button></p></form>
 <h2>People</h2>
-$rows"""
-        send(ex, 200, page("Users", body, me, "users"))
+$rows
+<div class="card"><p><b>The admin's password</b> is <code>SONGPORT_PASSWORD</code> in the container's settings (the Compose file, or the container's environment in Portainer, Unraid, Synology…). Forgot it? Read it there, or set a new one and restart the container: nothing else changes.</p></div>"""
+        send(ex, 200, page("Users", body, Html.Account(me, true), "users"))
     }
 
     /** A removed person's folder, moved out of the way (`users-removed/<name>-<time>`), or null when there was none. */
@@ -367,6 +412,7 @@ $rows"""
         internal const val ACCOUNT = "TRACKHOP_ACCOUNT"
         internal const val ROOT = "TRACKHOP_ROOT"
         internal const val PORT = "TRACKHOP_PORT"
+        internal const val PERMISSIONS = "TRACKHOP_PERMISSIONS"
         private const val MIN_PASSWORD = 8
         private const val SESSION_DAYS = 30
         private const val MAX_FORM = 64 * 1024
@@ -383,9 +429,11 @@ $rows"""
 
         private fun enc(s: String) = URLEncoder.encode(s, StandardCharsets.UTF_8)
 
-        private fun form(body: String): Map<String, String> = body.split('&').filter { it.isNotEmpty() }.associate {
+        private fun formPairs(body: String): List<Pair<String, String>> = body.split('&').filter { it.isNotEmpty() }.map {
             URLDecoder.decode(it.substringBefore('='), StandardCharsets.UTF_8) to URLDecoder.decode(it.substringAfter('=', ""), StandardCharsets.UTF_8)
         }
+
+        private fun form(body: String): Map<String, String> = formPairs(body).toMap()
 
         private fun cookie(ex: HttpExchange, name: String): String? = ex.requestHeaders["Cookie"].orEmpty()
             .flatMap { it.split(';') }.map { it.trim() }
@@ -433,8 +481,16 @@ object UserEngine {
     @JvmStatic
     fun start(settings: Map<String, String>): Map<String, Any> {
         val name = settings.getValue(MultiUser.ACCOUNT)
+        val permissions = Permissions.parse(settings[MultiUser.PERMISSIONS])
         Log.who = name
-        val app = launch(Config(settings), Html.Edition.SERVER, account = Html.Account(name, false), sharedRoot = File(settings.getValue(MultiUser.ROOT)))
+        val app = launch(
+            Config(settings), Html.Edition.SERVER,
+            // Without the unofficial connectors, as the Microsoft Store's build: not even listed.
+            officialOnly = Permissions.UNOFFICIAL !in permissions,
+            account = Html.Account(name, Permissions.ADMIN in permissions),
+            sharedRoot = File(settings.getValue(MultiUser.ROOT)),
+            permissions = permissions,
+        )
         app.started(false, settings.getValue(MultiUser.PORT).toInt())
         return mapOf(
             "handler" to app.web.handler(),
@@ -446,7 +502,7 @@ object UserEngine {
 
 /** The people of a shared server and their passwords (PBKDF2, salted), in `users.json`, readable by its owner only. */
 internal class UserStore(private val file: File) {
-    private class Entry(val salt: String, val hash: String, val iterations: Int, val created: Long)
+    private class Entry(val salt: String, val hash: String, val iterations: Int, val created: Long, val permissions: Set<String>)
 
     private val lock = Any()
     private var entries: Map<String, Entry> = load()
@@ -454,7 +510,9 @@ internal class UserStore(private val file: File) {
     private fun load(): Map<String, Entry> = runCatching {
         Json.parseToJsonElement(file.readText()).jsonObject.mapValues { (_, v) ->
             val o = v.jsonObject
-            Entry(o.str("salt"), o.str("hash"), o["iterations"]!!.jsonPrimitive.int, o["created"]?.jsonPrimitive?.long ?: 0)
+            // Added before permissions existed (0.6.0): what a new person gets.
+            val perms = o["permissions"]?.jsonPrimitive?.contentOrNull?.let { Permissions.parse(it) } ?: Permissions.DEFAULT
+            Entry(o.str("salt"), o.str("hash"), o["iterations"]!!.jsonPrimitive.int, o["created"]?.jsonPrimitive?.long ?: 0, perms)
         }
     }.getOrDefault(emptyMap())
 
@@ -462,7 +520,7 @@ internal class UserStore(private val file: File) {
 
     private fun save() = writePrivate(file, buildJsonObject {
         entries.toSortedMap().forEach { (name, e) ->
-            put(name, buildJsonObject { put("salt", e.salt); put("hash", e.hash); put("iterations", e.iterations); put("created", e.created) })
+            put(name, buildJsonObject { put("salt", e.salt); put("hash", e.hash); put("iterations", e.iterations); put("created", e.created); put("permissions", Permissions.format(e.permissions)) })
         }
     }.toString())
 
@@ -470,14 +528,22 @@ internal class UserStore(private val file: File) {
     fun has(name: String) = synchronized(lock) { name in entries }
     fun created(name: String): Long = synchronized(lock) { entries[name]?.created ?: 0 }
 
-    fun add(name: String, password: String) = synchronized(lock) {
-        entries = entries + (name to entry(password, System.currentTimeMillis()))
+    fun permissions(name: String): Set<String> = synchronized(lock) { entries[name]?.permissions.orEmpty() }
+
+    fun add(name: String, password: String, permissions: Set<String> = Permissions.DEFAULT) = synchronized(lock) {
+        entries = entries + (name to entry(password, System.currentTimeMillis(), permissions))
         save()
     }
 
     fun setPassword(name: String, password: String) = synchronized(lock) {
         val old = entries[name] ?: return
-        entries = entries + (name to entry(password, old.created))
+        entries = entries + (name to entry(password, old.created, old.permissions))
+        save()
+    }
+
+    fun setPermissions(name: String, permissions: Set<String>) = synchronized(lock) {
+        val old = entries[name] ?: return
+        entries = entries + (name to Entry(old.salt, old.hash, old.iterations, old.created, permissions))
         save()
     }
 
@@ -496,9 +562,9 @@ internal class UserStore(private val file: File) {
         return MessageDigest.isEqual(given.toByteArray(), e.hash.toByteArray())
     }
 
-    private fun entry(password: String, created: Long): Entry {
+    private fun entry(password: String, created: Long, permissions: Set<String>): Entry {
         val salt = ByteArray(16).also { SecureRandom().nextBytes(it) }
-        return Entry(Base64.getEncoder().encodeToString(salt), hash(password, salt, ITERATIONS), ITERATIONS, created)
+        return Entry(Base64.getEncoder().encodeToString(salt), hash(password, salt, ITERATIONS), ITERATIONS, created, permissions)
     }
 
     private fun hash(password: String, salt: ByteArray, iterations: Int): String {

@@ -5,6 +5,17 @@ released together as `server-v<version>`. The app keeps its own (`v1.x`), and th
 server version runs is the app's of the same commit, shown in the page footer. Up to the app's 1.3.8
 the Docker image carried the app's version.
 
+## 0.6.1
+
+- **What each person may use**, on a server shared by several people: in **Users** the admin ticks,
+  for each person, co-admin (manages the others), the unofficial connectors, radio syncs, folders on
+  the server and the API with the command line. A new person gets everything but co-admin, and so do
+  the people added with 0.6.0. Each person sees theirs under their name.
+  [How](https://xlollx.github.io/Trackhop/guide/docker#several-people-on-one-server).
+- **A forgotten password**: the Users page sets a new one for anyone (*Forgot the password?*), and
+  says where the admin's own is (`SONGPORT_PASSWORD` in the container's settings).
+- Trackhop Desktop: no changes.
+
 ## 0.6.0
 
 - **Several people on one server** (Docker): with `SONGPORT_MULTIUSER=true` each person signs in

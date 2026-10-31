@@ -26,6 +26,9 @@ import java.util.Base64
 import java.util.UUID
 import java.util.concurrent.Executors
 
+/** A page this person's permissions on a shared server leave out (Permissions.kt). */
+internal const val NOT_ALLOWED = """<div class="card"><p>This is not turned on for you on this server: ask its admin, on the Users page.</p><p><a href="/">Back</a></p></div>"""
+
 /** The largest request body accepted: a playlist file is far smaller. */
 private const val MAX_BODY = 20_000_000
 
@@ -100,7 +103,7 @@ class Web(
     }
 
     /** True when this server's API would take [header] from [from]: its token, or the command line's key. */
-    fun acceptsApi(header: String?, from: InetAddress?): Boolean = LocalKey.matches(header, from) || Api.authorized(env, header)
+    fun acceptsApi(header: String?, from: InetAddress?): Boolean = env.may(Permissions.API) && (LocalKey.matches(header, from) || Api.authorized(env, header))
 
     // ------------------------------------------------------------------ plumbing
 
@@ -239,7 +242,7 @@ class Web(
         if (connected.size < 1) {
             body.append("""<div class="card">Connect a service first: <a href="/connectors">Services</a>.</div>""")
         }
-        body.append("""<p class="actions"><a class="button" href="/syncs/new">New sync</a> <a class="button secondary" href="/syncs/radio">$RADIO_ICON New radio sync</a> <a class="button secondary" href="/syncs/shazam">$SHAZAM_ICON New Shazam sync</a></p>""")
+        body.append("""<p class="actions"><a class="button" href="/syncs/new">New sync</a> ${if (env.may(Permissions.RADIO)) """<a class="button secondary" href="/syncs/radio">$RADIO_ICON New radio sync</a> """ else ""}<a class="button secondary" href="/syncs/shazam">$SHAZAM_ICON New Shazam sync</a></p>""")
         if (jobs.isEmpty()) body.append("""<p class="muted">No syncs yet.</p>""")
         for (job in jobs) body.append(jobCard(job, running.containsKey(job.id)))
         send(r.ex, 200, page("Syncs", body.toString(), refresh = if (running.isNotEmpty()) 5 else null))
@@ -504,6 +507,7 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
     private fun syncs(r: Req, rest: List<String>) {
         when {
             rest == listOf("new") -> newSync(r)
+            rest == listOf("radio") && !env.may(Permissions.RADIO) -> send(r.ex, 403, page("Radio sync", NOT_ALLOWED))
             rest == listOf("radio") -> if (r.method == "POST") radioCreate(r) else radioNew(r)
             rest == listOf("shazam") -> if (r.method == "POST") shazamCreate(r) else shazamNew(r)
             rest == listOf("all") && r.method == "POST" -> {
@@ -531,6 +535,7 @@ if (location.hash.length > 1) location.replace('/callback?' + location.hash.subs
                         redirect(r.ex, "$back?ok=${q("Saved.")}")
                     }
                     "radio" -> {
+                        if (!env.may(Permissions.RADIO)) return send(r.ex, 403, page("Radio sync", NOT_ALLOWED))
                         val base = job.radio ?: return redirect(r.ex, back)
                         val (radio, problem) = radioWindow(r.form, base)
                         if (radio == null) return redirect(r.ex, "$back?err=${q(problem!!)}")

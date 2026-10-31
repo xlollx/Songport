@@ -225,16 +225,33 @@ Nobody sees the others'. Add `SONGPORT_MULTIUSER`:
 ```
 
 1. Open the page and sign in as **admin**, with `SONGPORT_PASSWORD`.
-2. In **Users**, add each person with a user name and a first password.
+2. In **Users**, add each person with a user name, a first password and what they may use (below).
 3. They sign in at the same address with their name and password, and connect their own services.
    The 👤 link with their name, in the top bar, is where they change their password or sign out.
 
+- **What each person may use**, ticked by the admin in **Users** and changed there at any time:
+  - *Co-admin*: manages the others as the admin does (not themselves: another admin does that).
+  - *Unofficial connectors*: YouTube Music, Spotify and Deezer with browser cookies; NetEase, QQ
+    Music and SoundCloud links. Off, they are not even offered. A service may limit an account that
+    uses them, so it is the admin's call.
+  - *Radio syncs*: the server listens to a station for hours, with its bandwidth.
+  - *Folders on the server*: backups copied to a folder of the server.
+  - *API and command line*: the API's token, the webhook and the `trackhop` command.
+
+  A new person gets everything but co-admin; people added with 0.6.0 too. A change restarts that
+  person's Trackhop (a sync running at that moment starts again at its next turn). Each person sees
+  what they may use under their name.
+- **Forgotten passwords.** Someone else's: the admin (or a co-admin) sets a new one in **Users** ›
+  *Forgot the password?*; they are signed out everywhere and can change it afterwards. The admin's:
+  it is `SONGPORT_PASSWORD` in the container's settings (the Compose file, or the container's
+  environment in Portainer, Unraid, Synology…): read it there, or set a new one and restart the
+  container. Nothing else changes, and the admin's old sessions end.
 - **What was there stays the admin's.** A server used by one person before carries on as the
   admin's Trackhop: same services, same syncs. The others start empty.
 - **Scheduled syncs run for everyone**, signed in or not.
 - **Data**: each person's is in `/data/users/<name>`, the admin's in `/data` as before. Removing
   someone stops their Trackhop and moves their folder to `/data/users-removed`, to delete when you
-  no longer need it. A forgotten password: the admin sets a new one in **Users**.
+  no longer need it.
 - **Sign-ins to the services** come back to the person who started them, through the same
   `SONGPORT_URL`: nothing to set per person. With your own Spotify or Google keys, they are shared by
   everyone on the server; Spotify's own limits on how many people a key in development mode serves

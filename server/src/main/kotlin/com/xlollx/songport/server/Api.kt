@@ -167,6 +167,7 @@ object Api {
     })
 
     private fun post(env: ServerEnv, event: JsonObject) {
+        if (!env.may(Permissions.API)) return
         val url = webhook(env).ifEmpty { return }
         val body = event.toString()
         val req = HttpRequest.newBuilder(URI(url)).timeout(Duration.ofSeconds(20))
@@ -188,6 +189,7 @@ internal fun Web.api(ex: HttpExchange, method: String, path: List<String>, query
     fun error(code: Int, message: String) = json(code, buildJsonObject { put("error", message) })
     // The command line on this machine (LocalKey) gets in without the API being turned on.
     val auth = ex.requestHeaders.getFirst("Authorization")
+    if (!env.may(Permissions.API)) return error(403, "The API is not turned on for you on this server: ask its admin.")
     if (!LocalKey.matches(auth, ex.remoteAddress?.address)) {
         if (!Api.enabled(env)) return error(403, "The API is off: make a token on the page, Tools › API.")
         if (!Api.authorized(env, auth)) return error(401, "Send the API token as: Authorization: Bearer <token>")
@@ -285,6 +287,7 @@ internal fun Web.api(ex: HttpExchange, method: String, path: List<String>, query
 
 /** Tools › API: the token (made, shown once, revoked) and the webhook. */
 internal fun Web.apiPage(r: Web.Req) {
+    if (!env.may(Permissions.API)) return send(r.ex, 403, page("API", NOT_ALLOWED))
     var shown: String? = null
     if (r.method == "POST") {
         when (r.form["action"]) {

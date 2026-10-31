@@ -49,6 +49,7 @@ object Backups {
 
     /** Copies the File playlists the backup folder does not have yet. Returns how many. */
     fun copyToFolder(env: ServerEnv): Int {
+        if (!env.may(Permissions.FOLDERS)) return 0
         val folder = env.store.data.settings.backupFolder.trim().ifEmpty { return 0 }
         val dir = File(folder)
         if (!dir.isDirectory || !dir.canWrite()) throw IllegalStateException("$folder is not a folder Trackhop can write to")

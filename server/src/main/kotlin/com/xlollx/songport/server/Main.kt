@@ -109,7 +109,7 @@ class Launched(val env: ServerEnv, val runner: Runner, val web: Web, val version
 
 fun launch(
     config: Config, edition: Html.Edition, onQuit: (() -> Unit)? = null, onShow: (() -> Unit)? = null, officialOnly: Boolean = false,
-    account: Html.Account? = null, sharedRoot: File? = null,
+    account: Html.Account? = null, sharedRoot: File? = null, permissions: Set<String>? = null,
 ): Launched {
     config.dataDir.mkdirs()
     Log.init(config.dataDir)
@@ -119,7 +119,7 @@ fun launch(
 
     BuildDefaults.values = config.buildDefaults
     installServerConnectors(officialOnly)
-    val env = ServerEnv(config.dataDir, Strings.load(config.locale), config.baseUrl)
+    val env = ServerEnv(config.dataDir, Strings.load(config.locale), config.baseUrl, permissions)
     // A first start: the services the server offers are not listed until the user adds them, as in the app.
     if (!env.store.data.settings.connectorsInit) env.store.updateSettings { it.copy(connectorsInit = true) }
 

@@ -26,7 +26,12 @@ class ServerEnv(
     private val strings: Strings,
     /** Where the web interface is reached from the browser, without a trailing slash. */
     val baseUrl: String,
+    /** What this person may do on a shared server ([Permissions]); null: everything. */
+    val permissions: Set<String>? = null,
 ) : Env {
+    /** True when this person may use [permission] ([Permissions]). */
+    fun may(permission: String) = permissions == null || permission in permissions
+
     override val store: FileStore = FileStore(dataDir).also { FileStore.install(it) }
     override val tokens: TokenVault = JsonTokenVault(File(dataDir, "tokens.json"))
     override val redirectUri: String get() = "$baseUrl/callback"

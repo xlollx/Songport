@@ -59,6 +59,7 @@ private fun Web.backupTool(r: Web.Req) {
                 val schedule = Schedule.entries.firstOrNull { it.name == r.form["schedule"] && it in BACKUP_SCHEDULES } ?: Schedule.MANUAL
                 val folder = r.form["folder"].orEmpty().trim()
                 if (folder.isNotEmpty() && !java.io.File(folder).isDirectory) return redirect(r.ex, "/tools/backup?err=${q("$folder is not a folder here.")}")
+                if (folder.isNotEmpty() && !env.may(Permissions.FOLDERS)) return redirect(r.ex, "/tools/backup?err=${q("Folders on the server are not turned on for you: ask the admin.")}")
                 // On a server shared by several people, nobody copies files into the others' part of the data volume.
                 if (folder.isNotEmpty() && sharedRoot != null) {
                     val f = java.io.File(folder).canonicalFile
@@ -93,8 +94,8 @@ private fun Web.backupTool(r: Web.Req) {
         """<h2>Automatically</h2><form method="post" action="/tools/backup" class="card"><input type="hidden" name="action" value="settings">
 <p class="muted">On the schedule, every connected service is backed up. With a folder, the new files and the set-up of the day are copied there too.</p>
 <label>Back up every connected service</label><select name="schedule">$schedules</select>
-<label>Also copy the backups and the set-up to this folder (optional)</label><input type="text" name="folder" value="${h(settings.backupFolder)}" placeholder="/backups">
-<p class="muted">A folder this ${if (env.dataDir.path.startsWith("/data")) "container" else "computer"} can write to: with Docker, mount one (for example <code>-v /mnt/nas/trackhop:/backups</code>)${account?.let { if (!it.admin) ". The server is shared: use a folder of your own, such as <code>/backups/${h(it.name)}</code>" else "" } ?: ""}. Only files the folder does not have yet are copied, so it keeps every version.</p>
+${if (env.may(Permissions.FOLDERS)) """<label>Also copy the backups and the set-up to this folder (optional)</label><input type="text" name="folder" value="${h(settings.backupFolder)}" placeholder="/backups">""" else """<input type="hidden" name="folder" value=""><p class="muted">Copies to a folder of the server are not turned on for you: download the backups from File playlists instead.</p>"""}
+${if (env.may(Permissions.FOLDERS)) """<p class="muted">A folder this ${if (env.dataDir.path.startsWith("/data")) "container" else "computer"} can write to: with Docker, mount one (for example <code>-v /mnt/nas/trackhop:/backups</code>)${account?.takeIf { sharedRoot != null }?.let { ". The server is shared: use a folder of your own, such as <code>/backups/${h(it.name)}</code>" } ?: ""}. Only files the folder does not have yet are copied, so it keeps every version.</p>""" else ""}
 <p><button class="secondary">Save</button></p></form>""",
     )
     send(r.ex, 200, page("Backup & restore", body.toString()))

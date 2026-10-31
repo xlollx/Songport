@@ -86,7 +86,7 @@ class MultiUserTest {
         val admin = signIn("admin", "admin-secret")
         assertTrue(post("/users", mapOf("action" to "add", "name" to "Anna", "password" to "short"), admin).body().contains("at least"))
         assertTrue(post("/users", mapOf("action" to "add", "name" to "../x", "password" to "long enough"), admin).body().contains("lowercase letters"))
-        val added = post("/users", mapOf("action" to "add", "name" to "Anna", "password" to "anna-password"), admin)
+        val added = postPairs("/users", listOf("action" to "add", "name" to "Anna", "password" to "anna-password") + Permissions.DEFAULT.map { "perm" to it }, admin)
         assertTrue(added.body(), added.body().contains("Added anna"))
         assertTrue(File(data, "users/anna").isDirectory)
 
@@ -127,6 +127,76 @@ class MultiUserTest {
         assertEquals(303, get("/", anna).statusCode())
         assertFalse(File(data, "users/anna").exists())
         assertTrue(File(data, "users-removed").listFiles()!!.any { it.name.startsWith("anna-") })
+    }
+
+    private fun postPairs(path: String, pairs: List<Pair<String, String>>, cookie: String) = client.send(
+        HttpRequest.newBuilder(URI("$base$path")).header("Content-Type", "application/x-www-form-urlencoded").header("Cookie", cookie).header("Origin", base)
+            .POST(HttpRequest.BodyPublishers.ofString(pairs.joinToString("&") { "${enc(it.first)}=${enc(it.second)}" })).build(),
+        HttpResponse.BodyHandlers.ofString(),
+    )
+
+    @Test fun theAdminSetsWhatEachPersonMayUse() {
+        val admin = signIn("admin", "admin-secret")
+        // Anna: what a new person gets. Luca: the API only.
+        post("/users", mapOf("action" to "add", "name" to "anna", "password" to "anna-password", "perm" to "unofficial"), admin)
+        postPairs("/users", listOf("action" to "add", "name" to "anna2", "password" to "anna-password") + Permissions.DEFAULT.map { "perm" to it }, admin)
+        postPairs("/users", listOf("action" to "add", "name" to "luca", "password" to "luca-password", "perm" to "api"), admin)
+        val anna = signIn("anna2", "anna-password")
+        val luca = signIn("luca", "luca-password")
+
+        // Unofficial connectors: not even offered.
+        assertTrue(get("/connectors", anna).body().contains("(unofficial, alpha)"))
+        assertFalse(get("/connectors", luca).body().contains("(unofficial, alpha)"))
+        // Radio syncs.
+        assertEquals(200, get("/syncs/radio", anna).statusCode())
+        assertEquals(403, get("/syncs/radio", luca).statusCode())
+        assertFalse(get("/", luca).body().contains("/syncs/radio"))
+        // Folders on the server.
+        val folder = tmp.newFolder("backups").path
+        val refused = post("/tools/backup", mapOf("action" to "settings", "schedule" to "MANUAL", "folder" to folder), luca)
+        assertTrue(refused.headers().firstValue("Location").orElse(""), refused.headers().firstValue("Location").orElse("").contains("err="))
+        // Nobody writes into another person's part of the data volume.
+        val intoOthers = post("/tools/backup", mapOf("action" to "settings", "schedule" to "MANUAL", "folder" to File(data, "users/luca").path), anna)
+        assertTrue(intoOthers.headers().firstValue("Location").orElse("").contains("err="))
+        // The API: luca may, anna2 may too; take it away from luca and his key no longer works.
+        val lucaKey = LocalKey.read(File(data, "users/luca"))!!.second
+        assertEquals(200, get("/api/v1/status", null, "Authorization", "Bearer $lucaKey").statusCode())
+        val saved = postPairs("/users", listOf("action" to "permissions", "name" to "luca", "perm" to "radio"), admin)
+        assertTrue(saved.body(), saved.body().contains("Saved luca"))
+        assertTrue(get("/api/v1/status", null, "Authorization", "Bearer $lucaKey").statusCode() != 200)
+        assertEquals(403, get("/tools/api", luca).statusCode())
+        // ... and radio is his now, in the restarted Trackhop, without signing in again.
+        assertEquals(200, get("/syncs/radio", luca).statusCode())
+        // The account page says what one may use.
+        assertTrue(get("/account", luca).body().substringAfter("Turned on for you").substringBefore("Not turned on").contains("Radio syncs"))
+
+        // A co-admin manages the others, but cannot remove themselves or drop their own role.
+        assertEquals(404, get("/users", anna).statusCode())
+        postPairs("/users", listOf("action" to "permissions", "name" to "anna2", "perm" to "admin", "perm" to "api"), admin)
+        assertEquals(200, get("/users", anna).statusCode())
+        assertTrue(get("/", anna).body().contains("href=\"/users\""))
+        assertTrue(post("/users", mapOf("action" to "remove", "name" to "anna2"), anna).body().contains("cannot remove yourself"))
+        assertTrue(postPairs("/users", listOf("action" to "permissions", "name" to "anna2", "perm" to "api"), anna).body().contains("cannot take co-admin away"))
+        assertTrue(post("/users", mapOf("action" to "password", "name" to "luca", "password" to "luca-new-pass"), anna).body().contains("New password for luca"))
+        assertEquals(303, get("/", luca).statusCode())
+        signIn("luca", "luca-new-pass")
+    }
+
+    @Test fun peopleAddedBefore060MayUseWhatANewPersonGets() {
+        hub.stop()
+        LocalKey.reset()
+        File(data, "users.json").writeText(File(data, "users.json").takeIf { it.exists() }?.readText() ?: "{}")
+        UserStore(File(data, "users.json")).add("old", "old-password")
+        // As 0.6.0 wrote it: no permissions field.
+        val f = File(data, "users.json")
+        f.writeText(f.readText().replace(Regex(",\"permissions\":\"[^\"]*\""), ""))
+        assertFalse(f.readText().contains("permissions"))
+        assertEquals(Permissions.DEFAULT, UserStore(f).permissions("old"))
+        val env = mapOf("SONGPORT_DATA" to data.path, "SONGPORT_PORT" to "0", "SONGPORT_PASSWORD" to "admin-secret", "SONGPORT_MULTIUSER" to "true")
+        hub = MultiUser.serve(Config(env), env)
+        base = "http://127.0.0.1:${hub.server!!.address.port}"
+        val old = signIn("old", "old-password")
+        assertEquals(200, get("/syncs/radio", old).statusCode())
     }
 
     @Test fun peopleComeBackAfterARestart() {
